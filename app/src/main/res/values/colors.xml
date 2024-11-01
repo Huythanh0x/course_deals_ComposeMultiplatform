@@ -1,31 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="black">#FF000000</color>
-    <color name="dark">#202020</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="blue_50">#e2f1fb</color>
+    <color name="blue_100">#b9dbf7</color>
+    <color name="blue_200">#8cc5f2</color>
+    <color name="blue_300">#5faeed</color>
+    <color name="blue_400">#3c9dea</color>
+    <color name="blue_500">#158de6</color>
+    <color name="blue_600">#1180d9</color>
+    <color name="blue_700">#0b6ec6</color>
+    <color name="blue_800">#055db4</color>
+    <color name="blue_900">#004095</color>
+    <color name="purple_50">#efe6f8</color>
+    <color name="purple_100">#d6c3ef</color>
+    <color name="purple_200">#bb9ae4</color>
+    <color name="purple_300">#a070da</color>
+    <color name="purple_400">#8a4ed2</color>
+    <color name="purple_500">#752bc9</color>
+    <color name="purple_600">#6b25c3</color>
+    <color name="purple_700">#5d1cba</color>
+    <color name="purple_800">#5014b3</color>
+    <color name="purple_900">#3a00a8</color>
+    <!-- named color   -->
     <color name="superLightGrey">#E5E6ED</color>
     <color name="lightGrey">#BEBFC3</color>
     <color name="grey">#8A8B8E</color>
-    <color name="darkGrey">#8A8B8E</color>
-    <color name="golden">#FFEB3B</color>
-    <color name="superDarkBlue">#000627</color>
-    <color name="darkBlue">#001CBA</color>
-    <color name="blue">#03A9F4</color>
-    <color name="lightBlue">#00BCD4</color>
-    <!-- DAY NIGHT   -->
-    <color name="courseTitle">@color/lightBlue</color>
-    <color name="courseAuthor">@color/darkGrey</color>
-    <color name="courseCategory">@color/lightBlue</color>
-    <color name="primaryBackground">@color/dark</color>
-    <color name="timeLeftBackground">@color/white</color>
-    <color name="timeLeftTextColor">@color/black</color>
-    <color name="primaryTextColor">@color/white</color>
-    <color name="headingTitle">@color/lightBlue</color>
-    <color name="cardBackgroundCategory">@color/black</color>
-    <color name="backgroundChip">@color/darkGrey</color>
-    <color name="backgroundAddChip">@color/blue</color>
-    <color name="enrollButtonBackground">@color/superDarkBlue</color>
-    <color name="backgroundTools">@color/darkGrey</color>
-    <color name="iconTintColor">@color/white</color>
-    <color name="backgroundRecyclerView">@color/black</color>
+    <color name="darkGrey">#6D6F77</color>
+    <color name="golden">#DBDDC50A</color>
+    <!--component color-->
+    <color name="primaryBackgroundColor">@color/white</color>
+    <color name="primaryTextColor">@color/black</color>
+    <color name="secondaryTextColor">@color/darkGrey</color>
+    <color name="courseTitle">@color/blue_800</color>
+    <color name="headingTitle">@color/blue_800</color>
+    <color name="courseCategory">@color/blue_500</color>
+    <color name="buttonBackgroundColor">@color/blue_800</color>
+    <color name="textButtonColor">@color/white</color>
+    <color name="iconTintColor">@color/blue_600</color>
+    <color name="placeHolderColor">@color/lightGrey</color>
+    <color name="timeLeftBackgroundColor">@color/black</color>
+    <color name="timeLeftTextColor">@color/white</color>
+    <color name="chipTextColor">@color/blue_500</color>
+    <color name="dividerColor">@color/grey</color>
 </resources>

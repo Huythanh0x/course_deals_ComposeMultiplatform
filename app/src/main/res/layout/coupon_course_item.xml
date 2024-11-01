@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="coupon"
+            type="com.batdaulaptrinh.freeudemycoupons.data.model.Coupon" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"
+            app:cardBackgroundColor="@color/primaryBackgroundColor"
+            app:cardCornerRadius="4dp"
+            app:cardElevation="4dp"
+            app:cardMaxElevation="4dp"
+            app:cardPreventCornerOverlap="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cvTimeLeft"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:cardBackgroundColor="@color/timeLeftBackgroundColor"
+                    app:cardCornerRadius="4dp"
+                    app:cardElevation="4dp"
+                    app:cardMaxElevation="4dp"
+                    app:cardPreventCornerOverlap="true"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        timeLeft="@{coupon.expiredDate}"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="8dp"
+                        android:textColor="@color/timeLeftTextColor"
+                        android:textSize="12sp"
+                        tools:text="3 days" />
+                </androidx.cardview.widget.CardView>
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/ivCoursePreview"
+                    loadImageFromUrl="@{coupon.previewImage}"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_margin="8dp"
+                    android:background="@color/placeHolderColor"
+                    app:layout_constraintDimensionRatio="1.78"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvCourseTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="8dp"
+                    android:layout_marginTop="4dp"
+                    android:lines="2"
+                    android:text="@{coupon.title}"
+                    android:textColor="@color/courseTitle"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/ivCoursePreview"
+                    tools:text="Sample title here" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvCourseAuthor"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:lines="1"
+                    android:text="@{coupon.author}"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toEndOf="@+id/tvCourseTitle"
+                    app:layout_constraintStart_toStartOf="@+id/tvCourseTitle"
+                    app:layout_constraintTop_toBottomOf="@+id/tvCourseTitle"
+                    tools:text="Author name" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvCourseCategory"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@{coupon.category}"
+                    android:textAlignment="center"
+                    android:textColor="@color/courseCategory"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="@+id/tvCourseAuthor"
+                    app:layout_constraintStart_toStartOf="@+id/tvCourseAuthor"
+                    app:layout_constraintTop_toBottomOf="@+id/tvCourseAuthor"
+                    tools:text="Development" />
+
+                <RatingBar
+                    android:id="@+id/rbCourse"
+                    style="@style/Widget.AppCompat.RatingBar.Small"
+                    displayRating="@{coupon.rating}"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="8dp"
+                    android:numStars="5"
+                    android:theme="@style/rating_bar"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/tvCourseCategory"
+                    app:layout_constraintTop_toBottomOf="@+id/tvCourseCategory" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvNumberOfStudent"
+                    displayNumberOfStudents="@{coupon.students}"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:textColor="@color/secondaryTextColor"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/rbCourse"
+                    app:layout_constraintStart_toEndOf="@+id/rbCourse"
+                    app:layout_constraintTop_toTopOf="@+id/rbCourse"
+                    tools:text="2k students" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -7,30 +7,26 @@
 
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.course.CourseFragment">
+        tools:context=".ui.core.course.CourseFragment">
 
         <WebView
-            android:id="@+id/courseWebView"
+            android:id="@+id/wvMyCourses"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="invisible" />
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/progress_bar_container"
+            android:id="@+id/clEnrollContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            app:layout_constraintBottom_toBottomOf="@+id/courseWebView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/courseWebView"
-            app:layout_constraintTop_toTopOf="@+id/courseWebView">
+            android:layout_gravity="center">
 
             <ProgressBar
-                android:id="@+id/progressBar"
+                android:id="@+id/pbLoadingEnroll"
                 style="@style/Widget.AppCompat.ProgressBar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -43,12 +39,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="@string/loading_your_courses"
-                app:layout_constraintEnd_toEndOf="@+id/progressBar"
-                app:layout_constraintStart_toStartOf="@+id/progressBar"
-                app:layout_constraintTop_toBottomOf="@id/progressBar" />
+                android:text="@string/loading_your_courses_page_text"
+                app:layout_constraintEnd_toEndOf="@+id/pbLoadingEnroll"
+                app:layout_constraintStart_toStartOf="@+id/pbLoadingEnroll"
+                app:layout_constraintTop_toBottomOf="@id/pbLoadingEnroll" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
 </layout>

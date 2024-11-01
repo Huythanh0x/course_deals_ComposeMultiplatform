@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--component color-->
+    <color name="primaryBackgroundColor">@color/black</color>
+    <color name="primaryTextColor">@color/white</color>
+    <color name="secondaryTextColor">@color/darkGrey</color>
+    <color name="courseTitle">@color/blue_600</color>
+    <color name="headingTitle">@color/blue_300</color>
+    <color name="courseCategory">@color/blue_300</color>
+    <color name="buttonBackgroundColor">@color/blue_800</color>
+    <color name="textButtonColor">@color/white</color>
+    <color name="iconTintColor">@color/white</color>
+    <color name="placeHolderColor">@color/darkGrey</color>
+    <color name="timeLeftBackgroundColor">@color/lightGrey</color>
+    <color name="timeLeftTextColor">@color/black</color>
+    <color name="chipTextColor">@color/blue_500</color>
+    <color name="dividerColor">@color/grey</color>
+
+</resources>

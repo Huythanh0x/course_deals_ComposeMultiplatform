@@ -10,10 +10,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        //a must to have shimmer
-        jcenter()
-        maven { url "https://jitpack.io" }
     }
 }
-rootProject.name = "AndroidUdemyCoupon"
+rootProject.name = "Free Udemy Coupons"
 include ':app'
