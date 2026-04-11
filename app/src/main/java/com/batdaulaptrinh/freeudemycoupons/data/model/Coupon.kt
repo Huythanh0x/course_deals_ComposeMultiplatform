@@ -18,7 +18,7 @@ data class Coupon(
     val couponCode: String,
     val couponUrl: String,
     val description: String,
-    val expiredDate: String,
+    val expiredDate: Long,
     val heading: String,
     val language: String,
     val level: String,

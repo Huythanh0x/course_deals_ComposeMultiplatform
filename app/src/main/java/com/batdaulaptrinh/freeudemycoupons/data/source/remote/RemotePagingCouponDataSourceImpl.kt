@@ -19,7 +19,7 @@ class RemotePagingCouponDataSourceImpl @Inject constructor(private val couponSer
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Coupon> {
         val pageNumber = params.key ?: STARTING_KEY
         val pageSize = params.loadSize
-        try{
+        try {
             val responseData = couponService.fetchPagedCoupons(pageNumber, pageSize)
             responseData.body()?.let {
                 val pageMax = it.totalPage
@@ -32,7 +32,7 @@ class RemotePagingCouponDataSourceImpl @Inject constructor(private val couponSer
                     nextKey = if (pageNumber < pageMax) pageNumber + 1 else null
                 )
             }
-        }catch (e: Exception){
+        } catch (e: Exception) {
             return LoadResult.Error(e)
         }
         Log.e("LOADING NEW PAGE", "Exception in loading new page")

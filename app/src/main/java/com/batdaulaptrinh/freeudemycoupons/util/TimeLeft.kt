@@ -19,7 +19,7 @@ object TimeLeft {
     }
 
     @SuppressLint("NewApi")
-    fun getDurationFromNow(dateTimeString: String): Long {
+    fun getDurationFromNow(dateTimeString: Long): Long {
         return try {
             val seconds = dateTimeString.toDouble().toLong()
             val inputInstant = Instant.ofEpochSecond(seconds)

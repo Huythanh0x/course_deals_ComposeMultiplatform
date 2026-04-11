@@ -57,7 +57,7 @@ object UdemyCouponBindingAdapter {
 
     @BindingAdapter("timeLeft")
     @JvmStatic
-    fun timeLeft(textView: AppCompatTextView, expiredDate: String) {
+    fun timeLeft(textView: AppCompatTextView, expiredDate: Long) {
         textView.text = MapperToView(textView.context).mapTimeLeft(expiredDate)
     }
 }

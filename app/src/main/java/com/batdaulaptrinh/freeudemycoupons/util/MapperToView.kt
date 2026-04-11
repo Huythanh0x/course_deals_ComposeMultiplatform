@@ -5,7 +5,7 @@ import android.text.Html
 import com.batdaulaptrinh.freeudemycoupons.R
 
 class MapperToView(val context: Context) {
-    fun mapTimeLeft(expiredDate: String): String {
+    fun mapTimeLeft(expiredDate: Long): String {
         return when (TimeLeft.getDurationFromNow(expiredDate)) {
             in 0..1 -> context.getString(
                 R.string.few_minute_left, TimeLeft.getDurationFromNow(expiredDate)
