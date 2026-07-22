@@ -1,0 +1,50 @@
+package com.batdaulaptrinh.freeudemycoupons.ui.binding_adapter;
+
+import android.widget.ImageView;
+import android.widget.RatingBar;
+import android.widget.TextView;
+import androidx.databinding.BindingAdapter;
+import com.batdaulaptrinh.freeudemycoupons.R;
+import com.batdaulaptrinh.freeudemycoupons.util.MapperToView;
+import com.squareup.picasso.Picasso;
+
+public class UdemyCouponBindingAdapterJava {
+    @BindingAdapter("loadImageFromUrl")
+    public static void loadImageFromUrl(ImageView imageView, String url) {
+        Picasso.get()
+            .load(url)
+            .error(R.drawable.error_loading_image)
+            .placeholder(R.drawable.progress_animation)
+            .into(imageView);
+    }
+
+    @BindingAdapter("displayNumberOfStudents")
+    public static void displayNumberOfStudents(TextView textView, int numberOfStudent) {
+        textView.setText(new MapperToView(textView.getContext()).mapNumberOfStudent(numberOfStudent));
+    }
+
+    @BindingAdapter("displayNumberOfReviews")
+    public static void displayNumberOfReviews(TextView textView, int numberOfReview) {
+        textView.setText(new MapperToView(textView.getContext()).mapNumberOfReview(numberOfReview));
+    }
+
+    @BindingAdapter("displayRating")
+    public static void displayRating(RatingBar ratingBar, double rating) {
+        ratingBar.setRating(new MapperToView(ratingBar.getContext()).mapRating(rating));
+    }
+
+    @BindingAdapter("parseHTML")
+    public static void parseHTML(TextView textView, String htmlString) {
+        textView.setText(new MapperToView(textView.getContext()).mapHTMLContent(htmlString));
+    }
+
+    @BindingAdapter("contentLength")
+    public static void contentLength(TextView textView, int contentLength) {
+        textView.setText(new MapperToView(textView.getContext()).mapContentLength(contentLength));
+    }
+
+    @BindingAdapter("timeLeft")
+    public static void timeLeft(TextView textView, long expiredDate) {
+        textView.setText(new MapperToView(textView.getContext()).mapTimeLeft(expiredDate));
+    }
+}

@@ -35,7 +35,7 @@ object NetworkModule {
                     chain.request().newBuilder().addHeader(Constant.NETWORK_AUTHORIZATION_HEADER, "${Constant.NETWORK_BEARER_PREFIX} $token")
                         .build()
                 val response = chain.proceed(request)
-                if (response.code() == NetworkStatusCode.HTTP_CODE_UNAUTHORIZED) {
+                if (response.code == NetworkStatusCode.HTTP_CODE_UNAUTHORIZED) {
                     try {
                         localAuthenticationDataSourceImpl.saveLocalToken(token!!)
                         chain.proceed(

@@ -45,7 +45,7 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        timeLeft="@{coupon.expiredDate}"
+                        app:timeLeft="@{coupon.expiredDate}"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingHorizontal="8dp"
@@ -56,7 +56,7 @@
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/ivCoursePreview"
-                    loadImageFromUrl="@{coupon.previewImage}"
+                    app:loadImageFromUrl="@{coupon.previewImage}"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_margin="8dp"
@@ -113,7 +113,7 @@
                 <RatingBar
                     android:id="@+id/rbCourse"
                     style="@style/Widget.AppCompat.RatingBar.Small"
-                    displayRating="@{coupon.rating}"
+                    app:displayRating="@{coupon.rating}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
@@ -126,7 +126,7 @@
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvNumberOfStudent"
-                    displayNumberOfStudents="@{coupon.students}"
+                    app:displayNumberOfStudents="@{coupon.students}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
