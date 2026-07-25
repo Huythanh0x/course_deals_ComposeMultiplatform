@@ -1,11 +1,11 @@
-package com.batdaulaptrinh.freeudemycoupons.domain.usecase.authentication
+package com.thanh0x.coursedeals.domain.usecase.authentication
 
 import android.content.Context
-import com.batdaulaptrinh.freeudemycoupons.R
-import com.batdaulaptrinh.freeudemycoupons.data.model.PostAuthenticationData
-import com.batdaulaptrinh.freeudemycoupons.data.model.TokenResponseData
-import com.batdaulaptrinh.freeudemycoupons.data.repository.UserAuthenticationRepositoryImpl
-import com.batdaulaptrinh.freeudemycoupons.util.NetWorkResult
+import com.thanh0x.coursedeals.R
+import com.thanh0x.coursedeals.data.model.PostAuthenticationData
+import com.thanh0x.coursedeals.data.model.TokenResponseData
+import com.thanh0x.coursedeals.data.repository.UserAuthenticationRepositoryImpl
+import com.thanh0x.coursedeals.util.NetWorkResult
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 

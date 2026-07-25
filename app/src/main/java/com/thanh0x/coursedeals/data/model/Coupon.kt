@@ -1,9 +1,9 @@
-package com.batdaulaptrinh.freeudemycoupons.data.model
+package com.thanh0x.coursedeals.data.model
 
 import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.batdaulaptrinh.freeudemycoupons.util.Constant
+import com.thanh0x.coursedeals.util.Constant
 import kotlinx.parcelize.Parcelize
 
 

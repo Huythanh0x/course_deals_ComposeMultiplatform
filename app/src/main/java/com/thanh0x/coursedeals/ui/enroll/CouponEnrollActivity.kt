@@ -1,4 +1,4 @@
-package com.batdaulaptrinh.freeudemycoupons.ui.enroll
+package com.thanh0x.coursedeals.ui.enroll
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
@@ -8,9 +8,9 @@ import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
-import com.batdaulaptrinh.freeudemycoupons.R
-import com.batdaulaptrinh.freeudemycoupons.databinding.ActivityCouponEnrollBinding
-import com.batdaulaptrinh.freeudemycoupons.util.BundleKey
+import com.thanh0x.coursedeals.R
+import com.thanh0x.coursedeals.databinding.ActivityCouponEnrollBinding
+import com.thanh0x.coursedeals.util.BundleKey
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class CouponEnrollActivity : AppCompatActivity() {

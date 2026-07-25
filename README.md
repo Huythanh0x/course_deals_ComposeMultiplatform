@@ -1,6 +1,6 @@
-# 100% Udemy Sale-Off Courses Android App
+# 100% Course Deals Sale-Off Courses Android App
 
-This Android app allows users to access 100% sale-off Udemy courses for free. All courses are
+This Android app allows users to access 100% sale-off Course Deals courses for free. All courses are
 fetched from a server and displayed in a list.
 
 # Features

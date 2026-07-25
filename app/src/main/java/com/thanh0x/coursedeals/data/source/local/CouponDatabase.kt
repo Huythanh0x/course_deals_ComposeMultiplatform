@@ -1,8 +1,8 @@
-package com.batdaulaptrinh.freeudemycoupons.data.source.local
+package com.thanh0x.coursedeals.data.source.local
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.batdaulaptrinh.freeudemycoupons.data.model.Coupon
+import com.thanh0x.coursedeals.data.model.Coupon
 
 @Database(entities = [Coupon::class], version = 2, exportSchema = false)
 abstract class CouponDatabase : RoomDatabase() {

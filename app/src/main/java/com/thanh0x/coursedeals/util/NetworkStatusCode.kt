@@ -1,4 +1,4 @@
-package com.batdaulaptrinh.freeudemycoupons.util
+package com.thanh0x.coursedeals.util
 
 object NetworkStatusCode {
     const val HTTP_CODE_UNAUTHORIZED = 401

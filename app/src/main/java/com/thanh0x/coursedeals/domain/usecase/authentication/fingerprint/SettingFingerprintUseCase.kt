@@ -1,4 +1,4 @@
-package com.batdaulaptrinh.freeudemycoupons.domain.usecase.authentication.fingerprint
+package com.thanh0x.coursedeals.domain.usecase.authentication.fingerprint
 
 import javax.inject.Inject
 

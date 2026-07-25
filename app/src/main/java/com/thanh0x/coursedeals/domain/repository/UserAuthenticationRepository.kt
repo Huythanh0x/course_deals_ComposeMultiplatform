@@ -1,7 +1,7 @@
-package com.batdaulaptrinh.freeudemycoupons.domain.repository
+package com.thanh0x.coursedeals.domain.repository
 
-import com.batdaulaptrinh.freeudemycoupons.data.model.PostAuthenticationData
-import com.batdaulaptrinh.freeudemycoupons.data.model.TokenResponseData
+import com.thanh0x.coursedeals.data.model.PostAuthenticationData
+import com.thanh0x.coursedeals.data.model.TokenResponseData
 import retrofit2.Response
 
 

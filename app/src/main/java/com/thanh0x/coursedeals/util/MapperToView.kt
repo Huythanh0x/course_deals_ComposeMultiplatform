@@ -1,8 +1,8 @@
-package com.batdaulaptrinh.freeudemycoupons.util
+package com.thanh0x.coursedeals.util
 
 import android.content.Context
 import android.text.Html
-import com.batdaulaptrinh.freeudemycoupons.R
+import com.thanh0x.coursedeals.R
 
 class MapperToView(val context: Context) {
     fun mapTimeLeft(expiredDate: Long): String {

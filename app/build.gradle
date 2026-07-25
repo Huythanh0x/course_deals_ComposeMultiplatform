@@ -50,11 +50,11 @@ plugins {
 }
 
 android {
-    namespace 'com.batdaulaptrinh.freeudemycoupons'
+    namespace 'com.thanh0x.coursedeals'
     compileSdk 37
 
     defaultConfig {
-        applicationId "com.batdaulaptrinh.freeudemycoupons"
+        applicationId "com.thanh0x.coursedeals"
         minSdk 24
         targetSdk 37
         versionCode 1

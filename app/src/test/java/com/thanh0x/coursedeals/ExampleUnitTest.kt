@@ -1,4 +1,4 @@
-package com.batdaulaptrinh.freeudemycoupons
+package com.thanh0x.coursedeals
 
 import org.junit.Test
 

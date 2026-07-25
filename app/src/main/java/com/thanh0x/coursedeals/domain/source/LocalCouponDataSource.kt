@@ -1,6 +1,6 @@
-package com.batdaulaptrinh.freeudemycoupons.domain.source
+package com.thanh0x.coursedeals.domain.source
 
-import com.batdaulaptrinh.freeudemycoupons.data.model.Coupon
+import com.thanh0x.coursedeals.data.model.Coupon
 
 interface LocalCouponDataSource {
     suspend fun getAllCoupons(): List<Coupon>

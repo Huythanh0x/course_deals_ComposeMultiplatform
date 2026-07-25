@@ -1,13 +1,13 @@
-package com.batdaulaptrinh.freeudemycoupons.di
+package com.thanh0x.coursedeals.di
 
-import com.batdaulaptrinh.freeudemycoupons.data.source.datastore.LocalAuthenticationDataSourceImpl
-import com.batdaulaptrinh.freeudemycoupons.data.source.remote.CouponService
-import com.batdaulaptrinh.freeudemycoupons.data.source.remote.RemotePagingCouponDataSourceImpl
-import com.batdaulaptrinh.freeudemycoupons.data.source.remote.RemoteAuthenticationDataSourceImpl
-import com.batdaulaptrinh.freeudemycoupons.data.source.remote.RemoteCouponDataSourceImpl
-import com.batdaulaptrinh.freeudemycoupons.data.source.remote.UserAuthenticationService
-import com.batdaulaptrinh.freeudemycoupons.util.Constant
-import com.batdaulaptrinh.freeudemycoupons.util.NetworkStatusCode
+import com.thanh0x.coursedeals.data.source.datastore.LocalAuthenticationDataSourceImpl
+import com.thanh0x.coursedeals.data.source.remote.CouponService
+import com.thanh0x.coursedeals.data.source.remote.RemotePagingCouponDataSourceImpl
+import com.thanh0x.coursedeals.data.source.remote.RemoteAuthenticationDataSourceImpl
+import com.thanh0x.coursedeals.data.source.remote.RemoteCouponDataSourceImpl
+import com.thanh0x.coursedeals.data.source.remote.UserAuthenticationService
+import com.thanh0x.coursedeals.util.Constant
+import com.thanh0x.coursedeals.util.NetworkStatusCode
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -1,4 +1,4 @@
-package com.batdaulaptrinh.freeudemycoupons.di
+package com.thanh0x.coursedeals.di
 
 import android.content.Context
 import androidx.datastore.core.DataStore
@@ -8,8 +8,8 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStoreFile
-import com.batdaulaptrinh.freeudemycoupons.data.source.datastore.LocalAuthenticationDataSourceImpl
-import com.batdaulaptrinh.freeudemycoupons.util.Constant
+import com.thanh0x.coursedeals.data.source.datastore.LocalAuthenticationDataSourceImpl
+import com.thanh0x.coursedeals.util.Constant
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

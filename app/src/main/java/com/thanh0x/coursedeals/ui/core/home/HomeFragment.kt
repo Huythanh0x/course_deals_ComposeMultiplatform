@@ -1,4 +1,4 @@
-package com.batdaulaptrinh.freeudemycoupons.ui.core.home
+package com.thanh0x.coursedeals.ui.core.home
 
 import android.content.Intent
 import android.os.Bundle
@@ -14,10 +14,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.paging.LoadState
-import com.batdaulaptrinh.freeudemycoupons.R
-import com.batdaulaptrinh.freeudemycoupons.databinding.FragmentHomeBinding
-import com.batdaulaptrinh.freeudemycoupons.ui.detail.CouponDetailActivity
-import com.batdaulaptrinh.freeudemycoupons.util.BundleKey
+import com.thanh0x.coursedeals.R
+import com.thanh0x.coursedeals.databinding.FragmentHomeBinding
+import com.thanh0x.coursedeals.ui.detail.CouponDetailActivity
+import com.thanh0x.coursedeals.util.BundleKey
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch

@@ -1,10 +1,10 @@
-package com.batdaulaptrinh.freeudemycoupons.domain.logic.fingerprint
+package com.thanh0x.coursedeals.domain.logic.fingerprint
 
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
-import com.batdaulaptrinh.freeudemycoupons.R
+import com.thanh0x.coursedeals.R
 
 object BiometricPromptUtils {
     private const val TAG = "BiometricPromptUtils"

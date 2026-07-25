@@ -1,10 +1,10 @@
-package com.batdaulaptrinh.freeudemycoupons.data.repository
+package com.thanh0x.coursedeals.data.repository
 
-import com.batdaulaptrinh.freeudemycoupons.data.model.Coupon
-import com.batdaulaptrinh.freeudemycoupons.data.source.remote.RemotePagingCouponDataSourceImpl
-import com.batdaulaptrinh.freeudemycoupons.domain.repository.CouponRepository
-import com.batdaulaptrinh.freeudemycoupons.domain.source.LocalCouponDataSource
-import com.batdaulaptrinh.freeudemycoupons.domain.source.RemoteCouponDataSource
+import com.thanh0x.coursedeals.data.model.Coupon
+import com.thanh0x.coursedeals.data.source.remote.RemotePagingCouponDataSourceImpl
+import com.thanh0x.coursedeals.domain.repository.CouponRepository
+import com.thanh0x.coursedeals.domain.source.LocalCouponDataSource
+import com.thanh0x.coursedeals.domain.source.RemoteCouponDataSource
 import javax.inject.Inject
 
 class CouponRepositoryImpl @Inject constructor(

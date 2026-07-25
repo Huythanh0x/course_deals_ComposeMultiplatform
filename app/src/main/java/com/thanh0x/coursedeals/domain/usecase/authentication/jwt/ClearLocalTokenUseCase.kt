@@ -1,6 +1,6 @@
-package com.batdaulaptrinh.freeudemycoupons.domain.usecase.authentication.jwt
+package com.thanh0x.coursedeals.domain.usecase.authentication.jwt
 
-import com.batdaulaptrinh.freeudemycoupons.data.repository.UserAuthenticationRepositoryImpl
+import com.thanh0x.coursedeals.data.repository.UserAuthenticationRepositoryImpl
 import javax.inject.Inject
 
 class ClearLocalTokenUseCase @Inject constructor(

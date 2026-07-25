@@ -1,6 +1,6 @@
-package com.batdaulaptrinh.freeudemycoupons.util
+package com.thanh0x.coursedeals.util
 
-import com.batdaulaptrinh.freeudemycoupons.BuildConfig
+import com.thanh0x.coursedeals.BuildConfig
 
 class Constant {
     companion object {

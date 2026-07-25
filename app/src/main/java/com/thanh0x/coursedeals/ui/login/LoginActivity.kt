@@ -1,4 +1,4 @@
-package com.batdaulaptrinh.freeudemycoupons.ui.login
+package com.thanh0x.coursedeals.ui.login
 
 import android.content.Intent
 import android.os.Bundle
@@ -12,13 +12,13 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
-import com.batdaulaptrinh.freeudemycoupons.MainActivity
-import com.batdaulaptrinh.freeudemycoupons.R
-import com.batdaulaptrinh.freeudemycoupons.data.model.TokenResponseData
-import com.batdaulaptrinh.freeudemycoupons.databinding.ActivityLoginBinding
-import com.batdaulaptrinh.freeudemycoupons.util.NetWorkResult
-import com.batdaulaptrinh.freeudemycoupons.util.ValidationHelper
-import com.batdaulaptrinh.freeudemycoupons.domain.logic.fingerprint.BiometricPromptUtils
+import com.thanh0x.coursedeals.MainActivity
+import com.thanh0x.coursedeals.R
+import com.thanh0x.coursedeals.data.model.TokenResponseData
+import com.thanh0x.coursedeals.databinding.ActivityLoginBinding
+import com.thanh0x.coursedeals.util.NetWorkResult
+import com.thanh0x.coursedeals.util.ValidationHelper
+import com.thanh0x.coursedeals.domain.logic.fingerprint.BiometricPromptUtils
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch

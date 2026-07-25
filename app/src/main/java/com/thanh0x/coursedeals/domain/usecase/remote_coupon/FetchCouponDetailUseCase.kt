@@ -1,8 +1,8 @@
-package com.batdaulaptrinh.freeudemycoupons.domain.usecase.remote_coupon
+package com.thanh0x.coursedeals.domain.usecase.remote_coupon
 
-import com.batdaulaptrinh.freeudemycoupons.data.model.Coupon
-import com.batdaulaptrinh.freeudemycoupons.domain.repository.CouponRepository
-import com.batdaulaptrinh.freeudemycoupons.util.NetWorkResult
+import com.thanh0x.coursedeals.data.model.Coupon
+import com.thanh0x.coursedeals.domain.repository.CouponRepository
+import com.thanh0x.coursedeals.util.NetWorkResult
 import javax.inject.Inject
 
 class FetchCouponDetailUseCase @Inject constructor(private val couponRepository: CouponRepository) {

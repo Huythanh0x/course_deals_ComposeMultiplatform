@@ -1,4 +1,4 @@
-package com.batdaulaptrinh.freeudemycoupons.ui.detail
+package com.thanh0x.coursedeals.ui.detail
 
 import android.content.Context
 import android.content.Intent
@@ -9,13 +9,13 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
-import com.batdaulaptrinh.freeudemycoupons.R
-import com.batdaulaptrinh.freeudemycoupons.data.model.Coupon
-import com.batdaulaptrinh.freeudemycoupons.databinding.ActivityCouponDetailBinding
-import com.batdaulaptrinh.freeudemycoupons.ui.enroll.CouponEnrollActivity
-import com.batdaulaptrinh.freeudemycoupons.util.BundleKey
-import com.batdaulaptrinh.freeudemycoupons.util.MapperToView
-import com.batdaulaptrinh.freeudemycoupons.util.NetWorkResult
+import com.thanh0x.coursedeals.R
+import com.thanh0x.coursedeals.data.model.Coupon
+import com.thanh0x.coursedeals.databinding.ActivityCouponDetailBinding
+import com.thanh0x.coursedeals.ui.enroll.CouponEnrollActivity
+import com.thanh0x.coursedeals.util.BundleKey
+import com.thanh0x.coursedeals.util.MapperToView
+import com.thanh0x.coursedeals.util.NetWorkResult
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint

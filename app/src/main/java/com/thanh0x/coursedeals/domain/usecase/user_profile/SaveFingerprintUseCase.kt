@@ -1,6 +1,6 @@
-package com.batdaulaptrinh.freeudemycoupons.domain.usecase.user_profile
+package com.thanh0x.coursedeals.domain.usecase.user_profile
 
-import com.batdaulaptrinh.freeudemycoupons.data.repository.UserProfileRepositoryImpl
+import com.thanh0x.coursedeals.data.repository.UserProfileRepositoryImpl
 import javax.inject.Inject
 
 class SaveFingerprintUseCase @Inject constructor(private val userProfileRepositoryImpl: UserProfileRepositoryImpl) {

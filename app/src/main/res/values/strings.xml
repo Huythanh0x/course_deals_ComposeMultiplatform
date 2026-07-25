@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Free Udemy Coupons</string>
+    <string name="app_name">Course Deals</string>
     <string name="username_hint_input">USERNAME</string>
     <string name="password_hint_input">PASSWORD</string>
     <string name="login_text_button">LOGIN</string>

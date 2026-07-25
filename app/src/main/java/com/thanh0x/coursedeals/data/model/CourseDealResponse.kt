@@ -1,6 +1,6 @@
-package com.batdaulaptrinh.freeudemycoupons.data.model
+package com.thanh0x.coursedeals.data.model
 
-data class UdemyCouponCourse(
+data class CourseDealResponse(
     val lastFetchTime: String,
     val totalCoupon: Long,
     val totalPage: Int,

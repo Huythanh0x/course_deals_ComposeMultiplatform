@@ -1,4 +1,4 @@
-package com.batdaulaptrinh.freeudemycoupons.ui.splash
+package com.thanh0x.coursedeals.ui.splash
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -6,10 +6,10 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
-import com.batdaulaptrinh.freeudemycoupons.MainActivity
-import com.batdaulaptrinh.freeudemycoupons.R
-import com.batdaulaptrinh.freeudemycoupons.databinding.ActivitySplashBinding
-import com.batdaulaptrinh.freeudemycoupons.util.Constant
+import com.thanh0x.coursedeals.MainActivity
+import com.thanh0x.coursedeals.R
+import com.thanh0x.coursedeals.databinding.ActivitySplashBinding
+import com.thanh0x.coursedeals.util.Constant
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

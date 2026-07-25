@@ -1,14 +1,14 @@
-package com.batdaulaptrinh.freeudemycoupons.ui.binding_adapter;
+package com.thanh0x.coursedeals.ui.binding_adapter;
 
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import androidx.databinding.BindingAdapter;
-import com.batdaulaptrinh.freeudemycoupons.R;
-import com.batdaulaptrinh.freeudemycoupons.util.MapperToView;
+import com.thanh0x.coursedeals.R;
+import com.thanh0x.coursedeals.util.MapperToView;
 import com.squareup.picasso.Picasso;
 
-public class UdemyCouponBindingAdapterJava {
+public class CourseDealBindingAdapterJava {
     @BindingAdapter("loadImageFromUrl")
     public static void loadImageFromUrl(ImageView imageView, String url) {
         Picasso.get()

@@ -1,11 +1,11 @@
-package com.batdaulaptrinh.freeudemycoupons.data.source.datastore
+package com.thanh0x.coursedeals.data.source.datastore
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
-import com.batdaulaptrinh.freeudemycoupons.domain.source.LocalUserProfileDataSource
-import com.batdaulaptrinh.freeudemycoupons.util.Constant
+import com.thanh0x.coursedeals.domain.source.LocalUserProfileDataSource
+import com.thanh0x.coursedeals.util.Constant
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 

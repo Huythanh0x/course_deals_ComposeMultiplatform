@@ -1,6 +1,6 @@
-package com.batdaulaptrinh.freeudemycoupons.domain.usecase.remote_coupon
+package com.thanh0x.coursedeals.domain.usecase.remote_coupon
 
-import com.batdaulaptrinh.freeudemycoupons.data.repository.UserAuthenticationRepositoryImpl
+import com.thanh0x.coursedeals.data.repository.UserAuthenticationRepositoryImpl
 import javax.inject.Inject
 
 class LoadJwtTokenUseCase @Inject constructor(private val userAuthenticationRepositoryImpl: UserAuthenticationRepositoryImpl) {

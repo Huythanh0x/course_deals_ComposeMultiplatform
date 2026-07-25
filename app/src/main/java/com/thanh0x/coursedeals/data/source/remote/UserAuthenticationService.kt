@@ -1,7 +1,7 @@
-package com.batdaulaptrinh.freeudemycoupons.data.source.remote
+package com.thanh0x.coursedeals.data.source.remote
 
-import com.batdaulaptrinh.freeudemycoupons.data.model.PostAuthenticationData
-import com.batdaulaptrinh.freeudemycoupons.data.model.TokenResponseData
+import com.thanh0x.coursedeals.data.model.PostAuthenticationData
+import com.thanh0x.coursedeals.data.model.TokenResponseData
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET

@@ -1,4 +1,4 @@
-package com.batdaulaptrinh.freeudemycoupons.util
+package com.thanh0x.coursedeals.util
 
 import android.content.Context
 import androidx.annotation.StringRes

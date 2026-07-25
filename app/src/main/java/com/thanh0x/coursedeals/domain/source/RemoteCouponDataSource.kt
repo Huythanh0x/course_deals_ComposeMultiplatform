@@ -1,7 +1,7 @@
-package com.batdaulaptrinh.freeudemycoupons.domain.source
+package com.thanh0x.coursedeals.domain.source
 
-import com.batdaulaptrinh.freeudemycoupons.data.model.Coupon
-import com.batdaulaptrinh.freeudemycoupons.data.model.ResponseStatusFromServer
+import com.thanh0x.coursedeals.data.model.Coupon
+import com.thanh0x.coursedeals.data.model.ResponseStatusFromServer
 import retrofit2.Response
 
 interface RemoteCouponDataSource {

@@ -1,4 +1,4 @@
-package com.batdaulaptrinh.freeudemycoupons.ui.core.course
+package com.thanh0x.coursedeals.ui.core.course
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
@@ -11,9 +11,9 @@ import android.webkit.WebViewClient
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.batdaulaptrinh.freeudemycoupons.R
-import com.batdaulaptrinh.freeudemycoupons.databinding.FragmentCourseBinding
-import com.batdaulaptrinh.freeudemycoupons.util.Constant
+import com.thanh0x.coursedeals.R
+import com.thanh0x.coursedeals.databinding.FragmentCourseBinding
+import com.thanh0x.coursedeals.util.Constant
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 

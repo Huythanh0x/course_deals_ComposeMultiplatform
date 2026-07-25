@@ -1,8 +1,8 @@
-package com.batdaulaptrinh.freeudemycoupons.domain.repository
+package com.thanh0x.coursedeals.domain.repository
 
-import com.batdaulaptrinh.freeudemycoupons.data.model.Coupon
-import com.batdaulaptrinh.freeudemycoupons.data.model.ResponseStatusFromServer
-import com.batdaulaptrinh.freeudemycoupons.data.source.remote.RemotePagingCouponDataSourceImpl
+import com.thanh0x.coursedeals.data.model.Coupon
+import com.thanh0x.coursedeals.data.model.ResponseStatusFromServer
+import com.thanh0x.coursedeals.data.source.remote.RemotePagingCouponDataSourceImpl
 import retrofit2.Response
 
 interface CouponRepository {

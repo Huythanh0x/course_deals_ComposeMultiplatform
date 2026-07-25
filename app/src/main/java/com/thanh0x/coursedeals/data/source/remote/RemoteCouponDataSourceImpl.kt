@@ -1,6 +1,6 @@
-package com.batdaulaptrinh.freeudemycoupons.data.source.remote
+package com.thanh0x.coursedeals.data.source.remote
 
-import com.batdaulaptrinh.freeudemycoupons.domain.source.RemoteCouponDataSource
+import com.thanh0x.coursedeals.domain.source.RemoteCouponDataSource
 
 class RemoteCouponDataSourceImpl(private val couponService: CouponService) :
     RemoteCouponDataSource {

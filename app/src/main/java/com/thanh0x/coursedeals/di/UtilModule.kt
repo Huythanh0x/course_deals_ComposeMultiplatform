@@ -1,7 +1,7 @@
-package com.batdaulaptrinh.freeudemycoupons.di
+package com.thanh0x.coursedeals.di
 
 import android.content.Context
-import com.batdaulaptrinh.freeudemycoupons.util.NetworkUtil
+import com.thanh0x.coursedeals.util.NetworkUtil
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

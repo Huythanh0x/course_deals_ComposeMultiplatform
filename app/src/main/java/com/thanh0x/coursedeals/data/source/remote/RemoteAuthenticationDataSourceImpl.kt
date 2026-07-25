@@ -1,8 +1,8 @@
-package com.batdaulaptrinh.freeudemycoupons.data.source.remote
+package com.thanh0x.coursedeals.data.source.remote
 
-import com.batdaulaptrinh.freeudemycoupons.data.model.PostAuthenticationData
-import com.batdaulaptrinh.freeudemycoupons.data.model.TokenResponseData
-import com.batdaulaptrinh.freeudemycoupons.domain.source.RemoteAuthenticationDataSource
+import com.thanh0x.coursedeals.data.model.PostAuthenticationData
+import com.thanh0x.coursedeals.data.model.TokenResponseData
+import com.thanh0x.coursedeals.domain.source.RemoteAuthenticationDataSource
 import retrofit2.Response
 
 class RemoteAuthenticationDataSourceImpl(private val userAuthenticationService: UserAuthenticationService) :

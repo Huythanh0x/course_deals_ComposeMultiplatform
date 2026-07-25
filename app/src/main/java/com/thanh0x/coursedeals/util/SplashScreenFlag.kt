@@ -1,4 +1,4 @@
-package com.batdaulaptrinh.freeudemycoupons.util
+package com.thanh0x.coursedeals.util
 
 enum class SplashScreenFlag {
     EXPIRED_TOKEN,

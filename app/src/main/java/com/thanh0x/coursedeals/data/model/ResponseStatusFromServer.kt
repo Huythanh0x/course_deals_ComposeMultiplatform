@@ -1,4 +1,4 @@
-package com.batdaulaptrinh.freeudemycoupons.data.model
+package com.thanh0x.coursedeals.data.model
 
 data class ResponseStatusFromServer(
     val status: Int,

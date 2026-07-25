@@ -1,8 +1,8 @@
-package com.batdaulaptrinh.freeudemycoupons.data.source.remote
+package com.thanh0x.coursedeals.data.source.remote
 
-import com.batdaulaptrinh.freeudemycoupons.data.model.Coupon
-import com.batdaulaptrinh.freeudemycoupons.data.model.ResponseStatusFromServer
-import com.batdaulaptrinh.freeudemycoupons.data.model.UdemyCouponCourse
+import com.thanh0x.coursedeals.data.model.Coupon
+import com.thanh0x.coursedeals.data.model.ResponseStatusFromServer
+import com.thanh0x.coursedeals.data.model.CourseDealResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -13,13 +13,13 @@ import retrofit2.http.Query
 
 interface CouponService {
     @GET("/api/v1/coupons")
-    suspend fun fetchAllCoupons(): Response<UdemyCouponCourse>
+    suspend fun fetchAllCoupons(): Response<CourseDealResponse>
 
     @GET("/api/v1/coupons")
     suspend fun fetchPagedCoupons(
         @Query(value = "pageIndex") pageIndex: Int,
         @Query(value = "numberPerPage") numberPerPage: Int = 10
-    ): Response<UdemyCouponCourse>
+    ): Response<CourseDealResponse>
 
     @GET("/api/v1/coupons/{courseId}")
     suspend fun fetchCouponDetail(
@@ -31,7 +31,7 @@ interface CouponService {
         @Query("query") query: String,
         @Query(value = "pageIndex") pageIndex: Int = 0,
         @Query(value = "numberPerPage") numberPerPage: Int = 10
-    ): Response<UdemyCouponCourse>
+    ): Response<CourseDealResponse>
 
     @POST("api/v1/coupons")
     suspend fun postCoupon(@Body couponUrl: String): Response<ResponseStatusFromServer>

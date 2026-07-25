@@ -1,4 +1,4 @@
-package com.batdaulaptrinh.freeudemycoupons.util
+package com.thanh0x.coursedeals.util
 
 sealed class NetWorkResult<T>(val data: T? = null, val message: String? = null) {
     class Success<T>(data: T?) : NetWorkResult<T>(data)

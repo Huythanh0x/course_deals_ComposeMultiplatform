@@ -1,7 +1,7 @@
-package com.batdaulaptrinh.freeudemycoupons.data.source.local
+package com.thanh0x.coursedeals.data.source.local
 
-import com.batdaulaptrinh.freeudemycoupons.data.model.Coupon
-import com.batdaulaptrinh.freeudemycoupons.domain.source.LocalCouponDataSource
+import com.thanh0x.coursedeals.data.model.Coupon
+import com.thanh0x.coursedeals.domain.source.LocalCouponDataSource
 import javax.inject.Inject
 
 class LocalCouponDataSourceImpl @Inject constructor(private val couponDao: CouponDao) :

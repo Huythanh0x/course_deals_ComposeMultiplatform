@@ -1,9 +1,9 @@
-package com.batdaulaptrinh.freeudemycoupons.data.repository
+package com.thanh0x.coursedeals.data.repository
 
-import com.batdaulaptrinh.freeudemycoupons.data.model.PostAuthenticationData
-import com.batdaulaptrinh.freeudemycoupons.domain.repository.UserAuthenticationRepository
-import com.batdaulaptrinh.freeudemycoupons.domain.source.LocalAuthenticationDataSource
-import com.batdaulaptrinh.freeudemycoupons.domain.source.RemoteAuthenticationDataSource
+import com.thanh0x.coursedeals.data.model.PostAuthenticationData
+import com.thanh0x.coursedeals.domain.repository.UserAuthenticationRepository
+import com.thanh0x.coursedeals.domain.source.LocalAuthenticationDataSource
+import com.thanh0x.coursedeals.domain.source.RemoteAuthenticationDataSource
 import javax.inject.Inject
 
 class UserAuthenticationRepositoryImpl @Inject constructor(

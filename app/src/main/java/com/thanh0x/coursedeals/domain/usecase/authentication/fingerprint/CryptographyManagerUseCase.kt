@@ -1,8 +1,8 @@
-package com.batdaulaptrinh.freeudemycoupons.domain.usecase.authentication.fingerprint
+package com.thanh0x.coursedeals.domain.usecase.authentication.fingerprint
 
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
-import com.batdaulaptrinh.freeudemycoupons.domain.logic.fingerprint.CiphertextWrapper
+import com.thanh0x.coursedeals.domain.logic.fingerprint.CiphertextWrapper
 import java.nio.charset.Charset
 import java.security.KeyStore
 import javax.crypto.Cipher

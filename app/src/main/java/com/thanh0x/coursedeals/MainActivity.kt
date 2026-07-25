@@ -1,4 +1,4 @@
-package com.batdaulaptrinh.freeudemycoupons
+package com.thanh0x.coursedeals
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -6,7 +6,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.ui.NavigationUI
-import com.batdaulaptrinh.freeudemycoupons.databinding.ActivityMainBinding
+import com.thanh0x.coursedeals.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

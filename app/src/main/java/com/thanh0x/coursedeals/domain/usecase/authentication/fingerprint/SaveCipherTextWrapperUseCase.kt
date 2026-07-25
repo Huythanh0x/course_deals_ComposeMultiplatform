@@ -1,7 +1,7 @@
-package com.batdaulaptrinh.freeudemycoupons.domain.usecase.authentication.fingerprint
+package com.thanh0x.coursedeals.domain.usecase.authentication.fingerprint
 
-import com.batdaulaptrinh.freeudemycoupons.data.repository.UserAuthenticationRepositoryImpl
-import com.batdaulaptrinh.freeudemycoupons.domain.logic.fingerprint.CiphertextWrapper
+import com.thanh0x.coursedeals.data.repository.UserAuthenticationRepositoryImpl
+import com.thanh0x.coursedeals.domain.logic.fingerprint.CiphertextWrapper
 import com.google.gson.Gson
 import javax.inject.Inject
 

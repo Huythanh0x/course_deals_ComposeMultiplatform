@@ -1,4 +1,4 @@
-package com.batdaulaptrinh.freeudemycoupons.util
+package com.thanh0x.coursedeals.util
 
 object BundleKey {
     const val TO_DETAIL_ACTIVITY = "to_detail_activity"

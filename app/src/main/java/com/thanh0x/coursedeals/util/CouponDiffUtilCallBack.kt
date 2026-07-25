@@ -1,7 +1,7 @@
-package com.batdaulaptrinh.freeudemycoupons.util
+package com.thanh0x.coursedeals.util
 
 import androidx.recyclerview.widget.DiffUtil
-import com.batdaulaptrinh.freeudemycoupons.data.model.Coupon
+import com.thanh0x.coursedeals.data.model.Coupon
 
 object CouponDiffUtilCallBack :
     DiffUtil.ItemCallback<Coupon>() {

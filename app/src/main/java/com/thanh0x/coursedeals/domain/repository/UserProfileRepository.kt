@@ -1,4 +1,4 @@
-package com.batdaulaptrinh.freeudemycoupons.domain.repository
+package com.thanh0x.coursedeals.domain.repository
 
 interface UserProfileRepository {
     suspend fun getEnableDarkMode(): Boolean?

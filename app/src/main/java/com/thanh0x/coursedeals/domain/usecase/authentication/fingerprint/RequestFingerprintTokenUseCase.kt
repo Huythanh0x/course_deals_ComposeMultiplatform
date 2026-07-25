@@ -1,7 +1,7 @@
-package com.batdaulaptrinh.freeudemycoupons.domain.usecase.authentication.fingerprint
+package com.thanh0x.coursedeals.domain.usecase.authentication.fingerprint
 
-import com.batdaulaptrinh.freeudemycoupons.data.model.TokenResponseData
-import com.batdaulaptrinh.freeudemycoupons.domain.repository.UserAuthenticationRepository
+import com.thanh0x.coursedeals.data.model.TokenResponseData
+import com.thanh0x.coursedeals.domain.repository.UserAuthenticationRepository
 import retrofit2.Response
 import javax.inject.Inject
 

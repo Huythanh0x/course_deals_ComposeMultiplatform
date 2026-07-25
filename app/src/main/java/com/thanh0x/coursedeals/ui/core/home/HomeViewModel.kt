@@ -1,4 +1,4 @@
-package com.batdaulaptrinh.freeudemycoupons.ui.core.home
+package com.thanh0x.coursedeals.ui.core.home
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,10 +7,10 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.batdaulaptrinh.freeudemycoupons.data.model.Coupon
-import com.batdaulaptrinh.freeudemycoupons.data.repository.CouponRepositoryImpl
-import com.batdaulaptrinh.freeudemycoupons.util.Constant
-import com.batdaulaptrinh.freeudemycoupons.util.NetworkUtil
+import com.thanh0x.coursedeals.data.model.Coupon
+import com.thanh0x.coursedeals.data.repository.CouponRepositoryImpl
+import com.thanh0x.coursedeals.util.Constant
+import com.thanh0x.coursedeals.util.NetworkUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject

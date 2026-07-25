@@ -1,4 +1,4 @@
-package com.batdaulaptrinh.freeudemycoupons.domain.logic.fingerprint
+package com.thanh0x.coursedeals.domain.logic.fingerprint
 
 
 data class CiphertextWrapper(

@@ -1,4 +1,4 @@
-package com.batdaulaptrinh.freeudemycoupons.domain.source
+package com.thanh0x.coursedeals.domain.source
 
 interface LocalAuthenticationDataSource {
     suspend fun getLocalToken(): String?

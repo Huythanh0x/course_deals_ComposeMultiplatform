@@ -1,4 +1,4 @@
-package com.batdaulaptrinh.freeudemycoupons.data.mapper
+package com.thanh0x.coursedeals.data.mapper
 
 object Mapper {
 }

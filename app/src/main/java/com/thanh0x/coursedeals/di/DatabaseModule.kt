@@ -1,9 +1,9 @@
-package com.batdaulaptrinh.freeudemycoupons.di
+package com.thanh0x.coursedeals.di
 
 import android.content.Context
 import androidx.room.Room
-import com.batdaulaptrinh.freeudemycoupons.data.source.local.CouponDatabase
-import com.batdaulaptrinh.freeudemycoupons.util.Constant
+import com.thanh0x.coursedeals.data.source.local.CouponDatabase
+import com.thanh0x.coursedeals.util.Constant
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

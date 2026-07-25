@@ -1,9 +1,9 @@
-package com.batdaulaptrinh.freeudemycoupons.data.source.remote
+package com.thanh0x.coursedeals.data.source.remote
 
 import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.batdaulaptrinh.freeudemycoupons.data.model.Coupon
+import com.thanh0x.coursedeals.data.model.Coupon
 import kotlinx.coroutines.delay
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
