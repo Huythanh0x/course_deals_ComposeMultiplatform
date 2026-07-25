@@ -1,5 +1,37 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
+def getLocalIP() {
+    try {
+        def en = NetworkInterface.getNetworkInterfaces()
+        while (en.hasMoreElements()) {
+            def intf = en.nextElement()
+            def enumIpAddr = intf.getInetAddresses()
+            while (enumIpAddr.hasMoreElements()) {
+                def inetAddress = enumIpAddr.nextElement()
+                if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {
+                    return inetAddress.getHostAddress()
+                }
+            }
+        }
+    } catch (Exception ex) {
+        ex.printStackTrace()
+    }
+    return "10.0.2.2" // Default emulator host IP
+}
+
+def getLocalApiUrl() {
+    Properties properties = new Properties()
+    def localPropertiesFile = project.rootProject.file('local.properties')
+    if (localPropertiesFile.exists()) {
+        properties.load(localPropertiesFile.newDataInputStream())
+    }
+    def overrideIp = properties.getProperty("local.api.ip")
+    if (overrideIp != null && !overrideIp.isEmpty()) {
+        return "http://${overrideIp}:8080"
+    }
+    return "http://${getLocalIP()}:8080"
+}
+
 plugins {
     id 'com.android.application'
     id 'kotlin-parcelize'
@@ -24,6 +56,19 @@ android {
 
     buildFeatures {
         dataBinding true
+        buildConfig true
+    }
+
+    flavorDimensions += "environment"
+    productFlavors {
+        local {
+            dimension "environment"
+            buildConfigField "String", "BASE_URL_API", "\"${getLocalApiUrl()}\""
+        }
+        prod {
+            dimension "environment"
+            buildConfigField "String", "BASE_URL_API", "\"https://coupons-api.thanh0x.com\""
+        }
     }
 
     buildTypes {

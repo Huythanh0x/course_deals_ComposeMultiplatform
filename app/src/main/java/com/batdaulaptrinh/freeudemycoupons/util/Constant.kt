@@ -1,10 +1,12 @@
 package com.batdaulaptrinh.freeudemycoupons.util
 
+import com.batdaulaptrinh.freeudemycoupons.BuildConfig
+
 class Constant {
     companion object {
         const val COUPON_TABLE_NAME = "coupon_table_name"
         const val COUPON_DATABASE_NAME = "coupon_database_name"
-        const val BASE_URL_API = "https://coupons-api.thanh0x.com"
+        const val BASE_URL_API = BuildConfig.BASE_URL_API
         const val DATA_STORE_NAME = "data_store_name"
         const val PREFERENCES_LOGIN_TOKEN = "login_token"
         const val PREFERENCES_ENABLE_DARK_MODE = "enable_dark_mode"
