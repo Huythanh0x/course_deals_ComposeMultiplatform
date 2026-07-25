@@ -39,7 +39,6 @@ class HomeFragment : Fragment() {
             startActivity(detailIntent)
         }
         binding.rvCouponCourse.adapter = couponCoursePagingAdapter
-        observeInitialLoading()
         observeLoadingState()
         homeViewModel.isInternetAvailable.observe(viewLifecycleOwner) {
             if (it) {
@@ -69,22 +68,23 @@ class HomeFragment : Fragment() {
     private fun observeLoadingState() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                couponCoursePagingAdapter.loadStateFlow.collect {
-                    binding.lpiLoadPreviousPage.isVisible = it.source.prepend is LoadState.Loading
-                    binding.lpiLoadNextPage.isVisible = it.source.append is LoadState.Loading
-                }
-            }
-        }
-    }
+                couponCoursePagingAdapter.loadStateFlow.collect { loadState ->
+                    binding.pbHome.isVisible = loadState.refresh is LoadState.Loading
+                    binding.lpiLoadPreviousPage.isVisible = loadState.source.prepend is LoadState.Loading
+                    binding.lpiLoadNextPage.isVisible = loadState.source.append is LoadState.Loading
 
-    private fun observeInitialLoading() {
-        lifecycleScope.launch {
-            couponCoursePagingAdapter.loadStateFlow.collect {
-                if (it.prepend is LoadState.NotLoading && it.prepend.endOfPaginationReached) {
-                    binding.pbHome.visibility = View.GONE
-                }
-                if (it.append is LoadState.NotLoading && it.append.endOfPaginationReached) {
-                    binding.pbHome.isVisible = couponCoursePagingAdapter.itemCount < 1
+                    val errorState = loadState.source.append as? LoadState.Error
+                        ?: loadState.source.prepend as? LoadState.Error
+                        ?: loadState.append as? LoadState.Error
+                        ?: loadState.prepend as? LoadState.Error
+                        ?: loadState.refresh as? LoadState.Error
+
+                    errorState?.let {
+                        showErrorFetchDialog(
+                            resources.getString(R.string.fetch_error_title),
+                            it.error.localizedMessage ?: resources.getString(R.string.error_fetching_null_coupon)
+                        )
+                    }
                 }
             }
         }
