@@ -1,18 +1,27 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
-def getLocalIP() {
+static def getLocalIP() {
     try {
         def en = NetworkInterface.getNetworkInterfaces()
+        def candidate = null
         while (en.hasMoreElements()) {
-            def intf = en.nextElement()
-            def enumIpAddr = intf.getInetAddresses()
-            while (enumIpAddr.hasMoreElements()) {
-                def inetAddress = enumIpAddr.nextElement()
-                if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {
-                    return inetAddress.getHostAddress()
+            def interFace = en.nextElement()
+            if (!interFace.isUp() || interFace.isLoopback() || interFace.isVirtual()) continue
+            
+            def enumIpAddress = interFace.getInetAddresses()
+            while (enumIpAddress.hasMoreElements()) {
+                def inetAddress = enumIpAddress.nextElement()
+                if (inetAddress instanceof Inet4Address) {
+                    String name = interFace.getName().toLowerCase()
+                    // Prioritize common physical interface names (en, eth, wlan)
+                    if (name.startsWith("en") || name.startsWith("eth") || name.startsWith("wlan")) {
+                        return inetAddress.getHostAddress()
+                    }
+                    candidate = inetAddress.getHostAddress()
                 }
             }
         }
+        if (candidate != null) return candidate
     } catch (Exception ex) {
         ex.printStackTrace()
     }
