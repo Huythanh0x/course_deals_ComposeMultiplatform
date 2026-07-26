@@ -9,11 +9,13 @@ import androidx.lifecycle.lifecycleScope
 import com.thanh0x.coursedeals.MainActivity
 import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.ActivitySplashBinding
+import com.thanh0x.coursedeals.ui.login.LoginActivity
 import com.thanh0x.coursedeals.util.Constant
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.lang.Long.max
+import kotlin.time.Duration.Companion.milliseconds
 
 @AndroidEntryPoint
 @SuppressLint("CustomSplashScreen")
@@ -27,13 +29,13 @@ class SplashActivity : AppCompatActivity() {
             val waitingTime = max(
                 Constant.SPLASH_LOADING_TIME_MS - (System.currentTimeMillis() - startedTime), 0L
             )
-            delay(waitingTime)
+            delay(waitingTime.milliseconds)
             navigateToHomeScreen()
         }
     }
 
     private fun navigateToHomeScreen() {
-        startActivity(Intent(this, MainActivity::class.java))
+        startActivity(Intent(this, LoginActivity::class.java))
         finish()
     }
 }

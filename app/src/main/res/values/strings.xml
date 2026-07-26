@@ -73,4 +73,9 @@
     <string name="cancel_button_text">Cancel</string>
     <string name="login_with_fingerprint_text">LOGIN WITH FINGERPRINT</string>
     <string name="submit_deal">Submit Deal</string>
+    <string name="auth_headline">Course Deal</string>
+    <string name="auth_subhead">Access the app via</string>
+    <string name="auth_btn_google">Continue with Google</string>
+    <string name="auth_btn_apple">Continue with Apple</string>
+    <string name="auth_btn_fingerprint">Continue with Fingerprint</string>
 </resources>
