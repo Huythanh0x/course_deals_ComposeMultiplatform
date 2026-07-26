@@ -5,11 +5,18 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="24dp">
+        android:paddingHorizontal="24dp"
+        android:paddingBottom="24dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
+            <com.google.android.material.bottomsheet.BottomSheetDragHandleView
+                android:id="@+id/dragHandle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/tvTitle"
@@ -19,7 +26,7 @@
                 android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
                 android:textColor="?attr/colorOnSurface"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/dragHandle" />
 
             <!-- Category Section -->
             <com.google.android.material.textview.MaterialTextView
