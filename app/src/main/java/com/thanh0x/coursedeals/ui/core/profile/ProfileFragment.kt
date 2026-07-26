@@ -59,7 +59,7 @@ class ProfileFragment : BaseFragment() {
             clearFocusAndHideKeyboard()
         }
 
-        binding.btnCopyEmail.setOnClickListener {
+        binding.llEmailContainer.setOnClickListener {
             copyToClipboard(binding.tvEmail.text.toString())
         }
 
@@ -121,8 +121,8 @@ class ProfileFragment : BaseFragment() {
         }
 
         binding.tietKeyword.setOnEditorActionListener { _, actionId, event ->
-            if (actionId == EditorInfo.IME_ACTION_DONE || 
-                actionId == EditorInfo.IME_ACTION_NEXT || 
+            if (actionId == EditorInfo.IME_ACTION_DONE ||
+                actionId == EditorInfo.IME_ACTION_NEXT ||
                 (event != null && event.keyCode == android.view.KeyEvent.KEYCODE_ENTER)) {
                 submitKeyword()
                 true
@@ -184,7 +184,7 @@ class ProfileFragment : BaseFragment() {
         val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(binding.tietKeyword.windowToken, 0)
         binding.clProfileRoot.requestFocus()
-        
+
         if (binding.tietKeyword.text.isNullOrEmpty()) {
             binding.tilKeyword.isVisible = false
             binding.btnAddKw.isVisible = true
