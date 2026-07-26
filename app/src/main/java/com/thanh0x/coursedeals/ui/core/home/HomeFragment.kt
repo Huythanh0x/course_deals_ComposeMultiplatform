@@ -28,11 +28,19 @@ class HomeFragment : Fragment() {
     private val homeViewModel: HomeViewModel by viewModels()
     private lateinit var couponCoursePagingAdapter: CouponCoursePagingViewAdapter
     private val binding get() = _binding!!
+
+    private var currentFilter = FilterData()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         binding.svCouponCourse.setOnQueryTextListener(queryTextChangeListener)
+        binding.btnFilter.setOnClickListener {
+            showFilterDialog()
+        }
+        binding.btnSubmitDeal.setOnClickListener {
+            showErrorFetchDialog("Submit Deal", "This feature is coming soon!")
+        }
         couponCoursePagingAdapter = CouponCoursePagingViewAdapter() { clickedCoupon ->
             val detailIntent = Intent(requireContext(), CouponDetailActivity::class.java)
             detailIntent.putExtra(BundleKey.TO_DETAIL_ACTIVITY, clickedCoupon.courseId)
@@ -111,6 +119,21 @@ class HomeFragment : Fragment() {
         override fun onQueryTextChange(newText: String?): Boolean {
             return true
         }
+    }
+
+    private fun showFilterDialog() {
+        val dialog = FilterBottomSheetDialog(currentFilter) { filterData ->
+            currentFilter = filterData
+            applyFilters()
+        }
+        dialog.show(childFragmentManager, FilterBottomSheetDialog.TAG)
+    }
+
+    private fun applyFilters() {
+        // Log or show the applied filters for now
+        Log.d("FILTER APPLIED", currentFilter.toString())
+        // In a real implementation, you would update the ViewModel with these parameters
+        // to trigger a new PagingData stream.
     }
 
     private fun showErrorFetchDialog(title: String, message: String) {

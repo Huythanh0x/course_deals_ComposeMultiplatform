@@ -9,21 +9,22 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="4dp">
+        android:layout_height="wrap_content">
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chip"
             style="@style/Widget.Material3.Chip.Assist"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="32dp"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginTop="8dp"
             android:checkable="true"
             android:clickable="true"
-            android:focusable="true"
+            android:textColor="@color/cat_chip_text_selector"
             app:chipBackgroundColor="@color/cat_chip_bg_selector"
             app:chipStrokeColor="@color/cat_chip_stroke_selector"
             app:chipStrokeWidth="1dp"
-            android:textColor="@color/cat_chip_text_selector"
+            app:ensureMinTouchTargetSize="false"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -38,7 +39,9 @@
             app:cardBackgroundColor="?attr/colorSurface"
             app:cardCornerRadius="7dp"
             app:cardElevation="2dp"
+            app:layout_constraintBottom_toTopOf="@+id/chip"
             app:layout_constraintEnd_toEndOf="@+id/chip"
+            app:layout_constraintStart_toEndOf="@+id/chip"
             app:layout_constraintTop_toTopOf="@+id/chip"
             app:strokeColor="?attr/colorPrimary"
             app:strokeWidth="1dp"
