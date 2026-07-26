@@ -1,9 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- Background for the logo to sit on -->
+    <item android:gravity="center">
+        <shape android:shape="oval">
+            <solid android:color="@android:color/transparent"/>
+            <size android:width="64dp" android:height="64dp"/>
+        </shape>
+    </item>
+
+    <!-- The brand logo mark -->
+    <item
+        android:drawable="@drawable/ic_logo_mark"
+        android:width="32dp"
+        android:height="32dp"
+        android:gravity="center" />
+
+    <!-- Rotating Material 3 ring -->
     <item android:gravity="center">
         <animated-rotate
-            android:drawable="@drawable/image_loading_progress"
+            android:drawable="@drawable/ic_loading_ring"
             android:pivotX="50%"
             android:pivotY="50%" />
     </item>
