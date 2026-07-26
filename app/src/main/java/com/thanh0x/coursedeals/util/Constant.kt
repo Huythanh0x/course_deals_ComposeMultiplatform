@@ -16,7 +16,7 @@ class Constant {
         const val NETWORK_AUTHORIZATION_HEADER = "Authorization"
         const val NETWORK_BEARER_PREFIX = "Bearer"
         const val ITEMS_PER_PAGE = 10
-        const val SPLASH_LOADING_TIME_MS = 500
+        const val SPLASH_LOADING_TIME_MS = 1500L
         const val MY_COURSE_URL = "https://www.udemy.com/home/my-courses/learning"
     }
 }
