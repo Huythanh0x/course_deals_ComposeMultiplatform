@@ -4,6 +4,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -68,6 +69,34 @@ class ProfileFragment : BaseFragment() {
             forceLogout()
         }
 
+        binding.tvDevEmail.setOnClickListener {
+            val devEmailAddress = getString(R.string.dev_email)
+            val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
+                data = Uri.parse("mailto:$devEmailAddress")
+                putExtra(Intent.EXTRA_SUBJECT, getString(R.string.email_send_title))
+            }
+
+            try {
+                startActivity(emailIntent)
+            } catch (e: android.content.ActivityNotFoundException) {
+                showAlertDialog(
+                    getString(R.string.email_failed_to_send),
+                    getString(R.string.email_cannot_find_client_app)
+                )
+            }
+        }
+
+        binding.tvDevWebsite.setOnClickListener {
+            val devWebsiteAddress = getString(R.string.dev_website)
+            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(devWebsiteAddress))
+
+            try {
+                startActivity(browserIntent)
+            } catch (e: android.content.ActivityNotFoundException) {
+                Toast.makeText(requireContext(), "No web browser installed.", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
         binding.swEnableDarkMode.setOnCheckedChangeListener { _, isChecked ->
             profileViewModel.checkIfTokenExpired()
             profileViewModel.isDarkModeEnable.postValue(isChecked)

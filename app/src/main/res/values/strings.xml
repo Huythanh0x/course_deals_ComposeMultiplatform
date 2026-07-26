@@ -82,8 +82,8 @@
     <string name="notif_cat">Favorite category</string>
     <string name="notif_kw">Favorite keyword</string>
     <string name="notif_hot">Hot deals</string>
-    <string name="dev_email">developer@thanh0x.com</string>
-    <string name="dev_website">www.thanh0x.com</string>
+    <string name="dev_email">coursedeals@thanh0x.com</string>
+    <string name="dev_website">https://thanh0x.com</string>
     <string name="auth_headline">Course Deal</string>
     <string name="auth_subhead">Access the app via</string>
     <string name="auth_btn_google">Continue with Google</string>
@@ -129,4 +129,7 @@
     <string name="report_other_hint">Please describe the issue</string>
     <string name="report_submit_success">Deal reported. Thanks!</string>
     <string name="action_report_title">Report</string>
+    <string name="email_failed_to_send">Failed to send Email</string>
+    <string name="email_cannot_find_client_app">Cannot find a suitable app for this request</string>
+    <string name="email_send_title">Sending from Course Deals app</string>
 </resources>
