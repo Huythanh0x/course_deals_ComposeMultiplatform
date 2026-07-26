@@ -39,7 +39,7 @@ class HomeFragment : Fragment() {
             showFilterDialog()
         }
         binding.btnSubmitDeal.setOnClickListener {
-            showErrorFetchDialog("Submit Deal", "This feature is coming soon!")
+            showSubmitDealDialog()
         }
         couponCoursePagingAdapter = CouponCoursePagingViewAdapter() { clickedCoupon ->
             val detailIntent = Intent(requireContext(), CouponDetailActivity::class.java)
@@ -127,6 +127,16 @@ class HomeFragment : Fragment() {
             applyFilters()
         }
         dialog.show(childFragmentManager, FilterBottomSheetDialog.TAG)
+    }
+
+    private fun showSubmitDealDialog() {
+        val dialog = SubmitDealBottomSheet { url ->
+            showErrorFetchDialog(
+                getString(R.string.submit_deal_title),
+                getString(R.string.submit_success_msg)
+            )
+        }
+        dialog.show(childFragmentManager, SubmitDealBottomSheet.TAG)
     }
 
     private fun applyFilters() {

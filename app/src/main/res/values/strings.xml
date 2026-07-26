@@ -115,4 +115,11 @@
     <string name="cat_10">Finance</string>
     <string name="btn_done">Done</string>
     <string name="kw_add_trigger">Add Keyword</string>
+    <string name="submit_deal_title">Submit a Deal</string>
+    <string name="submit_deal_subhead">Enter the Udemy course URL with the coupon code included.</string>
+    <string name="url_hint">Course URL</string>
+    <string name="url_error_invalid">Please enter a valid Udemy URL</string>
+    <string name="btn_submit">Submit</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="submit_success_msg">Deal submitted successfully! It will be reviewed soon.</string>
 </resources>
