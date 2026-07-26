@@ -11,6 +11,7 @@ import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.data.model.TokenResponseData
 import com.thanh0x.coursedeals.databinding.ActivityLoginBinding
 import com.thanh0x.coursedeals.util.NetWorkResult
+import com.thanh0x.coursedeals.ui.custom_view.LoadingDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -18,6 +19,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
     lateinit var binding: ActivityLoginBinding
     private val loginViewModel: LoginViewModel by viewModels()
+    private var loadingDialog: LoadingDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,11 +82,15 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun hideLoadingLoginProgressbar() {
-        binding.pbLogin.visibility = View.GONE
+        loadingDialog?.dismiss()
+        loadingDialog = null
     }
 
     private fun showLoadingLoginProgressbar() {
-        binding.pbLogin.visibility = View.VISIBLE
+        if (loadingDialog == null) {
+            loadingDialog = LoadingDialog.newInstance()
+            loadingDialog?.show(supportFragmentManager, "loading")
+        }
     }
 
     private fun navigateToMainScreen() {

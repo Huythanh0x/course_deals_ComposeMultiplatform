@@ -10,11 +10,13 @@ import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.ActivityCouponEnrollBinding
+import com.thanh0x.coursedeals.ui.custom_view.LoadingDialog
 import com.thanh0x.coursedeals.util.BundleKey
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class CouponEnrollActivity : AppCompatActivity() {
     lateinit var binding: ActivityCouponEnrollBinding
+    private var loadingDialog: LoadingDialog? = null
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,11 +72,15 @@ class CouponEnrollActivity : AppCompatActivity() {
     }
 
     fun showLoadingDialog() {
-        binding.clEnrollContainer.isVisible = true
+        if (loadingDialog == null) {
+            loadingDialog = LoadingDialog.newInstance(getString(R.string.loading_enroll_page_text))
+            loadingDialog?.show(supportFragmentManager, "loading")
+        }
     }
 
     fun hideLoadingDialog() {
-        binding.clEnrollContainer.isVisible = false
+        loadingDialog?.dismiss()
+        loadingDialog = null
     }
 
     fun showWebView() {

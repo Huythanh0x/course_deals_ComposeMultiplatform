@@ -13,6 +13,7 @@ import androidx.databinding.DataBindingUtil
 import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.data.model.Coupon
 import com.thanh0x.coursedeals.databinding.ActivityCouponDetailBinding
+import com.thanh0x.coursedeals.ui.custom_view.LoadingDialog
 import com.thanh0x.coursedeals.ui.enroll.CouponEnrollActivity
 import com.thanh0x.coursedeals.util.BundleKey
 import com.thanh0x.coursedeals.util.MapperToView
@@ -25,6 +26,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class CouponDetailActivity : AppCompatActivity() {
     lateinit var binding: ActivityCouponDetailBinding
     private val couponDetailViewModel: CouponDetailViewModel by viewModels()
+    private var loadingDialog: LoadingDialog? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_coupon_detail)
@@ -172,10 +174,14 @@ class CouponDetailActivity : AppCompatActivity() {
     }
 
     private fun hideLoadingProgressbar() {
-        binding.pbLoadingCouponDetails.isVisible = false
+        loadingDialog?.dismiss()
+        loadingDialog = null
     }
 
     private fun showLoadingProgressbar() {
-        binding.pbLoadingCouponDetails.isVisible = true
+        if (loadingDialog == null) {
+            loadingDialog = LoadingDialog.newInstance(getString(R.string.dialog_loading_text))
+            loadingDialog?.show(supportFragmentManager, "loading")
+        }
     }
 }

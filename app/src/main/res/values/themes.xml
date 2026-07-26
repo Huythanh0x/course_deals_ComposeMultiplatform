@@ -48,6 +48,11 @@
         <item name="android:textSize">12sp</item>
     </style>
 
+    <style name="Widget.CourseDeal.CircularProgressIndicator" parent="Widget.Material3.CircularProgressIndicator">
+        <item name="indicatorColor">@color/m3_primary</item>
+        <item name="trackColor">@color/m3_primary_container</item>
+    </style>
+
     <style name="rating_bar" parent="Theme.AppCompat">
         <item name="colorControlNormal">@color/grey</item>
         <item name="colorControlActivated">@color/golden</item>

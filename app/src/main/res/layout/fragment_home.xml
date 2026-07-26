@@ -108,8 +108,9 @@
             app:spanCount="2"
             tools:listitem="@layout/coupon_course_item" />
 
-        <ProgressBar
+        <com.google.android.material.progressindicator.CircularProgressIndicator
             android:id="@+id/pbHome"
+            style="@style/Widget.CourseDeal.CircularProgressIndicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"

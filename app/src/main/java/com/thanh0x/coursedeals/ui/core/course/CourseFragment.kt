@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.FragmentCourseBinding
+import com.thanh0x.coursedeals.ui.custom_view.LoadingDialog
 import com.thanh0x.coursedeals.util.Constant
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
@@ -22,6 +23,7 @@ class CourseFragment : Fragment() {
     private var _binding: FragmentCourseBinding? = null
     val binding get() = _binding!!
     private val courseViewModel: CourseViewModel by viewModels()
+    private var loadingDialog: LoadingDialog? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -81,11 +83,15 @@ class CourseFragment : Fragment() {
     }
 
     fun showLoadingDialog() {
-        binding.clEnrollContainer.isVisible = true
+        if (loadingDialog == null) {
+            loadingDialog = LoadingDialog.newInstance(getString(R.string.loading_your_courses_page_text))
+            loadingDialog?.show(childFragmentManager, "loading")
+        }
     }
 
     fun hideLoadingDialog() {
-        binding.clEnrollContainer.isVisible = false
+        loadingDialog?.dismiss()
+        loadingDialog = null
     }
 
     fun showWebView() {
