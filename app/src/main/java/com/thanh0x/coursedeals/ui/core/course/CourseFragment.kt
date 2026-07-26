@@ -8,28 +8,23 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.FragmentCourseBinding
-import com.thanh0x.coursedeals.ui.custom_view.LoadingDialog
+import com.thanh0x.coursedeals.ui.base.BaseFragment
 import com.thanh0x.coursedeals.util.Constant
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CourseFragment : Fragment() {
+class CourseFragment : BaseFragment() {
     private var _binding: FragmentCourseBinding? = null
     val binding get() = _binding!!
     private val courseViewModel: CourseViewModel by viewModels()
-    private var loadingDialog: LoadingDialog? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentCourseBinding.inflate(layoutInflater, container, false)
-        showLoadingDialog()
-        hideWebView()
+        showLoading(getString(R.string.loading_your_courses_page_text))
         courseViewModel.isInternetAvailable.observe(viewLifecycleOwner) {
             if (it) {
                 configureWebViewSettings()
@@ -65,8 +60,8 @@ class CourseFragment : Fragment() {
         return object : WebViewClient() {
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                 if (_binding != null) {
-                    hideLoadingDialog()
-                    showWebView()
+                    hideLoading()
+                    binding.wvMyCourses.visibility = View.VISIBLE
                 }
                 super.onPageStarted(view, url, favicon)
             }
@@ -74,31 +69,11 @@ class CourseFragment : Fragment() {
     }
 
     private fun showNotInternetDialog() {
-        MaterialAlertDialogBuilder(requireContext()).setTitle(this.getString(R.string.no_internet_title))
-            .setMessage(this.getString(R.string.no_internet_message))
-            .setNeutralButton(R.string.ok_text_button) { dialog, _ ->
-                dialog.dismiss()
-                courseViewModel.checkIfInternetAvailable()
-            }.setCancelable(false).create().show()
-    }
-
-    fun showLoadingDialog() {
-        if (loadingDialog == null) {
-            loadingDialog = LoadingDialog.newInstance(getString(R.string.loading_your_courses_page_text))
-            loadingDialog?.show(childFragmentManager, "loading")
+        showAlertDialog(
+            getString(R.string.no_internet_title),
+            getString(R.string.no_internet_message)
+        ) {
+            courseViewModel.checkIfInternetAvailable()
         }
-    }
-
-    fun hideLoadingDialog() {
-        loadingDialog?.dismiss()
-        loadingDialog = null
-    }
-
-    fun showWebView() {
-        binding.wvMyCourses.isVisible = true
-    }
-
-    fun hideWebView() {
-        binding.wvMyCourses.isVisible = false
     }
 }

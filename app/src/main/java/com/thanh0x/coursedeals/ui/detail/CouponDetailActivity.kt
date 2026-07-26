@@ -7,32 +7,29 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
-import androidx.databinding.DataBindingUtil
 import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.data.model.Coupon
 import com.thanh0x.coursedeals.databinding.ActivityCouponDetailBinding
-import com.thanh0x.coursedeals.ui.custom_view.LoadingDialog
+import com.thanh0x.coursedeals.ui.base.BaseActivity
 import com.thanh0x.coursedeals.ui.enroll.CouponEnrollActivity
 import com.thanh0x.coursedeals.util.BundleKey
 import com.thanh0x.coursedeals.util.MapperToView
 import com.thanh0x.coursedeals.util.NetWorkResult
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CouponDetailActivity : AppCompatActivity() {
+class CouponDetailActivity : BaseActivity() {
     lateinit var binding: ActivityCouponDetailBinding
     private val couponDetailViewModel: CouponDetailViewModel by viewModels()
-    private var loadingDialog: LoadingDialog? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_coupon_detail)
+        binding = ActivityCouponDetailBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         setupToolbar()
         val courseId = intent.extras?.getInt(BundleKey.TO_DETAIL_ACTIVITY)
-        showLoadingProgressbar()
+        showLoading(getString(R.string.dialog_loading_text))
         if (courseId != null) {
             couponDetailViewModel.isInternetAvailable.observe(this) { isInternetAvailable ->
                 if (isInternetAvailable) {
@@ -71,14 +68,14 @@ class CouponDetailActivity : AppCompatActivity() {
 
     private fun handleNetworkResult(networkResult: NetWorkResult<Coupon>) {
         when (networkResult) {
-            is NetWorkResult.Loading -> showLoadingProgressbar()
+            is NetWorkResult.Loading -> showLoading(getString(R.string.dialog_loading_text))
             is NetWorkResult.Error -> {
-                hideLoadingProgressbar()
+                hideLoading()
                 showFetchingErrorDialog()
             }
             is NetWorkResult.Success -> {
-                hideLoadingProgressbar()
-                showMainContentView()
+                hideLoading()
+                binding.mlCouponDetail.visibility = android.view.View.VISIBLE
                 if (networkResult.data != null) {
                     bindingCouponDataToView(networkResult.data)
                     setOnclickButtons(networkResult.data)
@@ -96,7 +93,6 @@ class CouponDetailActivity : AppCompatActivity() {
             binding.tvTimeLeft.text = it.mapTimeLeft(coupon.expiredDate)
             binding.tvContentLength.text = it.mapContentLength(coupon.contentLength)
             binding.tvCouponLeft.text = coupon.usesRemaining.toString()
-            binding.tvContentLength.text = coupon.contentLength.toString()
             binding.tvCourseLevel.text = coupon.level
             binding.tvLanguage.text = coupon.language
             binding.tvCourseDescription.text = it.mapHTMLContent(coupon.description)
@@ -131,29 +127,21 @@ class CouponDetailActivity : AppCompatActivity() {
     }
 
     private fun showFetchingErrorDialog() {
-        MaterialAlertDialogBuilder(this)
-            .setTitle(this.getString(R.string.coupon_detail_error_title))
-            .setMessage(this.getString(R.string.error_fetching_null_coupon))
-            .setNeutralButton(R.string.ok_text_button) { dialog, _ ->
-                dialog.dismiss()
-                finish()
-            }
-            .setCancelable(false)
-            .create().show()
+        showAlertDialog(
+            getString(R.string.coupon_detail_error_title),
+            getString(R.string.error_fetching_null_coupon)
+        ) {
+            finish()
+        }
     }
 
     private fun showNoInternetDialog() {
-        MaterialAlertDialogBuilder(
-            this,
-            com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered
-        ).setTitle(R.string.no_internet_title).setMessage(R.string.no_internet_message)
-            .setPositiveButton(R.string.ok_text_button) { dialog, _ ->
-                dialog.dismiss()
-                couponDetailViewModel.checkIfInternetAvailable()
-            }
-            .setCancelable(false)
-            .create().show()
-
+        showAlertDialog(
+            getString(R.string.no_internet_title),
+            getString(R.string.no_internet_message)
+        ) {
+            couponDetailViewModel.checkIfInternetAvailable()
+        }
     }
 
     private fun shareLink(context: Context, title: String, url: String) {
@@ -167,21 +155,5 @@ class CouponDetailActivity : AppCompatActivity() {
         val intent = Intent(Intent.ACTION_VIEW)
         intent.data = Uri.parse(url)
         context.startActivity(intent)
-    }
-
-    private fun showMainContentView() {
-        binding.mlCouponDetail.isVisible = true
-    }
-
-    private fun hideLoadingProgressbar() {
-        loadingDialog?.dismiss()
-        loadingDialog = null
-    }
-
-    private fun showLoadingProgressbar() {
-        if (loadingDialog == null) {
-            loadingDialog = LoadingDialog.newInstance(getString(R.string.dialog_loading_text))
-            loadingDialog?.show(supportFragmentManager, "loading")
-        }
     }
 }
