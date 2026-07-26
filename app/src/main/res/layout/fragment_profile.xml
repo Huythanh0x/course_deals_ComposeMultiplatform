@@ -10,44 +10,81 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/m3_surface_container_low"
         tools:context=".ui.core.profile.ProfileFragment">
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cvAvatar"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:cardCornerRadius="100dp"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            app:cardBackgroundColor="@color/m3_primary_container"
+            app:cardCornerRadius="32dp"
+            app:cardElevation="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.1"
-            app:layout_constraintWidth_percent=".5">
+            app:layout_constraintVertical_bias="0.15"
+            app:strokeWidth="0dp">
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ivAvatar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@color/grey" />
+                android:padding="16dp"
+                android:src="@drawable/ic_profile_menu"
+                app:tint="@color/m3_on_primary_container" />
         </com.google.android.material.card.MaterialCardView>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvDisplayName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="User Name"
+            android:textColor="@color/m3_on_surface"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cvAvatar" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="user@example.com"
+            android:textColor="@color/m3_on_surface_variant"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvDisplayName" />
+
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            app:dividerColor="@color/m3_outline_variant"
+            app:layout_constraintTop_toBottomOf="@+id/tvEmail" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvEnableDarkMode"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
-            android:layout_marginBottom="20dp"
+            android:layout_marginTop="24dp"
             android:text="@string/enable_dark_mode_switch_text"
-            android:textColor="@color/primaryTextColor"
-            android:textSize="20sp"
+            android:textColor="@color/m3_on_surface"
+            android:textSize="16sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/tvLoginFingerPrint"
             app:layout_constraintEnd_toStartOf="@+id/swEnableDarkMode"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/divider" />
 
-        <com.google.android.material.switchmaterial.SwitchMaterial
+        <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/swEnableDarkMode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -61,16 +98,16 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="24dp"
             android:text="@string/enable_finger_print_switch_text"
-            android:textColor="@color/primaryTextColor"
-            android:textSize="20sp"
+            android:textColor="@color/m3_on_surface"
+            android:textSize="16sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/swEnableDarkMode"
+            app:layout_constraintEnd_toStartOf="@+id/swEnableFingerPrint"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cvAvatar" />
+            app:layout_constraintTop_toBottomOf="@+id/tvEnableDarkMode" />
 
-        <com.google.android.material.switchmaterial.SwitchMaterial
+        <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/swEnableFingerPrint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -81,17 +118,16 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnLogout"
-            android:layout_width="wrap_content"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingHorizontal="40dp"
-            android:paddingVertical="10dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="40dp"
             android:text="@string/logout_button_text"
-            android:textColor="@color/textButtonColor"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvLoginFingerPrint" />
+            android:textColor="@color/m3_on_error_container"
+            app:cornerRadius="24dp"
+            app:layout_constraintTop_toBottomOf="@+id/tvLoginFingerPrint"
+            app:strokeColor="@color/m3_on_error_container"
+            app:strokeWidth="1.5dp" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

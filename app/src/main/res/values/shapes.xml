@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Material 3 Shapes -->
+    <style name="ShapeAppearance.CourseDeal.Small" parent="">
+        <item name="cornerSize">8dp</item>
+    </style>
+
+    <style name="ShapeAppearance.CourseDeal.Medium" parent="">
+        <item name="cornerSize">16dp</item>
+    </style>
+
+    <style name="ShapeAppearance.CourseDeal.ExtraLarge" parent="">
+        <item name="cornerSizeTopLeft">28dp</item>
+        <item name="cornerSizeTopRight">28dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
+
+    <style name="ShapeAppearance.CourseDeal.Full" parent="">
+        <item name="cornerSize">50%</item>
+    </style>
+</resources>

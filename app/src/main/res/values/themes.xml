@@ -1,13 +1,36 @@
 <resources>
     <!-- Base application theme. -->
-    <style name="Base.Theme.CourseDeals" parent="Theme.Material3.Light.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
-        <item name="bottomNavigationStyle">
-            @style/Widget.MaterialComponents.BottomNavigationView.Colored
-        </item>
-        <item name="colorPrimary">@color/blue_800</item>
-        <item name="colorOnPrimary">@color/blue_800</item>
+    <style name="Base.Theme.CourseDeals" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Core M3 Colors -->
+        <item name="colorPrimary">@color/m3_primary</item>
+        <item name="colorOnPrimary">@color/m3_on_primary</item>
+        <item name="colorPrimaryContainer">@color/m3_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/m3_on_primary_container</item>
+
+        <item name="colorTertiaryContainer">@color/m3_tertiary_container</item>
+        <item name="colorOnTertiaryContainer">@color/m3_on_tertiary_container</item>
+
+        <item name="android:colorBackground">@color/m3_surface</item>
+        <item name="colorSurface">@color/m3_surface</item>
+        <item name="colorOnSurface">@color/m3_on_surface</item>
+        <item name="colorSurfaceVariant">@color/m3_surface_container_high</item>
+        <item name="colorOnSurfaceVariant">@color/m3_on_surface_variant</item>
+
+        <item name="colorOutline">@color/m3_outline</item>
+        <item name="colorOutlineVariant">@color/m3_outline_variant</item>
+
+        <item name="colorErrorContainer">@color/m3_error_container</item>
+        <item name="colorOnErrorContainer">@color/m3_on_error_container</item>
+
+        <!-- Component Styles -->
+        <item name="bottomNavigationStyle">@style/Widget.Material3.BottomNavigationView</item>
+        <item name="materialCardViewStyle">@style/Widget.Material3.CardView.Elevated</item>
+
+        <!-- Shape mapping -->
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.CourseDeal.Small</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.CourseDeal.Medium</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.CourseDeal.ExtraLarge</item>
+
         <item name="android:windowIsTranslucent">true</item>
     </style>
 

@@ -1,19 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--component color-->
-    <color name="primaryBackgroundColor">@color/black</color>
-    <color name="primaryTextColor">@color/white</color>
-    <color name="secondaryTextColor">@color/darkGrey</color>
-    <color name="courseTitle">@color/blue_600</color>
-    <color name="headingTitle">@color/blue_300</color>
-    <color name="courseCategory">@color/blue_300</color>
-    <color name="buttonBackgroundColor">@color/blue_800</color>
-    <color name="textButtonColor">@color/white</color>
-    <color name="iconTintColor">@color/white</color>
-    <color name="placeHolderColor">@color/darkGrey</color>
-    <color name="timeLeftBackgroundColor">@color/lightGrey</color>
-    <color name="timeLeftTextColor">@color/black</color>
-    <color name="chipTextColor">@color/blue_500</color>
-    <color name="dividerColor">@color/grey</color>
+    <!-- Material 3 Color Roles (Dark) -->
+    <color name="m3_primary">#A8C7FA</color>
+    <color name="m3_on_primary">#00315C</color>
+    <color name="m3_primary_container">#00458F</color>
+    <color name="m3_on_primary_container">#D3E3FD</color>
 
+    <color name="m3_tertiary_container">#633B48</color>
+    <color name="m3_on_tertiary_container">#FFD8E4</color>
+
+    <color name="m3_surface">#111318</color>
+    <color name="m3_surface_container_low">#1A1C20</color>
+    <color name="m3_surface_container">#1E2025</color>
+    <color name="m3_surface_container_high">#282A2F</color>
+
+    <color name="m3_on_surface">#E2E2E6</color>
+    <color name="m3_on_surface_variant">#C4C6D0</color>
+
+    <color name="m3_outline">#8E9099</color>
+    <color name="m3_outline_variant">#44474E</color>
+
+    <color name="m3_error_container">#93000A</color>
+    <color name="m3_on_error_container">#FFDAD6</color>
+
+    <!-- Semantic & Component Colors -->
+    <color name="rating_amber">#E8A33D</color>
+
+    <!-- Legacy / Compatibility Colors (mapped to M3) -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="grey">@color/m3_outline</color>
+    <color name="golden">@color/rating_amber</color>
+
+    <color name="primaryBackgroundColor">@color/m3_surface_container_low</color>
+    <color name="primaryTextColor">@color/m3_on_surface</color>
+    <color name="secondaryTextColor">@color/m3_on_surface_variant</color>
+    <color name="courseTitle">@color/m3_primary</color>
+    <color name="headingTitle">@color/m3_primary</color>
+    <color name="courseCategory">@color/m3_on_primary_container</color>
+    <color name="buttonBackgroundColor">@color/m3_primary</color>
+    <color name="textButtonColor">@color/m3_on_primary</color>
+    <color name="iconTintColor">@color/m3_primary</color>
+    <color name="placeHolderColor">@color/m3_outline_variant</color>
+    <color name="timeLeftBackgroundColor">@color/m3_error_container</color>
+    <color name="timeLeftTextColor">@color/m3_on_error_container</color>
+    <color name="chipTextColor">@color/m3_on_primary_container</color>
+    <color name="dividerColor">@color/m3_outline_variant</color>
 </resources>

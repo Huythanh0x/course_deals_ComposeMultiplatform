@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Course Deals</string>
+    <string name="app_name">Course Deal</string>
     <string name="username_hint_input">USERNAME</string>
     <string name="password_hint_input">PASSWORD</string>
     <string name="login_text_button">LOGIN</string>
@@ -18,7 +18,7 @@
     <string name="string_title_home_menu">HOME</string>
     <string name="title_course_menu">COURSE</string>
     <string name="title_profile_menu">PROFILE</string>
-    <string name="search_here_hint_search">Search here …</string>
+    <string name="search_here_hint_search">Search courses</string>
     <string name="few_student">%d student</string>
     <string name="lots_of_student">%d students</string>
     <string name="thousand_students">%dK students</string>
@@ -45,15 +45,15 @@
     <string name="text_loading_students">LOADING STUDENT</string>
     <string name="text_loading_review">LOADING REVIEW</string>
     <string name="text_loading_preview">LOADING PREVIEW</string>
-    <string name="text_coupons_left">COUPON LEFT</string>
-    <string name="text_content_length">CONTENT LENGTH</string>
-    <string name="text_course_level">COURSE LEVEL</string>
-    <string name="text_language">LANGUAGE</string>
+    <string name="text_coupons_left">Coupons left</string>
+    <string name="text_content_length">Content length</string>
+    <string name="text_course_level">Level</string>
+    <string name="text_language">Language</string>
     <string name="header_heading">HEADING</string>
     <string name="header_description">DESCRIPTION</string>
-    <string name="text_button_share">SHARE</string>
-    <string name="text_button_open_browser">OPEN BROWSER</string>
-    <string name="text_button_enroll_now">ENROLL NOW</string>
+    <string name="text_button_share">Share</string>
+    <string name="text_button_open_browser">Open in Browser</string>
+    <string name="text_button_enroll_now">Enroll Now</string>
     <string name="loading_review_text">LOADING REVIEW</string>
     <string name="loading_student_text">LOADING STUDENT</string>
     <string name="few_review">%d review</string>
@@ -65,11 +65,12 @@
     <string name="loading_enroll_page_text">LOADING ENROLL WEBSITE</string>
     <string name="coupon_your_courses_error_title">FAILED TO  LOAD YOUR COURSES</string>
     <string name="loading_your_courses_page_text">LOADING YOUR COURSES WEBSITE</string>
-    <string name="enable_dark_mode_switch_text">ENABLE DARK MODE</string>
-    <string name="enable_finger_print_switch_text">ENABLE FINGERPRINT</string>
-    <string name="logout_button_text">LOGOUT</string>
+    <string name="enable_dark_mode_switch_text">Dark Mode</string>
+    <string name="enable_finger_print_switch_text">Fingerprint / Face ID</string>
+    <string name="logout_button_text">Log Out</string>
     <string name="prompt_info_title">Fingerprint Authentication</string>
     <string name="prompt_info_description">Save your time with just click</string>
     <string name="cancel_button_text">Cancel</string>
     <string name="login_with_fingerprint_text">LOGIN WITH FINGERPRINT</string>
+    <string name="submit_deal">Submit Deal</string>
 </resources>

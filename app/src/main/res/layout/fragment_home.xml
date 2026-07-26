@@ -9,28 +9,32 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/m3_surface_container_low">
 
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cvSearchContainer"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="12dp"
-            app:cardUseCompatPadding="true"
+            android:layout_height="48dp"
+            android:layout_margin="12dp"
+            app:cardBackgroundColor="@color/m3_surface_container_high"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="0dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:strokeWidth="0dp">
 
             <androidx.appcompat.widget.SearchView
                 android:id="@+id/svCouponCourse"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 app:iconifiedByDefault="false"
                 app:queryBackground="@android:color/transparent"
-                app:queryHint="@string/search_here_hint_search" />
+                app:queryHint="@string/search_here_hint_search"
+                app:searchIcon="@null" />
 
         </com.google.android.material.card.MaterialCardView>
 

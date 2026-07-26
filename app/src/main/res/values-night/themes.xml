@@ -1,16 +1,5 @@
 <resources>
-    <!-- Base application theme. -->
-    <style name="Base.Theme.CourseDeals" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
-        <item name="bottomNavigationStyle">
-            @style/Widget.MaterialComponents.BottomNavigationView.Colored
-        </item>
-        <item name="colorPrimary">@color/blue_400</item>
-        <item name="colorOnPrimary">@color/blue_400</item>
-        <item name="android:windowIsTranslucent">true</item>
-    </style>
-
+    <!-- Dark theme overrides if any (otherwise it uses Base.Theme.CourseDeals from values/themes.xml) -->
     <style name="Theme.CourseDeals" parent="Base.Theme.CourseDeals" />
 
     <style name="rating_bar" parent="Theme.AppCompat">

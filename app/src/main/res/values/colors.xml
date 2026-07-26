@@ -1,46 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Material 3 Color Roles (Light) -->
+    <color name="m3_primary">#0B57D0</color>
+    <color name="m3_on_primary">#FFFFFF</color>
+    <color name="m3_primary_container">#D3E3FD</color>
+    <color name="m3_on_primary_container">#041E49</color>
+
+    <color name="m3_tertiary_container">#FFD8E4</color>
+    <color name="m3_on_tertiary_container">#31111D</color>
+
+    <color name="m3_surface">#FDFCFF</color>
+    <color name="m3_surface_container_low">#F7F9FF</color>
+    <color name="m3_surface_container">#F1F3FB</color>
+    <color name="m3_surface_container_high">#EBEDF6</color>
+
+    <color name="m3_on_surface">#1A1C1E</color>
+    <color name="m3_on_surface_variant">#44474E</color>
+
+    <color name="m3_outline">#74777F</color>
+    <color name="m3_outline_variant">#C4C6D0</color>
+
+    <color name="m3_error_container">#FFDAD6</color>
+    <color name="m3_on_error_container">#410002</color>
+
+    <!-- Semantic & Component Colors -->
+    <color name="rating_amber">#E8A33D</color>
+
+    <!-- Legacy / Compatibility Colors (mapped to M3) -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="blue_50">#e2f1fb</color>
-    <color name="blue_100">#b9dbf7</color>
-    <color name="blue_200">#8cc5f2</color>
-    <color name="blue_300">#5faeed</color>
-    <color name="blue_400">#3c9dea</color>
-    <color name="blue_500">#158de6</color>
-    <color name="blue_600">#1180d9</color>
-    <color name="blue_700">#0b6ec6</color>
-    <color name="blue_800">#055db4</color>
-    <color name="blue_900">#004095</color>
-    <color name="purple_50">#efe6f8</color>
-    <color name="purple_100">#d6c3ef</color>
-    <color name="purple_200">#bb9ae4</color>
-    <color name="purple_300">#a070da</color>
-    <color name="purple_400">#8a4ed2</color>
-    <color name="purple_500">#752bc9</color>
-    <color name="purple_600">#6b25c3</color>
-    <color name="purple_700">#5d1cba</color>
-    <color name="purple_800">#5014b3</color>
-    <color name="purple_900">#3a00a8</color>
-    <!-- named color   -->
-    <color name="superLightGrey">#E5E6ED</color>
-    <color name="lightGrey">#BEBFC3</color>
-    <color name="grey">#8A8B8E</color>
-    <color name="darkGrey">#6D6F77</color>
-    <color name="golden">#DBDDC50A</color>
-    <!--component color-->
-    <color name="primaryBackgroundColor">@color/white</color>
-    <color name="primaryTextColor">@color/black</color>
-    <color name="secondaryTextColor">@color/darkGrey</color>
-    <color name="courseTitle">@color/blue_800</color>
-    <color name="headingTitle">@color/blue_800</color>
-    <color name="courseCategory">@color/blue_500</color>
-    <color name="buttonBackgroundColor">@color/blue_800</color>
-    <color name="textButtonColor">@color/white</color>
-    <color name="iconTintColor">@color/blue_600</color>
-    <color name="placeHolderColor">@color/lightGrey</color>
-    <color name="timeLeftBackgroundColor">@color/black</color>
-    <color name="timeLeftTextColor">@color/white</color>
-    <color name="chipTextColor">@color/blue_500</color>
-    <color name="dividerColor">@color/grey</color>
+    <color name="grey">@color/m3_outline</color>
+    <color name="golden">@color/rating_amber</color>
+
+    <color name="primaryBackgroundColor">@color/m3_surface_container_low</color>
+    <color name="primaryTextColor">@color/m3_on_surface</color>
+    <color name="secondaryTextColor">@color/m3_on_surface_variant</color>
+    <color name="courseTitle">@color/m3_primary</color>
+    <color name="headingTitle">@color/m3_primary</color>
+    <color name="courseCategory">@color/m3_on_primary_container</color>
+    <color name="buttonBackgroundColor">@color/m3_primary</color>
+    <color name="textButtonColor">@color/m3_on_primary</color>
+    <color name="iconTintColor">@color/m3_primary</color>
+    <color name="placeHolderColor">@color/m3_outline_variant</color>
+    <color name="timeLeftBackgroundColor">@color/m3_error_container</color>
+    <color name="timeLeftTextColor">@color/m3_on_error_container</color>
+    <color name="chipTextColor">@color/m3_on_primary_container</color>
+    <color name="dividerColor">@color/m3_outline_variant</color>
 </resources>
