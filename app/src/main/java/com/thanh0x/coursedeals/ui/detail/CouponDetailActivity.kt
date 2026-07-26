@@ -117,10 +117,6 @@ class CouponDetailActivity : BaseActivity() {
             startActivity(detailIntent)
         }
 
-        binding.btnOpenBrowser.setOnClickListener {
-            openLinkInBrowser(this, coupon.couponUrl)
-        }
-
         binding.btnShare.setOnClickListener {
             shareLink(this, coupon.title, coupon.couponUrl)
         }
@@ -149,11 +145,5 @@ class CouponDetailActivity : BaseActivity() {
         intent.type = "text/plain"
         intent.putExtra(Intent.EXTRA_TEXT, url)
         context.startActivity(Intent.createChooser(intent, title))
-    }
-
-    private fun openLinkInBrowser(context: Context, url: String) {
-        val intent = Intent(Intent.ACTION_VIEW)
-        intent.data = Uri.parse(url)
-        context.startActivity(intent)
     }
 }

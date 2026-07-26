@@ -52,7 +52,6 @@
     <string name="header_heading">HEADING</string>
     <string name="header_description">DESCRIPTION</string>
     <string name="text_button_share">Share</string>
-    <string name="text_button_open_browser">More details</string>
     <string name="text_button_enroll_now">Enroll Now</string>
     <string name="loading_review_text">LOADING REVIEW</string>
     <string name="loading_student_text">LOADING STUDENT</string>
