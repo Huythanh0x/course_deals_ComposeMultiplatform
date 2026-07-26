@@ -121,4 +121,12 @@
     <string name="btn_submit">Submit</string>
     <string name="btn_cancel">Cancel</string>
     <string name="submit_success_msg">Deal submitted successfully! It will be reviewed soon.</string>
+    <string name="report_title">Report this deal</string>
+    <string name="report_reason_not_free">Not free</string>
+    <string name="report_reason_no_data">No data</string>
+    <string name="report_reason_expired">Expired deal</string>
+    <string name="report_reason_other">Other</string>
+    <string name="report_other_hint">Please describe the issue</string>
+    <string name="report_submit_success">Deal reported. Thanks!</string>
+    <string name="action_report_title">Report</string>
 </resources>

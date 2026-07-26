@@ -58,7 +58,7 @@ class CouponDetailActivity : BaseActivity() {
         binding.toolbar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.action_report -> {
-                    Toast.makeText(this, "Report feature coming soon", Toast.LENGTH_SHORT).show()
+                    showReportDialog()
                     true
                 }
                 else -> false
@@ -138,6 +138,16 @@ class CouponDetailActivity : BaseActivity() {
         ) {
             couponDetailViewModel.checkIfInternetAvailable()
         }
+    }
+
+    private fun showReportDialog() {
+        val dialog = ReportBottomSheetDialog { reason, otherDetails ->
+            showAlertDialog(
+                getString(R.string.action_report_title),
+                getString(R.string.report_submit_success)
+            )
+        }
+        dialog.show(supportFragmentManager, ReportBottomSheetDialog.TAG)
     }
 
     private fun shareLink(context: Context, title: String, url: String) {

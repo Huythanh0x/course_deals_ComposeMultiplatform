@@ -4,7 +4,7 @@
     <item
         android:id="@+id/action_report"
         android:icon="@drawable/ic_flag"
-        android:title="@string/text_button_share"
+        android:title="@string/action_report_title"
         app:showAsAction="ifRoom"
         app:iconTint="?attr/colorOnSurfaceVariant" />
 </menu>

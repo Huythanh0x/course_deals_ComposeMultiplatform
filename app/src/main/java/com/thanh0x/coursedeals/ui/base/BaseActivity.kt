@@ -1,5 +1,8 @@
 package com.thanh0x.coursedeals.ui.base
 
+import android.view.LayoutInflater
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -36,10 +39,30 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     fun showAlertDialog(title: String, message: String, onPositiveClick: (() -> Unit)? = null) {
+        val headerView = LayoutInflater.from(this).inflate(R.layout.layout_dialog_header, null)
+        val tvTitle = headerView.findViewById<TextView>(R.id.tvDialogTitle)
+        val ivLogo = headerView.findViewById<ImageView>(R.id.ivDialogLogo)
+        
+        tvTitle.text = title
+        
+        // Use red tint for error-related titles
+        val isError = title.contains("Error", ignoreCase = true) || 
+                     title.contains("Failed", ignoreCase = true) ||
+                     title.contains("No Internet", ignoreCase = true)
+        
+        if (isError) {
+            val typedValue = android.util.TypedValue()
+            val attrId = resources.getIdentifier("colorError", "attr", packageName)
+            if (attrId != 0) {
+                theme.resolveAttribute(attrId, typedValue, true)
+                ivLogo.imageTintList = android.content.res.ColorStateList.valueOf(typedValue.data)
+            }
+        }
+
         MaterialAlertDialogBuilder(
             this,
             com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered
-        ).setTitle(title)
+        ).setCustomTitle(headerView)
             .setMessage(message)
             .setPositiveButton(R.string.ok_text_button) { dialog, _ ->
                 dialog.dismiss()
