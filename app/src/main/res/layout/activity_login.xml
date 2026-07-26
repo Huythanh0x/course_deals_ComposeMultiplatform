@@ -92,7 +92,7 @@
             android:enabled="false"
             android:text="@string/auth_btn_fingerprint"
             app:cornerRadius="29dp"
-            app:icon="@drawable/baseline_fingerprint_24"
+            app:icon="@drawable/ic_fingerprint"
             app:iconGravity="textStart"
             app:iconPadding="12dp"
             app:layout_constraintBottom_toBottomOf="parent"

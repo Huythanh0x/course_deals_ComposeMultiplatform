@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Home — state selector
+  Usage: android:icon="@drawable/ic_nav_home" in NavigationBarItem
+  In Compose: use painterResource(if(selected) R.drawable.ic_nav_home_filled else R.drawable.ic_nav_home_outlined)
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_selected="true"  android:drawable="@drawable/ic_nav_home_filled"/>
+    <item                                android:drawable="@drawable/ic_nav_home_outlined"/>
+</selector>

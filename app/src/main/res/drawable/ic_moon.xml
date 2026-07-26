@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Dark mode toggle — state selector
+  state_checked=true  → filled (dark mode ON)
+  default             → outlined (dark mode OFF)
+  Usage: android:src on ImageView with isChecked state, or switch programmatically in Compose
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_checked="true"   android:drawable="@drawable/ic_moon_filled"/>
+    <item android:state_selected="true"  android:drawable="@drawable/ic_moon_filled"/>
+    <item                                android:drawable="@drawable/ic_moon_outlined"/>
+</selector>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Share — single state
+  Three nodes connected by lines (standard Android share icon)
+  Color: onSurfaceVariant #FF44474E
+  Usage: Course Detail secondary action button
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Connecting lines -->
+    <path
+        android:strokeColor="#FF44474E"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M7.5,11.5L17,6M7.5,12.5L17,18"/>
+
+    <!-- Left node — center (5.5,12) r=2.5 -->
+    <path
+        android:fillColor="#FF44474E"
+        android:pathData="M5.5,9.5A2.5,2.5 0 0,1 5.5,14.5A2.5,2.5 0 0,1 5.5,9.5Z"/>
+
+    <!-- Top-right node — center (19,5) r=2.5 -->
+    <path
+        android:fillColor="#FF44474E"
+        android:pathData="M19,2.5A2.5,2.5 0 0,1 19,7.5A2.5,2.5 0 0,1 19,2.5Z"/>
+
+    <!-- Bottom-right node — center (19,19) r=2.5 -->
+    <path
+        android:fillColor="#FF44474E"
+        android:pathData="M19,16.5A2.5,2.5 0 0,1 19,21.5A2.5,2.5 0 0,1 19,16.5Z"/>
+
+</vector>

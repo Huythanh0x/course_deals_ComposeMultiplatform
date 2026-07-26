@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Notification (bell) — filled (notifications ON)
+  Color: primary #FF0B57D0
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Bell body filled -->
+    <path
+        android:fillColor="#FF0B57D0"
+        android:pathData="M12,2.75C11.31,2.75 10.75,3.31 10.75,4V4.68C7.9,5.36 6,7.93 6,11V16L4,18H20L18,16V11C18,7.93 16.1,5.36 13.25,4.68V4C13.25,3.31 12.69,2.75 12,2.75Z"/>
+
+    <!-- Clapper filled -->
+    <path
+        android:fillColor="#FF0B57D0"
+        android:pathData="M10,18C10,19.1 10.9,20 12,20C13.1,20 14,19.1 14,18H10Z"/>
+
+</vector>

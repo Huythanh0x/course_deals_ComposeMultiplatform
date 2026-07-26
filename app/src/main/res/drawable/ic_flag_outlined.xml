@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Flag / Report — outlined (not yet reported)
+  Color: onSurfaceVariant #FF44474E
+  Usage: Course Detail top app bar action
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Pole (full height) -->
+    <path
+        android:strokeColor="#FF44474E"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M5,4L5,21"/>
+
+    <!-- Flag body outline -->
+    <path
+        android:strokeColor="#FF44474E"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M5,4L17,4Q20,4 20,7Q20,10.5 17,10.5L5,10.5"/>
+
+</vector>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Language / Globe — single state
+  Color: onSurfaceVariant #FF44474E
+  Usage: Course Detail language metadata tile
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Globe outer circle — center (12,12) r=9 -->
+    <path
+        android:strokeColor="#FF44474E"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M12,3A9,9 0 0,1 12,21A9,9 0 0,1 12,3Z"/>
+
+    <!-- Equator line -->
+    <path
+        android:strokeColor="#FF44474E"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M3,12L21,12"/>
+
+    <!-- Left meridian oval (longitude) -->
+    <path
+        android:strokeColor="#FF44474E"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M12,3Q7,7.5 7,12Q7,16.5 12,21"/>
+
+    <!-- Right meridian oval (longitude) -->
+    <path
+        android:strokeColor="#FF44474E"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M12,3Q17,7.5 17,12Q17,16.5 12,21"/>
+
+</vector>

@@ -7,6 +7,9 @@
         <item name="colorPrimaryContainer">@color/m3_primary_container</item>
         <item name="colorOnPrimaryContainer">@color/m3_on_primary_container</item>
 
+        <item name="colorSecondaryContainer">@color/m3_primary_container</item>
+        <item name="colorOnSecondaryContainer">@color/m3_on_primary_container</item>
+
         <item name="colorTertiaryContainer">@color/m3_tertiary_container</item>
         <item name="colorOnTertiaryContainer">@color/m3_on_tertiary_container</item>
 
@@ -23,7 +26,7 @@
         <item name="colorOnErrorContainer">@color/m3_on_error_container</item>
 
         <!-- Component Styles -->
-        <item name="bottomNavigationStyle">@style/Widget.Material3.BottomNavigationView</item>
+        <item name="bottomNavigationStyle">@style/Widget.CourseDeal.BottomNavigationView</item>
         <item name="materialCardViewStyle">@style/Widget.Material3.CardView.Elevated</item>
 
         <!-- Shape mapping -->
@@ -35,6 +38,15 @@
     </style>
 
     <style name="Theme.CourseDeals" parent="Base.Theme.CourseDeals" />
+
+    <style name="Widget.CourseDeal.BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
+        <item name="itemTextAppearanceActive">@style/TextAppearance.CourseDeal.LabelMedium</item>
+        <item name="itemTextAppearanceInactive">@style/TextAppearance.CourseDeal.LabelMedium</item>
+    </style>
+
+    <style name="TextAppearance.CourseDeal.LabelMedium" parent="TextAppearance.Material3.LabelMedium">
+        <item name="android:textSize">12sp</item>
+    </style>
 
     <style name="rating_bar" parent="Theme.AppCompat">
         <item name="colorControlNormal">@color/grey</item>

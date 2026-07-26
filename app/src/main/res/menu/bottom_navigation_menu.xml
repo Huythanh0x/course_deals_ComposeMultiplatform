@@ -3,17 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/homeFragment"
-        android:icon="@drawable/ic_home_menu"
+        android:icon="@drawable/ic_nav_home"
         android:title="@string/string_title_home_menu"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/courseFragment"
-        android:icon="@drawable/ic_course_menu"
+        android:icon="@drawable/ic_nav_course"
         android:title="@string/title_course_menu"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/profileFragment"
-        android:icon="@drawable/ic_profile_menu"
+        android:icon="@drawable/ic_nav_profile"
         android:title="@string/title_profile_menu"
         app:showAsAction="ifRoom" />
 </menu>

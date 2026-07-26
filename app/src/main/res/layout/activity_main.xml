@@ -26,9 +26,12 @@
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavigationView"
-            style="@style/Widget.Material3.BottomNavigationView"
+            style="@style/Widget.CourseDeal.BottomNavigationView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="80dp"
+            app:backgroundTint="@color/m3_surface_container"
+            app:itemIconTint="@color/bnv_item_color"
+            app:itemTextColor="@color/bnv_item_color"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

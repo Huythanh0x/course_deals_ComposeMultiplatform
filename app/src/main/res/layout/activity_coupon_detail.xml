@@ -366,7 +366,7 @@
                     style="@style/Widget.Material3.Button.IconButton"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    app:icon="@drawable/baseline_share_24"
+                    app:icon="@drawable/ic_share"
                     app:iconTint="@color/m3_primary" />
 
                 <com.google.android.material.button.MaterialButton
@@ -377,7 +377,7 @@
                     android:layout_marginStart="8dp"
                     android:text="@string/text_button_open_browser"
                     android:textColor="@color/m3_primary"
-                    app:icon="@drawable/baseline_open_in_browser_24"
+                    app:icon="@drawable/ic_open_browser"
                     app:iconTint="@color/m3_primary" />
 
                 <View
