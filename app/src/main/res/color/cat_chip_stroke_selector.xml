@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Activated: Visible outline -->
+    <item android:color="?attr/colorPrimary" android:state_checked="true" />
+    <!-- Inactivated: No outline -->
+    <item android:color="@android:color/transparent" />
+</selector>

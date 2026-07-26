@@ -7,127 +7,419 @@
 
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nsvProfile"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/m3_surface_container_low"
-        tools:context=".ui.core.profile.ProfileFragment">
+        android:fillViewport="true"
+        android:clickable="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cvAvatar"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            app:cardBackgroundColor="@color/m3_primary_container"
-            app:cardCornerRadius="32dp"
-            app:cardElevation="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.15"
-            app:strokeWidth="0dp">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clProfileRoot"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="32dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:focusableInTouchMode="true">
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/ivAvatar"
+            <!-- Header -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cvAvatar"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_marginTop="32dp"
+                app:cardBackgroundColor="@color/m3_primary_container"
+                app:cardCornerRadius="32dp"
+                app:cardElevation="0dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:strokeWidth="0dp">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/ivAvatar"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="16dp"
+                    android:src="@drawable/ic_nav_profile"
+                    app:tint="@color/m3_on_primary_container" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tvDisplayName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="User Name"
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                android:textColor="?attr/colorOnSurface"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cvAvatar" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tvEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="user@example.com"
+                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                app:layout_constraintEnd_toStartOf="@+id/btnCopyEmail"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvDisplayName" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCopyEmail"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="8dp"
+                app:icon="@drawable/ic_content_copy"
+                app:iconSize="20dp"
+                app:iconTint="?attr/colorOnSurfaceVariant"
+                app:layout_constraintBottom_toBottomOf="@+id/tvEmail"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/tvEmail"
+                app:layout_constraintTop_toTopOf="@+id/tvEmail" />
+
+            <!-- Favorite Categories -->
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tvFavCatsTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="32dp"
+                android:text="@string/fav_cats_title"
+                android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvEmail" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/cgFavCats"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="8dp"
+                android:paddingVertical="8dp"
+                android:clipToPadding="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvFavCatsTitle">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/btnAddCat"
+                    style="@style/Widget.Material3.Chip.Assist"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:chipIcon="@drawable/ic_add"
+                    app:chipIconSize="20dp"
+                    app:chipIconVisible="true"
+                    app:chipIconTint="?attr/colorOnSurfaceVariant"
+                    app:chipBackgroundColor="@android:color/transparent"
+                    app:chipStrokeWidth="1dp"
+                    app:chipStartPadding="10dp"
+                    app:chipEndPadding="10dp"
+                    app:textStartPadding="0dp"
+                    app:textEndPadding="0dp"
+                    app:iconStartPadding="0dp"
+                    app:iconEndPadding="0dp" />
+
+            </com.google.android.material.chip.ChipGroup>
+
+            <!-- Favorite Keywords -->
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tvFavKwsTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:text="@string/fav_kws_title"
+                android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cgFavCats" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilKeyword"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="8dp"
+                android:visibility="gone"
+                app:endIconDrawable="@drawable/ic_add"
+                app:endIconMode="custom"
+                app:endIconTint="?attr/colorOnSurfaceVariant"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvFavKwsTitle"
+                tools:visibility="visible">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/tietKeyword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/kw_hint"
+                    android:imeOptions="actionDone"
+                    android:singleLine="true"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/cgFavKws"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="8dp"
+                android:paddingVertical="8dp"
+                android:clipToPadding="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tilKeyword">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/btnAddKw"
+                    style="@style/Widget.Material3.Chip.Assist"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/kw_add_trigger"
+                    app:chipIcon="@drawable/ic_add"
+                    app:chipIconSize="20dp"
+                    app:chipIconVisible="true"
+                    app:chipIconTint="?attr/colorOnSurfaceVariant"
+                    app:chipBackgroundColor="@android:color/transparent"
+                    app:chipStrokeWidth="1dp"
+                    app:chipStartPadding="8dp"
+                    app:chipEndPadding="8dp" />
+
+            </com.google.android.material.chip.ChipGroup>
+
+            <!-- Settings -->
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tvSettingsTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="32dp"
+                android:text="@string/settings_title"
+                android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cgFavKws" />
+
+            <!-- Dark Mode Row -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clDarkModeRow"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="16dp"
-                android:src="@drawable/ic_nav_profile"
-                app:tint="@color/m3_on_primary_container" />
-        </com.google.android.material.card.MaterialCardView>
+                android:layout_height="56dp"
+                android:layout_marginTop="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:paddingHorizontal="16dp"
+                app:layout_constraintTop_toBottomOf="@+id/tvSettingsTitle">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tvDisplayName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="User Name"
-            android:textColor="@color/m3_on_surface"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cvAvatar" />
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/ivDarkMode"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_moon"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="?attr/colorOnSurfaceVariant" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tvEmail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="user@example.com"
-            android:textColor="@color/m3_on_surface_variant"
-            android:textSize="14sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvDisplayName" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="@string/enable_dark_mode_switch_text"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+                    android:textColor="?attr/colorOnSurface"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/swEnableDarkMode"
+                    app:layout_constraintStart_toEndOf="@+id/ivDarkMode"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.divider.MaterialDivider
-            android:id="@+id/divider"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            app:dividerColor="@color/m3_outline_variant"
-            app:layout_constraintTop_toBottomOf="@+id/tvEmail" />
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/swEnableDarkMode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tvEnableDarkMode"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="24dp"
-            android:text="@string/enable_dark_mode_switch_text"
-            android:textColor="@color/m3_on_surface"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@+id/swEnableDarkMode"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/divider" />
+            <!-- Biometric Row -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clBiometricRow"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:paddingHorizontal="16dp"
+                app:layout_constraintTop_toBottomOf="@+id/clDarkModeRow">
 
-        <com.google.android.material.materialswitch.MaterialSwitch
-            android:id="@+id/swEnableDarkMode"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            app:layout_constraintBottom_toBottomOf="@+id/tvEnableDarkMode"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/tvEnableDarkMode" />
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/ivBiometric"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_fingerprint"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="?attr/colorOnSurfaceVariant" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tvLoginFingerPrint"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="24dp"
-            android:text="@string/enable_finger_print_switch_text"
-            android:textColor="@color/m3_on_surface"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@+id/swEnableFingerPrint"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvEnableDarkMode" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="@string/enable_finger_print_switch_text"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+                    android:textColor="?attr/colorOnSurface"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/swEnableFingerPrint"
+                    app:layout_constraintStart_toEndOf="@+id/ivBiometric"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.materialswitch.MaterialSwitch
-            android:id="@+id/swEnableFingerPrint"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            app:layout_constraintBottom_toBottomOf="@+id/tvLoginFingerPrint"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/tvLoginFingerPrint" />
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/swEnableFingerPrint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnLogout"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="40dp"
-            android:text="@string/logout_button_text"
-            android:textColor="@color/m3_on_error_container"
-            app:cornerRadius="24dp"
-            app:layout_constraintTop_toBottomOf="@+id/tvLoginFingerPrint"
-            app:strokeColor="@color/m3_on_error_container"
-            app:strokeWidth="1.5dp" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <!-- Notifications Row -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clNotificationsRow"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:paddingHorizontal="16dp"
+                app:layout_constraintTop_toBottomOf="@+id/clBiometricRow">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/ivNotifications"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_notification"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="?attr/colorOnSurfaceVariant" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="@string/notif_master"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+                    android:textColor="?attr/colorOnSurface"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/swEnableNotifications"
+                    app:layout_constraintStart_toEndOf="@+id/ivNotifications"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/swEnableNotifications"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Sub-settings -->
+            <LinearLayout
+                android:id="@+id/llNotificationSubSettings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@+id/clNotificationsRow"
+                tools:visibility="visible">
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/swNotifCat"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:paddingHorizontal="16dp"
+                    android:layout_marginStart="40dp"
+                    android:text="@string/notif_cat"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleSmall" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/swNotifKw"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:paddingHorizontal="16dp"
+                    android:layout_marginStart="40dp"
+                    android:text="@string/notif_kw"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleSmall" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/swNotifHot"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:paddingHorizontal="16dp"
+                    android:layout_marginStart="40dp"
+                    android:text="@string/notif_hot"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleSmall" />
+            </LinearLayout>
+
+            <!-- Logout -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLogout"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="48dp"
+                android:text="@string/logout_button_text"
+                android:textColor="@color/m3_on_error_container"
+                app:cornerRadius="24dp"
+                app:layout_constraintTop_toBottomOf="@+id/llNotificationSubSettings"
+                app:strokeColor="@color/m3_on_error_container"
+                app:strokeWidth="1.5dp" />
+
+            <!-- Footer -->
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tvDevEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:text="@string/dev_email"
+                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btnLogout" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tvDevWebsite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/dev_website"
+                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvDevEmail" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
 </layout>

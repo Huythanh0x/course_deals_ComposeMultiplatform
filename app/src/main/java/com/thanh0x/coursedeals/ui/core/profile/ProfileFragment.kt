@@ -1,89 +1,244 @@
 package com.thanh0x.coursedeals.ui.core.profile
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
-import androidx.fragment.app.Fragment
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.thanh0x.coursedeals.MainActivity
 import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.data.model.TokenResponseData
 import com.thanh0x.coursedeals.databinding.FragmentProfileBinding
 import com.thanh0x.coursedeals.domain.logic.fingerprint.BiometricPromptUtils
+import com.thanh0x.coursedeals.ui.base.BaseFragment
 import com.thanh0x.coursedeals.ui.login.LoginActivity
 import com.thanh0x.coursedeals.util.NetworkStatusCode
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class ProfileFragment : Fragment() {
-    var _binding: FragmentProfileBinding? = null
-    val binding get() = _binding!!
+class ProfileFragment : BaseFragment() {
+    private var _binding: FragmentProfileBinding? = null
+    private val binding get() = _binding!!
     private val profileViewModel: ProfileViewModel by viewModels()
+
+    private val selectedCategories = mutableListOf<String>()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupInteractions()
+        setupObservers()
         profileViewModel.checkIfTokenExpired()
+    }
+
+    private fun setupInteractions() {
+        binding.clProfileRoot.setOnClickListener {
+            clearFocusAndHideKeyboard()
+        }
+
+        binding.nsvProfile.setOnClickListener {
+            clearFocusAndHideKeyboard()
+        }
+
+        binding.btnCopyEmail.setOnClickListener {
+            copyToClipboard(binding.tvEmail.text.toString())
+        }
+
         binding.btnLogout.setOnClickListener {
             profileViewModel.deleteLocalToken()
             forceLogout()
         }
-        profileViewModel.tokenExpired.observe(requireActivity()) {
-            if (it) {
-                forceLogout()
-            }
-        }
-        profileViewModel.isDarkModeEnable.observe(viewLifecycleOwner) {
-            binding.swEnableDarkMode.isChecked = it
-            applyDarkModeToTheApp(it)
-        }
-        var initFingerprintValue = true
-        profileViewModel.isFingerPrintEnable.observe(viewLifecycleOwner) {
-            binding.swEnableFingerPrint.isChecked = it
-            initFingerprintValue = false
-        }
+
         binding.swEnableDarkMode.setOnCheckedChangeListener { _, isChecked ->
             profileViewModel.checkIfTokenExpired()
             profileViewModel.isDarkModeEnable.postValue(isChecked)
             profileViewModel.saveIsDarkModeEnable(isChecked)
         }
+
         binding.swEnableFingerPrint.setOnCheckedChangeListener { _, isChecked ->
             profileViewModel.checkIfTokenExpired()
-            if (!initFingerprintValue) {
+            if (isChecked) {
                 if (!profileViewModel.isNetworkAvailable()) {
-                    showNoInternetConnectionDialog(
-                        resources.getString(R.string.no_internet_title),
-                        resources.getString(R.string.no_internet_message)
+                    showAlertDialog(
+                        getString(R.string.no_internet_title),
+                        getString(R.string.no_internet_message)
                     )
-                }
-                if (isChecked) {
-                    promptFingerPrintSignUp()
+                    binding.swEnableFingerPrint.isChecked = false
                 } else {
-                    profileViewModel.isFingerPrintEnable.postValue(false)
+                    promptFingerPrintSignUp()
                 }
-
+            } else {
+                profileViewModel.isFingerPrintEnable.postValue(false)
+                profileViewModel.saveIsFingerPrintEnable(false)
             }
-            profileViewModel.saveIsFingerPrintEnable(isChecked)
         }
-        return binding.root
+
+        binding.swEnableNotifications.setOnCheckedChangeListener { _, isChecked ->
+            binding.llNotificationSubSettings.isVisible = isChecked
+        }
+
+        binding.btnAddCat.setOnClickListener {
+            val dialog = CategoryPickerDialog(selectedCategories) { selected ->
+                selectedCategories.clear()
+                selectedCategories.addAll(selected)
+                updateCategoryChips()
+            }
+            dialog.show(childFragmentManager, CategoryPickerDialog.TAG)
+        }
+
+        binding.btnAddKw.setOnClickListener {
+            binding.btnAddKw.isVisible = false
+            binding.tilKeyword.isVisible = true
+            binding.tietKeyword.requestFocus()
+            val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(binding.tietKeyword, InputMethodManager.SHOW_IMPLICIT)
+        }
+
+        binding.tietKeyword.setOnFocusChangeListener { _, hasFocus ->
+            if (!hasFocus && binding.tietKeyword.text.isNullOrEmpty()) {
+                binding.tilKeyword.isVisible = false
+                binding.btnAddKw.isVisible = true
+            }
+        }
+
+        binding.tietKeyword.setOnEditorActionListener { _, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE || 
+                actionId == EditorInfo.IME_ACTION_NEXT || 
+                (event != null && event.keyCode == android.view.KeyEvent.KEYCODE_ENTER)) {
+                submitKeyword()
+                true
+            } else {
+                false
+            }
+        }
+
+        binding.tilKeyword.setEndIconOnClickListener {
+            submitKeyword()
+        }
+    }
+
+    private fun updateCategoryChips() {
+        // Remove all except the add button
+        val childCount = binding.cgFavCats.childCount
+        for (i in childCount - 1 downTo 0) {
+            val view = binding.cgFavCats.getChildAt(i)
+            if (view.id != R.id.btnAddCat) {
+                binding.cgFavCats.removeView(view)
+            }
+        }
+
+        // Add new chips before the add button
+        selectedCategories.forEach { cat ->
+            val chip = com.google.android.material.chip.Chip(
+                requireContext(),
+                null,
+                com.google.android.material.R.style.Widget_Material3_Chip_Assist
+            ).apply {
+                this.text = cat
+                isCloseIconVisible = true
+                setCloseIconResource(R.drawable.ic_close)
+                closeIconSize = 18f * resources.displayMetrics.density
+                chipIconTint = android.content.res.ColorStateList.valueOf(
+                    com.google.android.material.color.MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnSurfaceVariant)
+                )
+                closeIconTint = chipIconTint
+                setOnCloseIconClickListener {
+                    selectedCategories.remove(cat)
+                    binding.cgFavCats.removeView(this)
+                }
+            }
+            binding.cgFavCats.addView(chip, 0)
+        }
+    }
+
+    private fun submitKeyword() {
+        val kw = binding.tietKeyword.text.toString().trim()
+        if (kw.isNotEmpty()) {
+            addKeywordChip(kw)
+            binding.tietKeyword.text?.clear()
+        }
+        clearFocusAndHideKeyboard()
+    }
+
+    private fun clearFocusAndHideKeyboard() {
+        binding.tietKeyword.clearFocus()
+        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(binding.tietKeyword.windowToken, 0)
+        binding.clProfileRoot.requestFocus()
+        
+        if (binding.tietKeyword.text.isNullOrEmpty()) {
+            binding.tilKeyword.isVisible = false
+            binding.btnAddKw.isVisible = true
+        }
+    }
+
+    private fun setupObservers() {
+        profileViewModel.tokenExpired.observe(viewLifecycleOwner) {
+            if (it) forceLogout()
+        }
+
+        profileViewModel.isDarkModeEnable.observe(viewLifecycleOwner) {
+            binding.swEnableDarkMode.isChecked = it
+            applyDarkModeToTheApp(it)
+        }
+
+        profileViewModel.isFingerPrintEnable.observe(viewLifecycleOwner) {
+            binding.swEnableFingerPrint.isChecked = it
+        }
+    }
+
+    private fun copyToClipboard(text: String) {
+        val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText("Course Deal Email", text)
+        clipboard.setPrimaryClip(clip)
+        showToast("Email copied to clipboard")
+    }
+
+    private fun addKeywordChip(text: String) {
+        val chip = com.google.android.material.chip.Chip(
+            requireContext(),
+            null,
+            com.google.android.material.R.style.Widget_Material3_Chip_Assist
+        ).apply {
+            this.text = text
+            isCloseIconVisible = true
+            setCloseIconResource(R.drawable.ic_close)
+            closeIconSize = 18f * resources.displayMetrics.density
+            chipIconTint = android.content.res.ColorStateList.valueOf(
+                com.google.android.material.color.MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnSurfaceVariant)
+            )
+            closeIconTint = chipIconTint
+            setOnCloseIconClickListener {
+                binding.cgFavKws.removeView(this)
+            }
+        }
+        binding.cgFavKws.addView(chip, 0)
     }
 
     private fun promptFingerPrintSignUp() {
         val canAuthenticate = BiometricManager.from(requireContext()).canAuthenticate()
         if (canAuthenticate == BiometricManager.BIOMETRIC_SUCCESS) {
             val biometricPrompt =
-                BiometricPromptUtils.createBiometricPrompt(requireActivity() as MainActivity, {
+                BiometricPromptUtils.createBiometricPrompt(requireActivity() as AppCompatActivity, {
                     lifecycleScope.launch {
                         val fingerprintTokenResult = profileViewModel.requestFingerprintToken()
                         if (fingerprintTokenResult.isSuccessful && fingerprintTokenResult.body() is TokenResponseData) {
@@ -92,36 +247,32 @@ class ProfileFragment : Fragment() {
                                     it,
                                     fingerprintTokenResult.body()!!.accessToken
                                 )
-                            Log.d("FINGERPRINT TOKEN", fingerprintTokenResult.body()!!.accessToken)
-                            if (cipherTextWrapper == null) {
-                                Log.d("FINGERPRINT TOKEN", "cipherTextWrapper == null")
-                            } else {
+                            if (cipherTextWrapper != null) {
                                 showToast("Add fingerprint successfully")
                                 profileViewModel.saveCipherTextWrapper(cipherTextWrapper)
                                 profileViewModel.isFingerPrintEnable.postValue(true)
+                                profileViewModel.saveIsFingerPrintEnable(true)
                             }
-                        } else if (fingerprintTokenResult.code() == NetworkStatusCode.HTTP_CODE_UNAUTHORIZED) {
-                            Log.d("REGISTER FINGERPRINT", fingerprintTokenResult.code().toString())
-                            setFingerprintSwitchBackToOff()
-                            forceLogout()
                         } else {
-                            Log.d("REGISTER FINGERPRINT", fingerprintTokenResult.code().toString())
-                            setFingerprintSwitchBackToOff()
+                            binding.swEnableFingerPrint.isChecked = false
+                            if (fingerprintTokenResult.code() == NetworkStatusCode.HTTP_CODE_UNAUTHORIZED) {
+                                forceLogout()
+                            }
                         }
                     }
                 }, {
-                    setFingerprintSwitchBackToOff()
+                    binding.swEnableFingerPrint.isChecked = false
                 })
-            val promptInfo =
-                BiometricPromptUtils.createPromptInfo(requireActivity() as MainActivity)
+            val promptInfo = BiometricPromptUtils.createPromptInfo(requireActivity() as AppCompatActivity)
             val cipher = profileViewModel.generateCypher()
             biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(cipher))
+        } else {
+            binding.swEnableFingerPrint.isChecked = false
         }
     }
 
     private fun showToast(message: String) {
-        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG)
-            .show()
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 
     override fun onDestroyView() {
@@ -130,35 +281,13 @@ class ProfileFragment : Fragment() {
     }
 
     private fun forceLogout() {
-        try {
-            profileViewModel.clearLocalToken()
-            startActivity(Intent(requireActivity(), LoginActivity::class.java))
-            requireActivity().finish()
-        } catch (_: Exception) {
-        }
+        profileViewModel.clearLocalToken()
+        startActivity(Intent(requireActivity(), LoginActivity::class.java))
+        requireActivity().finish()
     }
 
     private fun applyDarkModeToTheApp(isDarkModeEnable: Boolean) {
-        if (isDarkModeEnable) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-        }
-        (activity as AppCompatActivity).delegate.applyDayNight()
-    }
-
-    private fun showNoInternetConnectionDialog(title: String, message: String) {
-        val loginDialog = MaterialAlertDialogBuilder(
-            requireContext(),
-            com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered
-        ).setTitle(title).setMessage(message)
-            .setPositiveButton(R.string.ok_text_button) { dialog, _ ->
-                dialog.dismiss()
-            }.create()
-        loginDialog.show()
-    }
-
-    private fun setFingerprintSwitchBackToOff() {
-        binding.swEnableFingerPrint.isChecked = false
+        val mode = if (isDarkModeEnable) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+        AppCompatDelegate.setDefaultNightMode(mode)
     }
 }

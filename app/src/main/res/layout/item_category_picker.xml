@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip"
+            style="@style/Widget.Material3.Chip.Assist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checkable="true"
+            android:clickable="true"
+            android:focusable="true"
+            app:chipBackgroundColor="@color/cat_chip_bg_selector"
+            app:chipStrokeColor="@color/cat_chip_stroke_selector"
+            app:chipStrokeWidth="1dp"
+            android:textColor="@color/cat_chip_text_selector"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Development" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cvCheck"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:visibility="gone"
+            app:cardBackgroundColor="?attr/colorSurface"
+            app:cardCornerRadius="7dp"
+            app:cardElevation="2dp"
+            app:layout_constraintEnd_toEndOf="@+id/chip"
+            app:layout_constraintTop_toTopOf="@+id/chip"
+            app:strokeColor="?attr/colorPrimary"
+            app:strokeWidth="1dp"
+            tools:visibility="visible">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="2dp"
+                android:src="@drawable/ic_check"
+                app:tint="?attr/colorPrimary" />
+        </com.google.android.material.card.MaterialCardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
