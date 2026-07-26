@@ -39,6 +39,7 @@ class HomeFragment : Fragment() {
             startActivity(detailIntent)
         }
         binding.rvCouponCourse.adapter = couponCoursePagingAdapter
+        setupStatLine()
         observeLoadingState()
         homeViewModel.isInternetAvailable.observe(viewLifecycleOwner) {
             if (it) {
@@ -52,6 +53,12 @@ class HomeFragment : Fragment() {
         }
         homeViewModel.checkIfInternetAvailable()
         return binding.root
+    }
+
+    private fun setupStatLine() {
+        // Set sample values for now to avoid showing raw formatting tokens
+        binding.tvStatDeals.text = getString(R.string.stat_deals, 128)
+        binding.tvStatUpdated.text = getString(R.string.stat_updated, "2h")
     }
 
     private fun observeLoadingCourses() {

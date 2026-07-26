@@ -17,7 +17,7 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="6dp"
+            android:layout_margin="2dp"
             app:cardBackgroundColor="@color/m3_surface_container"
             app:cardCornerRadius="16dp"
             app:cardElevation="1dp"
@@ -35,8 +35,8 @@
                     android:id="@+id/cvTimeLeft"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="4dp"
                     app:cardBackgroundColor="@color/m3_error_container"
                     app:cardCornerRadius="10dp"
                     app:cardElevation="2dp"
@@ -48,11 +48,11 @@
                         android:id="@+id/tvTimeLeft"
                         app:timeLeft="@{coupon.expiredDate}"
                         android:layout_width="wrap_content"
-                        android:layout_height="20dp"
+                        android:layout_height="18dp"
                         android:gravity="center"
-                        android:paddingHorizontal="8dp"
+                        android:paddingHorizontal="6dp"
                         android:textColor="@color/m3_on_error_container"
-                        android:textSize="11sp"
+                        android:textSize="10sp"
                         android:textStyle="bold"
                         tools:text="3 days" />
                 </com.google.android.material.card.MaterialCardView>
@@ -72,13 +72,13 @@
                     android:id="@+id/tvCourseTitle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="12dp"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginHorizontal="6dp"
+                    android:layout_marginTop="4dp"
                     android:ellipsize="end"
                     android:lines="2"
                     android:text="@{coupon.title}"
                     android:textColor="@color/m3_on_surface"
-                    android:textSize="14sp"
+                    android:textSize="13sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -89,27 +89,26 @@
                     android:id="@+id/tvCourseAuthor"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="1dp"
                     android:lines="1"
                     android:text="@{coupon.author}"
                     android:textColor="@color/m3_on_surface_variant"
-                    android:textSize="12sp"
+                    android:textSize="11sp"
                     app:layout_constraintEnd_toEndOf="@+id/tvCourseTitle"
                     app:layout_constraintStart_toStartOf="@+id/tvCourseTitle"
                     app:layout_constraintTop_toBottomOf="@+id/tvCourseTitle"
                     tools:text="Author name" />
 
-                <com.google.android.material.chip.Chip
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/tvCourseCategory"
-                    style="@style/Widget.Material3.Chip.Assist"
-                    android:layout_width="wrap_content"
-                    android:layout_height="32dp"
-                    android:layout_marginTop="4dp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
                     android:text="@{coupon.category}"
-                    app:chipBackgroundColor="@color/m3_primary_container"
-                    app:chipStrokeWidth="0dp"
-                    app:labelStyle="@style/TextAppearance.Material3.LabelSmall"
-                    android:textColor="@color/m3_on_primary_container"
+                    android:textColor="@color/m3_primary"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="@+id/tvCourseAuthor"
                     app:layout_constraintStart_toStartOf="@+id/tvCourseAuthor"
                     app:layout_constraintTop_toBottomOf="@+id/tvCourseAuthor"
                     tools:text="Development" />
@@ -120,26 +119,59 @@
                     app:displayRating="@{coupon.rating}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="12dp"
+                    android:layout_marginTop="2dp"
                     android:numStars="5"
                     android:theme="@style/rating_bar"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/tvCourseCategory"
                     app:layout_constraintTop_toBottomOf="@+id/tvCourseCategory" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/ivStudents"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_marginTop="2dp"
+                    android:src="@drawable/ic_students"
+                    app:layout_constraintStart_toStartOf="@+id/rbCourse"
+                    app:layout_constraintTop_toBottomOf="@+id/rbCourse"
+                    app:tint="@color/m3_on_surface_variant" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvNumberOfStudent"
                     app:displayNumberOfStudents="@{coupon.students}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
+                    android:layout_marginStart="4dp"
                     android:textColor="@color/m3_on_surface_variant"
-                    android:textSize="12sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/rbCourse"
-                    app:layout_constraintStart_toEndOf="@+id/rbCourse"
-                    app:layout_constraintTop_toTopOf="@+id/rbCourse"
-                    tools:text="2k students" />
+                    android:textSize="10sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/ivStudents"
+                    app:layout_constraintStart_toEndOf="@+id/ivStudents"
+                    app:layout_constraintTop_toTopOf="@+id/ivStudents"
+                    tools:text="2k" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/ivReviews"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_marginStart="10dp"
+                    android:src="@drawable/ic_comment"
+                    app:layout_constraintBottom_toBottomOf="@+id/ivStudents"
+                    app:layout_constraintStart_toEndOf="@+id/tvNumberOfStudent"
+                    app:layout_constraintTop_toTopOf="@+id/ivStudents"
+                    app:tint="@color/m3_on_surface_variant" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvNumberOfReviews"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginBottom="6dp"
+                    android:text="@{String.valueOf(coupon.reviews)}"
+                    android:textColor="@color/m3_on_surface_variant"
+                    android:textSize="10sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/ivReviews"
+                    app:layout_constraintTop_toTopOf="@+id/ivReviews"
+                    tools:text="452" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
