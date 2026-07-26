@@ -8,12 +8,25 @@
         android:layout_height="match_parent"
         android:fitsSystemWindows="true">
 
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorSurface"
+            app:layout_constraintTop_toTopOf="parent"
+            app:menu="@menu/menu_coupon_detail"
+            app:navigationIcon="@drawable/ic_arrow_back"
+            app:navigationIconTint="?attr/colorOnSurface"
+            app:title="" />
+
         <androidx.constraintlayout.motion.widget.MotionLayout
             android:id="@+id/mlCouponDetail"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
             android:visibility="invisible"
             app:layoutDescription="@xml/fragment_detail_coupon_xml_constraint_layout_scene"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
             tools:context=".ui.detail.CouponDetailActivity">
 
 
@@ -61,9 +74,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="16dp"
-                        android:layout_marginTop="16dp"
+                        android:layout_marginTop="2dp"
                         android:textColor="@color/m3_on_surface"
-                        android:textSize="22sp"
+                        android:textSize="20sp"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -74,10 +87,10 @@
                         android:id="@+id/tvCourseAuthor"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="0dp"
                         android:lines="1"
                         android:textColor="@color/m3_on_surface_variant"
-                        android:textSize="14sp"
+                        android:textSize="13sp"
                         app:layout_constraintEnd_toEndOf="@+id/tvCourseTitle"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="@+id/tvCourseTitle"
@@ -94,15 +107,15 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                    <com.google.android.material.chip.Chip
+                    <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/tvCourseCategory"
-                        style="@style/Widget.Material3.Chip.Assist"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:textColor="@color/m3_on_primary_container"
-                        app:chipBackgroundColor="@color/m3_primary_container"
-                        app:chipStrokeWidth="0dp"
+                        android:layout_marginTop="0dp"
+                        android:textColor="@color/m3_primary"
+                        android:textStyle="bold"
+                        android:textSize="13sp"
+                        app:layout_constraintEnd_toEndOf="@+id/tvCourseAuthor"
                         app:layout_constraintStart_toStartOf="@+id/tvCourseAuthor"
                         app:layout_constraintTop_toBottomOf="@+id/tvCourseAuthor"
                         tools:text="Social Media Marketing" />
@@ -112,36 +125,58 @@
                         style="@style/Widget.AppCompat.RatingBar.Small"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:layout_marginBottom="12dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginBottom="4dp"
                         android:numStars="5"
                         android:theme="@style/rating_bar"
                         app:layout_constraintStart_toStartOf="@+id/tvCourseCategory"
                         app:layout_constraintTop_toBottomOf="@+id/tvCourseCategory" />
 
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/ivStudents"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_marginStart="4dp"
+                        android:src="@drawable/ic_students"
+                        app:layout_constraintBottom_toBottomOf="@+id/rbCouponDetail"
+                        app:layout_constraintStart_toEndOf="@+id/rbCouponDetail"
+                        app:layout_constraintTop_toTopOf="@+id/rbCouponDetail"
+                        app:tint="@color/m3_on_surface_variant" />
+
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvNumberOfStudent"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
+                        android:layout_marginStart="4dp"
                         android:text="@string/loading_student_text"
                         android:textColor="@color/m3_on_surface_variant"
-                        android:textSize="12sp"
-                        app:layout_constraintBottom_toBottomOf="@+id/rbCouponDetail"
-                        app:layout_constraintStart_toEndOf="@+id/rbCouponDetail"
-                        app:layout_constraintTop_toTopOf="@+id/rbCouponDetail" />
+                        android:textSize="11sp"
+                        app:layout_constraintBottom_toBottomOf="@+id/ivStudents"
+                        app:layout_constraintStart_toEndOf="@+id/ivStudents"
+                        app:layout_constraintTop_toTopOf="@+id/ivStudents" />
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/ivReviews"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_marginStart="8dp"
+                        android:src="@drawable/ic_comment"
+                        app:layout_constraintBottom_toBottomOf="@+id/ivStudents"
+                        app:layout_constraintStart_toEndOf="@+id/tvNumberOfStudent"
+                        app:layout_constraintTop_toTopOf="@+id/ivStudents"
+                        app:tint="@color/m3_on_surface_variant" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvNumberOfReview"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
+                        android:layout_marginStart="4dp"
                         android:text="@string/loading_review_text"
                         android:textColor="@color/m3_on_surface_variant"
-                        android:textSize="12sp"
-                        app:layout_constraintBottom_toBottomOf="@+id/tvNumberOfStudent"
-                        app:layout_constraintStart_toEndOf="@+id/tvNumberOfStudent"
-                        app:layout_constraintTop_toTopOf="@+id/tvNumberOfStudent" />
+                        android:textSize="11sp"
+                        app:layout_constraintBottom_toBottomOf="@+id/ivReviews"
+                        app:layout_constraintStart_toEndOf="@+id/ivReviews"
+                        app:layout_constraintTop_toTopOf="@+id/ivReviews" />
 
                     <HorizontalScrollView
                         android:layout_width="match_parent"
@@ -155,7 +190,7 @@
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginVertical="12dp"
+                            android:layout_marginVertical="4dp"
                             android:orientation="horizontal"
                             android:scrollbars="none">
 
@@ -165,8 +200,26 @@
                                 android:layout_height="wrap_content"
                                 android:background="@drawable/bg_info_item"
                                 android:backgroundTint="@color/m3_surface_container"
+                                android:gravity="center"
                                 android:orientation="vertical"
-                                android:padding="8dp">
+                                android:padding="4dp">
+
+                                <androidx.appcompat.widget.AppCompatImageView
+                                    android:layout_width="18dp"
+                                    android:layout_height="18dp"
+                                    android:layout_marginBottom="2dp"
+                                    android:src="@drawable/ic_coupon"
+                                    app:tint="@color/m3_on_surface_variant" />
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/tvCouponLeft"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textAlignment="center"
+                                    android:textColor="@color/m3_on_surface"
+                                    android:textSize="13sp"
+                                    android:textStyle="bold"
+                                    tools:text="701" />
 
                                 <androidx.appcompat.widget.AppCompatTextView
                                     android:layout_width="wrap_content"
@@ -174,28 +227,36 @@
                                     android:text="@string/text_coupons_left"
                                     android:textAlignment="center"
                                     android:textColor="@color/m3_on_surface_variant"
-                                    android:textSize="11sp" />
-
-                                <androidx.appcompat.widget.AppCompatTextView
-                                    android:id="@+id/tvCouponLeft"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:textAlignment="center"
-                                    android:textColor="@color/m3_on_surface"
-                                    android:textSize="14sp"
-                                    android:textStyle="bold"
-                                    tools:text="701" />
+                                    android:textSize="9sp" />
                             </LinearLayout>
 
                             <LinearLayout
                                 android:id="@+id/llCourseLengthContainer"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="8dp"
+                                android:layout_marginStart="4dp"
                                 android:background="@drawable/bg_info_item"
                                 android:backgroundTint="@color/m3_surface_container"
+                                android:gravity="center"
                                 android:orientation="vertical"
-                                android:padding="8dp">
+                                android:padding="4dp">
+
+                                <androidx.appcompat.widget.AppCompatImageView
+                                    android:layout_width="18dp"
+                                    android:layout_height="18dp"
+                                    android:layout_marginBottom="2dp"
+                                    android:src="@drawable/ic_clock"
+                                    app:tint="@color/m3_on_surface_variant" />
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/tvContentLength"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textAlignment="center"
+                                    android:textColor="@color/m3_on_surface"
+                                    android:textSize="13sp"
+                                    android:textStyle="bold"
+                                    tools:text="7.5h" />
 
                                 <androidx.appcompat.widget.AppCompatTextView
                                     android:layout_width="wrap_content"
@@ -203,28 +264,36 @@
                                     android:text="@string/text_content_length"
                                     android:textAlignment="center"
                                     android:textColor="@color/m3_on_surface_variant"
-                                    android:textSize="11sp" />
-
-                                <androidx.appcompat.widget.AppCompatTextView
-                                    android:id="@+id/tvContentLength"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:textAlignment="center"
-                                    android:textColor="@color/m3_on_surface"
-                                    android:textSize="14sp"
-                                    android:textStyle="bold"
-                                    tools:text="701" />
+                                    android:textSize="9sp" />
                             </LinearLayout>
 
                             <LinearLayout
                                 android:id="@+id/llCourseLevelContainer"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="8dp"
+                                android:layout_marginStart="4dp"
                                 android:background="@drawable/bg_info_item"
                                 android:backgroundTint="@color/m3_surface_container"
+                                android:gravity="center"
                                 android:orientation="vertical"
-                                android:padding="8dp">
+                                android:padding="4dp">
+
+                                <androidx.appcompat.widget.AppCompatImageView
+                                    android:layout_width="18dp"
+                                    android:layout_height="18dp"
+                                    android:layout_marginBottom="2dp"
+                                    android:src="@drawable/ic_level"
+                                    app:tint="@color/m3_on_surface_variant" />
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/tvCourseLevel"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textAlignment="center"
+                                    android:textColor="@color/m3_on_surface"
+                                    android:textSize="13sp"
+                                    android:textStyle="bold"
+                                    tools:text="All Levels" />
 
                                 <androidx.appcompat.widget.AppCompatTextView
                                     android:layout_width="wrap_content"
@@ -232,28 +301,36 @@
                                     android:text="@string/text_course_level"
                                     android:textAlignment="center"
                                     android:textColor="@color/m3_on_surface_variant"
-                                    android:textSize="11sp" />
-
-                                <androidx.appcompat.widget.AppCompatTextView
-                                    android:id="@+id/tvCourseLevel"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:textAlignment="center"
-                                    android:textColor="@color/m3_on_surface"
-                                    android:textSize="14sp"
-                                    android:textStyle="bold"
-                                    tools:text="701" />
+                                    android:textSize="9sp" />
                             </LinearLayout>
 
                             <LinearLayout
                                 android:id="@+id/llCourseLanguageContainer"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="8dp"
+                                android:layout_marginStart="4dp"
                                 android:background="@drawable/bg_info_item"
                                 android:backgroundTint="@color/m3_surface_container"
+                                android:gravity="center"
                                 android:orientation="vertical"
-                                android:padding="8dp">
+                                android:padding="4dp">
+
+                                <androidx.appcompat.widget.AppCompatImageView
+                                    android:layout_width="18dp"
+                                    android:layout_height="18dp"
+                                    android:layout_marginBottom="2dp"
+                                    android:src="@drawable/ic_language"
+                                    app:tint="@color/m3_on_surface_variant" />
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/tvLanguage"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textAlignment="center"
+                                    android:textColor="@color/m3_on_surface"
+                                    android:textSize="13sp"
+                                    android:textStyle="bold"
+                                    tools:text="English" />
 
                                 <androidx.appcompat.widget.AppCompatTextView
                                     android:layout_width="wrap_content"
@@ -261,17 +338,7 @@
                                     android:text="@string/text_language"
                                     android:textAlignment="center"
                                     android:textColor="@color/m3_on_surface_variant"
-                                    android:textSize="11sp" />
-
-                                <androidx.appcompat.widget.AppCompatTextView
-                                    android:id="@+id/tvLanguage"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:textAlignment="center"
-                                    android:textColor="@color/m3_on_surface"
-                                    android:textSize="14sp"
-                                    android:textStyle="bold"
-                                    tools:text="701" />
+                                    android:textSize="9sp" />
                             </LinearLayout>
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -286,7 +353,7 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginTop="4dp"
-                app:layout_constraintBottom_toTopOf="@id/llActionContainer"
+                app:layout_constraintBottom_toTopOf="@id/clActionContainer"
                 app:layout_constraintEnd_toEndOf="@+id/cvContainer"
                 app:layout_constraintStart_toStartOf="@+id/cvContainer"
                 app:layout_constraintTop_toBottomOf="@+id/cvContainer">
@@ -338,64 +405,80 @@
                         android:id="@+id/tvCourseDescription"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/primaryTextColor"
-                        android:textSize="10sp"
-                        android:textStyle="bold"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                        android:lineHeight="24sp"
                         app:layout_constraintEnd_toEndOf="@id/tvDescription"
                         app:layout_constraintStart_toStartOf="@+id/tvDescription"
-                        app:layout_constraintTop_toBottomOf="@id/tvDescription"
-                        tools:ignore="SmallSp" />
+                        app:layout_constraintTop_toBottomOf="@id/tvDescription" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
 
             </androidx.core.widget.NestedScrollView>
 
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:id="@+id/llActionContainer"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clActionContainer"
                 android:layout_width="0dp"
                 android:layout_height="80dp"
                 android:background="@color/m3_surface"
                 android:elevation="8dp"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="16dp"
+                android:paddingHorizontal="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnShare"
-                    style="@style/Widget.Material3.Button.IconButton"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_button_share"
+                    android:textColor="@color/m3_on_surface_variant"
+                    android:textSize="11sp"
                     app:icon="@drawable/ic_share"
-                    app:iconTint="@color/m3_primary" />
+                    app:iconGravity="top"
+                    app:iconSize="24dp"
+                    app:iconTint="@color/m3_on_surface_variant"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/btnOpenBrowser"
+                    app:layout_constraintHorizontal_weight="1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnOpenBrowser"
                     style="@style/Widget.Material3.Button.TextButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:text="@string/text_button_open_browser"
-                    android:textColor="@color/m3_primary"
-                    app:icon="@drawable/ic_open_browser"
-                    app:iconTint="@color/m3_primary" />
-
-                <View
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1" />
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_button_open_browser"
+                    android:textColor="@color/m3_on_surface_variant"
+                    android:textSize="11sp"
+                    app:icon="@drawable/ic_open_browser"
+                    app:iconGravity="top"
+                    app:iconSize="24dp"
+                    app:iconTint="@color/m3_on_surface_variant"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/btnEnroll"
+                    app:layout_constraintHorizontal_weight="1"
+                    app:layout_constraintStart_toEndOf="@+id/btnShare"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnEnroll"
                     style="@style/Widget.Material3.Button"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="56dp"
+                    android:layout_marginHorizontal="4dp"
                     android:text="@string/text_button_enroll_now"
-                    android:textSize="16sp"
-                    app:cornerRadius="24dp" />
+                    android:textSize="13sp"
+                    app:cornerRadius="28dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_weight="1"
+                    app:layout_constraintStart_toEndOf="@+id/btnOpenBrowser"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            </androidx.appcompat.widget.LinearLayoutCompat>
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.motion.widget.MotionLayout>
 
         <ProgressBar

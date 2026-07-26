@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -27,6 +28,7 @@ class CouponDetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_coupon_detail)
+        setupToolbar()
         val courseId = intent.extras?.getInt(BundleKey.TO_DETAIL_ACTIVITY)
         showLoadingProgressbar()
         if (courseId != null) {
@@ -48,6 +50,21 @@ class CouponDetailActivity : AppCompatActivity() {
             handleNetworkResult(networkResult)
         }
         couponDetailViewModel.fetchCouponDetail(courseId)
+    }
+
+    private fun setupToolbar() {
+        binding.toolbar.setNavigationOnClickListener {
+            finish()
+        }
+        binding.toolbar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.action_report -> {
+                    Toast.makeText(this, "Report feature coming soon", Toast.LENGTH_SHORT).show()
+                    true
+                }
+                else -> false
+            }
+        }
     }
 
     private fun handleNetworkResult(networkResult: NetWorkResult<Coupon>) {
