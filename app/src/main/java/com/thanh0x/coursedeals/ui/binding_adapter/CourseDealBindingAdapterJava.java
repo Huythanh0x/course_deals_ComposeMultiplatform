@@ -19,17 +19,17 @@ public class CourseDealBindingAdapterJava {
     }
 
     @BindingAdapter("displayNumberOfStudents")
-    public static void displayNumberOfStudents(TextView textView, int numberOfStudent) {
+    public static void displayNumberOfStudents(TextView textView, Integer numberOfStudent) {
         textView.setText(new MapperToView(textView.getContext()).mapNumberOfStudent(numberOfStudent));
     }
 
     @BindingAdapter("displayNumberOfReviews")
-    public static void displayNumberOfReviews(TextView textView, int numberOfReview) {
+    public static void displayNumberOfReviews(TextView textView, Integer numberOfReview) {
         textView.setText(new MapperToView(textView.getContext()).mapNumberOfReview(numberOfReview));
     }
 
     @BindingAdapter("displayRating")
-    public static void displayRating(RatingBar ratingBar, double rating) {
+    public static void displayRating(RatingBar ratingBar, Double rating) {
         ratingBar.setRating(new MapperToView(ratingBar.getContext()).mapRating(rating));
     }
 
@@ -39,12 +39,12 @@ public class CourseDealBindingAdapterJava {
     }
 
     @BindingAdapter("contentLength")
-    public static void contentLength(TextView textView, int contentLength) {
+    public static void contentLength(TextView textView, Integer contentLength) {
         textView.setText(new MapperToView(textView.getContext()).mapContentLength(contentLength));
     }
 
     @BindingAdapter("timeLeft")
-    public static void timeLeft(TextView textView, long expiredDate) {
+    public static void timeLeft(TextView textView, Double expiredDate) {
         textView.setText(new MapperToView(textView.getContext()).mapTimeLeft(expiredDate));
     }
 }

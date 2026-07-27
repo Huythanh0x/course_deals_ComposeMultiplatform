@@ -1,9 +1,16 @@
 package com.thanh0x.coursedeals.data.model
 
+import com.google.gson.annotations.SerializedName
+
 data class CourseDealResponse(
-    val lastFetchTime: String,
+    @SerializedName("lastFetchTime")
+    val lastFetchTime: Long,
+    @SerializedName("totalCoupon")
     val totalCoupon: Long,
+    @SerializedName("totalPage")
     val totalPage: Int,
+    @SerializedName("currentPage")
     val currentPage: Int,
+    @SerializedName("courses")
     val courses: List<Coupon>
 )

@@ -87,21 +87,21 @@ class CouponDetailActivity : BaseActivity() {
     }
 
     private fun bindingCouponDataToView(coupon: Coupon) {
-        Log.d("COUPON DETAIL ", coupon.couponUrl)
+        Log.d("COUPON DETAIL ", coupon.couponUrl ?: "")
         MapperToView(applicationContext).let {
             binding.rbCouponDetail.rating = it.mapRating(coupon.rating)
             binding.tvTimeLeft.text = it.mapTimeLeft(coupon.expiredDate)
             binding.tvContentLength.text = it.mapContentLength(coupon.contentLength)
-            binding.tvCouponLeft.text = coupon.usesRemaining.toString()
-            binding.tvCourseLevel.text = coupon.level
-            binding.tvLanguage.text = coupon.language
+            binding.tvCouponLeft.text = (coupon.usesRemaining ?: 0).toString()
+            binding.tvCourseLevel.text = coupon.level ?: ""
+            binding.tvLanguage.text = coupon.language ?: ""
             binding.tvCourseDescription.text = it.mapHTMLContent(coupon.description)
-            binding.tvCourseHeadingTitle.text = coupon.heading
+            binding.tvCourseHeadingTitle.text = coupon.heading ?: ""
             binding.tvNumberOfStudent.text = it.mapNumberOfStudent(coupon.students)
             binding.tvNumberOfReview.text = it.mapNumberOfReview(coupon.reviews)
-            binding.tvCourseTitle.text = coupon.title
-            binding.tvCourseAuthor.text = coupon.author
-            binding.tvCourseCategory.text = coupon.category
+            binding.tvCourseTitle.text = coupon.title ?: ""
+            binding.tvCourseAuthor.text = coupon.author ?: ""
+            binding.tvCourseCategory.text = coupon.category ?: ""
             Picasso.get()
                 .load(coupon.previewImage)
                 .error(R.drawable.error_loading_image)
@@ -118,7 +118,7 @@ class CouponDetailActivity : BaseActivity() {
         }
 
         binding.btnShare.setOnClickListener {
-            shareLink(this, coupon.title, coupon.couponUrl)
+            shareLink(this, coupon.title ?: "", coupon.couponUrl ?: "")
         }
     }
 

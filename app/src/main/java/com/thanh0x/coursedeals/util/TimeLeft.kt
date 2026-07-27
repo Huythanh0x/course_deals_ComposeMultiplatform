@@ -19,15 +19,16 @@ object TimeLeft {
     }
 
     @SuppressLint("NewApi")
-    fun getDurationFromNow(dateTimeString: Long): Long {
+    fun getDurationFromNow(expiredDate: Double?): Long {
+        if (expiredDate == null) return -1L
         return try {
-            val seconds = dateTimeString.toDouble().toLong()
+            val seconds = expiredDate.toLong()
             val inputInstant = Instant.ofEpochSecond(seconds)
             val now = Instant.now()
             Duration.between(now, inputInstant).toMinutes()
         } catch (e: Exception) {
-            Log.e("TimeLeft", "Error parsing timestamp: $dateTimeString", e)
-            -0L
+            Log.e("TimeLeft", "Error parsing timestamp: $expiredDate", e)
+            -1L
         }
     }
 }
