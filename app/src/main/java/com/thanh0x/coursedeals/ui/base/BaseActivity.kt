@@ -18,6 +18,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.lang.Long.max
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -59,6 +60,7 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     fun showLoading(message: String? = null) {
+        if (isFinishing || isDestroyed) return
         if (loadingDialog == null) {
             loadingStartTime = System.currentTimeMillis()
             loadingDialog = LoadingDialog.newInstance(message)
@@ -67,6 +69,7 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     fun hideLoading() {
+        if (isFinishing || isDestroyed) return
         lifecycleScope.launch {
             val elapsedTime = System.currentTimeMillis() - loadingStartTime
             val remainingTime = max(500L - elapsedTime, 0L)
@@ -84,6 +87,7 @@ abstract class BaseActivity : AppCompatActivity() {
         cause: String? = null,
         onPositiveClick: (() -> Unit)? = null
     ) {
+        if (isFinishing || isDestroyed) return
         val headerView = LayoutInflater.from(this).inflate(R.layout.layout_dialog_header, null)
         val tvTitle = headerView.findViewById<TextView>(R.id.tvDialogTitle)
         val ivLogo = headerView.findViewById<ImageView>(R.id.ivDialogLogo)
@@ -96,7 +100,7 @@ abstract class BaseActivity : AppCompatActivity() {
                 title.contains("No Internet", ignoreCase = true)
 
         if (isError) {
-            Log.e(this.javaClass.name, "showAlertDialog: title = $title, message = $cause")
+            Timber.e(this.javaClass.name, "showAlertDialog: title = $title, message = $cause")
             val typedValue = TypedValue()
             val attrId = resources.getIdentifier("colorError", "attr", packageName)
             if (attrId != 0) {
