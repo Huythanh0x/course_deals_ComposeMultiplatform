@@ -14,6 +14,7 @@ import com.thanh0x.coursedeals.databinding.FragmentHomeBinding
 import com.thanh0x.coursedeals.ui.base.BaseFragment
 import com.thanh0x.coursedeals.ui.detail.CouponDetailActivity
 import com.thanh0x.coursedeals.util.BundleKey
+import com.thanh0x.coursedeals.util.MapperToView
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
@@ -81,8 +82,12 @@ class HomeFragment : BaseFragment() {
             )
         }
 
+        val mapper = MapperToView(requireContext())
         binding.tvStatDeals.text = getString(R.string.stat_deals, state.statDeals)
-        binding.tvStatUpdated.text = getString(R.string.stat_updated, state.statUpdatedTime)
+        binding.tvStatUpdated.text = getString(
+            R.string.stat_updated,
+            mapper.mapTimeAgo(state.statUpdatedTimestamp)
+        )
     }
 
     private fun observePagingData() {

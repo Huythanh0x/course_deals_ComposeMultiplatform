@@ -6,12 +6,18 @@ import java.time.Duration
 import java.time.Instant
 
 object TimeLeft {
+    private const val MILLIS_THRESHOLD = 10_000_000_000L
+
     @SuppressLint("NewApi")
     @Suppress("TooGenericExceptionCaught")
     fun getDurationFromNow(expiredDate: Long?): Long {
         if (expiredDate == null) return -1L
         return try {
-            val inputInstant = Instant.ofEpochSecond(expiredDate)
+            val inputInstant = if (expiredDate > MILLIS_THRESHOLD) {
+                Instant.ofEpochMilli(expiredDate)
+            } else {
+                Instant.ofEpochSecond(expiredDate)
+            }
             val now = Instant.now()
             Duration.between(now, inputInstant).toMinutes()
         } catch (e: Exception) {
@@ -25,7 +31,11 @@ object TimeLeft {
     fun getDurationFromNowToAgo(timestamp: Long?): Long {
         if (timestamp == null) return -1L
         return try {
-            val inputInstant = Instant.ofEpochSecond(timestamp)
+            val inputInstant = if (timestamp > MILLIS_THRESHOLD) {
+                Instant.ofEpochMilli(timestamp)
+            } else {
+                Instant.ofEpochSecond(timestamp)
+            }
             val now = Instant.now()
             Duration.between(inputInstant, now).toMinutes()
         } catch (e: Exception) {

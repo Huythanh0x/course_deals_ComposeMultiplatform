@@ -17,7 +17,9 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -36,6 +38,23 @@ class HomeViewModel @Inject constructor(
         config = PagingConfig(pageSize = Constant.ITEMS_PER_PAGE, enablePlaceholders = false),
         pagingSourceFactory = { couponRepository.getRemotePagingCouponSource() }
     ).flow.cachedIn(viewModelScope)
+
+    init {
+        observeMetadata()
+    }
+
+    private fun observeMetadata() {
+        viewModelScope.launch {
+            couponRepository.getMetadataFlow().collectLatest { metadata ->
+                _uiState.update {
+                    it.copy(
+                        statDeals = metadata.totalCoupon,
+                        statUpdatedTimestamp = metadata.lastFetchTime
+                    )
+                }
+            }
+        }
+    }
 
     fun checkIfInternetAvailable() {
         val available = networkUtil.isInternetAvailable()
