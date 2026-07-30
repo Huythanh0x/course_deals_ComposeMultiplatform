@@ -12,8 +12,8 @@ import com.thanh0x.coursedeals.data.source.remote.RemoteCouponDataSourceImpl
 import com.thanh0x.coursedeals.domain.repository.CouponRepository
 import com.thanh0x.coursedeals.domain.repository.UserAuthenticationRepository
 import com.thanh0x.coursedeals.domain.repository.UserProfileRepository
+import com.thanh0x.coursedeals.data.source.LocalCouponDataSource
 import com.thanh0x.coursedeals.domain.source.LocalAuthenticationDataSource
-import com.thanh0x.coursedeals.domain.source.LocalCouponDataSource
 import com.thanh0x.coursedeals.domain.source.LocalSettingsDataSource
 import com.thanh0x.coursedeals.domain.source.LocalUserProfileDataSource
 import com.thanh0x.coursedeals.domain.source.RemoteAuthenticationDataSource

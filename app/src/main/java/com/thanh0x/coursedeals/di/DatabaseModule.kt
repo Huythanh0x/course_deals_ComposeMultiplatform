@@ -20,6 +20,10 @@ object DatabaseModule {
 
     @Singleton
     @Provides
+    fun provideRemoteKeyDao(couponDatabase: CouponDatabase) = couponDatabase.remoteKeyDao()
+
+    @Singleton
+    @Provides
     fun provideDataBase(@ApplicationContext context: Context) =
         Room
             .databaseBuilder(context, CouponDatabase::class.java, Constant.COUPON_DATABASE_NAME)

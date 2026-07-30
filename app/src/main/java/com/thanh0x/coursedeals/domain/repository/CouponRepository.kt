@@ -1,5 +1,6 @@
 package com.thanh0x.coursedeals.domain.repository
 
+import androidx.paging.PagingData
 import androidx.paging.PagingSource
 import com.thanh0x.coursedeals.domain.model.AppResult
 import com.thanh0x.coursedeals.domain.model.Coupon
@@ -8,6 +9,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface CouponRepository {
     suspend fun getAllCoupons(): List<Coupon>
+
+    fun getCouponsPager(query: String? = null): Flow<PagingData<Coupon>>
 
     suspend fun insertCoupon(coupon: Coupon)
 
@@ -18,8 +21,6 @@ interface CouponRepository {
     suspend fun requestPostANewCoupon(couponUrl: String): AppResult<Unit>
 
     suspend fun requestDeleteACoupon(couponUrl: String): AppResult<Unit>
-
-    fun getRemotePagingCouponSource(): PagingSource<Int, Coupon>
 
     fun getMetadataFlow(): Flow<CouponMetadata>
 
