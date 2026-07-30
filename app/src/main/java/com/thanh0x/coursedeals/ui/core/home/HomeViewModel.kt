@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.thanh0x.coursedeals.domain.model.Coupon
+import com.thanh0x.coursedeals.domain.model.FilterData
 import com.thanh0x.coursedeals.domain.repository.CouponRepository
 import com.thanh0x.coursedeals.ui.base.UiEvent
 import com.thanh0x.coursedeals.util.NetworkUtil
@@ -37,10 +38,10 @@ class HomeViewModel @Inject constructor(
     val uiEvent = _uiEvent.asSharedFlow()
 
     val items: Flow<PagingData<Coupon>> = uiState
-        .map { it.query }
+        .map { it.query to it.filter }
         .distinctUntilChanged()
-        .flatMapLatest { query ->
-            couponRepository.getCouponsPager(query)
+        .flatMapLatest { (query, filter) ->
+            couponRepository.getCouponsPager(query, filter)
         }
         .cachedIn(viewModelScope)
 
@@ -97,5 +98,9 @@ class HomeViewModel @Inject constructor(
 
     fun updateQuery(query: String) {
         _uiState.update { it.copy(query = query) }
+    }
+
+    fun updateFilter(filter: FilterData) {
+        _uiState.update { it.copy(filter = filter) }
     }
 }

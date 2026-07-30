@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.paging.LoadState
 import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.FragmentHomeBinding
+import com.thanh0x.coursedeals.domain.model.FilterData
 import com.thanh0x.coursedeals.ui.base.BaseFragment
 import com.thanh0x.coursedeals.ui.detail.CouponDetailActivity
 import com.thanh0x.coursedeals.util.BundleKey
@@ -176,6 +177,6 @@ class HomeFragment : BaseFragment() {
     }
 
     private fun applyFilters() {
-        Timber.d("FILTER APPLIED: $currentFilter")
+        homeViewModel.updateFilter(currentFilter)
     }
 }
