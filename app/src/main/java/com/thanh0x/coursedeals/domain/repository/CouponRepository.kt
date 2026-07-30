@@ -5,12 +5,13 @@ import androidx.paging.PagingSource
 import com.thanh0x.coursedeals.domain.model.AppResult
 import com.thanh0x.coursedeals.domain.model.Coupon
 import com.thanh0x.coursedeals.domain.model.CouponMetadata
+import com.thanh0x.coursedeals.domain.model.FilterData
 import kotlinx.coroutines.flow.Flow
 
 interface CouponRepository {
     suspend fun getAllCoupons(): List<Coupon>
 
-    fun getCouponsPager(query: String? = null): Flow<PagingData<Coupon>>
+    fun getCouponsPager(query: String? = null, filter: FilterData = FilterData()): Flow<PagingData<Coupon>>
 
     suspend fun syncAllCoupons(force: Boolean = false)
 

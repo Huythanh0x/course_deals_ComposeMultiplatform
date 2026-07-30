@@ -10,12 +10,7 @@ import com.google.android.material.chip.Chip
 import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.DialogFilterBinding
 import com.thanh0x.coursedeals.databinding.ItemCategoryPickerBinding
-
-data class FilterData(
-    val categories: List<String> = emptyList(),
-    val language: String? = null,
-    val sortBy: String? = null
-)
+import com.thanh0x.coursedeals.domain.model.FilterData
 
 class FilterBottomSheetDialog(
     private val initialFilter: FilterData,
@@ -48,7 +43,7 @@ class FilterBottomSheetDialog(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
+
         selectedCategories.addAll(initialFilter.categories)
         selectedLanguage = initialFilter.language
         selectedSort = initialFilter.sortBy
@@ -71,7 +66,7 @@ class FilterBottomSheetDialog(
         categories.forEach { category ->
             val itemBinding = ItemCategoryPickerBinding.inflate(layoutInflater, binding.cgCategories, false)
             itemBinding.chip.text = category
-            
+
             val isSelected = selectedCategories.contains(category)
             itemBinding.cvCheck.isVisible = isSelected
             itemBinding.chip.isChecked = isSelected
@@ -95,7 +90,7 @@ class FilterBottomSheetDialog(
         languages.forEach { language ->
             val itemBinding = ItemCategoryPickerBinding.inflate(layoutInflater, binding.cgLanguages, false)
             itemBinding.chip.text = language
-            
+
             val isSelected = selectedLanguage == language
             itemBinding.cvCheck.isVisible = isSelected
             itemBinding.chip.isChecked = isSelected
@@ -114,7 +109,7 @@ class FilterBottomSheetDialog(
         sortOptions.forEach { option ->
             val itemBinding = ItemCategoryPickerBinding.inflate(layoutInflater, binding.cgSort, false)
             itemBinding.chip.text = option
-            
+
             val isSelected = selectedSort == option
             itemBinding.cvCheck.isVisible = isSelected
             itemBinding.chip.isChecked = isSelected

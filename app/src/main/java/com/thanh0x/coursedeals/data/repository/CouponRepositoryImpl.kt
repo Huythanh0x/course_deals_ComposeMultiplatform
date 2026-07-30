@@ -12,6 +12,7 @@ import com.thanh0x.coursedeals.data.source.local.CouponDatabase
 import com.thanh0x.coursedeals.data.source.remote.CouponService
 import com.thanh0x.coursedeals.domain.model.Coupon
 import com.thanh0x.coursedeals.domain.model.CouponMetadata
+import com.thanh0x.coursedeals.domain.model.FilterData
 import com.thanh0x.coursedeals.domain.repository.CouponRepository
 import com.thanh0x.coursedeals.domain.source.LocalSettingsDataSource
 import com.thanh0x.coursedeals.domain.source.RemoteCouponDataSource
@@ -35,18 +36,14 @@ class CouponRepositoryImpl @Inject constructor(
 
     override suspend fun getAllCoupons() = localCouponDataSource.getAllCoupons().map { it.toDomain() }
 
-    override fun getCouponsPager(query: String?): Flow<PagingData<Coupon>> {
+    override fun getCouponsPager(query: String?, filter: FilterData): Flow<PagingData<Coupon>> {
         return Pager(
             config = PagingConfig(
                 pageSize = Constant.ITEMS_PER_PAGE,
                 enablePlaceholders = false
             ),
             pagingSourceFactory = {
-                if (query.isNullOrBlank()) {
-                    localCouponDataSource.getPagingCoupons()
-                } else {
-                    localCouponDataSource.queryCouponByName(query)
-                }
+                localCouponDataSource.getFilteredCoupons(query, filter)
             }
         ).flow.map { pagingData ->
             pagingData.map { entity -> entity.toDomain() }

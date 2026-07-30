@@ -1,5 +1,7 @@
 package com.thanh0x.coursedeals.ui.core.home
 
+import com.thanh0x.coursedeals.domain.model.FilterData
+
 data class HomeUiState(
     val isInternetAvailable: Boolean = true,
     val isSyncing: Boolean = false,
