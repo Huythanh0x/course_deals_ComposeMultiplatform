@@ -1,25 +1,25 @@
 package com.thanh0x.coursedeals.ui.base
 
+import android.content.res.ColorStateList
 import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.thanh0x.coursedeals.R
-import com.thanh0x.coursedeals.ui.custom_view.LoadingDialog
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import java.lang.Long.max
-import kotlin.time.Duration.Companion.milliseconds
-
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.thanh0x.coursedeals.R
+import com.thanh0x.coursedeals.ui.customview.LoadingDialog
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.lang.Long.max
+import kotlin.time.Duration.Companion.milliseconds
 
 abstract class BaseActivity : AppCompatActivity() {
 
@@ -45,11 +45,7 @@ abstract class BaseActivity : AppCompatActivity() {
     open fun handleUiEvent(event: UiEvent) {
         when (event) {
             is UiEvent.ShowToast -> {
-                android.widget.Toast.makeText(
-                    this,
-                    event.message,
-                    android.widget.Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(this, event.message, Toast.LENGTH_SHORT).show()
             }
 
             is UiEvent.ShowErrorDialog -> {
@@ -82,8 +78,12 @@ abstract class BaseActivity : AppCompatActivity() {
         }
     }
 
-    fun showAlertDialog(title: String, message: String, cause: String? = null, onPositiveClick: (() -> Unit)? = null) {
-
+    fun showAlertDialog(
+        title: String,
+        message: String,
+        cause: String? = null,
+        onPositiveClick: (() -> Unit)? = null
+    ) {
         val headerView = LayoutInflater.from(this).inflate(R.layout.layout_dialog_header, null)
         val tvTitle = headerView.findViewById<TextView>(R.id.tvDialogTitle)
         val ivLogo = headerView.findViewById<ImageView>(R.id.ivDialogLogo)
@@ -97,11 +97,11 @@ abstract class BaseActivity : AppCompatActivity() {
 
         if (isError) {
             Log.e(this.javaClass.name, "showAlertDialog: title = $title, message = $cause")
-            val typedValue = android.util.TypedValue()
+            val typedValue = TypedValue()
             val attrId = resources.getIdentifier("colorError", "attr", packageName)
             if (attrId != 0) {
                 theme.resolveAttribute(attrId, typedValue, true)
-                ivLogo.imageTintList = android.content.res.ColorStateList.valueOf(typedValue.data)
+                ivLogo.imageTintList = ColorStateList.valueOf(typedValue.data)
             }
         }
 

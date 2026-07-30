@@ -1,4 +1,4 @@
-package com.thanh0x.coursedeals.ui.custom_view
+package com.thanh0x.coursedeals.ui.customview
 
 import android.content.Context
 import android.graphics.Matrix

@@ -1,4 +1,4 @@
-package com.thanh0x.coursedeals.ui.custom_view
+package com.thanh0x.coursedeals.ui.customview
 
 import android.app.Dialog
 import android.graphics.Color
