@@ -22,8 +22,8 @@ interface CouponDao {
     @Query("SELECT * FROM ${Constant.COUPON_TABLE_NAME} ORDER BY created_at DESC")
     fun getPagingCoupons(): PagingSource<Int, Coupon>
 
-    @Query("SELECT * FROM ${Constant.COUPON_TABLE_NAME} WHERE LOWER(title) LIKE '%' || :searchQuery || '%'")
-    suspend fun queryCouponByName(searchQuery: String): List<Coupon>
+    @Query("SELECT * FROM ${Constant.COUPON_TABLE_NAME} WHERE LOWER(title) LIKE '%' || :searchQuery || '%' ORDER BY created_at DESC")
+    fun queryCouponByName(searchQuery: String): PagingSource<Int, Coupon>
 
     @Query("DELETE FROM ${Constant.COUPON_TABLE_NAME}")
     suspend fun clearAllCoupons(): Int
