@@ -8,8 +8,9 @@ import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import androidx.appcompat.widget.AppCompatImageView
 
-private var MIN_SCALE = 0.5f
-private var MAX_SCALE = 4f
+private const val MIN_SCALE = 0.5f
+private const val MAX_SCALE = 4f
+private const val MATRIX_SIZE = 9
 
 class ZoomableImageView @JvmOverloads constructor(
     context: Context,
@@ -19,7 +20,7 @@ class ZoomableImageView @JvmOverloads constructor(
     private var mode = ACTION_MODE.NONE
     private val viewMatrix: Matrix = Matrix()
     private val lastPoint = PointF()
-    private var matrixValue = FloatArray(9)
+    private var matrixValue = FloatArray(MATRIX_SIZE)
     private var saveScale = 1f
     private var right = 0f
     private var bottom = 0f
@@ -34,7 +35,7 @@ class ZoomableImageView @JvmOverloads constructor(
     init {
         super.setClickable(true)
         mScaleDetector = ScaleGestureDetector(context, ScaleListener())
-        matrixValue = FloatArray(9)
+        matrixValue = FloatArray(MATRIX_SIZE)
         imageMatrix = viewMatrix
         scaleType = ScaleType.MATRIX
     }
@@ -61,6 +62,7 @@ class ZoomableImageView @JvmOverloads constructor(
         fitCenter()
     }
 
+    @Suppress("CyclomaticComplexMethod", "NestedBlockDepth")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         mScaleDetector!!.onTouchEvent(event)
         viewMatrix.getValues(matrixValue)
@@ -69,75 +71,84 @@ class ZoomableImageView @JvmOverloads constructor(
         val currentPoint = PointF(event.x, event.y)
 
         when (event.action) {
-            MotionEvent.ACTION_DOWN -> {
-                startTime = System.currentTimeMillis()
-                clickCount++
-                lastPoint.set(currentPoint)
-                mode = ACTION_MODE.DRAG
-            }
-
+            MotionEvent.ACTION_DOWN -> handleActionDown(currentPoint)
             MotionEvent.ACTION_POINTER_DOWN -> {
                 lastPoint.set(currentPoint)
                 mode = ACTION_MODE.ZOOM
             }
-
-            MotionEvent.ACTION_MOVE -> if (mode == ACTION_MODE.ZOOM || mode == ACTION_MODE.DRAG && saveScale > MIN_SCALE) {
-                var deltaX = currentPoint.x - lastPoint.x
-                var deltaY = currentPoint.y - lastPoint.y
-                val scaleWidth = Math.round(originalBitmapWidth * saveScale).toFloat()
-                val scaleHeight = Math.round(originalBitmapHeight * saveScale).toFloat()
-                var limitX = false
-                var limitY = false
-                if (!(scaleWidth < width && scaleHeight < height)) {
-                    if (scaleWidth < width) {
-                        deltaX = 0f
-                        limitY = true
-                    } else if (scaleHeight < height) {
-                        deltaY = 0f
-                        limitX = true
-                    } else {
-                        limitX = true
-                        limitY = true
-                    }
-                }
-                if (limitY) {
-                    if (y + deltaY > 0) {
-                        deltaY = -y * 2
-                    } else if (y + deltaY < -bottom) {
-                        deltaY = -(y + bottom) * 2
-                    }
-                }
-                if (limitX) {
-                    if (x + deltaX > 0) {
-                        deltaX = -x * 2
-                    } else if (x + deltaX < -right) {
-                        deltaX = -(x + right) * 2
-                    }
-                }
-                if (saveScale > 1.0f) {
-                    viewMatrix.postTranslate(deltaX, deltaY)
-                }
-                lastPoint[currentPoint.x] = currentPoint.y
-            }
-
-            MotionEvent.ACTION_UP -> {
-                val time = System.currentTimeMillis() - startTime
-                duration = duration + time
-                if (clickCount == 2) {
-                    if (duration <= MAX_DURATION) {
-                        fitCenter()
-                    }
-                    clickCount = 0
-                    duration = 0
-                }
-                mode = ACTION_MODE.NONE
-            }
-
+            MotionEvent.ACTION_MOVE -> handleActionMove(currentPoint, x, y)
+            MotionEvent.ACTION_UP -> handleActionUp()
             MotionEvent.ACTION_POINTER_UP -> mode = ACTION_MODE.NONE
         }
         imageMatrix = viewMatrix
         invalidate()
         return true
+    }
+
+    private fun handleActionDown(point: PointF) {
+        startTime = System.currentTimeMillis()
+        clickCount++
+        lastPoint.set(point)
+        mode = ACTION_MODE.DRAG
+    }
+
+    private fun handleActionMove(currentPoint: PointF, x: Float, y: Float) {
+        if (mode == ACTION_MODE.ZOOM || (mode == ACTION_MODE.DRAG && saveScale > MIN_SCALE)) {
+            var deltaX = currentPoint.x - lastPoint.x
+            var deltaY = currentPoint.y - lastPoint.y
+            val scaleWidth = Math.round(originalBitmapWidth * saveScale).toFloat()
+            val scaleHeight = Math.round(originalBitmapHeight * saveScale).toFloat()
+
+            val limitX: Boolean
+            val limitY: Boolean
+
+            if (scaleWidth < width && scaleHeight < height) {
+                limitX = false
+                limitY = false
+            } else if (scaleWidth < width) {
+                deltaX = 0f
+                limitX = false
+                limitY = true
+            } else if (scaleHeight < height) {
+                deltaY = 0f
+                limitX = true
+                limitY = false
+            } else {
+                limitX = true
+                limitY = true
+            }
+
+            val finalDeltaX = if (limitX) calculateLimit(x, deltaX, right) else deltaX
+            val finalDeltaY = if (limitY) calculateLimit(y, deltaY, bottom) else deltaY
+
+            if (saveScale > 1.0f) {
+                viewMatrix.postTranslate(finalDeltaX, finalDeltaY)
+            }
+            lastPoint.set(currentPoint)
+        }
+    }
+
+    private fun calculateLimit(current: Float, delta: Float, limit: Float): Float {
+        return if (current + delta > 0) {
+            -current * 2
+        } else if (current + delta < -limit) {
+            -(current + limit) * 2
+        } else {
+            delta
+        }
+    }
+
+    private fun handleActionUp() {
+        val time = System.currentTimeMillis() - startTime
+        duration += time
+        if (clickCount == 2) {
+            if (duration <= MAX_DURATION) {
+                fitCenter()
+            }
+            clickCount = 0
+            duration = 0
+        }
+        mode = ACTION_MODE.NONE
     }
 
     private enum class ACTION_MODE {

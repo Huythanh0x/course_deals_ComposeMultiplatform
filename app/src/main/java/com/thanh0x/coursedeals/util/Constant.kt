@@ -21,4 +21,10 @@ object Constant {
     const val MINUTES_IN_HOUR = 60
     const val HOURS_IN_DAY = 24
     const val DAYS_IN_MONTH = 30
+
+    const val NETWORK_TIMEOUT_SECONDS = 30L
+    const val THRESHOLD_THOUSANDS = 1000
+    const val DATE_ARRAY_MIN_SIZE = 3
+    const val KEY_SIZE_256 = 256
+    const val GCM_TAG_LENGTH = 128
 }

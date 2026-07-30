@@ -90,9 +90,9 @@ class MapperToView(val context: Context) {
             context.getString(
                 R.string.few_review, numberOfReview
             )
-        } else if (numberOfReview > 1000) {
+        } else if (numberOfReview > Constant.THRESHOLD_THOUSANDS) {
             context.getString(
-                R.string.thousands_reviews, numberOfReview / 1000
+                R.string.thousands_reviews, numberOfReview / Constant.THRESHOLD_THOUSANDS
             )
         } else {
             context.getString(
@@ -107,9 +107,9 @@ class MapperToView(val context: Context) {
             context.getString(
                 R.string.few_student, numberOfStudent
             )
-        } else if (numberOfStudent > 1000) {
+        } else if (numberOfStudent > Constant.THRESHOLD_THOUSANDS) {
             context.getString(
-                R.string.thousand_students, numberOfStudent / 1000
+                R.string.thousand_students, numberOfStudent / Constant.THRESHOLD_THOUSANDS
             )
         } else {
             context.getString(

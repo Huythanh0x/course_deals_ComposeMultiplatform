@@ -7,6 +7,7 @@ import java.time.Instant
 
 object TimeLeft {
     @SuppressLint("NewApi")
+    @Suppress("TooGenericExceptionCaught")
     fun getDurationFromNow(expiredDate: Long?): Long {
         if (expiredDate == null) return -1L
         return try {
@@ -20,6 +21,7 @@ object TimeLeft {
     }
 
     @SuppressLint("NewApi")
+    @Suppress("TooGenericExceptionCaught")
     fun getDurationFromNowToAgo(timestamp: Long?): Long {
         if (timestamp == null) return -1L
         return try {

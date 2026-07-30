@@ -97,7 +97,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/tvCourseTitle"
                         tools:text="Yasir Ahmed, M.B.A" />
 
-                <com.thanh0x.coursedeals.ui.custom_view.ZoomableImageView
+                <com.thanh0x.coursedeals.ui.customview.ZoomableImageView
                     android:id="@+id/ivPreview"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"

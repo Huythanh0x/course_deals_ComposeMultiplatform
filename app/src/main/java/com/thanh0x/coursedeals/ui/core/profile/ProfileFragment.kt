@@ -151,9 +151,7 @@ class ProfileFragment : BaseFragment() {
         }
 
         binding.tietKeyword.setOnEditorActionListener { _, actionId, event ->
-            if (actionId == EditorInfo.IME_ACTION_DONE ||
-                actionId == EditorInfo.IME_ACTION_NEXT ||
-                (event != null && event.keyCode == android.view.KeyEvent.KEYCODE_ENTER)) {
+            if (isKeyboardActionDone(actionId, event)) {
                 submitKeyword()
                 true
             } else {
@@ -186,7 +184,10 @@ class ProfileFragment : BaseFragment() {
                 setCloseIconResource(R.drawable.ic_close)
                 closeIconSize = 18f * resources.displayMetrics.density
                 chipIconTint = android.content.res.ColorStateList.valueOf(
-                    com.google.android.material.color.MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnSurfaceVariant)
+                    com.google.android.material.color.MaterialColors.getColor(
+                        this, 
+                        com.google.android.material.R.attr.colorOnSurfaceVariant
+                    )
                 )
                 closeIconTint = chipIconTint
                 setOnCloseIconClickListener {
@@ -274,7 +275,10 @@ class ProfileFragment : BaseFragment() {
             setCloseIconResource(R.drawable.ic_close)
             closeIconSize = 18f * resources.displayMetrics.density
             chipIconTint = android.content.res.ColorStateList.valueOf(
-                com.google.android.material.color.MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnSurfaceVariant)
+                com.google.android.material.color.MaterialColors.getColor(
+                    this,
+                    com.google.android.material.R.attr.colorOnSurfaceVariant
+                )
             )
             closeIconTint = chipIconTint
             setOnCloseIconClickListener {
@@ -316,12 +320,21 @@ class ProfileFragment : BaseFragment() {
                 }, {
                     binding.swEnableFingerPrint.isChecked = false
                 })
-            val promptInfo = BiometricPromptUtils.createPromptInfo(requireActivity() as AppCompatActivity)
+            val promptInfo = BiometricPromptUtils.createPromptInfo(
+                requireActivity() as AppCompatActivity
+            )
             val cipher = profileViewModel.generateCypher()
             biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(cipher))
         } else {
             binding.swEnableFingerPrint.isChecked = false
         }
+    }
+
+    private fun isKeyboardActionDone(actionId: Int, event: android.view.KeyEvent?): Boolean {
+        val isDone = actionId == EditorInfo.IME_ACTION_DONE
+        val isNext = actionId == EditorInfo.IME_ACTION_NEXT
+        val isEnter = event?.keyCode == android.view.KeyEvent.KEYCODE_ENTER
+        return isDone || isNext || isEnter
     }
 
     private fun showToast(message: String) {
@@ -340,7 +353,11 @@ class ProfileFragment : BaseFragment() {
     }
 
     private fun applyDarkModeToTheApp(isDarkModeEnable: Boolean) {
-        val mode = if (isDarkModeEnable) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+        val mode = if (isDarkModeEnable) {
+            AppCompatDelegate.MODE_NIGHT_YES
+        } else {
+            AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+        }
         AppCompatDelegate.setDefaultNightMode(mode)
     }
 }

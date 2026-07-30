@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import com.thanh0x.coursedeals.data.model.Coupon as CouponEntity
 import com.thanh0x.coursedeals.data.model.CouponDto
 import com.thanh0x.coursedeals.domain.model.Coupon as CouponDomain
+import com.thanh0x.coursedeals.util.Constant
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import timber.log.Timber
@@ -122,8 +123,9 @@ fun CouponDomain.toEntity(): CouponEntity {
  * Converts a JSON date array [year, month, day, hour, minute, second] to Epoch Seconds.
  */
 @SuppressLint("NewApi")
+@Suppress("TooGenericExceptionCaught")
 private fun formatDateArrayToEpoch(dateArray: List<Int>?): Long? {
-    if (dateArray == null || dateArray.size < 3) return null
+    if (dateArray == null || dateArray.size < Constant.DATE_ARRAY_MIN_SIZE) return null
     return try {
         val year = dateArray[0]
         val month = dateArray[1]

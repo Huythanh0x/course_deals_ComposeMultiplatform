@@ -21,28 +21,34 @@ class RemotePagingCouponDataSourceImpl @Inject constructor(private val couponSer
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Coupon> {
         val pageNumber = params.key ?: STARTING_KEY
         val pageSize = params.loadSize
-        try {
+        
+        val result: LoadResult<Int, Coupon> = try {
             val responseData = couponService.fetchPagedCoupons(pageNumber, pageSize)
-            responseData.body()?.let {
-                val pageMax = it.totalPage
-                val courses = it.courses.map { dto -> dto.toDomain() }
+            val body = responseData.body()
+            
+            if (responseData.isSuccessful && body != null) {
+                val pageMax = body.totalPage
+                val courses = body.courses.map { dto -> dto.toDomain() }
                 Timber.d("CURRENT PAGE: $pageNumber $pageMax with $pageSize")
                 if (pageNumber != STARTING_KEY) delay(LOAD_DELAY_MILLIS.milliseconds)
-                return LoadResult.Page(
+                LoadResult.Page(
                     courses,
                     prevKey = if (pageNumber > 1) pageNumber - 1 else null,
                     nextKey = if (pageNumber < pageMax) pageNumber + 1 else null
                 )
+            } else {
+                Timber.e("LOADING NEW PAGE: Response body is null or unsuccessful")
+                LoadResult.Error(Throwable("Unknown error while loading new paging data"))
             }
         } catch (e: Exception) {
             Timber.e(e, "Error loading paging data: page $pageNumber")
-            return LoadResult.Error(e)
+            LoadResult.Error(e)
         }
-        Timber.e("LOADING NEW PAGE: Unknown error while loading new page")
-        return LoadResult.Error(Throwable("Unknown error while loading new paging data"))
+        return result
     }
 
     override val keyReuseSupported: Boolean

@@ -4,8 +4,10 @@ import com.thanh0x.coursedeals.domain.model.AppResult
 import com.thanh0x.coursedeals.domain.repository.UserAuthenticationRepository
 import javax.inject.Inject
 
-class CheckIfTokenExpiredUseCase @Inject constructor(private val userAuthenticationRepository: UserAuthenticationRepository) {
+class CheckIfTokenExpiredUseCase @Inject constructor(
+    private val repository: UserAuthenticationRepository
+) {
     suspend operator fun invoke(): AppResult<Unit> {
-        return userAuthenticationRepository.checkIfTokenExpired()
+        return repository.checkIfTokenExpired()
     }
 }

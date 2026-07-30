@@ -51,7 +51,7 @@ class ReportBottomSheetDialog(
             validateAndSubmit()
         }
 
-        binding.tietOtherReason.setOnEditorActionListener { v: android.widget.TextView, actionId: Int, event: android.view.KeyEvent? ->
+        binding.tietOtherReason.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 validateAndSubmit()
                 true

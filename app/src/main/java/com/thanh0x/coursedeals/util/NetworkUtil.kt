@@ -14,16 +14,13 @@ class NetworkUtil(val context: Context) {
     }
 
     private fun isInternetCapabilityAvailable(capabilities: NetworkCapabilities?): Boolean {
-        if (capabilities != null) {
-            if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
-                return true
-            } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
-                return true
-            } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
-                return true
-            }
-        }
-        return false
+        if (capabilities == null) return false
+        
+        val hasCellular = capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
+        val hasWifi = capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+        val hasEthernet = capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
+        
+        return hasCellular || hasWifi || hasEthernet
     }
 
 }

@@ -3,6 +3,7 @@ package com.thanh0x.coursedeals.domain.usecase.authentication.fingerprint
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import com.thanh0x.coursedeals.domain.logic.fingerprint.CiphertextWrapper
+import com.thanh0x.coursedeals.util.Constant
 import java.nio.charset.Charset
 import java.security.KeyStore
 import javax.crypto.Cipher
@@ -32,7 +33,11 @@ class CryptographyManagerUseCase @Inject constructor() {
     ): Cipher {
         val cipher = getCipher()
         val secretKey = getOrCreateSecretKey(SECRET_KEY_NAME)
-        cipher.init(Cipher.DECRYPT_MODE, secretKey, GCMParameterSpec(128, initializationVector))
+        cipher.init(
+            Cipher.DECRYPT_MODE,
+            secretKey,
+            GCMParameterSpec(Constant.GCM_TAG_LENGTH, initializationVector)
+        )
         return cipher
     }
 

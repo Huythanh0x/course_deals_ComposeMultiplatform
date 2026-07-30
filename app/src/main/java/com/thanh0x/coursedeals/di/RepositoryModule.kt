@@ -27,33 +27,49 @@ import javax.inject.Singleton
 abstract class RepositoryModule {
     @Binds
     @Singleton
-    abstract fun bindUserAuthenticationRepository(userAuthenticationRepositoryImpl: UserAuthenticationRepositoryImpl): UserAuthenticationRepository
+    abstract fun bindUserAuthenticationRepository(
+        impl: UserAuthenticationRepositoryImpl
+    ): UserAuthenticationRepository
 
     @Binds
     @Singleton
-    abstract fun bindCouponRepository(couponRepositoryImpl: CouponRepositoryImpl): CouponRepository
+    abstract fun bindCouponRepository(
+        impl: CouponRepositoryImpl
+    ): CouponRepository
 
     @Binds
     @Singleton
-    abstract fun bindUserProfileRepository(userProfileRepositoryImpl: UserProfileRepositoryImpl): UserProfileRepository
+    abstract fun bindUserProfileRepository(
+        impl: UserProfileRepositoryImpl
+    ): UserProfileRepository
 
     @Binds
     @Singleton
-    abstract fun bindingRemoteAuthenticationDataSource(remoteAuthenticationDataSourceImpl: RemoteAuthenticationDataSourceImpl): RemoteAuthenticationDataSource
+    abstract fun bindRemoteAuthenticationDataSource(
+        impl: RemoteAuthenticationDataSourceImpl
+    ): RemoteAuthenticationDataSource
 
     @Binds
     @Singleton
-    abstract fun bindLocalAuthenticationDataSource(localAuthenticationDataSourceImpl: LocalAuthenticationDataSourceImpl): LocalAuthenticationDataSource
+    abstract fun bindLocalAuthenticationDataSource(
+        impl: LocalAuthenticationDataSourceImpl
+    ): LocalAuthenticationDataSource
 
     @Binds
     @Singleton
-    abstract fun bindLocalUserProfileDataSource(localUserProfileDataSourceImpl: LocalUserProfileDataSourceImpl): LocalUserProfileDataSource
+    abstract fun bindLocalUserProfileDataSource(
+        impl: LocalUserProfileDataSourceImpl
+    ): LocalUserProfileDataSource
 
     @Binds
     @Singleton
-    abstract fun bindRemoteCouponDataSourceImpl(remoteCouponDataSourceImpl: RemoteCouponDataSourceImpl): RemoteCouponDataSource
+    abstract fun bindRemoteCouponDataSource(
+        impl: RemoteCouponDataSourceImpl
+    ): RemoteCouponDataSource
 
     @Binds
     @Singleton
-    abstract fun bindLocalCouponDataSourceImpl(localCouponDataSourceImpl: LocalCouponDataSourceImpl): LocalCouponDataSource
+    abstract fun bindLocalCouponDataSource(
+        impl: LocalCouponDataSourceImpl
+    ): LocalCouponDataSource
 }

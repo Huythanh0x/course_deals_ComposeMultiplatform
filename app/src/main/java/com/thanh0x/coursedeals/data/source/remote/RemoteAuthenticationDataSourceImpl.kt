@@ -10,6 +10,8 @@ import timber.log.Timber
 
 class RemoteAuthenticationDataSourceImpl(private val userAuthenticationService: UserAuthenticationService) :
     RemoteAuthenticationDataSource {
+    
+    @Suppress("TooGenericExceptionCaught")
     override suspend fun register(credentials: AuthCredentials): AppResult<Unit> {
         return try {
             val response = userAuthenticationService.register(credentials.toDto())
@@ -24,6 +26,7 @@ class RemoteAuthenticationDataSourceImpl(private val userAuthenticationService: 
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     override suspend fun login(credentials: AuthCredentials): AppResult<TokenData> {
         return try {
             val response = userAuthenticationService.login(credentials.toDto())
@@ -39,6 +42,7 @@ class RemoteAuthenticationDataSourceImpl(private val userAuthenticationService: 
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     override suspend fun checkIfTokenExpired(): AppResult<Unit> {
         return try {
             val response = userAuthenticationService.checkIfTokeExpired()
@@ -53,6 +57,7 @@ class RemoteAuthenticationDataSourceImpl(private val userAuthenticationService: 
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     override suspend fun requestFingerprintToken(): AppResult<TokenData> {
         return try {
             val response = userAuthenticationService.requestFingerprintToken()
@@ -68,6 +73,7 @@ class RemoteAuthenticationDataSourceImpl(private val userAuthenticationService: 
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     override suspend fun requestAccessToken(): AppResult<TokenData> {
         return try {
             val response = userAuthenticationService.requestAccessToken()

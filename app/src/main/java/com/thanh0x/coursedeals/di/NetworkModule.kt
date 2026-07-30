@@ -34,18 +34,24 @@ object NetworkModule {
         return Interceptor { chain ->
             return@Interceptor runBlocking {
                 val token = localAuthenticationDataSourceImpl.getLocalToken()
-                val request =
-                    chain.request().newBuilder().addHeader(Constant.NETWORK_AUTHORIZATION_HEADER, "${Constant.NETWORK_BEARER_PREFIX} $token")
-                        .build()
+                val request = chain.request().newBuilder()
+                    .addHeader(
+                        Constant.NETWORK_AUTHORIZATION_HEADER,
+                        "${Constant.NETWORK_BEARER_PREFIX} $token"
+                    )
+                    .build()
                 val response = chain.proceed(request)
                 if (response.code == NetworkStatusCode.HTTP_CODE_UNAUTHORIZED) {
                     try {
                         localAuthenticationDataSourceImpl.saveLocalToken(token!!)
-                        chain.proceed(
-                            request.newBuilder().addHeader(Constant.NETWORK_AUTHORIZATION_HEADER, "${Constant.NETWORK_BEARER_PREFIX} $token")
-                                .build()
-                        )
-                    } catch (exception: Exception) {
+                        val retryRequest = request.newBuilder()
+                            .addHeader(
+                                Constant.NETWORK_AUTHORIZATION_HEADER,
+                                "${Constant.NETWORK_BEARER_PREFIX} $token"
+                            )
+                            .build()
+                        chain.proceed(retryRequest)
+                    } catch (@Suppress("TooGenericExceptionCaught") exception: Exception) {
                         Timber.e(exception, "AuthInterceptor: Failed to refresh token")
                         localAuthenticationDataSourceImpl.saveLocalToken("")
                         response
@@ -59,18 +65,21 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    fun providePagingCouponDataSource(couponService: CouponService): PagingSource<Int, Coupon> =
-        RemotePagingCouponDataSourceImpl(couponService)
+    fun providePagingCouponDataSource(
+        couponService: CouponService
+    ): PagingSource<Int, Coupon> = RemotePagingCouponDataSourceImpl(couponService)
 
     @Singleton
     @Provides
-    fun provideRemoteCouponDataSource(couponService: CouponService) =
-        RemoteCouponDataSourceImpl(couponService)
+    fun provideRemoteCouponDataSource(
+        couponService: CouponService
+    ) = RemoteCouponDataSourceImpl(couponService)
 
     @Singleton
     @Provides
-    fun provideRemoteAuthenticationDataSource(userAuthenticationService: UserAuthenticationService) =
-        RemoteAuthenticationDataSourceImpl(userAuthenticationService)
+    fun provideRemoteAuthenticationDataSource(
+        userAuthenticationService: UserAuthenticationService
+    ) = RemoteAuthenticationDataSourceImpl(userAuthenticationService)
 
     @Singleton
     @Provides
@@ -85,7 +94,8 @@ object NetworkModule {
     @Singleton
     @Provides
     fun provideRetrofitInstance(
-        okHttpClient: OkHttpClient, gsonConverterFactory: GsonConverterFactory
+        okHttpClient: OkHttpClient, 
+        gsonConverterFactory: GsonConverterFactory
     ): Retrofit {
         return Retrofit.Builder().baseUrl(Constant.BASE_URL_API).client(okHttpClient)
             .addConverterFactory(gsonConverterFactory).build()
@@ -95,8 +105,8 @@ object NetworkModule {
     @Provides
     fun provideHttpClient(authInterceptor: Interceptor): OkHttpClient {
         return OkHttpClient().newBuilder()
-            .readTimeout(5000, TimeUnit.SECONDS)
-            .connectTimeout(5000, TimeUnit.SECONDS)
+            .readTimeout(Constant.NETWORK_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .connectTimeout(Constant.NETWORK_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .addInterceptor(authInterceptor)
             .build()
     }
