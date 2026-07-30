@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -16,14 +15,14 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.paging.LoadState
 import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.FragmentHomeBinding
+import com.thanh0x.coursedeals.ui.base.BaseFragment
 import com.thanh0x.coursedeals.ui.detail.CouponDetailActivity
 import com.thanh0x.coursedeals.util.BundleKey
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class HomeFragment : Fragment() {
+class HomeFragment : BaseFragment() {
     private var _binding: FragmentHomeBinding? = null
     private val homeViewModel: HomeViewModel by viewModels()
     private lateinit var couponCoursePagingAdapter: CouponCoursePagingViewAdapter
@@ -53,7 +52,7 @@ class HomeFragment : Fragment() {
             if (it) {
                 observeLoadingCourses()
             } else {
-                showErrorFetchDialog(
+                showAlertDialog(
                     resources.getString(R.string.fetch_error_title),
                     resources.getString(R.string.no_internet_message)
                 )
@@ -95,7 +94,7 @@ class HomeFragment : Fragment() {
                         ?: loadState.refresh as? LoadState.Error
 
                     errorState?.let {
-                        showErrorFetchDialog(
+                        showAlertDialog(
                             resources.getString(R.string.fetch_error_title),
                             it.error.localizedMessage ?: resources.getString(R.string.error_fetching_null_coupon)
                         )
@@ -131,7 +130,7 @@ class HomeFragment : Fragment() {
 
     private fun showSubmitDealDialog() {
         val dialog = SubmitDealBottomSheet { url ->
-            showErrorFetchDialog(
+            showAlertDialog(
                 getString(R.string.submit_deal_title),
                 getString(R.string.submit_success_msg)
             )
@@ -144,18 +143,5 @@ class HomeFragment : Fragment() {
         Log.d("FILTER APPLIED", currentFilter.toString())
         // In a real implementation, you would update the ViewModel with these parameters
         // to trigger a new PagingData stream.
-    }
-
-    private fun showErrorFetchDialog(title: String, message: String) {
-        MaterialAlertDialogBuilder(
-            requireActivity(),
-            com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered
-        ).setTitle(title).setMessage(message)
-            .setPositiveButton(R.string.ok_text_button) { dialog, _ ->
-                dialog.dismiss()
-                homeViewModel.checkIfInternetAvailable()
-            }
-            .setCancelable(false)
-            .create().show()
     }
 }

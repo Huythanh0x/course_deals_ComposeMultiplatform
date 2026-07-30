@@ -24,7 +24,7 @@ class CourseFragment : BaseFragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentCourseBinding.inflate(layoutInflater, container, false)
-        showLoading(getString(R.string.loading_your_courses_page_text))
+        showLoading()
         courseViewModel.isInternetAvailable.observe(viewLifecycleOwner) {
             if (it) {
                 configureWebViewSettings()

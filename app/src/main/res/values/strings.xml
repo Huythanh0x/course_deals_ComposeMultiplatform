@@ -3,7 +3,7 @@
     <string name="username_hint_input">USERNAME</string>
     <string name="password_hint_input">PASSWORD</string>
     <string name="login_text_button">LOGIN</string>
-    <string name="login_error_title">There is an error while login</string>
+    <string name="login_error_title">Login Error</string>
     <string name="ok_text_button">OK</string>
     <string name="no_internet_title">NO INTERNET CONNECTION</string>
     <string name="no_internet_message">Please enable your internet connection to continue using this app</string>
@@ -40,7 +40,7 @@
     <string name="error_fetch_status_code_401">Problem with authentication</string>
     <string name="error_fetch_result_is_null">Response is null</string>
     <string name="error_fetch_status_code_400">Bad request: %s</string>
-    <string name="fetch_error_title">There is an error while fetching data</string>
+    <string name="fetch_error_title">Fetching Data Error</string>
     <string name="jwt_token_is_expired_warning_text">Token is expired. Login Again !!!</string>
     <string name="text_loading_students">LOADING STUDENT</string>
     <string name="text_loading_review">LOADING REVIEW</string>
@@ -58,7 +58,7 @@
     <string name="few_review">%d review</string>
     <string name="lots_of_review">%d reviews</string>
     <string name="thousands_reviews">%dK reviews</string>
-    <string name="coupon_detail_error_title">THERE IS AN ERROR WHILE LOADING DETAIL</string>
+    <string name="coupon_detail_error_title">Fetching Data Error</string>
     <string name="error_fetching_null_coupon">Unexpected error, try again !!!</string>
     <string name="dialog_loading_text">LOADING COUPON DETAILS</string>
     <string name="loading_enroll_page_text">LOADING ENROLL WEBSITE</string>
