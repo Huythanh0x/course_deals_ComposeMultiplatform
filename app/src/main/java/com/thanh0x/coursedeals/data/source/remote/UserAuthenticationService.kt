@@ -1,6 +1,7 @@
 package com.thanh0x.coursedeals.data.source.remote
 
 import com.thanh0x.coursedeals.data.model.PostAuthenticationData
+import com.thanh0x.coursedeals.data.model.SocialLoginRequest
 import com.thanh0x.coursedeals.data.model.TokenResponseData
 import retrofit2.Response
 import retrofit2.http.Body
@@ -9,9 +10,14 @@ import retrofit2.http.POST
 
 interface UserAuthenticationService {
     @POST("/api/v1/auth/login")
+    @Deprecated("Use social login instead")
     suspend fun login(@Body postAuthenticationData: PostAuthenticationData): Response<TokenResponseData>
 
+    @POST("/api/v1/auth/social/login")
+    suspend fun socialLogin(@Body request: SocialLoginRequest): Response<TokenResponseData>
+
     @POST("/api/v1/auth/register")
+    @Deprecated("Use social login instead")
     suspend fun register(@Body postAuthenticationData: PostAuthenticationData): Response<Any>
 
     @GET("/api/v1/coupons")

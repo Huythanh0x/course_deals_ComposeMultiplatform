@@ -31,7 +31,7 @@ class CouponDetailActivity : BaseActivity() {
             setupObservers(courseId)
             couponDetailViewModel.checkIfInternetAvailable()
         } else {
-            showFetchingErrorDialog()
+            showFetchingErrorDialog("Not getting courseID")
         }
     }
 
@@ -54,7 +54,7 @@ class CouponDetailActivity : BaseActivity() {
         }
 
         state.error?.let {
-            showFetchingErrorDialog()
+            showFetchingErrorDialog(state.error)
         }
 
         state.coupon?.let {
@@ -119,10 +119,12 @@ class CouponDetailActivity : BaseActivity() {
         }
     }
 
-    private fun showFetchingErrorDialog() {
+    private fun showFetchingErrorDialog(cause: String) {
+        Log.d("showFetchingErrorDialog", cause)
         showAlertDialog(
             getString(R.string.coupon_detail_error_title),
-            getString(R.string.error_fetching_null_coupon)
+            getString(R.string.error_fetching_null_coupon),
+            cause
         ) {
             finish()
         }

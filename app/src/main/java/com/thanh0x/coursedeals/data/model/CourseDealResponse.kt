@@ -12,5 +12,5 @@ data class CourseDealResponse(
     @SerializedName("currentPage")
     val currentPage: Int,
     @SerializedName("courses")
-    val courses: List<Coupon>
+    val courses: List<CouponDto>
 )

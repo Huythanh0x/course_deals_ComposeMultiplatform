@@ -9,9 +9,6 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.paging.LoadState
 import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.FragmentHomeBinding
@@ -19,7 +16,6 @@ import com.thanh0x.coursedeals.ui.base.BaseFragment
 import com.thanh0x.coursedeals.ui.detail.CouponDetailActivity
 import com.thanh0x.coursedeals.util.BundleKey
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class HomeFragment : BaseFragment() {
@@ -29,7 +25,7 @@ class HomeFragment : BaseFragment() {
     private val binding get() = _binding!!
 
     private var currentFilter = FilterData()
-    
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -84,7 +80,7 @@ class HomeFragment : BaseFragment() {
                 getString(R.string.no_internet_message)
             )
         }
-        
+
         binding.tvStatDeals.text = getString(R.string.stat_deals, state.statDeals)
         binding.tvStatUpdated.text = getString(R.string.stat_updated, state.statUpdatedTime)
     }

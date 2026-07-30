@@ -1,6 +1,6 @@
 package com.thanh0x.coursedeals.data.source.remote
 
-import com.thanh0x.coursedeals.data.model.Coupon
+import com.thanh0x.coursedeals.data.model.CouponDto
 import com.thanh0x.coursedeals.data.model.ResponseStatusFromServer
 import com.thanh0x.coursedeals.data.model.CourseDealResponse
 import retrofit2.Response
@@ -24,7 +24,12 @@ interface CouponService {
     @GET("/api/v1/coupons/{courseId}")
     suspend fun fetchCouponDetail(
         @Path(value = "courseId") courseId: Int,
-    ): Response<Coupon>
+    ): Response<CouponDto>
+
+    @GET("/api/v1/coupons/{courseId}/details")
+    suspend fun fetchEnhancedCouponDetail(
+        @Path(value = "courseId") courseId: Int,
+    ): Response<CouponDto>
 
     @GET("/api/v1/coupons/search")
     suspend fun searchCourseCoupon(

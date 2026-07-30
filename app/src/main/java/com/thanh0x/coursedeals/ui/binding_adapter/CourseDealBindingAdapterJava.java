@@ -44,7 +44,7 @@ public class CourseDealBindingAdapterJava {
     }
 
     @BindingAdapter("timeLeft")
-    public static void timeLeft(TextView textView, Double expiredDate) {
+    public static void timeLeft(TextView textView, Long expiredDate) {
         textView.setText(new MapperToView(textView.getContext()).mapTimeLeft(expiredDate));
     }
 }

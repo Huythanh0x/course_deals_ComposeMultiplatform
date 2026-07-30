@@ -34,8 +34,8 @@ abstract class BaseFragment : Fragment() {
         (activity as? BaseActivity)?.hideLoading()
     }
 
-    fun showAlertDialog(title: String, message: String, onPositiveClick: (() -> Unit)? = null) {
-        (activity as? BaseActivity)?.showAlertDialog(title, message, onPositiveClick)
+    fun showAlertDialog(title: String, message: String, cause: String? = null, onPositiveClick: (() -> Unit)? = null) {
+        (activity as? BaseActivity)?.showAlertDialog(title, message, cause, onPositiveClick)
     }
 
     open fun handleUiEvent(event: UiEvent) {

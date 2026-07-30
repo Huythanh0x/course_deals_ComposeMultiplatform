@@ -8,7 +8,7 @@ data class Coupon(
     val couponCode: String?,
     val couponUrl: String?,
     val description: String?,
-    val expiredDate: Double?,
+    val expiredDate: Long?,
     val heading: String?,
     val language: String?,
     val level: String?,
@@ -20,5 +20,7 @@ data class Coupon(
     val subCategory: String?,
     val title: String?,
     val usesRemaining: Int?,
-    val isNew: Boolean?
+    val isNew: Boolean?,
+    val createdAt: Long? = null,
+    val updatedAt: Long? = null
 )

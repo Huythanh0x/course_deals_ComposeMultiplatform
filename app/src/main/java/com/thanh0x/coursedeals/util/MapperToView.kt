@@ -5,7 +5,7 @@ import android.text.Html
 import com.thanh0x.coursedeals.R
 
 class MapperToView(val context: Context) {
-    fun mapTimeLeft(expiredDate: Double?): String {
+    fun mapTimeLeft(expiredDate: Long?): String {
         val durationInMinutes = TimeLeft.getDurationFromNow(expiredDate)
         return when (durationInMinutes) {
             -1L -> context.getString(R.string.unknown_time_left)
@@ -28,6 +28,17 @@ class MapperToView(val context: Context) {
             else -> context.getString(
                 R.string.unknown_time_left
             )
+        }
+    }
+
+    fun mapTimeAgo(timestamp: Long?): String {
+        val minutesAgo = TimeLeft.getDurationFromNowToAgo(timestamp)
+        return when (minutesAgo) {
+            -1L -> context.getString(R.string.unknown_time_ago)
+            in 0..1 -> context.getString(R.string.few_minute_ago)
+            in 2..60 -> context.getString(R.string.lots_of_minutes_ago, minutesAgo)
+            in 61..1440 -> context.getString(R.string.lots_of_hours_ago, minutesAgo / 60)
+            else -> context.getString(R.string.lots_of_days_ago, minutesAgo / 60 / 24)
         }
     }
 

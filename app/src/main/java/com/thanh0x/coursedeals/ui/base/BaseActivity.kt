@@ -1,5 +1,6 @@
 package com.thanh0x.coursedeals.ui.base
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.widget.ImageView
 import android.widget.TextView
@@ -44,11 +45,17 @@ abstract class BaseActivity : AppCompatActivity() {
     open fun handleUiEvent(event: UiEvent) {
         when (event) {
             is UiEvent.ShowToast -> {
-                android.widget.Toast.makeText(this, event.message, android.widget.Toast.LENGTH_SHORT).show()
+                android.widget.Toast.makeText(
+                    this,
+                    event.message,
+                    android.widget.Toast.LENGTH_SHORT
+                ).show()
             }
+
             is UiEvent.ShowErrorDialog -> {
                 showAlertDialog(event.title, event.message)
             }
+
             is UiEvent.Navigate -> {
                 // This will be overridden or expanded in specific activities
             }
@@ -75,19 +82,21 @@ abstract class BaseActivity : AppCompatActivity() {
         }
     }
 
-    fun showAlertDialog(title: String, message: String, onPositiveClick: (() -> Unit)? = null) {
+    fun showAlertDialog(title: String, message: String, cause: String? = null, onPositiveClick: (() -> Unit)? = null) {
+
         val headerView = LayoutInflater.from(this).inflate(R.layout.layout_dialog_header, null)
         val tvTitle = headerView.findViewById<TextView>(R.id.tvDialogTitle)
         val ivLogo = headerView.findViewById<ImageView>(R.id.ivDialogLogo)
-        
+
         tvTitle.text = title
-        
+
         // Use red tint for error-related titles
-        val isError = title.contains("Error", ignoreCase = true) || 
-                     title.contains("Failed", ignoreCase = true) ||
-                     title.contains("No Internet", ignoreCase = true)
-        
+        val isError = title.contains("Error", ignoreCase = true) ||
+                title.contains("Failed", ignoreCase = true) ||
+                title.contains("No Internet", ignoreCase = true)
+
         if (isError) {
+            Log.e(this.javaClass.name, "showAlertDialog: title = $title, message = $cause")
             val typedValue = android.util.TypedValue()
             val attrId = resources.getIdentifier("colorError", "attr", packageName)
             if (attrId != 0) {
