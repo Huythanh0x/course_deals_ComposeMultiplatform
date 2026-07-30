@@ -13,10 +13,47 @@ import kotlinx.coroutines.launch
 import java.lang.Long.max
 import kotlin.time.Duration.Companion.milliseconds
 
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+
 abstract class BaseActivity : AppCompatActivity() {
 
     private var loadingDialog: LoadingDialog? = null
     private var loadingStartTime: Long = 0L
+
+    fun <T> collectFlow(flow: Flow<T>, action: suspend (T) -> Unit) {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                flow.collect { action(it) }
+            }
+        }
+    }
+
+    fun <T> collectLatestFlow(flow: Flow<T>, action: suspend (T) -> Unit) {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                flow.collectLatest { action(it) }
+            }
+        }
+    }
+
+    open fun handleUiEvent(event: UiEvent) {
+        when (event) {
+            is UiEvent.ShowToast -> {
+                android.widget.Toast.makeText(this, event.message, android.widget.Toast.LENGTH_SHORT).show()
+            }
+            is UiEvent.ShowErrorDialog -> {
+                showAlertDialog(event.title, event.message)
+            }
+            is UiEvent.Navigate -> {
+                // This will be overridden or expanded in specific activities
+            }
+        }
+    }
 
     fun showLoading(message: String? = null) {
         if (loadingDialog == null) {

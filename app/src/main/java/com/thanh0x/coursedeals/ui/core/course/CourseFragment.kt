@@ -20,22 +20,35 @@ class CourseFragment : BaseFragment() {
     private var _binding: FragmentCourseBinding? = null
     val binding get() = _binding!!
     private val courseViewModel: CourseViewModel by viewModels()
+    
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentCourseBinding.inflate(layoutInflater, container, false)
-        showLoading()
-        courseViewModel.isInternetAvailable.observe(viewLifecycleOwner) {
-            if (it) {
-                configureWebViewSettings()
-                binding.wvMyCourses.webViewClient = getCustomWebViewClient()
-                binding.wvMyCourses.loadUrl(Constant.MY_COURSE_URL)
-            } else {
-                showNotInternetDialog()
-            }
-        }
-        courseViewModel.checkIfInternetAvailable()
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        showLoading()
+        setupObservers()
+        courseViewModel.checkIfInternetAvailable()
+    }
+
+    private fun setupObservers() {
+        collectFlow(courseViewModel.uiState) { state ->
+            handleUiState(state)
+        }
+    }
+
+    private fun handleUiState(state: CourseUiState) {
+        if (state.isInternetAvailable) {
+            configureWebViewSettings()
+            binding.wvMyCourses.webViewClient = getCustomWebViewClient()
+            binding.wvMyCourses.loadUrl(Constant.MY_COURSE_URL)
+        } else {
+            showNotInternetDialog()
+        }
     }
 
     override fun onDestroyView() {

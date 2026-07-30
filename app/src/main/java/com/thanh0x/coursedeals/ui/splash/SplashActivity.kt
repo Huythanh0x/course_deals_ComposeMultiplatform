@@ -3,12 +3,11 @@ package com.thanh0x.coursedeals.ui.splash
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
-import com.thanh0x.coursedeals.MainActivity
 import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.ActivitySplashBinding
+import com.thanh0x.coursedeals.ui.base.BaseActivity
 import com.thanh0x.coursedeals.ui.login.LoginActivity
 import com.thanh0x.coursedeals.util.Constant
 import dagger.hilt.android.AndroidEntryPoint
@@ -19,9 +18,10 @@ import kotlin.time.Duration.Companion.milliseconds
 
 @AndroidEntryPoint
 @SuppressLint("CustomSplashScreen")
-class SplashActivity : AppCompatActivity() {
+class SplashActivity : BaseActivity() {
     lateinit var binding: ActivitySplashBinding
     private val startedTime = System.currentTimeMillis()
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_splash)

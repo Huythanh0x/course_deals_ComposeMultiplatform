@@ -1,14 +1,15 @@
 package com.thanh0x.coursedeals.ui.detail
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.thanh0x.coursedeals.domain.model.AppResult
-import com.thanh0x.coursedeals.domain.model.Coupon
 import com.thanh0x.coursedeals.domain.usecase.remote_coupon.FetchCouponDetailUseCase
 import com.thanh0x.coursedeals.util.NetworkUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -16,20 +17,31 @@ import javax.inject.Inject
 class CouponDetailViewModel @Inject constructor(
     private val fetchCouponDetailUseCase: FetchCouponDetailUseCase,
     private val networkUtil: NetworkUtil
-) :
-    ViewModel() {
-    val isInternetAvailable = MutableLiveData<Boolean>()
-    val couponDetail = MutableLiveData<AppResult<Coupon>>()
+) : ViewModel() {
+
+    private val _uiState = MutableStateFlow(CouponDetailUiState())
+    val uiState = _uiState.asStateFlow()
     
     fun fetchCouponDetail(courseId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            couponDetail.postValue(AppResult.Loading)
+            _uiState.update { it.copy(isLoading = true, error = null) }
             val result = fetchCouponDetailUseCase(courseId)
-            couponDetail.postValue(result)
+            _uiState.update { it.copy(isLoading = false) }
+            
+            when (result) {
+                is AppResult.Success -> {
+                    _uiState.update { it.copy(coupon = result.data) }
+                }
+                is AppResult.Error -> {
+                    _uiState.update { it.copy(error = result.message) }
+                }
+                is AppResult.Loading -> { }
+            }
         }
     }
 
     fun checkIfInternetAvailable() {
-        isInternetAvailable.postValue(networkUtil.isInternetAvailable())
+        val available = networkUtil.isInternetAvailable()
+        _uiState.update { it.copy(isInternetAvailable = available) }
     }
 }

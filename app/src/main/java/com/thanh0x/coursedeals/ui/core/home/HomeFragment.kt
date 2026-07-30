@@ -29,10 +29,32 @@ class HomeFragment : BaseFragment() {
     private val binding get() = _binding!!
 
     private var currentFilter = FilterData()
+    
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupAdapter()
+        setupListeners()
+        setupObservers()
+        homeViewModel.checkIfInternetAvailable()
+    }
+
+    private fun setupAdapter() {
+        couponCoursePagingAdapter = CouponCoursePagingViewAdapter() { clickedCoupon ->
+            val detailIntent = Intent(requireContext(), CouponDetailActivity::class.java)
+            detailIntent.putExtra(BundleKey.TO_DETAIL_ACTIVITY, clickedCoupon.courseId)
+            startActivity(detailIntent)
+        }
+        binding.rvCouponCourse.adapter = couponCoursePagingAdapter
+    }
+
+    private fun setupListeners() {
         binding.svCouponCourse.setOnQueryTextListener(queryTextChangeListener)
         binding.btnFilter.setOnClickListener {
             showFilterDialog()
@@ -40,73 +62,63 @@ class HomeFragment : BaseFragment() {
         binding.btnSubmitDeal.setOnClickListener {
             showSubmitDealDialog()
         }
-        couponCoursePagingAdapter = CouponCoursePagingViewAdapter() { clickedCoupon ->
-            val detailIntent = Intent(requireContext(), CouponDetailActivity::class.java)
-            detailIntent.putExtra(BundleKey.TO_DETAIL_ACTIVITY, clickedCoupon.courseId)
-            startActivity(detailIntent)
+    }
+
+    private fun setupObservers() {
+        collectFlow(homeViewModel.uiState) { state ->
+            handleUiState(state)
         }
-        binding.rvCouponCourse.adapter = couponCoursePagingAdapter
-        setupStatLine()
-        observeLoadingState()
-        homeViewModel.isInternetAvailable.observe(viewLifecycleOwner) {
-            if (it) {
-                observeLoadingCourses()
-            } else {
+
+        collectFlow(homeViewModel.uiEvent) { event ->
+            handleUiEvent(event)
+        }
+
+        observePagingData()
+        observePagingLoadState()
+    }
+
+    private fun handleUiState(state: HomeUiState) {
+        if (!state.isInternetAvailable) {
+            showAlertDialog(
+                getString(R.string.fetch_error_title),
+                getString(R.string.no_internet_message)
+            )
+        }
+        
+        binding.tvStatDeals.text = getString(R.string.stat_deals, state.statDeals)
+        binding.tvStatUpdated.text = getString(R.string.stat_updated, state.statUpdatedTime)
+    }
+
+    private fun observePagingData() {
+        collectFlow(homeViewModel.items) { pagingData ->
+            couponCoursePagingAdapter.submitData(pagingData)
+        }
+    }
+
+    private fun observePagingLoadState() {
+        collectFlow(couponCoursePagingAdapter.loadStateFlow) { loadState ->
+            binding.pbHome.isVisible = loadState.refresh is LoadState.Loading
+            binding.lpiLoadPreviousPage.isVisible = loadState.source.prepend is LoadState.Loading
+            binding.lpiLoadNextPage.isVisible = loadState.source.append is LoadState.Loading
+
+            val errorState = loadState.source.append as? LoadState.Error
+                ?: loadState.source.prepend as? LoadState.Error
+                ?: loadState.append as? LoadState.Error
+                ?: loadState.prepend as? LoadState.Error
+                ?: loadState.refresh as? LoadState.Error
+
+            errorState?.let {
                 showAlertDialog(
-                    resources.getString(R.string.fetch_error_title),
-                    resources.getString(R.string.no_internet_message)
+                    getString(R.string.fetch_error_title),
+                    it.error.localizedMessage ?: getString(R.string.error_fetching_null_coupon)
                 )
             }
         }
-        homeViewModel.checkIfInternetAvailable()
-        return binding.root
     }
 
-    private fun setupStatLine() {
-        // Set sample values for now to avoid showing raw formatting tokens
-        binding.tvStatDeals.text = getString(R.string.stat_deals, 128)
-        binding.tvStatUpdated.text = getString(R.string.stat_updated, "2h")
-    }
-
-    private fun observeLoadingCourses() {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-
-                homeViewModel.items.collect {
-                    couponCoursePagingAdapter.submitData(it)
-                }
-            }
-        }
-    }
-
-    private fun observeLoadingState() {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                couponCoursePagingAdapter.loadStateFlow.collect { loadState ->
-                    binding.pbHome.isVisible = loadState.refresh is LoadState.Loading
-                    binding.lpiLoadPreviousPage.isVisible = loadState.source.prepend is LoadState.Loading
-                    binding.lpiLoadNextPage.isVisible = loadState.source.append is LoadState.Loading
-
-                    val errorState = loadState.source.append as? LoadState.Error
-                        ?: loadState.source.prepend as? LoadState.Error
-                        ?: loadState.append as? LoadState.Error
-                        ?: loadState.prepend as? LoadState.Error
-                        ?: loadState.refresh as? LoadState.Error
-
-                    errorState?.let {
-                        showAlertDialog(
-                            resources.getString(R.string.fetch_error_title),
-                            it.error.localizedMessage ?: resources.getString(R.string.error_fetching_null_coupon)
-                        )
-                    }
-                }
-            }
-        }
-    }
-
-    override fun onDestroy() {
+    override fun onDestroyView() {
+        super.onDestroyView()
         _binding = null
-        super.onDestroy()
     }
 
     private val queryTextChangeListener = object : SearchView.OnQueryTextListener {
@@ -116,6 +128,7 @@ class HomeFragment : BaseFragment() {
         }
 
         override fun onQueryTextChange(newText: String?): Boolean {
+            homeViewModel.updateQuery(newText ?: "")
             return true
         }
     }
@@ -139,9 +152,6 @@ class HomeFragment : BaseFragment() {
     }
 
     private fun applyFilters() {
-        // Log or show the applied filters for now
         Log.d("FILTER APPLIED", currentFilter.toString())
-        // In a real implementation, you would update the ViewModel with these parameters
-        // to trigger a new PagingData stream.
     }
 }

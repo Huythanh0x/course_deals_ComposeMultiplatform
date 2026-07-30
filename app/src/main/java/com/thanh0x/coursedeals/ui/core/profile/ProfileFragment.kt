@@ -24,6 +24,7 @@ import com.thanh0x.coursedeals.databinding.FragmentProfileBinding
 import com.thanh0x.coursedeals.domain.logic.fingerprint.BiometricPromptUtils
 import com.thanh0x.coursedeals.domain.model.AppResult
 import com.thanh0x.coursedeals.ui.base.BaseFragment
+import com.thanh0x.coursedeals.ui.base.UiEvent
 import com.thanh0x.coursedeals.ui.login.LoginActivity
 import com.thanh0x.coursedeals.util.NetworkStatusCode
 import dagger.hilt.android.AndroidEntryPoint
@@ -66,7 +67,6 @@ class ProfileFragment : BaseFragment() {
 
         binding.btnLogout.setOnClickListener {
             profileViewModel.deleteLocalToken()
-            forceLogout()
         }
 
         binding.tvDevEmail.setOnClickListener {
@@ -99,7 +99,6 @@ class ProfileFragment : BaseFragment() {
         }
         binding.swEnableDarkMode.setOnCheckedChangeListener { _, isChecked ->
             profileViewModel.checkIfTokenExpired()
-            profileViewModel.isDarkModeEnable.postValue(isChecked)
             profileViewModel.saveIsDarkModeEnable(isChecked)
         }
 
@@ -116,7 +115,6 @@ class ProfileFragment : BaseFragment() {
                     promptFingerPrintSignUp()
                 }
             } else {
-                profileViewModel.isFingerPrintEnable.postValue(false)
                 profileViewModel.saveIsFingerPrintEnable(false)
             }
         }
@@ -166,7 +164,6 @@ class ProfileFragment : BaseFragment() {
     }
 
     private fun updateCategoryChips() {
-        // Remove all except the add button
         val childCount = binding.cgFavCats.childCount
         for (i in childCount - 1 downTo 0) {
             val view = binding.cgFavCats.getChildAt(i)
@@ -175,7 +172,6 @@ class ProfileFragment : BaseFragment() {
             }
         }
 
-        // Add new chips before the add button
         selectedCategories.forEach { cat ->
             val chip = com.google.android.material.chip.Chip(
                 requireContext(),
@@ -221,17 +217,39 @@ class ProfileFragment : BaseFragment() {
     }
 
     private fun setupObservers() {
-        profileViewModel.tokenExpired.observe(viewLifecycleOwner) {
-            if (it) forceLogout()
+        collectFlow(profileViewModel.uiState) { state ->
+            handleUiState(state)
         }
 
-        profileViewModel.isDarkModeEnable.observe(viewLifecycleOwner) {
-            binding.swEnableDarkMode.isChecked = it
-            applyDarkModeToTheApp(it)
+        collectFlow(profileViewModel.uiEvent) { event ->
+            handleUiEvent(event)
+        }
+    }
+
+    private fun handleUiState(state: ProfileUiState) {
+        if (state.isTokenExpired) {
+            forceLogout()
+            return
         }
 
-        profileViewModel.isFingerPrintEnable.observe(viewLifecycleOwner) {
-            binding.swEnableFingerPrint.isChecked = it
+        if (binding.swEnableDarkMode.isChecked != state.isDarkModeEnabled) {
+            binding.swEnableDarkMode.isChecked = state.isDarkModeEnabled
+            applyDarkModeToTheApp(state.isDarkModeEnabled)
+        }
+
+        if (binding.swEnableFingerPrint.isChecked != state.isFingerprintEnabled) {
+            binding.swEnableFingerPrint.isChecked = state.isFingerprintEnabled
+        }
+    }
+
+    override fun handleUiEvent(event: UiEvent) {
+        when (event) {
+            is UiEvent.Navigate -> {
+                if (event.destination == "Login") {
+                    forceLogout()
+                }
+            }
+            else -> super.handleUiEvent(event)
         }
     }
 
@@ -280,7 +298,6 @@ class ProfileFragment : BaseFragment() {
                                 if (cipherTextWrapper != null) {
                                     showToast("Add fingerprint successfully")
                                     profileViewModel.saveCipherTextWrapper(cipherTextWrapper)
-                                    profileViewModel.isFingerPrintEnable.postValue(true)
                                     profileViewModel.saveIsFingerPrintEnable(true)
                                 }
                             }
@@ -290,7 +307,7 @@ class ProfileFragment : BaseFragment() {
                                     forceLogout()
                                 }
                             }
-                            is AppResult.Loading -> { /* Handle loading */ }
+                            is AppResult.Loading -> { }
                         }
                     }
                 }, {

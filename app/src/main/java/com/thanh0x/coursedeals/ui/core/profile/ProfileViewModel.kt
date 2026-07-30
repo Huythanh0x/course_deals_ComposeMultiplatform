@@ -2,7 +2,6 @@ package com.thanh0x.coursedeals.ui.core.profile
 
 import android.util.Log
 import androidx.biometric.BiometricPrompt
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.thanh0x.coursedeals.domain.logic.fingerprint.CiphertextWrapper
@@ -15,10 +14,16 @@ import com.thanh0x.coursedeals.domain.usecase.authentication.jwt.CheckIfTokenExp
 import com.thanh0x.coursedeals.domain.usecase.authentication.jwt.ClearLocalTokenUseCase
 import com.thanh0x.coursedeals.domain.usecase.authentication.jwt.SaveJwtTokenUseCase
 import com.thanh0x.coursedeals.domain.usecase.user_profile.SettingUserProfileUseCase
+import com.thanh0x.coursedeals.ui.base.UiEvent
 import com.thanh0x.coursedeals.util.NetworkStatusCode
 import com.thanh0x.coursedeals.util.NetworkUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.crypto.Cipher
 import javax.inject.Inject
@@ -34,9 +39,12 @@ class ProfileViewModel @Inject constructor(
     private val checkIfTokenExpiredUseCase: CheckIfTokenExpiredUseCase,
     private val networkUtil: NetworkUtil
 ) : ViewModel() {
-    val isDarkModeEnable = MutableLiveData<Boolean>()
-    val isFingerPrintEnable = MutableLiveData<Boolean>()
-    val tokenExpired = MutableLiveData<Boolean>()
+
+    private val _uiState = MutableStateFlow(ProfileUiState())
+    val uiState = _uiState.asStateFlow()
+
+    private val _uiEvent = MutableSharedFlow<UiEvent>()
+    val uiEvent = _uiEvent.asSharedFlow()
 
     init {
         initSwitchState()
@@ -45,10 +53,9 @@ class ProfileViewModel @Inject constructor(
 
     private fun initSwitchState() {
         viewModelScope.launch(Dispatchers.IO) {
-            isDarkModeEnable.postValue(settingUserProfileUseCase.loadDarkModeUseCase() ?: false)
-            isFingerPrintEnable.postValue(
-                settingUserProfileUseCase.loadFingerprintUseCase() ?: false
-            )
+            val darkMode = settingUserProfileUseCase.loadDarkModeUseCase() ?: false
+            val fingerprint = settingUserProfileUseCase.loadFingerprintUseCase() ?: false
+            _uiState.update { it.copy(isDarkModeEnabled = darkMode, isFingerprintEnabled = fingerprint) }
         }
     }
 
@@ -56,26 +63,28 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val result = checkIfTokenExpiredUseCase()
             when (result) {
-                is AppResult.Success -> tokenExpired.postValue(false)
+                is AppResult.Success -> _uiState.update { it.copy(isTokenExpired = false) }
                 is AppResult.Error -> {
                     if (result.code == NetworkStatusCode.HTTP_CODE_UNAUTHORIZED) {
-                        tokenExpired.postValue(true)
+                        _uiState.update { it.copy(isTokenExpired = true) }
                     } else {
                         Log.e("CHECK EXPIRED", result.code.toString())
                     }
                 }
-                is AppResult.Loading -> { /* Handle loading if needed */ }
+                is AppResult.Loading -> { }
             }
         }
     }
 
     fun saveIsDarkModeEnable(isDarkModeEnable: Boolean) {
+        _uiState.update { it.copy(isDarkModeEnabled = isDarkModeEnable) }
         viewModelScope.launch(Dispatchers.IO) {
             settingUserProfileUseCase.saveDarkModeUseCase(isDarkModeEnable)
         }
     }
 
     fun saveIsFingerPrintEnable(isFingerprintEnable: Boolean) {
+        _uiState.update { it.copy(isFingerprintEnabled = isFingerprintEnable) }
         viewModelScope.launch(Dispatchers.IO) {
             settingUserProfileUseCase.saveFingerPrintUseCase(isFingerprintEnable)
         }
@@ -84,6 +93,7 @@ class ProfileViewModel @Inject constructor(
     fun deleteLocalToken() {
         viewModelScope.launch(Dispatchers.IO) {
             saveJwtTokenUseCase("")
+            _uiEvent.emit(UiEvent.Navigate("Login"))
         }
     }
 

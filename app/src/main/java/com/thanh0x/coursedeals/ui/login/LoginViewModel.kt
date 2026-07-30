@@ -2,11 +2,9 @@ package com.thanh0x.coursedeals.ui.login
 
 import android.util.Log
 import androidx.biometric.BiometricPrompt
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.thanh0x.coursedeals.domain.model.AppResult
-import com.thanh0x.coursedeals.domain.model.TokenData
 import com.thanh0x.coursedeals.domain.usecase.authentication.LoginUseCase
 import com.thanh0x.coursedeals.domain.usecase.authentication.fingerprint.CryptographyManagerUseCase
 import com.thanh0x.coursedeals.domain.usecase.authentication.fingerprint.SettingFingerprintUseCase
@@ -14,9 +12,15 @@ import com.thanh0x.coursedeals.domain.usecase.authentication.jwt.ClearLocalToken
 import com.thanh0x.coursedeals.domain.usecase.authentication.jwt.RequestAccessTokenUseCase
 import com.thanh0x.coursedeals.domain.usecase.authentication.jwt.SaveJwtTokenUseCase
 import com.thanh0x.coursedeals.domain.usecase.user_profile.SettingUserProfileUseCase
+import com.thanh0x.coursedeals.ui.base.UiEvent
 import com.thanh0x.coursedeals.util.NetworkUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.crypto.Cipher
 import javax.inject.Inject
@@ -32,23 +36,33 @@ class LoginViewModel @Inject constructor(
     private val settingUserProfileUseCase: SettingUserProfileUseCase,
     private val networkUtil: NetworkUtil
 ) : ViewModel() {
-    val loginResponseResult = MutableLiveData<AppResult<TokenData>>()
-    val decryptionResult = MutableLiveData<String>()
-    val newAccessTokenFromFingerprint = MutableLiveData<String>()
-    val isLoginByFingerprintEnable = MutableLiveData<Boolean?>()
+
+    private val _uiState = MutableStateFlow(LoginUiState())
+    val uiState = _uiState.asStateFlow()
+
+    private val _uiEvent = MutableSharedFlow<UiEvent>()
+    val uiEvent = _uiEvent.asSharedFlow()
 
     init {
         checkIsAbleLoginByFingerprint()
     }
 
     fun login(username: String, password: String) {
-        loginResponseResult.postValue(AppResult.Loading)
         viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update { it.copy(isLoading = true, error = null) }
             val result = loginUseCase(username, password)
-            if (result is AppResult.Success) {
-                saveJwtTokenUseCase(result.data.accessToken)
+            _uiState.update { it.copy(isLoading = false) }
+            
+            when (result) {
+                is AppResult.Success -> {
+                    saveJwtTokenUseCase(result.data.accessToken)
+                    _uiEvent.emit(UiEvent.Navigate("Main"))
+                }
+                is AppResult.Error -> {
+                    _uiState.update { it.copy(error = result.message) }
+                }
+                is AppResult.Loading -> { /* Handled by manually setting isLoading */ }
             }
-            loginResponseResult.postValue(result)
         }
     }
 
@@ -62,7 +76,7 @@ class LoginViewModel @Inject constructor(
                 authResult.cryptoObject?.cipher?.let {
                     val localFingerToken =
                         cryptographyManagerUseCase.decryptData(textWrapper.ciphertext, it)
-                    decryptionResult.postValue(localFingerToken)
+                    requestJwtTokenFromFingerprint(localFingerToken)
                 }
             }
         }
@@ -75,17 +89,20 @@ class LoginViewModel @Inject constructor(
         return null
     }
 
-    fun requestJwtTokenFromFingerprint(fingerToken: String) {
+    private fun requestJwtTokenFromFingerprint(fingerToken: String) {
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
             saveFingerprintToStorage(fingerToken)
             val result = requestAccessTokenUseCase()
-            Log.d("ACCESS TOKEN RESPONSE", result.toString())
+            _uiState.update { it.copy(isLoading = false) }
+            
             if (result is AppResult.Success) {
-                newAccessTokenFromFingerprint.postValue(result.data.accessToken)
                 clearFingerprintToken()
                 saveAccessToken(result.data.accessToken)
+                _uiEvent.emit(UiEvent.Navigate("Main"))
             } else {
                 Log.e("ACCESS TOKEN RESPONSE", "ERROR")
+                _uiEvent.emit(UiEvent.ShowToast("Fingerprint login failed"))
             }
         }
     }
@@ -94,7 +111,7 @@ class LoginViewModel @Inject constructor(
         saveAccessToken(token)
     }
 
-    suspend fun saveAccessToken(token: String) {
+    private suspend fun saveAccessToken(token: String) {
         saveJwtTokenUseCase(token)
     }
 
@@ -104,7 +121,8 @@ class LoginViewModel @Inject constructor(
 
     private fun checkIsAbleLoginByFingerprint() {
         viewModelScope.launch {
-            isLoginByFingerprintEnable.postValue(settingUserProfileUseCase.loadFingerprintUseCase())
+            val isEnabled = settingUserProfileUseCase.loadFingerprintUseCase() ?: false
+            _uiState.update { it.copy(isFingerprintEnabled = isEnabled) }
         }
     }
 }

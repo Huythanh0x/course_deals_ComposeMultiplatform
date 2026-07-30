@@ -7,7 +7,6 @@ import android.util.Log
 import androidx.activity.viewModels
 import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.ActivityCouponDetailBinding
-import com.thanh0x.coursedeals.domain.model.AppResult
 import com.thanh0x.coursedeals.domain.model.Coupon
 import com.thanh0x.coursedeals.ui.base.BaseActivity
 import com.thanh0x.coursedeals.ui.enroll.CouponEnrollActivity
@@ -26,27 +25,47 @@ class CouponDetailActivity : BaseActivity() {
         binding = ActivityCouponDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setupToolbar()
+        
         val courseId = intent.extras?.getInt(BundleKey.TO_DETAIL_ACTIVITY)
-        showLoading(getString(R.string.dialog_loading_text))
         if (courseId != null) {
-            couponDetailViewModel.isInternetAvailable.observe(this) { isInternetAvailable ->
-                if (isInternetAvailable) {
-                    handleIfInternetIsAvailable(courseId)
-                } else {
-                    showNoInternetDialog()
-                }
-            }
+            setupObservers(courseId)
             couponDetailViewModel.checkIfInternetAvailable()
         } else {
             showFetchingErrorDialog()
         }
     }
 
-    private fun handleIfInternetIsAvailable(courseId: Int) {
-        couponDetailViewModel.couponDetail.observe(this) { result ->
-            handleResult(result)
+    private fun setupObservers(courseId: Int) {
+        collectFlow(couponDetailViewModel.uiState) { state ->
+            handleUiState(state, courseId)
         }
-        couponDetailViewModel.fetchCouponDetail(courseId)
+    }
+
+    private fun handleUiState(state: CouponDetailUiState, courseId: Int) {
+        if (!state.isInternetAvailable) {
+            showNoInternetDialog()
+            return
+        }
+
+        if (state.isLoading) {
+            showLoading(getString(R.string.dialog_loading_text))
+        } else {
+            hideLoading()
+        }
+
+        state.error?.let {
+            showFetchingErrorDialog()
+        }
+
+        state.coupon?.let {
+            binding.mlCouponDetail.visibility = android.view.View.VISIBLE
+            bindingCouponDataToView(it)
+            setOnclickButtons(it)
+        } ?: run {
+            if (!state.isLoading && state.error == null) {
+                couponDetailViewModel.fetchCouponDetail(courseId)
+            }
+        }
     }
 
     private fun setupToolbar() {
@@ -60,22 +79,6 @@ class CouponDetailActivity : BaseActivity() {
                     true
                 }
                 else -> false
-            }
-        }
-    }
-
-    private fun handleResult(result: AppResult<Coupon>) {
-        when (result) {
-            is AppResult.Loading -> showLoading(getString(R.string.dialog_loading_text))
-            is AppResult.Error -> {
-                hideLoading()
-                showFetchingErrorDialog()
-            }
-            is AppResult.Success -> {
-                hideLoading()
-                binding.mlCouponDetail.visibility = android.view.View.VISIBLE
-                bindingCouponDataToView(result.data)
-                setOnclickButtons(result.data)
             }
         }
     }

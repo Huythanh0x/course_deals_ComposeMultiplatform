@@ -7,9 +7,8 @@ import androidx.activity.viewModels
 import com.thanh0x.coursedeals.MainActivity
 import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.ActivityLoginBinding
-import com.thanh0x.coursedeals.domain.model.AppResult
-import com.thanh0x.coursedeals.domain.model.TokenData
 import com.thanh0x.coursedeals.ui.base.BaseActivity
+import com.thanh0x.coursedeals.ui.base.UiEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -22,6 +21,11 @@ class LoginActivity : BaseActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setupObservers()
+        setupListeners()
+    }
+
+    private fun setupListeners() {
         binding.btnGoogle.setOnClickListener {
             handleSocialLogin("Google")
         }
@@ -33,9 +37,40 @@ class LoginActivity : BaseActivity() {
         binding.btnFingerprint.setOnClickListener {
             handleSocialLogin("Fingerprint")
         }
+    }
 
-        loginViewModel.loginResponseResult.observe(this) { result ->
-            handleLoginResult(result)
+    private fun setupObservers() {
+        collectFlow(loginViewModel.uiState) { state ->
+            handleUiState(state)
+        }
+
+        collectFlow(loginViewModel.uiEvent) { event ->
+            handleUiEvent(event)
+        }
+    }
+
+    private fun handleUiState(state: LoginUiState) {
+        if (state.isLoading) {
+            showLoading()
+        } else {
+            hideLoading()
+        }
+
+        state.error?.let {
+            showAlertDialog(getString(R.string.login_error_title), it)
+        }
+        
+        binding.btnFingerprint.isEnabled = state.isFingerprintEnabled
+    }
+
+    override fun handleUiEvent(event: UiEvent) {
+        when (event) {
+            is UiEvent.Navigate -> {
+                if (event.destination == "Main") {
+                    navigateToMainScreen()
+                }
+            }
+            else -> super.handleUiEvent(event)
         }
     }
 
@@ -48,25 +83,6 @@ class LoginActivity : BaseActivity() {
                 resources.getString(R.string.no_internet_title),
                 resources.getString(R.string.no_internet_message)
             )
-        }
-    }
-
-    private fun handleLoginResult(result: AppResult<TokenData>) {
-        when (result) {
-            is AppResult.Success -> {
-                hideLoading()
-                navigateToMainScreen()
-            }
-            is AppResult.Loading -> {
-                showLoading()
-            }
-            is AppResult.Error -> {
-                hideLoading()
-                showAlertDialog(
-                    resources.getString(R.string.login_error_title),
-                    result.message
-                )
-            }
         }
     }
 
