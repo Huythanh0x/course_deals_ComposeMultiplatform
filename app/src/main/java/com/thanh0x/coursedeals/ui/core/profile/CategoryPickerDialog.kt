@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.DialogCategoryPickerBinding
 import com.thanh0x.coursedeals.databinding.ItemCategoryPickerBinding
 

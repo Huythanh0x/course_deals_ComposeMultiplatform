@@ -2,13 +2,11 @@ package com.thanh0x.coursedeals.ui.custom_view
 
 import android.app.Dialog
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
-import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.DialogLoadingBinding
 import androidx.core.graphics.drawable.toDrawable
 

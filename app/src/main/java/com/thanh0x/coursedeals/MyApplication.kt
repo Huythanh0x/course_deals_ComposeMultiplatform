@@ -1,7 +1,6 @@
 package com.thanh0x.coursedeals
 
 import android.app.Application
-import com.thanh0x.coursedeals.BuildConfig
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 

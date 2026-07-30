@@ -4,7 +4,6 @@ import com.thanh0x.coursedeals.data.mapper.toDomain
 import com.thanh0x.coursedeals.domain.model.AppResult
 import com.thanh0x.coursedeals.domain.model.Coupon
 import com.thanh0x.coursedeals.domain.source.RemoteCouponDataSource
-import retrofit2.Response
 
 class RemoteCouponDataSourceImpl(private val couponService: CouponService) :
     RemoteCouponDataSource {
