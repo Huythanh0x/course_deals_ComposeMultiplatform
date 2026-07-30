@@ -5,6 +5,8 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.RawQuery
+import androidx.sqlite.db.SupportSQLiteQuery
 import com.thanh0x.coursedeals.data.model.Coupon
 import com.thanh0x.coursedeals.util.Constant
 
@@ -24,6 +26,9 @@ interface CouponDao {
 
     @Query("SELECT * FROM ${Constant.COUPON_TABLE_NAME} WHERE LOWER(title) LIKE '%' || :searchQuery || '%' ORDER BY created_at DESC")
     fun queryCouponByName(searchQuery: String): PagingSource<Int, Coupon>
+
+    @RawQuery(observedEntities = [Coupon::class])
+    fun getFilteredCoupons(query: SupportSQLiteQuery): PagingSource<Int, Coupon>
 
     @Query("DELETE FROM ${Constant.COUPON_TABLE_NAME}")
     suspend fun clearAllCoupons(): Int

@@ -4,6 +4,7 @@ data class HomeUiState(
     val isInternetAvailable: Boolean = true,
     val isSyncing: Boolean = false,
     val query: String = "",
+    val filter: FilterData = FilterData(),
     val statDeals: Long = 0,
     val statUpdatedTimestamp: Long? = null,
     val statFetchedTimestamp: Long? = null,
