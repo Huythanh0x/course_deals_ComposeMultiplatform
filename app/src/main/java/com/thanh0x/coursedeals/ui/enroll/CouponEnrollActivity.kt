@@ -24,7 +24,12 @@ class CouponEnrollActivity : BaseActivity() {
             binding.wvEnroll.webViewClient = getCustomWebViewClient()
             binding.wvEnroll.loadUrl(couponUrl)
         } else {
-            showUrlOpeningErrorDialog()
+            showAlertDialog(
+                getString(R.string.coupon_detail_error_title),
+                getString(R.string.error_fetching_null_coupon)
+            ) {
+                finish()
+            }
         }
     }
 
@@ -53,15 +58,6 @@ class CouponEnrollActivity : BaseActivity() {
                 hideLoading()
                 binding.wvEnroll.visibility = android.view.View.VISIBLE
             }
-        }
-    }
-
-    private fun showUrlOpeningErrorDialog() {
-        showAlertDialog(
-            getString(R.string.coupon_detail_error_title),
-            getString(R.string.error_fetching_null_coupon)
-        ) {
-            finish()
         }
     }
 }
