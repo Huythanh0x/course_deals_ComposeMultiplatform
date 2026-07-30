@@ -20,9 +20,9 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.thanh0x.coursedeals.R
-import com.thanh0x.coursedeals.data.model.TokenResponseData
 import com.thanh0x.coursedeals.databinding.FragmentProfileBinding
 import com.thanh0x.coursedeals.domain.logic.fingerprint.BiometricPromptUtils
+import com.thanh0x.coursedeals.domain.model.AppResult
 import com.thanh0x.coursedeals.ui.base.BaseFragment
 import com.thanh0x.coursedeals.ui.login.LoginActivity
 import com.thanh0x.coursedeals.util.NetworkStatusCode
@@ -269,24 +269,28 @@ class ProfileFragment : BaseFragment() {
             val biometricPrompt =
                 BiometricPromptUtils.createBiometricPrompt(requireActivity() as AppCompatActivity, {
                     lifecycleScope.launch {
-                        val fingerprintTokenResult = profileViewModel.requestFingerprintToken()
-                        if (fingerprintTokenResult.isSuccessful && fingerprintTokenResult.body() is TokenResponseData) {
-                            val cipherTextWrapper =
-                                profileViewModel.encryptedServerTokenWrapper(
-                                    it,
-                                    fingerprintTokenResult.body()!!.accessToken
-                                )
-                            if (cipherTextWrapper != null) {
-                                showToast("Add fingerprint successfully")
-                                profileViewModel.saveCipherTextWrapper(cipherTextWrapper)
-                                profileViewModel.isFingerPrintEnable.postValue(true)
-                                profileViewModel.saveIsFingerPrintEnable(true)
+                        val result = profileViewModel.requestFingerprintToken()
+                        when (result) {
+                            is AppResult.Success -> {
+                                val cipherTextWrapper =
+                                    profileViewModel.encryptedServerTokenWrapper(
+                                        it,
+                                        result.data.accessToken
+                                    )
+                                if (cipherTextWrapper != null) {
+                                    showToast("Add fingerprint successfully")
+                                    profileViewModel.saveCipherTextWrapper(cipherTextWrapper)
+                                    profileViewModel.isFingerPrintEnable.postValue(true)
+                                    profileViewModel.saveIsFingerPrintEnable(true)
+                                }
                             }
-                        } else {
-                            binding.swEnableFingerPrint.isChecked = false
-                            if (fingerprintTokenResult.code() == NetworkStatusCode.HTTP_CODE_UNAUTHORIZED) {
-                                forceLogout()
+                            is AppResult.Error -> {
+                                binding.swEnableFingerPrint.isChecked = false
+                                if (result.code == NetworkStatusCode.HTTP_CODE_UNAUTHORIZED) {
+                                    forceLogout()
+                                }
                             }
+                            is AppResult.Loading -> { /* Handle loading */ }
                         }
                     }
                 }, {

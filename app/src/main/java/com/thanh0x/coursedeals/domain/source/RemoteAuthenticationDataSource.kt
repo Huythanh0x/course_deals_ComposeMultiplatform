@@ -1,13 +1,13 @@
 package com.thanh0x.coursedeals.domain.source
 
-import com.thanh0x.coursedeals.data.model.PostAuthenticationData
-import com.thanh0x.coursedeals.data.model.TokenResponseData
-import retrofit2.Response
+import com.thanh0x.coursedeals.domain.model.AppResult
+import com.thanh0x.coursedeals.domain.model.AuthCredentials
+import com.thanh0x.coursedeals.domain.model.TokenData
 
 interface RemoteAuthenticationDataSource {
-    suspend fun register(postAuthenticationData: PostAuthenticationData): Response<Any>
-    suspend fun login(postAuthenticationData: PostAuthenticationData): Response<TokenResponseData>
-    suspend fun checkIfTokeExpired(): Response<Any>
-    suspend fun requestFingerprintToken(): Response<TokenResponseData>
-    suspend fun requestAccessToken(): Response<TokenResponseData>
+    suspend fun register(credentials: AuthCredentials): AppResult<Unit>
+    suspend fun login(credentials: AuthCredentials): AppResult<TokenData>
+    suspend fun checkIfTokenExpired(): AppResult<Unit>
+    suspend fun requestFingerprintToken(): AppResult<TokenData>
+    suspend fun requestAccessToken(): AppResult<TokenData>
 }

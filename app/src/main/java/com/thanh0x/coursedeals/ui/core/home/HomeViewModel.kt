@@ -7,8 +7,8 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.thanh0x.coursedeals.data.model.Coupon
-import com.thanh0x.coursedeals.data.repository.CouponRepositoryImpl
+import com.thanh0x.coursedeals.domain.model.Coupon
+import com.thanh0x.coursedeals.domain.repository.CouponRepository
 import com.thanh0x.coursedeals.util.Constant
 import com.thanh0x.coursedeals.util.NetworkUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,12 +17,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val couponRepositoryImpl: CouponRepositoryImpl,
+    private val couponRepository: CouponRepository,
     private val networkUtil: NetworkUtil
 ) : ViewModel() {
     val items: Flow<PagingData<Coupon>> = Pager(
         config = PagingConfig(pageSize = Constant.ITEMS_PER_PAGE, enablePlaceholders = false),
-        pagingSourceFactory = { couponRepositoryImpl.getRemotePagingCouponSource() }
+        pagingSourceFactory = { couponRepository.getRemotePagingCouponSource() }
     ).flow.cachedIn(viewModelScope)
 
     val isInternetAvailable = MutableLiveData<Boolean>()

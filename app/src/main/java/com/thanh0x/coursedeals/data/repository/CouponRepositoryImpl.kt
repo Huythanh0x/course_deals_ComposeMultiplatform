@@ -1,7 +1,7 @@
 package com.thanh0x.coursedeals.data.repository
 
-import com.thanh0x.coursedeals.data.model.Coupon
-import com.thanh0x.coursedeals.data.source.remote.RemotePagingCouponDataSourceImpl
+import androidx.paging.PagingSource
+import com.thanh0x.coursedeals.domain.model.Coupon
 import com.thanh0x.coursedeals.domain.repository.CouponRepository
 import com.thanh0x.coursedeals.domain.source.LocalCouponDataSource
 import com.thanh0x.coursedeals.domain.source.RemoteCouponDataSource
@@ -10,7 +10,7 @@ import javax.inject.Inject
 class CouponRepositoryImpl @Inject constructor(
     private val localCouponDataSource: LocalCouponDataSource,
     private val remoteCouponDataSource: RemoteCouponDataSource,
-    private val remotePagingCouponDataSource: RemotePagingCouponDataSourceImpl,
+    private val remotePagingCouponDataSource: PagingSource<Int, Coupon>,
 ) : CouponRepository {
     override suspend fun getAllCoupons() = localCouponDataSource.getAllCoupons()
 

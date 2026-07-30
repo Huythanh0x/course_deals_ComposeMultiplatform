@@ -2,19 +2,17 @@ package com.thanh0x.coursedeals.ui.detail
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.viewModels
 import com.thanh0x.coursedeals.R
-import com.thanh0x.coursedeals.data.model.Coupon
 import com.thanh0x.coursedeals.databinding.ActivityCouponDetailBinding
+import com.thanh0x.coursedeals.domain.model.AppResult
+import com.thanh0x.coursedeals.domain.model.Coupon
 import com.thanh0x.coursedeals.ui.base.BaseActivity
 import com.thanh0x.coursedeals.ui.enroll.CouponEnrollActivity
 import com.thanh0x.coursedeals.util.BundleKey
 import com.thanh0x.coursedeals.util.MapperToView
-import com.thanh0x.coursedeals.util.NetWorkResult
 import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -45,8 +43,8 @@ class CouponDetailActivity : BaseActivity() {
     }
 
     private fun handleIfInternetIsAvailable(courseId: Int) {
-        couponDetailViewModel.couponDetail.observe(this) { networkResult ->
-            handleNetworkResult(networkResult)
+        couponDetailViewModel.couponDetail.observe(this) { result ->
+            handleResult(result)
         }
         couponDetailViewModel.fetchCouponDetail(courseId)
     }
@@ -66,22 +64,18 @@ class CouponDetailActivity : BaseActivity() {
         }
     }
 
-    private fun handleNetworkResult(networkResult: NetWorkResult<Coupon>) {
-        when (networkResult) {
-            is NetWorkResult.Loading -> showLoading(getString(R.string.dialog_loading_text))
-            is NetWorkResult.Error -> {
+    private fun handleResult(result: AppResult<Coupon>) {
+        when (result) {
+            is AppResult.Loading -> showLoading(getString(R.string.dialog_loading_text))
+            is AppResult.Error -> {
                 hideLoading()
                 showFetchingErrorDialog()
             }
-            is NetWorkResult.Success -> {
+            is AppResult.Success -> {
                 hideLoading()
                 binding.mlCouponDetail.visibility = android.view.View.VISIBLE
-                if (networkResult.data != null) {
-                    bindingCouponDataToView(networkResult.data)
-                    setOnclickButtons(networkResult.data)
-                } else {
-                    showFetchingErrorDialog()
-                }
+                bindingCouponDataToView(result.data)
+                setOnclickButtons(result.data)
             }
         }
     }

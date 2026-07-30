@@ -1,15 +1,50 @@
 package com.thanh0x.coursedeals.data.source.remote
 
+import com.thanh0x.coursedeals.data.mapper.toDomain
+import com.thanh0x.coursedeals.domain.model.AppResult
+import com.thanh0x.coursedeals.domain.model.Coupon
 import com.thanh0x.coursedeals.domain.source.RemoteCouponDataSource
+import retrofit2.Response
 
 class RemoteCouponDataSourceImpl(private val couponService: CouponService) :
     RemoteCouponDataSource {
-    override suspend fun requestPostANewCoupon(couponUrl: String) =
-        couponService.postCoupon(couponUrl)
+    override suspend fun requestPostANewCoupon(couponUrl: String): AppResult<Unit> {
+        return try {
+            val response = couponService.postCoupon(couponUrl)
+            if (response.isSuccessful) {
+                AppResult.Success(Unit)
+            } else {
+                AppResult.Error(response.message(), response.code())
+            }
+        } catch (e: Exception) {
+            AppResult.Error(e.localizedMessage ?: "Unknown Error")
+        }
+    }
 
-    override suspend fun requestDeleteACoupon(couponUrl: String) =
-        couponService.deleteCoupon(couponUrl)
+    override suspend fun requestDeleteACoupon(couponUrl: String): AppResult<Unit> {
+        return try {
+            val response = couponService.deleteCoupon(couponUrl)
+            if (response.isSuccessful) {
+                AppResult.Success(Unit)
+            } else {
+                AppResult.Error(response.message(), response.code())
+            }
+        } catch (e: Exception) {
+            AppResult.Error(e.localizedMessage ?: "Unknown Error")
+        }
+    }
 
-    override suspend fun fetchCouponDetail(courseId: Int) =
-        couponService.fetchCouponDetail(courseId)
+    override suspend fun fetchCouponDetail(courseId: Int): AppResult<Coupon> {
+        return try {
+            val response = couponService.fetchCouponDetail(courseId)
+            val body = response.body()
+            if (response.isSuccessful && body != null) {
+                AppResult.Success(body.toDomain())
+            } else {
+                AppResult.Error(response.message(), response.code())
+            }
+        } catch (e: Exception) {
+            AppResult.Error(e.localizedMessage ?: "Unknown Error")
+        }
+    }
 }

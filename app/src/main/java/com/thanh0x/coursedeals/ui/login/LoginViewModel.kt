@@ -5,7 +5,8 @@ import androidx.biometric.BiometricPrompt
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.thanh0x.coursedeals.data.model.TokenResponseData
+import com.thanh0x.coursedeals.domain.model.AppResult
+import com.thanh0x.coursedeals.domain.model.TokenData
 import com.thanh0x.coursedeals.domain.usecase.authentication.LoginUseCase
 import com.thanh0x.coursedeals.domain.usecase.authentication.fingerprint.CryptographyManagerUseCase
 import com.thanh0x.coursedeals.domain.usecase.authentication.fingerprint.SettingFingerprintUseCase
@@ -13,7 +14,6 @@ import com.thanh0x.coursedeals.domain.usecase.authentication.jwt.ClearLocalToken
 import com.thanh0x.coursedeals.domain.usecase.authentication.jwt.RequestAccessTokenUseCase
 import com.thanh0x.coursedeals.domain.usecase.authentication.jwt.SaveJwtTokenUseCase
 import com.thanh0x.coursedeals.domain.usecase.user_profile.SettingUserProfileUseCase
-import com.thanh0x.coursedeals.util.NetWorkResult
 import com.thanh0x.coursedeals.util.NetworkUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -32,7 +32,7 @@ class LoginViewModel @Inject constructor(
     private val settingUserProfileUseCase: SettingUserProfileUseCase,
     private val networkUtil: NetworkUtil
 ) : ViewModel() {
-    val loginResponseResult = MutableLiveData<NetWorkResult<TokenResponseData>>()
+    val loginResponseResult = MutableLiveData<AppResult<TokenData>>()
     val decryptionResult = MutableLiveData<String>()
     val newAccessTokenFromFingerprint = MutableLiveData<String>()
     val isLoginByFingerprintEnable = MutableLiveData<Boolean?>()
@@ -42,13 +42,13 @@ class LoginViewModel @Inject constructor(
     }
 
     fun login(username: String, password: String) {
-        loginResponseResult.postValue(NetWorkResult.Loading())
+        loginResponseResult.postValue(AppResult.Loading)
         viewModelScope.launch(Dispatchers.IO) {
-            val networkResult = loginUseCase(username, password)
-            if (networkResult is NetWorkResult.Success && networkResult.data != null) {
-                saveJwtTokenUseCase(networkResult.data.accessToken)
+            val result = loginUseCase(username, password)
+            if (result is AppResult.Success) {
+                saveJwtTokenUseCase(result.data.accessToken)
             }
-            loginResponseResult.postValue(networkResult)
+            loginResponseResult.postValue(result)
         }
     }
 
@@ -78,12 +78,12 @@ class LoginViewModel @Inject constructor(
     fun requestJwtTokenFromFingerprint(fingerToken: String) {
         viewModelScope.launch {
             saveFingerprintToStorage(fingerToken)
-            val accessTokenResponse = requestAccessTokenUseCase()
-            Log.d("ACCESS TOKEN RESPONSE", accessTokenResponse.toString())
-            if (accessTokenResponse.isSuccessful && accessTokenResponse.body() is TokenResponseData) {
-                newAccessTokenFromFingerprint.postValue(accessTokenResponse.body()!!.accessToken)
+            val result = requestAccessTokenUseCase()
+            Log.d("ACCESS TOKEN RESPONSE", result.toString())
+            if (result is AppResult.Success) {
+                newAccessTokenFromFingerprint.postValue(result.data.accessToken)
                 clearFingerprintToken()
-                saveAccessToken(accessTokenResponse.body()!!.accessToken)
+                saveAccessToken(result.data.accessToken)
             } else {
                 Log.e("ACCESS TOKEN RESPONSE", "ERROR")
             }

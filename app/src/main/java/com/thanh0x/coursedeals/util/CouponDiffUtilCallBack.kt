@@ -1,7 +1,7 @@
 package com.thanh0x.coursedeals.util
 
 import androidx.recyclerview.widget.DiffUtil
-import com.thanh0x.coursedeals.data.model.Coupon
+import com.thanh0x.coursedeals.domain.model.Coupon
 
 object CouponDiffUtilCallBack :
     DiffUtil.ItemCallback<Coupon>() {
@@ -9,5 +9,5 @@ object CouponDiffUtilCallBack :
         oldItem.courseId == newItem.courseId
 
     override fun areContentsTheSame(oldItem: Coupon, newItem: Coupon): Boolean =
-        oldItem.courseId == newItem.courseId
+        oldItem == newItem
 }

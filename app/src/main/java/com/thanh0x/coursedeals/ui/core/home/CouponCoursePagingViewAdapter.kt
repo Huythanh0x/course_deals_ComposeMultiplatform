@@ -4,8 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.thanh0x.coursedeals.data.model.Coupon
 import com.thanh0x.coursedeals.databinding.CouponCourseItemBinding
+import com.thanh0x.coursedeals.domain.model.Coupon
 import com.thanh0x.coursedeals.util.CouponDiffUtilCallBack
 
 class CouponCoursePagingViewAdapter(private val clickListener: (Coupon) -> Unit) :

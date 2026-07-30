@@ -1,9 +1,8 @@
 package com.thanh0x.coursedeals.domain.repository
 
-import com.thanh0x.coursedeals.data.model.Coupon
-import com.thanh0x.coursedeals.data.model.ResponseStatusFromServer
-import com.thanh0x.coursedeals.data.source.remote.RemotePagingCouponDataSourceImpl
-import retrofit2.Response
+import androidx.paging.PagingSource
+import com.thanh0x.coursedeals.domain.model.AppResult
+import com.thanh0x.coursedeals.domain.model.Coupon
 
 interface CouponRepository {
     suspend fun getAllCoupons(): List<Coupon>
@@ -14,11 +13,11 @@ interface CouponRepository {
 
     suspend fun clearALlCoupons(): Int
 
-    suspend fun requestPostANewCoupon(couponUrl: String): Response<ResponseStatusFromServer>
+    suspend fun requestPostANewCoupon(couponUrl: String): AppResult<Unit>
 
-    suspend fun requestDeleteACoupon(couponUrl: String): Response<ResponseStatusFromServer>
+    suspend fun requestDeleteACoupon(couponUrl: String): AppResult<Unit>
 
-    fun getRemotePagingCouponSource(): RemotePagingCouponDataSourceImpl
+    fun getRemotePagingCouponSource(): PagingSource<Int, Coupon>
 
-    suspend fun fetchCouponDetail(courseId: Int): Response<Coupon>
+    suspend fun fetchCouponDetail(courseId: Int): AppResult<Coupon>
 }

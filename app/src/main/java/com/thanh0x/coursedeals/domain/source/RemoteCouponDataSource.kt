@@ -1,13 +1,12 @@
 package com.thanh0x.coursedeals.domain.source
 
-import com.thanh0x.coursedeals.data.model.Coupon
-import com.thanh0x.coursedeals.data.model.ResponseStatusFromServer
-import retrofit2.Response
+import com.thanh0x.coursedeals.domain.model.AppResult
+import com.thanh0x.coursedeals.domain.model.Coupon
 
 interface RemoteCouponDataSource {
-    suspend fun requestPostANewCoupon(couponUrl: String): Response<ResponseStatusFromServer>
+    suspend fun requestPostANewCoupon(couponUrl: String): AppResult<Unit>
 
-    suspend fun requestDeleteACoupon(couponUrl: String): Response<ResponseStatusFromServer>
+    suspend fun requestDeleteACoupon(couponUrl: String): AppResult<Unit>
 
-    suspend fun fetchCouponDetail(courseId: Int): Response<Coupon>
+    suspend fun fetchCouponDetail(courseId: Int): AppResult<Coupon>
 }

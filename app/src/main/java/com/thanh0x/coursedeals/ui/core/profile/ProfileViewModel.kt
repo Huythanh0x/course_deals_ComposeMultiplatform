@@ -5,21 +5,21 @@ import androidx.biometric.BiometricPrompt
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.thanh0x.coursedeals.data.model.TokenResponseData
-import com.thanh0x.coursedeals.domain.usecase.authentication.jwt.CheckIfTokenExpiredUseCase
-import com.thanh0x.coursedeals.domain.usecase.authentication.jwt.ClearLocalTokenUseCase
-import com.thanh0x.coursedeals.domain.usecase.authentication.jwt.SaveJwtTokenUseCase
+import com.thanh0x.coursedeals.domain.logic.fingerprint.CiphertextWrapper
+import com.thanh0x.coursedeals.domain.model.AppResult
+import com.thanh0x.coursedeals.domain.model.TokenData
 import com.thanh0x.coursedeals.domain.usecase.authentication.fingerprint.CryptographyManagerUseCase
 import com.thanh0x.coursedeals.domain.usecase.authentication.fingerprint.RequestFingerprintTokenUseCase
 import com.thanh0x.coursedeals.domain.usecase.authentication.fingerprint.SettingFingerprintUseCase
+import com.thanh0x.coursedeals.domain.usecase.authentication.jwt.CheckIfTokenExpiredUseCase
+import com.thanh0x.coursedeals.domain.usecase.authentication.jwt.ClearLocalTokenUseCase
+import com.thanh0x.coursedeals.domain.usecase.authentication.jwt.SaveJwtTokenUseCase
 import com.thanh0x.coursedeals.domain.usecase.user_profile.SettingUserProfileUseCase
 import com.thanh0x.coursedeals.util.NetworkStatusCode
-import com.thanh0x.coursedeals.domain.logic.fingerprint.CiphertextWrapper
 import com.thanh0x.coursedeals.util.NetworkUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import retrofit2.Response
 import javax.crypto.Cipher
 import javax.inject.Inject
 
@@ -54,13 +54,17 @@ class ProfileViewModel @Inject constructor(
 
     fun checkIfTokenExpired() {
         viewModelScope.launch(Dispatchers.IO) {
-            val response = checkIfTokenExpiredUseCase()
-            if (response.isSuccessful) {
-                tokenExpired.postValue(false)
-            } else if (response.code() == NetworkStatusCode.HTTP_CODE_UNAUTHORIZED) {
-                tokenExpired.postValue(true)
-            } else {
-                Log.e("CHECK EXPIRED", response.code().toString())
+            val result = checkIfTokenExpiredUseCase()
+            when (result) {
+                is AppResult.Success -> tokenExpired.postValue(false)
+                is AppResult.Error -> {
+                    if (result.code == NetworkStatusCode.HTTP_CODE_UNAUTHORIZED) {
+                        tokenExpired.postValue(true)
+                    } else {
+                        Log.e("CHECK EXPIRED", result.code.toString())
+                    }
+                }
+                is AppResult.Loading -> { /* Handle loading if needed */ }
             }
         }
     }
@@ -103,7 +107,7 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    suspend fun requestFingerprintToken(): Response<TokenResponseData> {
+    suspend fun requestFingerprintToken(): AppResult<TokenData> {
         return requestFingerprintTokenUseCase()
     }
 

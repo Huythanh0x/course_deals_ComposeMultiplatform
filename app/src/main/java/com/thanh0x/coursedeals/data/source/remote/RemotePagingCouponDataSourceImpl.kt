@@ -3,7 +3,8 @@ package com.thanh0x.coursedeals.data.source.remote
 import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.thanh0x.coursedeals.data.model.Coupon
+import com.thanh0x.coursedeals.data.mapper.toDomain
+import com.thanh0x.coursedeals.domain.model.Coupon
 import kotlinx.coroutines.delay
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
@@ -27,7 +28,7 @@ class RemotePagingCouponDataSourceImpl @Inject constructor(private val couponSer
             val responseData = couponService.fetchPagedCoupons(pageNumber, pageSize)
             responseData.body()?.let {
                 val pageMax = it.totalPage
-                val courses = it.courses
+                val courses = it.courses.map { dto -> dto.toDomain() }
                 Log.d("CURRENT PAGE", "$pageNumber $pageMax with $pageSize")
                 if (pageNumber != STARTING_KEY) delay(LOAD_DELAY_MILLIS.milliseconds)
                 return LoadResult.Page(

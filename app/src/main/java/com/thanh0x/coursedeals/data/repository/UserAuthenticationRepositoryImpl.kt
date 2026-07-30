@@ -1,6 +1,8 @@
 package com.thanh0x.coursedeals.data.repository
 
-import com.thanh0x.coursedeals.data.model.PostAuthenticationData
+import com.thanh0x.coursedeals.domain.model.AppResult
+import com.thanh0x.coursedeals.domain.model.AuthCredentials
+import com.thanh0x.coursedeals.domain.model.TokenData
 import com.thanh0x.coursedeals.domain.repository.UserAuthenticationRepository
 import com.thanh0x.coursedeals.domain.source.LocalAuthenticationDataSource
 import com.thanh0x.coursedeals.domain.source.RemoteAuthenticationDataSource
@@ -10,23 +12,23 @@ class UserAuthenticationRepositoryImpl @Inject constructor(
     private val localAuthenticationDataSource: LocalAuthenticationDataSource,
     private val remoteAuthenticationDataSource: RemoteAuthenticationDataSource
 ) : UserAuthenticationRepository {
-    override suspend fun login(postAuthenticationData: PostAuthenticationData) =
-        remoteAuthenticationDataSource.login(postAuthenticationData)
+    override suspend fun login(credentials: AuthCredentials): AppResult<TokenData> =
+        remoteAuthenticationDataSource.login(credentials)
 
-    override suspend fun register(postAuthenticationData: PostAuthenticationData) =
-        remoteAuthenticationDataSource.register(postAuthenticationData)
+    override suspend fun register(credentials: AuthCredentials): AppResult<Unit> =
+        remoteAuthenticationDataSource.register(credentials)
 
     override suspend fun getLocalToken(): String? =
         localAuthenticationDataSource.getLocalToken()
 
-    override suspend fun saveLocalToken(newLoginToken: String) =
-        localAuthenticationDataSource.saveLocalToken(newLoginToken)
+    override suspend fun saveLocalToken(token: String) =
+        localAuthenticationDataSource.saveLocalToken(token)
 
     override suspend fun clearLocalToken() {
         localAuthenticationDataSource.clearLocalToken()
     }
 
-    override suspend fun checkIfTokeExpired() = remoteAuthenticationDataSource.checkIfTokeExpired()
+    override suspend fun checkIfTokenExpired(): AppResult<Unit> = remoteAuthenticationDataSource.checkIfTokenExpired()
 
     override suspend fun getCipherTextWrapper() =
         localAuthenticationDataSource.getCipherTextWrapper()
