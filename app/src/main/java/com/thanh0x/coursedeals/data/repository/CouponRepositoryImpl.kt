@@ -86,9 +86,6 @@ class CouponRepositoryImpl @Inject constructor(
 
     override suspend fun insertCoupon(coupon: Coupon) = localCouponDataSource.insertCoupon(coupon.toEntity())
 
-    override suspend fun queryCouponByName(query: String) =
-        localCouponDataSource.queryCouponByName(query).map { it.toDomain() }
-
     override suspend fun clearALlCoupons() = localCouponDataSource.clearALlCoupons()
 
     override suspend fun requestPostANewCoupon(couponUrl: String) =

@@ -16,8 +16,6 @@ interface CouponRepository {
 
     suspend fun insertCoupon(coupon: Coupon)
 
-    suspend fun queryCouponByName(query: String): List<Coupon>
-
     suspend fun clearALlCoupons(): Int
 
     suspend fun requestPostANewCoupon(couponUrl: String): AppResult<Unit>

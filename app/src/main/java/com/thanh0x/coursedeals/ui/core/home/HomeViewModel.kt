@@ -47,6 +47,19 @@ class HomeViewModel @Inject constructor(
     init {
         observeMetadata()
         observeSettings()
+        syncAllCoupons()
+    }
+
+    private fun syncAllCoupons(force: Boolean = false) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isSyncing = true) }
+            couponRepository.syncAllCoupons(force)
+            _uiState.update { it.copy(isSyncing = false) }
+        }
+    }
+
+    fun refreshCoupons() {
+        syncAllCoupons(force = true)
     }
 
     private fun observeMetadata() {

@@ -63,7 +63,7 @@ class HomeFragment : BaseFragment() {
             homeViewModel.toggleTimestampDisplay()
         }
         binding.srlHome.setOnRefreshListener {
-            couponCoursePagingAdapter.refresh()
+            homeViewModel.refreshCoupons()
         }
     }
 
@@ -107,6 +107,8 @@ class HomeFragment : BaseFragment() {
             labelResId,
             mapper.mapTimeAgo(timestamp)
         )
+
+        binding.srlHome.isRefreshing = state.isSyncing
     }
 
     private fun observePagingData() {
@@ -119,7 +121,6 @@ class HomeFragment : BaseFragment() {
         collectFlow(couponCoursePagingAdapter.loadStateFlow) { loadState ->
             val isRefreshing = loadState.refresh is LoadState.Loading
             binding.pbHome.isVisible = isRefreshing && couponCoursePagingAdapter.itemCount == 0
-            binding.srlHome.isRefreshing = isRefreshing
 
             binding.lpiLoadPreviousPage.isVisible = loadState.source.prepend is LoadState.Loading
             binding.lpiLoadNextPage.isVisible = loadState.source.append is LoadState.Loading
