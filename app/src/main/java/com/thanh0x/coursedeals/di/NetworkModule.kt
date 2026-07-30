@@ -1,9 +1,7 @@
 package com.thanh0x.coursedeals.di
 
-import androidx.paging.PagingSource
 import com.thanh0x.coursedeals.data.source.datastore.LocalAuthenticationDataSourceImpl
 import com.thanh0x.coursedeals.data.source.remote.CouponService
-import com.thanh0x.coursedeals.data.source.remote.RemotePagingCouponDataSourceImpl
 import com.thanh0x.coursedeals.data.source.remote.RemoteAuthenticationDataSourceImpl
 import com.thanh0x.coursedeals.data.source.remote.RemoteCouponDataSourceImpl
 import com.thanh0x.coursedeals.data.source.remote.UserAuthenticationService
@@ -65,12 +63,6 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    fun providePagingCouponDataSource(
-        couponService: CouponService
-    ): PagingSource<Int, Coupon> = RemotePagingCouponDataSourceImpl(couponService)
-
-    @Singleton
-    @Provides
     fun provideRemoteCouponDataSource(
         couponService: CouponService
     ) = RemoteCouponDataSourceImpl(couponService)
@@ -94,7 +86,7 @@ object NetworkModule {
     @Singleton
     @Provides
     fun provideRetrofitInstance(
-        okHttpClient: OkHttpClient, 
+        okHttpClient: OkHttpClient,
         gsonConverterFactory: GsonConverterFactory
     ): Retrofit {
         return Retrofit.Builder().baseUrl(Constant.BASE_URL_API).client(okHttpClient)

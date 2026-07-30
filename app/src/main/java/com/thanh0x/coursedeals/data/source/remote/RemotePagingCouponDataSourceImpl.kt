@@ -6,8 +6,6 @@ import com.thanh0x.coursedeals.data.mapper.toDomain
 import com.thanh0x.coursedeals.domain.model.Coupon
 import com.thanh0x.coursedeals.domain.model.CouponMetadata
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import timber.log.Timber
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
@@ -18,8 +16,7 @@ private const val LOAD_DELAY_MILLIS = 500L
 class RemotePagingCouponDataSourceImpl @Inject constructor(private val couponService: CouponService) :
     PagingSource<Int, Coupon>() {
 
-    private val _metadataFlow = MutableSharedFlow<CouponMetadata>(replay = 1)
-    val metadataFlow = _metadataFlow.asSharedFlow()
+    var onMetadataLoaded: (suspend (CouponMetadata) -> Unit)? = null
 
     override fun getRefreshKey(state: PagingState<Int, Coupon>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
@@ -41,8 +38,8 @@ class RemotePagingCouponDataSourceImpl @Inject constructor(private val couponSer
                 val pageMax = body.totalPage
                 val courses = body.courses.map { dto -> dto.toDomain() }
 
-                // Emit metadata
-                _metadataFlow.emit(CouponMetadata(body.totalCoupon, body.lastFetchTime))
+                // Emit metadata via callback
+                onMetadataLoaded?.invoke(CouponMetadata(body.totalCoupon, body.lastFetchTime))
 
                 Timber.d("CURRENT PAGE: $pageNumber $pageMax with $pageSize")
                 if (pageNumber != STARTING_KEY) delay(LOAD_DELAY_MILLIS.milliseconds)

@@ -28,6 +28,7 @@ paging = "3.5.0"
 biometric = "1.1.0"
 timber = "5.0.1"
 detekt = "1.23.6"
+swiperefreshlayout = "1.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -69,6 +70,7 @@ circularimageview = { group = "com.mikhaellopez", name = "circularimageview", ve
 androidx-paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "paging" }
 androidx-biometric = { group = "androidx.biometric", name = "biometric", version.ref = "biometric" }
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
+androidx-swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayout" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

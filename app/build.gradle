@@ -179,4 +179,7 @@ dependencies {
 
     // Logging
     implementation libs.timber
+
+    // Swipe Refresh Layout
+    implementation libs.androidx.swiperefreshlayout
 }

@@ -59,6 +59,9 @@ class HomeFragment : BaseFragment() {
         binding.btnSubmitDeal.setOnClickListener {
             showSubmitDealDialog()
         }
+        binding.srlHome.setOnRefreshListener {
+            couponCoursePagingAdapter.refresh()
+        }
     }
 
     private fun setupObservers() {
@@ -98,7 +101,10 @@ class HomeFragment : BaseFragment() {
 
     private fun observePagingLoadState() {
         collectFlow(couponCoursePagingAdapter.loadStateFlow) { loadState ->
-            binding.pbHome.isVisible = loadState.refresh is LoadState.Loading
+            val isRefreshing = loadState.refresh is LoadState.Loading
+            binding.pbHome.isVisible = isRefreshing && couponCoursePagingAdapter.itemCount == 0
+            binding.srlHome.isRefreshing = isRefreshing
+
             binding.lpiLoadPreviousPage.isVisible = loadState.source.prepend is LoadState.Loading
             binding.lpiLoadNextPage.isVisible = loadState.source.append is LoadState.Loading
 
