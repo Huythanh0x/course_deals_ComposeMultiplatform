@@ -1,13 +1,12 @@
 package com.thanh0x.coursedeals.data.repository
 
-import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
+import androidx.room.withTransaction
 import com.thanh0x.coursedeals.data.mapper.toDomain
 import com.thanh0x.coursedeals.data.mapper.toEntity
-import com.thanh0x.coursedeals.data.paging.CouponRemoteMediator
 import com.thanh0x.coursedeals.data.source.LocalCouponDataSource
 import com.thanh0x.coursedeals.data.source.local.CouponDatabase
 import com.thanh0x.coursedeals.data.source.remote.CouponService
@@ -21,6 +20,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.map
+import timber.log.Timber
 import javax.inject.Inject
 
 class CouponRepositoryImpl @Inject constructor(
@@ -35,24 +35,52 @@ class CouponRepositoryImpl @Inject constructor(
 
     override suspend fun getAllCoupons() = localCouponDataSource.getAllCoupons().map { it.toDomain() }
 
-    @OptIn(ExperimentalPagingApi::class)
     override fun getCouponsPager(query: String?): Flow<PagingData<Coupon>> {
         return Pager(
             config = PagingConfig(
                 pageSize = Constant.ITEMS_PER_PAGE,
                 enablePlaceholders = false
             ),
-            remoteMediator = CouponRemoteMediator(
-                database = couponDatabase,
-                couponService = couponService,
-                query = query,
-                onMetadataLoaded = { metadata ->
-                    _metadataFlow.emit(metadata)
+            pagingSourceFactory = {
+                if (query.isNullOrBlank()) {
+                    localCouponDataSource.getPagingCoupons()
+                } else {
+                    localCouponDataSource.queryCouponByName(query)
                 }
-            ),
-            pagingSourceFactory = { localCouponDataSource.getPagingCoupons() }
+            }
         ).flow.map { pagingData ->
             pagingData.map { entity -> entity.toDomain() }
+        }
+    }
+
+    private var lastSyncTimestamp: Long = 0
+    private val SYNC_THRESHOLD_MS = 15 * 60 * 1000L // 15 minutes
+
+    override suspend fun syncAllCoupons(force: Boolean) {
+        val currentTime = System.currentTimeMillis()
+        if (!force && (currentTime - lastSyncTimestamp < SYNC_THRESHOLD_MS)) {
+            return
+        }
+
+        try {
+            val response = couponService.fetchAllCoupons()
+            val body = response.body()
+            if (response.isSuccessful && body != null) {
+                couponDatabase.withTransaction {
+                    localCouponDataSource.clearALlCoupons()
+                    localCouponDataSource.insertCoupons(body.courses.map { it.toEntity() })
+                }
+                lastSyncTimestamp = currentTime
+                _metadataFlow.emit(
+                    CouponMetadata(
+                        totalCoupon = body.totalCoupon,
+                        lastFetchTime = body.lastFetchTime,
+                        localFetchTime = currentTime
+                    )
+                )
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "syncAllCoupons: Failed to sync deals")
         }
     }
 

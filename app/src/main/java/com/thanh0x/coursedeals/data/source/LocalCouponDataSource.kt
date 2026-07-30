@@ -12,7 +12,7 @@ interface LocalCouponDataSource {
 
     suspend fun insertCoupons(coupons: List<Coupon>)
 
-    suspend fun queryCouponByName(query: String): List<Coupon>
+    fun queryCouponByName(query: String): PagingSource<Int, Coupon>
 
     suspend fun clearALlCoupons(): Int
 }

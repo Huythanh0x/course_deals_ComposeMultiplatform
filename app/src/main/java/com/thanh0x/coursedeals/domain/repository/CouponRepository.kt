@@ -12,6 +12,8 @@ interface CouponRepository {
 
     fun getCouponsPager(query: String? = null): Flow<PagingData<Coupon>>
 
+    suspend fun syncAllCoupons(force: Boolean = false)
+
     suspend fun insertCoupon(coupon: Coupon)
 
     suspend fun queryCouponByName(query: String): List<Coupon>

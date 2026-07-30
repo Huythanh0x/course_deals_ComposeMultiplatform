@@ -15,7 +15,7 @@ class LocalCouponDataSourceImpl @Inject constructor(private val couponDao: Coupo
 
     override suspend fun insertCoupons(coupons: List<Coupon>) = couponDao.insertCoupons(coupons)
 
-    override suspend fun queryCouponByName(query: String): List<Coupon> =
+    override fun queryCouponByName(query: String): PagingSource<Int, Coupon> =
         couponDao.queryCouponByName(query)
 
     override suspend fun clearALlCoupons() = couponDao.clearAllCoupons()
