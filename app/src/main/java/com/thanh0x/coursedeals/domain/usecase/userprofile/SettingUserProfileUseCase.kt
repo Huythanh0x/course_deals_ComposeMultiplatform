@@ -1,4 +1,4 @@
-package com.thanh0x.coursedeals.domain.usecase.user_profile
+package com.thanh0x.coursedeals.domain.usecase.userprofile
 
 import javax.inject.Inject
 

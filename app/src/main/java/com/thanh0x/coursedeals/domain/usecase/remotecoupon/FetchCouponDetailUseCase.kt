@@ -1,4 +1,4 @@
-package com.thanh0x.coursedeals.domain.usecase.remote_coupon
+package com.thanh0x.coursedeals.domain.usecase.remotecoupon
 
 import com.thanh0x.coursedeals.domain.model.AppResult
 import com.thanh0x.coursedeals.domain.model.Coupon

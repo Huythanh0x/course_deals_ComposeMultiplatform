@@ -3,7 +3,7 @@ package com.thanh0x.coursedeals.ui.detail
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.thanh0x.coursedeals.domain.model.AppResult
-import com.thanh0x.coursedeals.domain.usecase.remote_coupon.FetchCouponDetailUseCase
+import com.thanh0x.coursedeals.domain.usecase.remotecoupon.FetchCouponDetailUseCase
 import com.thanh0x.coursedeals.util.NetworkUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

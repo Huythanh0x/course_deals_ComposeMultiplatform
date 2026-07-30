@@ -10,7 +10,7 @@ import com.thanh0x.coursedeals.domain.usecase.authentication.fingerprint.Setting
 import com.thanh0x.coursedeals.domain.usecase.authentication.jwt.ClearLocalTokenUseCase
 import com.thanh0x.coursedeals.domain.usecase.authentication.jwt.RequestAccessTokenUseCase
 import com.thanh0x.coursedeals.domain.usecase.authentication.jwt.SaveJwtTokenUseCase
-import com.thanh0x.coursedeals.domain.usecase.user_profile.SettingUserProfileUseCase
+import com.thanh0x.coursedeals.domain.usecase.userprofile.SettingUserProfileUseCase
 import com.thanh0x.coursedeals.ui.base.UiEvent
 import com.thanh0x.coursedeals.util.NetworkUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
