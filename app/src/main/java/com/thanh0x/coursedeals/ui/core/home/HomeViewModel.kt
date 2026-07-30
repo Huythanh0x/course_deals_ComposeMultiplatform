@@ -41,6 +41,7 @@ class HomeViewModel @Inject constructor(
 
     init {
         observeMetadata()
+        observeSettings()
     }
 
     private fun observeMetadata() {
@@ -49,10 +50,25 @@ class HomeViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         statDeals = metadata.totalCoupon,
-                        statUpdatedTimestamp = metadata.lastFetchTime
+                        statUpdatedTimestamp = metadata.lastFetchTime,
+                        statFetchedTimestamp = metadata.localFetchTime
                     )
                 }
             }
+        }
+    }
+
+    private fun observeSettings() {
+        viewModelScope.launch {
+            couponRepository.getShowLocalFetchTime().collectLatest { show ->
+                _uiState.update { it.copy(showLocalFetchTime = show) }
+            }
+        }
+    }
+
+    fun toggleTimestampDisplay() {
+        viewModelScope.launch {
+            couponRepository.saveShowLocalFetchTime(!_uiState.value.showLocalFetchTime)
         }
     }
 

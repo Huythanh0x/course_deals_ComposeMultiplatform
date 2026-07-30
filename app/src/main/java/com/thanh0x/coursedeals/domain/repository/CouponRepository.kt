@@ -23,5 +23,9 @@ interface CouponRepository {
 
     fun getMetadataFlow(): Flow<CouponMetadata>
 
+    fun getShowLocalFetchTime(): Flow<Boolean>
+
+    suspend fun saveShowLocalFetchTime(show: Boolean)
+
     suspend fun fetchCouponDetail(courseId: Int): AppResult<Coupon>
 }

@@ -39,7 +39,13 @@ class RemotePagingCouponDataSourceImpl @Inject constructor(private val couponSer
                 val courses = body.courses.map { dto -> dto.toDomain() }
 
                 // Emit metadata via callback
-                onMetadataLoaded?.invoke(CouponMetadata(body.totalCoupon, body.lastFetchTime))
+                onMetadataLoaded?.invoke(
+                    CouponMetadata(
+                        body.totalCoupon,
+                        body.lastFetchTime,
+                        System.currentTimeMillis()
+                    )
+                )
 
                 Timber.d("CURRENT PAGE: $pageNumber $pageMax with $pageSize")
                 if (pageNumber != STARTING_KEY) delay(LOAD_DELAY_MILLIS.milliseconds)

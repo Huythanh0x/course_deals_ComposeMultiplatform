@@ -6,6 +6,7 @@ import com.thanh0x.coursedeals.domain.model.Coupon
 import com.thanh0x.coursedeals.domain.model.CouponMetadata
 import com.thanh0x.coursedeals.domain.repository.CouponRepository
 import com.thanh0x.coursedeals.domain.source.LocalCouponDataSource
+import com.thanh0x.coursedeals.domain.source.LocalSettingsDataSource
 import com.thanh0x.coursedeals.domain.source.RemoteCouponDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -16,6 +17,7 @@ import javax.inject.Provider
 class CouponRepositoryImpl @Inject constructor(
     private val localCouponDataSource: LocalCouponDataSource,
     private val remoteCouponDataSource: RemoteCouponDataSource,
+    private val localSettingsDataSource: LocalSettingsDataSource,
     private val remotePagingCouponDataSourceProvider: Provider<RemotePagingCouponDataSourceImpl>,
 ) : CouponRepository {
 
@@ -45,6 +47,13 @@ class CouponRepositoryImpl @Inject constructor(
 
     override fun getMetadataFlow(): Flow<CouponMetadata> =
         _metadataFlow.asSharedFlow()
+
+    override fun getShowLocalFetchTime(): Flow<Boolean> =
+        localSettingsDataSource.getShowLocalFetchTime()
+
+    override suspend fun saveShowLocalFetchTime(show: Boolean) {
+        localSettingsDataSource.saveShowLocalFetchTime(show)
+    }
 
     override suspend fun fetchCouponDetail(courseId: Int) =
         remoteCouponDataSource.fetchCouponDetail(courseId)

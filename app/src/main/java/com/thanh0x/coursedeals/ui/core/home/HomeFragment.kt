@@ -59,6 +59,9 @@ class HomeFragment : BaseFragment() {
         binding.btnSubmitDeal.setOnClickListener {
             showSubmitDealDialog()
         }
+        binding.tvStatUpdated.setOnClickListener {
+            homeViewModel.toggleTimestampDisplay()
+        }
         binding.srlHome.setOnRefreshListener {
             couponCoursePagingAdapter.refresh()
         }
@@ -87,9 +90,22 @@ class HomeFragment : BaseFragment() {
 
         val mapper = MapperToView(requireContext())
         binding.tvStatDeals.text = getString(R.string.stat_deals, state.statDeals)
+
+        val timestamp = if (state.showLocalFetchTime) {
+            state.statFetchedTimestamp
+        } else {
+            state.statUpdatedTimestamp
+        }
+
+        val labelResId = if (state.showLocalFetchTime) {
+            R.string.stat_fetched
+        } else {
+            R.string.stat_updated
+        }
+
         binding.tvStatUpdated.text = getString(
-            R.string.stat_updated,
-            mapper.mapTimeAgo(state.statUpdatedTimestamp)
+            labelResId,
+            mapper.mapTimeAgo(timestamp)
         )
     }
 

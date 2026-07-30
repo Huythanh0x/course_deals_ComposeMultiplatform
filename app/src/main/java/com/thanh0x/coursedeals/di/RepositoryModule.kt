@@ -4,6 +4,7 @@ import com.thanh0x.coursedeals.data.repository.CouponRepositoryImpl
 import com.thanh0x.coursedeals.data.repository.UserAuthenticationRepositoryImpl
 import com.thanh0x.coursedeals.data.repository.UserProfileRepositoryImpl
 import com.thanh0x.coursedeals.data.source.datastore.LocalAuthenticationDataSourceImpl
+import com.thanh0x.coursedeals.data.source.datastore.LocalSettingsDataSourceImpl
 import com.thanh0x.coursedeals.data.source.datastore.LocalUserProfileDataSourceImpl
 import com.thanh0x.coursedeals.data.source.local.LocalCouponDataSourceImpl
 import com.thanh0x.coursedeals.data.source.remote.RemoteAuthenticationDataSourceImpl
@@ -13,6 +14,7 @@ import com.thanh0x.coursedeals.domain.repository.UserAuthenticationRepository
 import com.thanh0x.coursedeals.domain.repository.UserProfileRepository
 import com.thanh0x.coursedeals.domain.source.LocalAuthenticationDataSource
 import com.thanh0x.coursedeals.domain.source.LocalCouponDataSource
+import com.thanh0x.coursedeals.domain.source.LocalSettingsDataSource
 import com.thanh0x.coursedeals.domain.source.LocalUserProfileDataSource
 import com.thanh0x.coursedeals.domain.source.RemoteAuthenticationDataSource
 import com.thanh0x.coursedeals.domain.source.RemoteCouponDataSource
@@ -72,4 +74,10 @@ abstract class RepositoryModule {
     abstract fun bindLocalCouponDataSource(
         impl: LocalCouponDataSourceImpl
     ): LocalCouponDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindLocalSettingsDataSource(
+        impl: LocalSettingsDataSourceImpl
+    ): LocalSettingsDataSource
 }
