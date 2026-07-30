@@ -1,0 +1,14 @@
+#!/bin/bash
+
+echo "Running Detekt check..."
+
+./gradlew :app:detekt
+
+RESULT=$?
+
+if [ $RESULT -ne 0 ]; then
+    echo "Detekt failed. Please fix issues before committing."
+    exit $RESULT
+fi
+
+exit 0

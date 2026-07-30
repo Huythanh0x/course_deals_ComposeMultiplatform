@@ -7,7 +7,7 @@ static def getLocalIP() {
         while (en.hasMoreElements()) {
             def interFace = en.nextElement()
             if (!interFace.isUp() || interFace.isLoopback() || interFace.isVirtual()) continue
-            
+
             def enumIpAddress = interFace.getInetAddresses()
             while (enumIpAddress.hasMoreElements()) {
                 def inetAddress = enumIpAddress.nextElement()
@@ -47,14 +47,6 @@ plugins {
     alias(libs.plugins.navigation.safeargs)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.detekt)
-}
-
-detekt {
-    toolVersion = libs.versions.detekt.get()
-    config.setFrom(file("../config/detekt/detekt.yml"))
-    buildUponDefaultConfig = true
-    allRules = false
 }
 
 android {
@@ -113,70 +105,70 @@ dependencies {
     implementation libs.androidx.constraintlayout
     implementation libs.androidx.navigation.fragment.ktx
     implementation libs.androidx.navigation.ui.ktx
-    
+
     testImplementation libs.junit
     androidTestImplementation libs.androidx.junit
     androidTestImplementation libs.androidx.espresso.core
-    
+
     //Coordinator layout
     implementation libs.androidx.coordinatorlayout
-    
+
     //Navigation component
     implementation libs.androidx.navigation.fragment
     implementation libs.androidx.navigation.ui
-    
+
     //Room component
     implementation libs.androidx.room.runtime
     ksp libs.androidx.room.compiler
     implementation libs.androidx.room.ktx
     implementation libs.androidx.room.paging
     implementation libs.androidx.room.testing
-    
+
     //Datastore
     implementation libs.androidx.datastore.preferences
-    
+
     //Recyclerview
     implementation libs.androidx.recyclerview
-    
+
     //Retrofit
     implementation libs.retrofit
     implementation libs.retrofit.converter.gson
-    
+
     //Dagger-Hilt
     implementation libs.androidx.hilt.common
     ksp libs.androidx.hilt.compiler
     implementation libs.hilt.android
     ksp libs.hilt.android.compiler
     implementation libs.dagger
-    
+
     //Coroutines
     implementation libs.kotlinx.coroutines.android
     implementation libs.kotlinx.coroutines.core
-    
+
     //Lifecycle
     implementation libs.androidx.lifecycle.extensions
     implementation libs.androidx.lifecycle.runtime.ktx
     implementation libs.androidx.lifecycle.viewmodel.ktx
     implementation libs.androidx.lifecycle.livedata.ktx
-    
+
     //Loading image
     implementation libs.picasso
-    
+
     //Gson
     implementation libs.gson
-    
+
     //Jsoup
     implementation libs.jsoup
-    
+
     //circular avatar
     implementation libs.circularimageview
-    
+
     //paging
     implementation libs.androidx.paging.runtime
-    
+
     //finger print
     implementation libs.androidx.biometric
-    
+
     // Logging
     implementation libs.timber
 }

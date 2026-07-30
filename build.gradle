@@ -5,5 +5,20 @@ plugins {
     alias(libs.plugins.hilt.android) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.navigation.safeargs) apply false
-    alias(libs.plugins.detekt) apply false
+}
+
+tasks.register('installGitHooks', Copy) {
+    def hooksSource = new File(rootProject.rootDir, '.git-hooks')
+    if (hooksSource.exists()) {
+        from hooksSource
+        into new File(rootProject.rootDir, '.git/hooks')
+        fileMode = 0755
+        doLast {
+            println "Git hooks installed successfully from .git-hooks/"
+        }
+    } else {
+        doLast {
+            println "Warning: .git-hooks directory not found. Skipping installation."
+        }
+    }
 }

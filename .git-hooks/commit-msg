@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Regex for Conventional Commits
+# feat, fix, chore, refactor, docs, style, test, perf, ci, build
+COMMIT_MSG_REGEX='^(feat|fix|chore|refactor|docs|style|test|perf|ci|build)(\(.*\))?!?: .+'
+
+COMMIT_MSG_FILE=$1
+COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+
+if [[ ! $COMMIT_MSG =~ $COMMIT_MSG_REGEX ]]; then
+    echo "Error: Invalid commit message format."
+    echo "Message must follow Conventional Commits standard, e.g.:"
+    echo "  feat: add new feature"
+    echo "  fix: resolve bug in login"
+    echo "  chore: update dependencies"
+    echo "Allowed prefixes: feat, fix, chore, refactor, docs, style, test, perf, ci, build"
+    exit 1
+fi
+
+exit 0
