@@ -1,6 +1,5 @@
 package com.thanh0x.coursedeals.ui.core.profile
 
-import android.util.Log
 import androidx.biometric.BiometricPrompt
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -25,6 +24,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.crypto.Cipher
 import javax.inject.Inject
 
@@ -68,7 +68,7 @@ class ProfileViewModel @Inject constructor(
                     if (result.code == NetworkStatusCode.HTTP_CODE_UNAUTHORIZED) {
                         _uiState.update { it.copy(isTokenExpired = true) }
                     } else {
-                        Log.e("CHECK EXPIRED", result.code.toString())
+                        Timber.e("CHECK EXPIRED: ${result.code}")
                     }
                 }
                 is AppResult.Loading -> { }

@@ -3,7 +3,6 @@ package com.thanh0x.coursedeals.ui.detail
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.viewModels
 import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.ActivityCouponDetailBinding
@@ -14,6 +13,7 @@ import com.thanh0x.coursedeals.util.BundleKey
 import com.thanh0x.coursedeals.util.MapperToView
 import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 @AndroidEntryPoint
 class CouponDetailActivity : BaseActivity() {
@@ -84,7 +84,7 @@ class CouponDetailActivity : BaseActivity() {
     }
 
     private fun bindingCouponDataToView(coupon: Coupon) {
-        Log.d("COUPON DETAIL ", coupon.couponUrl ?: "")
+        Timber.d("COUPON DETAIL: ${coupon.couponUrl}")
         MapperToView(applicationContext).let {
             binding.rbCouponDetail.rating = it.mapRating(coupon.rating)
             binding.tvTimeLeft.text = it.mapTimeLeft(coupon.expiredDate)
@@ -120,7 +120,7 @@ class CouponDetailActivity : BaseActivity() {
     }
 
     private fun showFetchingErrorDialog(cause: String) {
-        Log.d("showFetchingErrorDialog", cause)
+        Timber.e("showFetchingErrorDialog: $cause")
         showAlertDialog(
             getString(R.string.coupon_detail_error_title),
             getString(R.string.error_fetching_null_coupon),

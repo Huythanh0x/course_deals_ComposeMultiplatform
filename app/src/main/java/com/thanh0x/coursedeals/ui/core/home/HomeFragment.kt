@@ -2,7 +2,6 @@ package com.thanh0x.coursedeals.ui.core.home
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +15,8 @@ import com.thanh0x.coursedeals.ui.base.BaseFragment
 import com.thanh0x.coursedeals.ui.detail.CouponDetailActivity
 import com.thanh0x.coursedeals.util.BundleKey
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import timber.log.Timber
 
 @AndroidEntryPoint
 class HomeFragment : BaseFragment() {
@@ -119,7 +120,7 @@ class HomeFragment : BaseFragment() {
 
     private val queryTextChangeListener = object : SearchView.OnQueryTextListener {
         override fun onQueryTextSubmit(query: String?): Boolean {
-            Log.d("SUBMITTED TEXT", query.toString())
+            Timber.d("SUBMITTED TEXT: $query")
             return true
         }
 
@@ -148,6 +149,6 @@ class HomeFragment : BaseFragment() {
     }
 
     private fun applyFilters() {
-        Log.d("FILTER APPLIED", currentFilter.toString())
+        Timber.d("FILTER APPLIED: $currentFilter")
     }
 }

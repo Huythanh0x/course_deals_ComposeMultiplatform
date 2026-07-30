@@ -1,6 +1,5 @@
 package com.thanh0x.coursedeals.ui.login
 
-import android.util.Log
 import androidx.biometric.BiometricPrompt
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -22,6 +21,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.crypto.Cipher
 import javax.inject.Inject
 
@@ -95,13 +95,14 @@ class LoginViewModel @Inject constructor(
             saveFingerprintToStorage(fingerToken)
             val result = requestAccessTokenUseCase()
             _uiState.update { it.copy(isLoading = false) }
+            Timber.d("ACCESS TOKEN RESPONSE: $result")
             
             if (result is AppResult.Success) {
                 clearFingerprintToken()
                 saveAccessToken(result.data.accessToken)
                 _uiEvent.emit(UiEvent.Navigate("Main"))
             } else {
-                Log.e("ACCESS TOKEN RESPONSE", "ERROR")
+                Timber.e("ACCESS TOKEN RESPONSE: ERROR")
                 _uiEvent.emit(UiEvent.ShowToast("Fingerprint login failed"))
             }
         }

@@ -168,4 +168,7 @@ dependencies {
     
     //finger print
     implementation libs.androidx.biometric
+    
+    // Logging
+    implementation libs.timber
 }

@@ -26,6 +26,7 @@ jsoup = "1.22.2"
 circularimageview = "4.3.1"
 paging = "3.5.0"
 biometric = "1.1.0"
+timber = "5.0.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -66,6 +67,7 @@ jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }
 circularimageview = { group = "com.mikhaellopez", name = "circularimageview", version.ref = "circularimageview" }
 androidx-paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "paging" }
 androidx-biometric = { group = "androidx.biometric", name = "biometric", version.ref = "biometric" }
+timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
