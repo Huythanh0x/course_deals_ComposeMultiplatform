@@ -6,6 +6,7 @@ import com.thanh0x.coursedeals.data.model.CouponDto
 import com.thanh0x.coursedeals.domain.model.Coupon as CouponDomain
 import java.time.LocalDateTime
 import java.time.ZoneOffset
+import timber.log.Timber
 
 @SuppressLint("NewApi")
 fun CouponDto.toDomain(): CouponDomain {
@@ -134,6 +135,7 @@ private fun formatDateArrayToEpoch(dateArray: List<Int>?): Long? {
         LocalDateTime.of(year, month, day, hour, minute, second)
             .toEpochSecond(ZoneOffset.UTC)
     } catch (e: Exception) {
+        Timber.e(e, "Error formatting date array to epoch: $dateArray")
         null
     }
 }

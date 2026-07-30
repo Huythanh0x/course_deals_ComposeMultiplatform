@@ -38,9 +38,10 @@ class RemotePagingCouponDataSourceImpl @Inject constructor(private val couponSer
                 )
             }
         } catch (e: Exception) {
+            Timber.e(e, "Error loading paging data: page $pageNumber")
             return LoadResult.Error(e)
         }
-        Timber.e("LOADING NEW PAGE: Exception in loading new page")
+        Timber.e("LOADING NEW PAGE: Unknown error while loading new page")
         return LoadResult.Error(Throwable("Unknown error while loading new paging data"))
     }
 

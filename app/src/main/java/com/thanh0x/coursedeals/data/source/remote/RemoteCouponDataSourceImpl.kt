@@ -4,6 +4,7 @@ import com.thanh0x.coursedeals.data.mapper.toDomain
 import com.thanh0x.coursedeals.domain.model.AppResult
 import com.thanh0x.coursedeals.domain.model.Coupon
 import com.thanh0x.coursedeals.domain.source.RemoteCouponDataSource
+import timber.log.Timber
 
 class RemoteCouponDataSourceImpl(private val couponService: CouponService) :
     RemoteCouponDataSource {
@@ -16,6 +17,7 @@ class RemoteCouponDataSourceImpl(private val couponService: CouponService) :
                 AppResult.Error(response.message(), response.code())
             }
         } catch (e: Exception) {
+            Timber.e(e, "Error posting coupon: $couponUrl")
             AppResult.Error(e.localizedMessage ?: "Unknown Error")
         }
     }
@@ -29,6 +31,7 @@ class RemoteCouponDataSourceImpl(private val couponService: CouponService) :
                 AppResult.Error(response.message(), response.code())
             }
         } catch (e: Exception) {
+            Timber.e(e, "Error deleting coupon: $couponUrl")
             AppResult.Error(e.localizedMessage ?: "Unknown Error")
         }
     }
@@ -43,6 +46,7 @@ class RemoteCouponDataSourceImpl(private val couponService: CouponService) :
                 AppResult.Error(response.message(), response.code())
             }
         } catch (e: Exception) {
+            Timber.e(e, "Error fetching coupon detail: $courseId")
             AppResult.Error(e.localizedMessage ?: "Unknown Error")
         }
     }

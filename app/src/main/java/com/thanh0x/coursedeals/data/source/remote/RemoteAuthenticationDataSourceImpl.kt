@@ -6,6 +6,7 @@ import com.thanh0x.coursedeals.domain.model.AppResult
 import com.thanh0x.coursedeals.domain.model.AuthCredentials
 import com.thanh0x.coursedeals.domain.model.TokenData
 import com.thanh0x.coursedeals.domain.source.RemoteAuthenticationDataSource
+import timber.log.Timber
 
 class RemoteAuthenticationDataSourceImpl(private val userAuthenticationService: UserAuthenticationService) :
     RemoteAuthenticationDataSource {
@@ -18,6 +19,7 @@ class RemoteAuthenticationDataSourceImpl(private val userAuthenticationService: 
                 AppResult.Error(response.message(), response.code())
             }
         } catch (e: Exception) {
+            Timber.e(e, "Error during registration")
             AppResult.Error(e.localizedMessage ?: "Unknown Error")
         }
     }
@@ -32,6 +34,7 @@ class RemoteAuthenticationDataSourceImpl(private val userAuthenticationService: 
                 AppResult.Error(response.message(), response.code())
             }
         } catch (e: Exception) {
+            Timber.e(e, "Error during login")
             AppResult.Error(e.localizedMessage ?: "Unknown Error")
         }
     }
@@ -45,6 +48,7 @@ class RemoteAuthenticationDataSourceImpl(private val userAuthenticationService: 
                 AppResult.Error(response.message(), response.code())
             }
         } catch (e: Exception) {
+            Timber.e(e, "Error checking token expiration")
             AppResult.Error(e.localizedMessage ?: "Unknown Error")
         }
     }
@@ -59,6 +63,7 @@ class RemoteAuthenticationDataSourceImpl(private val userAuthenticationService: 
                 AppResult.Error(response.message(), response.code())
             }
         } catch (e: Exception) {
+            Timber.e(e, "Error requesting fingerprint token")
             AppResult.Error(e.localizedMessage ?: "Unknown Error")
         }
     }
@@ -73,6 +78,7 @@ class RemoteAuthenticationDataSourceImpl(private val userAuthenticationService: 
                 AppResult.Error(response.message(), response.code())
             }
         } catch (e: Exception) {
+            Timber.e(e, "Error requesting access token")
             AppResult.Error(e.localizedMessage ?: "Unknown Error")
         }
     }

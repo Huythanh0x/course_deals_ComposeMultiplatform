@@ -29,6 +29,7 @@ import com.thanh0x.coursedeals.ui.login.LoginActivity
 import com.thanh0x.coursedeals.util.NetworkStatusCode
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 @AndroidEntryPoint
 class ProfileFragment : BaseFragment() {
@@ -79,6 +80,7 @@ class ProfileFragment : BaseFragment() {
             try {
                 startActivity(emailIntent)
             } catch (e: android.content.ActivityNotFoundException) {
+                Timber.e(e, "Failed to send email: No activity found")
                 showAlertDialog(
                     getString(R.string.email_failed_to_send),
                     getString(R.string.email_cannot_find_client_app)
@@ -93,6 +95,7 @@ class ProfileFragment : BaseFragment() {
             try {
                 startActivity(browserIntent)
             } catch (e: android.content.ActivityNotFoundException) {
+                Timber.e(e, "Failed to open website: No browser installed")
                 Toast.makeText(requireContext(), "No web browser installed.", Toast.LENGTH_SHORT)
                     .show()
             }

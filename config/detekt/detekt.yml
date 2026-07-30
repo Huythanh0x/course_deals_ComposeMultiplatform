@@ -4,19 +4,25 @@ build:
 
 complexity:
   active: true
-  ComplexMethod:
+  CyclomaticComplexMethod:
     active: true
-    threshold: 15
+    threshold: 20
   LongMethod:
     active: true
-    threshold: 60
+    threshold: 100
   LongParameterList:
     active: true
-    functionThreshold: 6
-    constructorThreshold: 7
+    functionThreshold: 10
+    constructorThreshold: 10
   LargeClass:
     active: true
     threshold: 600
+  TooManyFunctions:
+    active: true
+    thresholdInFiles: 20
+    thresholdInClasses: 20
+    thresholdInInterfaces: 15
+    thresholdInObjects: 15
 
 naming:
   active: true
