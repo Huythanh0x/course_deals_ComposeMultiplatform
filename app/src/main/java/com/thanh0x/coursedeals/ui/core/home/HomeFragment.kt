@@ -188,6 +188,7 @@ class HomeFragment : BaseFragment() {
 
         binding.tvStatUpdated.isVisible = !isFiltered
         binding.btnClearFilters.isVisible = isFiltered
+        binding.btnSubmitDeal.isVisible = !isFiltered
 
         binding.srlHome.isRefreshing = state.isSyncing
         binding.llEmptyState.isVisible = state.isEmptyState
