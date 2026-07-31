@@ -95,6 +95,10 @@
     <string name="auth_btn_apple">Continue with Apple</string>
     <string name="auth_btn_fingerprint">Continue with Fingerprint</string>
     <string name="filter_title">Filter</string>
+    <string name="filter_rating">Minimum Rating</string>
+    <string name="filter_rating_any">Any Rating</string>
+    <string name="filter_rating_max">5.0</string>
+    <string name="filter_rating_format">%1$.1f+ Stars</string>
     <string name="filter_reset">Reset</string>
     <string name="filter_apply">Apply</string>
     <string name="lang_label">Language</string>

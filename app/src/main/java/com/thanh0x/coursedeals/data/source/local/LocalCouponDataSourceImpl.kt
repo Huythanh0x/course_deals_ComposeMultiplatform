@@ -62,6 +62,12 @@ class LocalCouponDataSourceImpl @Inject constructor(private val couponDao: Coupo
             args.addAll(filter.categories.map { it.dbValue })
         }
 
+        // Rating
+        if (filter.minRating > 0.0) {
+            conditions.add("rating >= ?")
+            args.add(filter.minRating)
+        }
+
         // Language
         when (filter.language) {
             CourseLanguage.ENGLISH -> {

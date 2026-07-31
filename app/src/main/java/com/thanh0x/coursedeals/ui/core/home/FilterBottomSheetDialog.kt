@@ -26,6 +26,7 @@ class FilterBottomSheetDialog(
     private val selectedCategories = mutableSetOf<CourseCategory>()
     private var selectedLanguage: CourseLanguage = CourseLanguage.ALL
     private var selectedSort: SortOption = SortOption.NEWEST
+    private var selectedMinRating: Double = 0.0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,8 +43,10 @@ class FilterBottomSheetDialog(
         selectedCategories.addAll(initialFilter.categories)
         selectedLanguage = initialFilter.language
         selectedSort = initialFilter.sortBy
+        selectedMinRating = initialFilter.minRating
 
         setupCategoryGroup()
+        setupRatingSlider()
         setupLanguageGroup()
         setupSortGroup()
 
@@ -52,8 +55,60 @@ class FilterBottomSheetDialog(
         }
 
         binding.btnApply.setOnClickListener {
-            onFilterApplied(FilterData(selectedCategories.toList(), selectedLanguage, selectedSort))
+            onFilterApplied(
+                FilterData(
+                    selectedCategories.toList(),
+                    selectedLanguage,
+                    selectedSort,
+                    selectedMinRating,
+                ),
+            )
             dismiss()
+        }
+    }
+
+    private fun setupRatingSlider() {
+        binding.sliderRating.value = ratingToSlider(selectedMinRating)
+        updateRatingLabel(selectedMinRating)
+
+        binding.sliderRating.setLabelFormatter { value ->
+            val rating = sliderToRating(value)
+            if (rating > 0.0) {
+                getString(R.string.filter_rating_format, rating)
+            } else {
+                getString(R.string.filter_rating_any)
+            }
+        }
+
+        binding.sliderRating.addOnChangeListener { _, value, _ ->
+            selectedMinRating = sliderToRating(value)
+            updateRatingLabel(selectedMinRating)
+        }
+    }
+
+    private fun sliderToRating(value: Float): Double {
+        return if (value == 0.0f) {
+            0.0
+        } else {
+            MIN_QUALIFIED_RATING + (value - 1.0) / RATING_STEP_FACTOR
+        }
+    }
+
+    private fun ratingToSlider(rating: Double): Float {
+        return if (rating <= 0.0) {
+            0.0f
+        } else {
+            ((rating - MIN_QUALIFIED_RATING) * RATING_STEP_FACTOR + 1.0)
+                .toFloat()
+                .coerceIn(0.0f, MAX_SLIDER_VALUE)
+        }
+    }
+
+    private fun updateRatingLabel(rating: Double) {
+        binding.tvCurrentRating.text = if (rating > 0.0) {
+            getString(R.string.filter_rating_format, rating)
+        } else {
+            getString(R.string.filter_rating_any)
         }
     }
 
@@ -133,6 +188,7 @@ class FilterBottomSheetDialog(
         selectedCategories.clear()
         selectedLanguage = CourseLanguage.ALL
         selectedSort = SortOption.NEWEST
+        selectedMinRating = 0.0
 
         clearGroupSelection(binding.cgCategories)
         clearGroupSelection(binding.cgLanguages)
@@ -141,6 +197,9 @@ class FilterBottomSheetDialog(
         // Select defaults
         updateChipSelection(binding.cgLanguages, CourseLanguage.ALL.displayResId)
         updateChipSelection(binding.cgSort, SortOption.NEWEST.displayResId)
+
+        binding.sliderRating.value = ratingToSlider(0.0)
+        updateRatingLabel(0.0)
     }
 
     private fun updateChipSelection(group: ViewGroup, displayResId: Int) {
@@ -163,5 +222,8 @@ class FilterBottomSheetDialog(
 
     companion object {
         const val TAG = "FilterBottomSheetDialog"
+        private const val MIN_QUALIFIED_RATING = 4.0
+        private const val RATING_STEP_FACTOR = 10.0
+        private const val MAX_SLIDER_VALUE = 11.0f
     }
 }

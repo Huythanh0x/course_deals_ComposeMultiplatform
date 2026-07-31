@@ -51,7 +51,7 @@ class HomeViewModel @Inject constructor(
 
     val items: Flow<PagingData<Coupon>> = combine(
         _queryTrigger,
-        uiState.map { it.filter }.distinctUntilChanged()
+        uiState.map { it.filter }.distinctUntilChanged(),
     ) { query, filter ->
         query to filter
     }.flatMapLatest { (query, filter) ->
@@ -157,7 +157,8 @@ class HomeViewModel @Inject constructor(
                     val isFiltered = _queryTrigger.value.isNotBlank() ||
                         (it.filter.categories.isNotEmpty()) ||
                         (it.filter.language != CourseLanguage.ALL) ||
-                        (it.filter.sortBy != SortOption.NEWEST)
+                        (it.filter.sortBy != SortOption.NEWEST) ||
+                        (it.filter.minRating > 0.0)
 
                     it.copy(
                         matchingDeals = count,

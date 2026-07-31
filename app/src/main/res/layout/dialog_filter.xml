@@ -64,6 +64,66 @@
                     <!-- Category items will be inflated here -->
                 </com.google.android.material.chip.ChipGroup>
 
+                <!-- Rating Section -->
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tvRatingLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_24"
+                    android:text="@string/filter_rating"
+                    android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/cgCategories" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tvCurrentRating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                    android:textColor="@color/golden"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvRatingLabel"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/tvRatingLabel"
+                    tools:text="4.5+ Stars" />
+
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/sliderRating"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_8"
+                    android:stepSize="1.0"
+                    android:valueFrom="0.0"
+                    android:valueTo="11.0"
+                    app:layout_constraintTop_toBottomOf="@+id/tvRatingLabel"
+                    app:thumbColor="@color/golden"
+                    app:trackColorActive="@color/golden"
+                    app:trackColorInactive="@color/m3_outline_variant"
+                    app:tickVisible="true"
+                    app:tickColorActive="@color/golden"
+                    app:tickColorInactive="@color/m3_outline_variant" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/filter_rating_any"
+                    android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:alpha="0.7"
+                    app:layout_constraintStart_toStartOf="@+id/sliderRating"
+                    app:layout_constraintTop_toBottomOf="@+id/sliderRating" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/filter_rating_max"
+                    android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:alpha="0.7"
+                    app:layout_constraintEnd_toEndOf="@+id/sliderRating"
+                    app:layout_constraintTop_toBottomOf="@+id/sliderRating" />
+
                 <!-- Language Section -->
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/tvLanguageLabel"
@@ -74,7 +134,7 @@
                     android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/cgCategories" />
+                    app:layout_constraintTop_toBottomOf="@+id/sliderRating" />
 
                 <com.google.android.material.chip.ChipGroup
                     android:id="@+id/cgLanguages"
