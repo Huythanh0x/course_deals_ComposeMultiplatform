@@ -1,8 +1,11 @@
 package com.thanh0x.coursedeals.domain.model
 
+import android.os.Parcelable
 import com.thanh0x.coursedeals.R
+import kotlinx.parcelize.Parcelize
 
-enum class CourseCategory(val dbValue: String, val displayResId: Int) {
+@Parcelize
+enum class CourseCategory(val dbValue: String, val displayResId: Int) : Parcelable {
     DEVELOPMENT("Development", R.string.cat_1),
     DESIGN("Design", R.string.cat_2),
     BUSINESS("Business", R.string.cat_3),
@@ -12,19 +15,21 @@ enum class CourseCategory(val dbValue: String, val displayResId: Int) {
     PHOTOGRAPHY("Photography", R.string.cat_7),
     MUSIC("Music", R.string.cat_8),
     HEALTH_AND_FITNESS("Health & Fitness", R.string.cat_9),
-    FINANCE("Finance", R.string.cat_10)
+    FINANCE("Finance", R.string.cat_10),
 }
 
-enum class CourseLanguage(val displayResId: Int) {
+@Parcelize
+enum class CourseLanguage(val displayResId: Int) : Parcelable {
     ALL(R.string.lang_all),
     ENGLISH(R.string.lang_english),
-    OTHERS(R.string.lang_others)
+    OTHERS(R.string.lang_others),
 }
 
-enum class SortOption(val displayResId: Int) {
+@Parcelize
+enum class SortOption(val displayResId: Int) : Parcelable {
     NEWEST(R.string.sort_newest),
     RATING(R.string.sort_rating),
     STUDENTS(R.string.sort_students),
     REVIEWS(R.string.sort_reviews),
-    EXPIRING_SOON(R.string.sort_expiring)
+    EXPIRING_SOON(R.string.sort_expiring),
 }

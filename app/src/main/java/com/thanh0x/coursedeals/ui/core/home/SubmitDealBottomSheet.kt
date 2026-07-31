@@ -7,13 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
 import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.DialogSubmitDealBinding
 import com.thanh0x.coursedeals.ui.base.BaseBottomSheetDialog
 
-class SubmitDealBottomSheet(
-    private val onDealSubmitted: (String) -> Unit,
-) : BaseBottomSheetDialog() {
+class SubmitDealBottomSheet : BaseBottomSheetDialog() {
 
     private var _binding: DialogSubmitDealBinding? = null
     private val binding get() = _binding!!
@@ -21,7 +21,7 @@ class SubmitDealBottomSheet(
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = DialogSubmitDealBinding.inflate(inflater, container, false)
         return binding.root
@@ -60,7 +60,7 @@ class SubmitDealBottomSheet(
             binding.tilUrl.error = getString(R.string.url_error_invalid)
         } else {
             binding.tilUrl.error = null
-            onDealSubmitted(url)
+            setFragmentResult(REQUEST_KEY, bundleOf(EXTRA_COUPON_URL to url))
             dismiss()
         }
     }
@@ -72,5 +72,7 @@ class SubmitDealBottomSheet(
 
     companion object {
         const val TAG = "SubmitDealBottomSheet"
+        const val REQUEST_KEY = "SubmitDealRequestKey"
+        const val EXTRA_COUPON_URL = "ExtraCouponUrl"
     }
 }

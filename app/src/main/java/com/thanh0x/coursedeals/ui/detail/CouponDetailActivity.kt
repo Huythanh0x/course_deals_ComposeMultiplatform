@@ -25,6 +25,7 @@ class CouponDetailActivity : BaseActivity() {
         binding = ActivityCouponDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setupToolbar()
+        setupFragmentResultListeners()
 
         val courseId = intent.extras?.getInt(BundleKey.TO_DETAIL_ACTIVITY)
         if (courseId != null) {
@@ -65,6 +66,18 @@ class CouponDetailActivity : BaseActivity() {
             if ((!state.isLoading) && (state.error == null)) {
                 couponDetailViewModel.fetchCouponDetail(courseId)
             }
+        }
+    }
+
+    private fun setupFragmentResultListeners() {
+        supportFragmentManager.setFragmentResultListener(
+            ReportBottomSheetDialog.REQUEST_KEY,
+            this,
+        ) { _, _ ->
+            showAlertDialog(
+                getString(R.string.action_report_title),
+                getString(R.string.report_submit_success),
+            )
         }
     }
 
@@ -145,12 +158,7 @@ class CouponDetailActivity : BaseActivity() {
     }
 
     private fun showReportDialog() {
-        val dialog = ReportBottomSheetDialog { _, _ ->
-            showAlertDialog(
-                getString(R.string.action_report_title),
-                getString(R.string.report_submit_success),
-            )
-        }
+        val dialog = ReportBottomSheetDialog()
         dialog.show(supportFragmentManager, ReportBottomSheetDialog.TAG)
     }
 

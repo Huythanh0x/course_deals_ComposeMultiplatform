@@ -52,7 +52,34 @@ class HomeFragment : BaseFragment() {
         setupListeners()
         setupObservers()
         setupSearchViewSuggestions()
+        setupFragmentResultListeners()
         homeViewModel.checkIfInternetAvailable()
+    }
+
+    private fun setupFragmentResultListeners() {
+        childFragmentManager.setFragmentResultListener(
+            FilterBottomSheetDialog.REQUEST_KEY,
+            viewLifecycleOwner,
+        ) { _, bundle ->
+            val filterData = bundle.getParcelable<FilterData>(FilterBottomSheetDialog.EXTRA_FILTER_DATA)
+            filterData?.let {
+                currentFilter = it
+                applyFilters()
+            }
+        }
+
+        childFragmentManager.setFragmentResultListener(
+            SubmitDealBottomSheet.REQUEST_KEY,
+            viewLifecycleOwner,
+        ) { _, bundle ->
+            val url = bundle.getString(SubmitDealBottomSheet.EXTRA_COUPON_URL)
+            url?.let {
+                showAlertDialog(
+                    getString(R.string.submit_deal_title),
+                    getString(R.string.submit_success_msg),
+                )
+            }
+        }
     }
 
     private fun setupSearchViewSuggestions() {
@@ -325,20 +352,12 @@ class HomeFragment : BaseFragment() {
     }
 
     private fun showFilterDialog() {
-        val dialog = FilterBottomSheetDialog(currentFilter) { filterData ->
-            currentFilter = filterData
-            applyFilters()
-        }
+        val dialog = FilterBottomSheetDialog.newInstance(currentFilter)
         dialog.show(childFragmentManager, FilterBottomSheetDialog.TAG)
     }
 
     private fun showSubmitDealDialog() {
-        val dialog = SubmitDealBottomSheet { _ ->
-            showAlertDialog(
-                getString(R.string.submit_deal_title),
-                getString(R.string.submit_success_msg),
-            )
-        }
+        val dialog = SubmitDealBottomSheet()
         dialog.show(childFragmentManager, SubmitDealBottomSheet.TAG)
     }
 

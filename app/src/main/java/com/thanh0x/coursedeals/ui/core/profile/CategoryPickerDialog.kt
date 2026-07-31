@@ -4,16 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.fragment.app.setFragmentResult
 import com.thanh0x.coursedeals.databinding.DialogCategoryPickerBinding
 import com.thanh0x.coursedeals.databinding.ItemCategoryPickerBinding
 import com.thanh0x.coursedeals.domain.model.CourseCategory
 import com.thanh0x.coursedeals.ui.base.BaseBottomSheetDialog
 
-class CategoryPickerDialog(
-    private val initialSelected: List<String>,
-    private val onCategoriesSelected: (List<String>) -> Unit,
-) : BaseBottomSheetDialog() {
+class CategoryPickerDialog : BaseBottomSheetDialog() {
 
     private var _binding: DialogCategoryPickerBinding? = null
     private val binding get() = _binding!!
@@ -23,7 +22,7 @@ class CategoryPickerDialog(
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = DialogCategoryPickerBinding.inflate(inflater, container, false)
         return binding.root
@@ -31,6 +30,7 @@ class CategoryPickerDialog(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val initialSelected = arguments?.getStringArrayList(ARG_INITIAL_SELECTED) ?: emptyList<String>()
         selectedItems.addAll(initialSelected)
 
         CourseCategory.entries.forEach { category ->
@@ -57,7 +57,7 @@ class CategoryPickerDialog(
         }
 
         binding.btnDone.setOnClickListener {
-            onCategoriesSelected(selectedItems.toList())
+            setFragmentResult(REQUEST_KEY, bundleOf(EXTRA_SELECTED_CATEGORIES to ArrayList(selectedItems)))
             dismiss()
         }
     }
@@ -69,5 +69,14 @@ class CategoryPickerDialog(
 
     companion object {
         const val TAG = "CategoryPickerDialog"
+        const val REQUEST_KEY = "CategoryPickerRequestKey"
+        const val EXTRA_SELECTED_CATEGORIES = "ExtraSelectedCategories"
+        private const val ARG_INITIAL_SELECTED = "ArgInitialSelected"
+
+        fun newInstance(selected: List<String>): CategoryPickerDialog {
+            return CategoryPickerDialog().apply {
+                arguments = bundleOf(ARG_INITIAL_SELECTED to ArrayList(selected))
+            }
+        }
     }
 }

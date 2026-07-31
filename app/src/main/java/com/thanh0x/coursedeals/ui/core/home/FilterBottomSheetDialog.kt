@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.fragment.app.setFragmentResult
 import com.google.android.material.chip.Chip
 import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.DialogFilterBinding
@@ -15,10 +17,7 @@ import com.thanh0x.coursedeals.domain.model.FilterData
 import com.thanh0x.coursedeals.domain.model.SortOption
 import com.thanh0x.coursedeals.ui.base.BaseBottomSheetDialog
 
-class FilterBottomSheetDialog(
-    private val initialFilter: FilterData,
-    private val onFilterApplied: (FilterData) -> Unit,
-) : BaseBottomSheetDialog() {
+class FilterBottomSheetDialog : BaseBottomSheetDialog() {
 
     private var _binding: DialogFilterBinding? = null
     private val binding get() = _binding!!
@@ -40,6 +39,8 @@ class FilterBottomSheetDialog(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val initialFilter = arguments?.getParcelable<FilterData>(ARG_INITIAL_FILTER) ?: FilterData()
+
         selectedCategories.addAll(initialFilter.categories)
         selectedLanguage = initialFilter.language
         selectedSort = initialFilter.sortBy
@@ -55,14 +56,13 @@ class FilterBottomSheetDialog(
         }
 
         binding.btnApply.setOnClickListener {
-            onFilterApplied(
-                FilterData(
-                    selectedCategories.toList(),
-                    selectedLanguage,
-                    selectedSort,
-                    selectedMinRating,
-                ),
+            val result = FilterData(
+                selectedCategories.toList(),
+                selectedLanguage,
+                selectedSort,
+                selectedMinRating,
             )
+            setFragmentResult(REQUEST_KEY, bundleOf(EXTRA_FILTER_DATA to result))
             dismiss()
         }
     }
@@ -222,8 +222,18 @@ class FilterBottomSheetDialog(
 
     companion object {
         const val TAG = "FilterBottomSheetDialog"
+        const val REQUEST_KEY = "FilterRequestKey"
+        const val EXTRA_FILTER_DATA = "ExtraFilterData"
+        private const val ARG_INITIAL_FILTER = "ArgInitialFilter"
+
         private const val MIN_QUALIFIED_RATING = 4.0
         private const val RATING_STEP_FACTOR = 10.0
         private const val MAX_SLIDER_VALUE = 11.0f
+
+        fun newInstance(filter: FilterData): FilterBottomSheetDialog {
+            return FilterBottomSheetDialog().apply {
+                arguments = bundleOf(ARG_INITIAL_FILTER to filter)
+            }
+        }
     }
 }

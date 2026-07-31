@@ -5,26 +5,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.fragment.app.setFragmentResult
 import com.google.android.material.chip.Chip
 import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.DialogReportBinding
 import com.thanh0x.coursedeals.databinding.ItemReportReasonBinding
 import com.thanh0x.coursedeals.ui.base.BaseBottomSheetDialog
 
-class ReportBottomSheetDialog(
-    private val onReportSubmitted: (String, String?) -> Unit,
-) : BaseBottomSheetDialog() {
+class ReportBottomSheetDialog : BaseBottomSheetDialog() {
 
-    private var _binding
-    : DialogReportBinding? = null
+    private var _binding: DialogReportBinding? = null
     private val binding get() = _binding!!
 
     private val reasons = listOf(
         R.string.report_reason_not_free,
         R.string.report_reason_no_data,
         R.string.report_reason_expired,
-        R.string.report_reason_other
+        R.string.report_reason_other,
     )
 
     private var selectedReason: String? = null
@@ -32,7 +31,7 @@ class ReportBottomSheetDialog(
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = DialogReportBinding.inflate(inflater, container, false)
         return binding.root
@@ -94,20 +93,27 @@ class ReportBottomSheetDialog(
 
     private fun validateAndSubmit() {
         if (selectedReason == null) {
-            // Shake or show error if needed, but for now just wait for selection
             return
         }
 
         val otherDetails = if (binding.tilOtherReason.isVisible) {
             binding.tietOtherReason.text.toString().trim()
-        } else null
+        } else {
+            null
+        }
 
         if (binding.tilOtherReason.isVisible && otherDetails.isNullOrEmpty()) {
             binding.tilOtherReason.error = getString(R.string.report_other_hint)
             return
         }
 
-        onReportSubmitted(selectedReason!!, otherDetails)
+        setFragmentResult(
+            REQUEST_KEY,
+            bundleOf(
+                EXTRA_REASON to selectedReason,
+                EXTRA_OTHER_DETAILS to otherDetails,
+            ),
+        )
         dismiss()
     }
 
@@ -118,5 +124,8 @@ class ReportBottomSheetDialog(
 
     companion object {
         const val TAG = "ReportBottomSheetDialog"
+        const val REQUEST_KEY = "ReportRequestKey"
+        const val EXTRA_REASON = "ExtraReason"
+        const val EXTRA_OTHER_DETAILS = "ExtraOtherDetails"
     }
 }

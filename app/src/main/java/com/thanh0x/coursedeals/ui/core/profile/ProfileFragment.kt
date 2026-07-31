@@ -50,7 +50,22 @@ class ProfileFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         setupInteractions()
         setupObservers()
+        setupFragmentResultListeners()
         profileViewModel.checkIfTokenExpired()
+    }
+
+    private fun setupFragmentResultListeners() {
+        childFragmentManager.setFragmentResultListener(
+            CategoryPickerDialog.REQUEST_KEY,
+            viewLifecycleOwner,
+        ) { _, bundle ->
+            val selected = bundle.getStringArrayList(CategoryPickerDialog.EXTRA_SELECTED_CATEGORIES)
+            selected?.let {
+                selectedCategories.clear()
+                selectedCategories.addAll(it)
+                updateCategoryChips()
+            }
+        }
     }
 
     private fun setupInteractions() {
@@ -127,11 +142,7 @@ class ProfileFragment : BaseFragment() {
         }
 
         binding.btnAddCat.setOnClickListener {
-            val dialog = CategoryPickerDialog(selectedCategories) { selected ->
-                selectedCategories.clear()
-                selectedCategories.addAll(selected)
-                updateCategoryChips()
-            }
+            val dialog = CategoryPickerDialog.newInstance(selectedCategories)
             dialog.show(childFragmentManager, CategoryPickerDialog.TAG)
         }
 
@@ -185,7 +196,7 @@ class ProfileFragment : BaseFragment() {
                 closeIconSize = 18f * resources.displayMetrics.density
                 chipIconTint = android.content.res.ColorStateList.valueOf(
                     com.google.android.material.color.MaterialColors.getColor(
-                        this, 
+                        this,
                         com.google.android.material.R.attr.colorOnSurfaceVariant
                     )
                 )
