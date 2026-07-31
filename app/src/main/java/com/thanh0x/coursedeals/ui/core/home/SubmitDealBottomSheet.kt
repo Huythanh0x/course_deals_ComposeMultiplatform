@@ -53,6 +53,7 @@ class SubmitDealBottomSheet : BaseBottomSheetDialog() {
     }
 
     private fun validateAndSubmit() {
+        hideKeyboard()
         val url = binding.tietUrl.text.toString().trim()
         if (url.isEmpty()) {
             binding.tilUrl.error = getString(R.string.url_error_invalid)

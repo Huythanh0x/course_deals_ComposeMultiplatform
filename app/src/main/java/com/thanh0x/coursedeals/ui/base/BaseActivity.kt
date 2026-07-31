@@ -3,6 +3,7 @@ package com.thanh0x.coursedeals.ui.base
 import android.content.res.ColorStateList
 import android.util.TypedValue
 import android.view.LayoutInflater
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.TextView
@@ -73,8 +74,9 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     fun hideKeyboard() {
+        val view = currentFocus ?: findViewById<View>(android.R.id.content)
         val imm = getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
-        imm?.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+        imm?.hideSoftInputFromWindow(view?.windowToken, 0)
     }
 
     fun showAlertDialog(

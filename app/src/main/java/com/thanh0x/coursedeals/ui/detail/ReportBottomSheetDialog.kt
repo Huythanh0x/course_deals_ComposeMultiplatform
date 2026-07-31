@@ -92,6 +92,7 @@ class ReportBottomSheetDialog : BaseBottomSheetDialog() {
     }
 
     private fun validateAndSubmit() {
+        hideKeyboard()
         if (selectedReason == null) {
             return
         }

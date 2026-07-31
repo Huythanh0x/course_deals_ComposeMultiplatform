@@ -1,5 +1,7 @@
 package com.thanh0x.coursedeals.ui.base
 
+import android.content.Context
+import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -10,6 +12,12 @@ abstract class BaseBottomSheetDialog : BottomSheetDialogFragment() {
     override fun onStart() {
         super.onStart()
         setupBottomSheetBehavior()
+    }
+
+    fun hideKeyboard() {
+        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+        val view = dialog?.currentFocus ?: view
+        imm?.hideSoftInputFromWindow(view?.windowToken, 0)
     }
 
     private fun setupBottomSheetBehavior() {
