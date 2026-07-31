@@ -34,10 +34,20 @@
         <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.CourseDeal.Medium</item>
         <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.CourseDeal.ExtraLarge</item>
 
+        <item name="bottomSheetDialogTheme">@style/Theme.CourseDeal.BottomSheetDialog</item>
         <item name="android:windowIsTranslucent">true</item>
     </style>
 
     <style name="Theme.CourseDeals" parent="Base.Theme.CourseDeals" />
+
+    <style name="Theme.CourseDeal.BottomSheetDialog" parent="Theme.Material3.DayNight.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Widget.CourseDeal.BottomSheet</item>
+    </style>
+
+    <style name="Widget.CourseDeal.BottomSheet" parent="Widget.Material3.BottomSheet.Modal">
+        <item name="backgroundTint">@color/m3_surface</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.CourseDeal.ExtraLarge</item>
+    </style>
 
     <style name="Widget.CourseDeal.BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
         <item name="itemTextAppearanceActive">@style/TextAppearance.CourseDeal.LabelMedium</item>
