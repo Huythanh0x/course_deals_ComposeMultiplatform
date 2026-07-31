@@ -11,6 +11,8 @@ interface LocalCouponDataSource {
 
     fun getFilteredCoupons(query: String?, filter: FilterData): PagingSource<Int, Coupon>
 
+    fun getFilteredCount(query: String?, filter: FilterData): kotlinx.coroutines.flow.Flow<Int>
+
     suspend fun insertCoupon(coupon: Coupon)
 
     suspend fun insertCoupons(coupons: List<Coupon>)

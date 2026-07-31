@@ -66,6 +66,9 @@ class HomeFragment : BaseFragment() {
         binding.srlHome.setOnRefreshListener {
             homeViewModel.refreshCoupons()
         }
+        binding.btnResetFilters.setOnClickListener {
+            homeViewModel.resetFilters()
+        }
     }
 
     private fun setupObservers() {
@@ -89,8 +92,24 @@ class HomeFragment : BaseFragment() {
             )
         }
 
+        // Sync local currentFilter and search view with state (for Reset logic)
+        currentFilter = state.filter
+        if (binding.svCouponCourse.query.toString() != state.query) {
+            binding.svCouponCourse.setQuery(state.query, false)
+        }
+
+        val isFiltered = state.query.isNotBlank() ||
+            state.filter.categories.isNotEmpty() ||
+            state.filter.language != null ||
+            state.filter.sortBy != null
+
         val mapper = MapperToView(requireContext())
-        binding.tvStatDeals.text = getString(R.string.stat_deals, state.statDeals)
+
+        binding.tvStatDeals.text = if (isFiltered) {
+            getString(R.string.stat_matching_deals, state.matchingDeals, state.statDeals)
+        } else {
+            getString(R.string.stat_deals, state.statDeals)
+        }
 
         val timestamp = if (state.showLocalFetchTime) {
             state.statFetchedTimestamp
@@ -109,7 +128,10 @@ class HomeFragment : BaseFragment() {
             mapper.mapTimeAgo(timestamp)
         )
 
+        binding.tvStatUpdated.isVisible = !isFiltered
+
         binding.srlHome.isRefreshing = state.isSyncing
+        binding.llEmptyState.isVisible = state.isEmptyState
     }
 
     private fun observePagingData() {

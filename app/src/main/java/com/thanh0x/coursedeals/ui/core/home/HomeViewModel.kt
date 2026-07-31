@@ -48,6 +48,7 @@ class HomeViewModel @Inject constructor(
     init {
         observeMetadata()
         observeSettings()
+        observeFilteredCount()
         syncAllCoupons()
     }
 
@@ -77,6 +78,30 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    private fun observeFilteredCount() {
+        viewModelScope.launch {
+            uiState
+                .map { it.query to it.filter }
+                .distinctUntilChanged()
+                .flatMapLatest { (query, filter) ->
+                    couponRepository.getFilteredCountFlow(query, filter)
+                }
+                .collectLatest { count ->
+                    _uiState.update {
+                        val isFiltered = it.query.isNotBlank() ||
+                            it.filter.categories.isNotEmpty() ||
+                            it.filter.language != null ||
+                            it.filter.sortBy != null
+
+                        it.copy(
+                            matchingDeals = count,
+                            isEmptyState = count == 0 && isFiltered
+                        )
+                    }
+                }
+        }
+    }
+
     private fun observeSettings() {
         viewModelScope.launch {
             couponRepository.getShowLocalFetchTime().collectLatest { show ->
@@ -88,6 +113,15 @@ class HomeViewModel @Inject constructor(
     fun toggleTimestampDisplay() {
         viewModelScope.launch {
             couponRepository.saveShowLocalFetchTime(!_uiState.value.showLocalFetchTime)
+        }
+    }
+
+    fun resetFilters() {
+        _uiState.update {
+            it.copy(
+                query = "",
+                filter = FilterData()
+            )
         }
     }
 

@@ -94,6 +94,9 @@ class CouponRepositoryImpl @Inject constructor(
     override fun getMetadataFlow(): Flow<CouponMetadata> =
         _metadataFlow.asSharedFlow()
 
+    override fun getFilteredCountFlow(query: String?, filter: FilterData): Flow<Int> =
+        localCouponDataSource.getFilteredCount(query, filter)
+
     override fun getShowLocalFetchTime(): Flow<Boolean> =
         localSettingsDataSource.getShowLocalFetchTime()
 

@@ -73,8 +73,11 @@
     <string name="login_with_fingerprint_text">LOGIN WITH FINGERPRINT</string>
     <string name="submit_deal">Submit</string>
     <string name="stat_deals">%1$d deals</string>
+    <string name="stat_matching_deals">Matching %1$d/%2$d deals</string>
     <string name="stat_updated">· Updated %1$s</string>
     <string name="stat_fetched">· Fetched %1$s</string>
+    <string name="empty_state_message">No courses matching your criteria</string>
+    <string name="btn_reset_filters">Reset Filters</string>
     <string name="fav_cats_title">Favorite Categories</string>
     <string name="fav_kws_title">Favorite Keywords</string>
     <string name="kw_hint">Add keyword</string>

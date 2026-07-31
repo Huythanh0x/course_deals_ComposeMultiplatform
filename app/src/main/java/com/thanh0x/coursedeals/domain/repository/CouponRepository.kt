@@ -13,6 +13,8 @@ interface CouponRepository {
 
     fun getCouponsPager(query: String? = null, filter: FilterData = FilterData()): Flow<PagingData<Coupon>>
 
+    fun getFilteredCountFlow(query: String?, filter: FilterData): Flow<Int>
+
     suspend fun syncAllCoupons(force: Boolean = false)
 
     suspend fun insertCoupon(coupon: Coupon)

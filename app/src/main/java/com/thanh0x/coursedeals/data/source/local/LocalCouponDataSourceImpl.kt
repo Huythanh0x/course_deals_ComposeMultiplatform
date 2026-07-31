@@ -15,6 +15,32 @@ class LocalCouponDataSourceImpl @Inject constructor(private val couponDao: Coupo
     override fun getPagingCoupons(): PagingSource<Int, Coupon> = couponDao.getPagingCoupons()
 
     override fun getFilteredCoupons(query: String?, filter: FilterData): PagingSource<Int, Coupon> {
+        val (whereClause, args) = buildConditions(query, filter)
+
+        // Sort By
+        val orderClause = when (filter.sortBy) {
+            "Rating" -> "ORDER BY rating DESC"
+            "Students" -> "ORDER BY students DESC"
+            "Reviews" -> "ORDER BY reviews DESC"
+            "Expiring Soon" -> "ORDER BY expired_date ASC"
+            "Newest" -> "ORDER BY created_at DESC"
+            else -> "ORDER BY created_at DESC"
+        }
+
+        val sql = "SELECT * FROM ${Constant.COUPON_TABLE_NAME} $whereClause $orderClause"
+        val sqliteQuery = SimpleSQLiteQuery(sql, args.toTypedArray())
+
+        return couponDao.getFilteredCoupons(sqliteQuery)
+    }
+
+    override fun getFilteredCount(query: String?, filter: FilterData): kotlinx.coroutines.flow.Flow<Int> {
+        val (whereClause, args) = buildConditions(query, filter)
+        val sql = "SELECT COUNT(*) FROM ${Constant.COUPON_TABLE_NAME} $whereClause"
+        val sqliteQuery = SimpleSQLiteQuery(sql, args.toTypedArray())
+        return couponDao.getFilteredCount(sqliteQuery)
+    }
+
+    private fun buildConditions(query: String?, filter: FilterData): Pair<String, List<Any>> {
         val conditions = mutableListOf<String>()
         val args = mutableListOf<Any>()
 
@@ -48,20 +74,7 @@ class LocalCouponDataSourceImpl @Inject constructor(private val couponDao: Coupo
             ""
         }
 
-        // Sort By
-        val orderClause = when (filter.sortBy) {
-            "Rating" -> "ORDER BY rating DESC"
-            "Students" -> "ORDER BY students DESC"
-            "Reviews" -> "ORDER BY reviews DESC"
-            "Expiring Soon" -> "ORDER BY expired_date ASC"
-            "Newest" -> "ORDER BY created_at DESC"
-            else -> "ORDER BY created_at DESC"
-        }
-
-        val sql = "SELECT * FROM ${Constant.COUPON_TABLE_NAME} $whereClause $orderClause"
-        val sqliteQuery = SimpleSQLiteQuery(sql, args.toTypedArray())
-
-        return couponDao.getFilteredCoupons(sqliteQuery)
+        return whereClause to args
     }
 
     override suspend fun insertCoupon(coupon: Coupon) = couponDao.insertCoupon(coupon)

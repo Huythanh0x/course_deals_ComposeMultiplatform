@@ -30,6 +30,9 @@ interface CouponDao {
     @RawQuery(observedEntities = [Coupon::class])
     fun getFilteredCoupons(query: SupportSQLiteQuery): PagingSource<Int, Coupon>
 
+    @RawQuery(observedEntities = [Coupon::class])
+    fun getFilteredCount(query: SupportSQLiteQuery): kotlinx.coroutines.flow.Flow<Int>
+
     @Query("DELETE FROM ${Constant.COUPON_TABLE_NAME}")
     suspend fun clearAllCoupons(): Int
 }
