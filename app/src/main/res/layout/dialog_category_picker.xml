@@ -5,35 +5,81 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/spacing_24">
+        android:paddingTop="@dimen/spacing_8">
+
+        <com.google.android.material.bottomsheet.BottomSheetDragHandleView
+            android:id="@+id/dragHandle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/spacing_24"
             android:text="@string/fav_cats_title"
             android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
             android:textColor="?attr/colorOnSurface"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/dragHandle" />
 
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/cgCategories"
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_24"
-            app:layout_constraintTop_toBottomOf="@+id/tvTitle">
-            <!-- Items will be inflated here dynamically -->
-        </com.google.android.material.chip.ChipGroup>
+            android:layout_marginTop="@dimen/spacing_8"
+            android:clipToPadding="false"
+            android:fillViewport="true"
+            android:paddingHorizontal="@dimen/spacing_24"
+            android:paddingBottom="@dimen/spacing_16"
+            app:layout_constrainedHeight="true"
+            app:layout_constraintBottom_toTopOf="@+id/footerDivider"
+            app:layout_constraintTop_toBottomOf="@+id/tvTitle"
+            app:layout_constraintVertical_bias="0.0">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnDone"
-            style="@style/Widget.Material3.Button"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/cgCategories"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_16"
+                    android:layout_marginBottom="@dimen/spacing_16"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+                    <!-- Items will be inflated here dynamically -->
+                </com.google.android.material.chip.ChipGroup>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <View
+            android:id="@+id/footerDivider"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/spacing_1"
+            android:background="?attr/colorOutlineVariant"
+            app:layout_constraintBottom_toTopOf="@+id/llActionFooter" />
+
+        <LinearLayout
+            android:id="@+id/llActionFooter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_32"
-            android:text="@string/btn_done"
-            app:layout_constraintTop_toBottomOf="@+id/cgCategories" />
+            android:background="?attr/colorSurface"
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/spacing_24"
+            android:paddingVertical="@dimen/spacing_16"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDone"
+                style="@style/Widget.Material3.Button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/btn_done" />
+
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

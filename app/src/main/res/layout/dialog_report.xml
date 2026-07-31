@@ -6,8 +6,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="@dimen/spacing_24"
-        android:paddingBottom="@dimen/spacing_24">
+        android:paddingTop="@dimen/spacing_8">
 
         <com.google.android.material.bottomsheet.BottomSheetDragHandleView
             android:id="@+id/dragHandle"
@@ -19,10 +18,9 @@
             android:id="@+id/ivLogo"
             android:layout_width="@dimen/spacing_24"
             android:layout_height="@dimen/spacing_24"
+            android:layout_marginStart="@dimen/spacing_24"
             android:src="@drawable/ic_logo_mark"
             app:layout_constraintBottom_toBottomOf="@+id/tvTitle"
-            app:layout_constraintEnd_toStartOf="@+id/tvTitle"
-            app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tvTitle"
             app:tint="?attr/colorError" />
@@ -31,84 +29,104 @@
             android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/spacing_2"
-            android:layout_marginTop="@dimen/spacing_8"
+            android:layout_marginStart="@dimen/spacing_6"
             android:text="@string/report_title"
-            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+            android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
             android:textColor="?attr/colorOnSurface"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/ivLogo"
             app:layout_constraintTop_toBottomOf="@+id/dragHandle" />
 
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/cgReasons"
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nsvReportContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_20"
+            android:layout_marginTop="@dimen/spacing_8"
+            android:clipToPadding="false"
+            android:fillViewport="true"
+            android:paddingHorizontal="@dimen/spacing_24"
+            android:paddingBottom="@dimen/spacing_16"
+            app:layout_constrainedHeight="true"
+            app:layout_constraintBottom_toTopOf="@+id/footerDivider"
             app:layout_constraintTop_toBottomOf="@+id/tvTitle"
-            app:singleSelection="true">
-            <!-- Reasons will be inflated here -->
-        </com.google.android.material.chip.ChipGroup>
+            app:layout_constraintVertical_bias="0.0">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilOtherReason"
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/cgReasons"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_16"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:singleSelection="true">
+                    <!-- Reasons will be inflated here -->
+                </com.google.android.material.chip.ChipGroup>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilOtherReason"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_16"
+                    android:layout_marginBottom="@dimen/spacing_16"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/cgReasons"
+                    tools:visibility="visible">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/tietOtherReason"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/report_other_hint"
+                        android:imeOptions="actionDone"
+                        android:singleLine="true"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <View
+            android:id="@+id/footerDivider"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/spacing_1"
+            android:background="?attr/colorOutlineVariant"
+            app:layout_constraintBottom_toTopOf="@+id/llActionFooter" />
+
+        <LinearLayout
+            android:id="@+id/llActionFooter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_16"
-            android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@+id/cgReasons"
-            tools:visibility="visible">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/tietOtherReason"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/report_other_hint"
-                android:imeOptions="actionDone"
-                android:singleLine="true"
-                android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Centered Button Group -->
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/clButtonContainer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_32"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tilOtherReason">
+            android:background="?attr/colorSurface"
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/spacing_24"
+            android:paddingVertical="@dimen/spacing_16"
+            app:layout_constraintBottom_toBottomOf="parent">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnCancel"
                 style="@style/Widget.Material3.Button.TextButton"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@string/cancel_button_text"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/btnSubmit"
-                app:layout_constraintHorizontal_chainStyle="packed"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_weight="1"
+                android:text="@string/cancel_button_text" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSubmit"
                 style="@style/Widget.Material3.Button.TonalButton"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/spacing_16"
+                android:layout_weight="1"
                 android:text="@string/btn_submit"
                 app:backgroundTint="?attr/colorErrorContainer"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/btnCancel"
-                app:layout_constraintTop_toTopOf="parent"
                 app:rippleColor="?attr/colorError"
                 android:textColor="?attr/colorOnErrorContainer" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

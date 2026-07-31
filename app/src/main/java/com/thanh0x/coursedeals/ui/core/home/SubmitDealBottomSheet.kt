@@ -7,13 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.DialogSubmitDealBinding
+import com.thanh0x.coursedeals.ui.base.BaseBottomSheetDialog
 
 class SubmitDealBottomSheet(
     private val onDealSubmitted: (String) -> Unit
-) : BottomSheetDialogFragment() {
+) : BaseBottomSheetDialog() {
 
     private var _binding: DialogSubmitDealBinding? = null
     private val binding get() = _binding!!

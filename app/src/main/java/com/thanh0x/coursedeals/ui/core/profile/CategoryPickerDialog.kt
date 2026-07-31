@@ -5,22 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.thanh0x.coursedeals.databinding.DialogCategoryPickerBinding
 import com.thanh0x.coursedeals.databinding.ItemCategoryPickerBinding
+import com.thanh0x.coursedeals.domain.model.CourseCategory
+import com.thanh0x.coursedeals.ui.base.BaseBottomSheetDialog
 
 class CategoryPickerDialog(
     private val initialSelected: List<String>,
     private val onCategoriesSelected: (List<String>) -> Unit
-) : BottomSheetDialogFragment() {
+) : BaseBottomSheetDialog() {
 
     private var _binding: DialogCategoryPickerBinding? = null
     private val binding get() = _binding!!
-
-    private val categories = listOf(
-        "Development", "Design", "Business", "IT & Software", "Marketing",
-        "Personal Development", "Photography", "Music", "Health & Fitness", "Finance"
-    )
 
     private val selectedItems = mutableSetOf<String>()
 
@@ -37,22 +33,22 @@ class CategoryPickerDialog(
         super.onViewCreated(view, savedInstanceState)
         selectedItems.addAll(initialSelected)
 
-        categories.forEach { category ->
+        CourseCategory.entries.forEach { category ->
+            val categoryStr = getString(category.displayResId)
             val itemBinding = ItemCategoryPickerBinding.inflate(layoutInflater, binding.cgCategories, false)
-            itemBinding.chip.text = category
-            
-            // Sync UI state
-            val isSelected = selectedItems.contains(category)
+            itemBinding.chip.text = categoryStr
+
+            val isSelected = selectedItems.contains(categoryStr)
             itemBinding.cvCheck.isVisible = isSelected
             itemBinding.chip.isChecked = isSelected
 
             itemBinding.chip.setOnClickListener {
-                if (selectedItems.contains(category)) {
-                    selectedItems.remove(category)
+                if (selectedItems.contains(categoryStr)) {
+                    selectedItems.remove(categoryStr)
                     itemBinding.cvCheck.isVisible = false
                     itemBinding.chip.isChecked = false
                 } else {
-                    selectedItems.add(category)
+                    selectedItems.add(categoryStr)
                     itemBinding.cvCheck.isVisible = true
                     itemBinding.chip.isChecked = true
                 }

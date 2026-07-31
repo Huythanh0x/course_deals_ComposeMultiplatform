@@ -4,11 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import androidx.core.view.isVisible
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.chip.Chip
 import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.DialogFilterBinding
@@ -17,11 +13,12 @@ import com.thanh0x.coursedeals.domain.model.CourseCategory
 import com.thanh0x.coursedeals.domain.model.CourseLanguage
 import com.thanh0x.coursedeals.domain.model.FilterData
 import com.thanh0x.coursedeals.domain.model.SortOption
+import com.thanh0x.coursedeals.ui.base.BaseBottomSheetDialog
 
 class FilterBottomSheetDialog(
     private val initialFilter: FilterData,
     private val onFilterApplied: (FilterData) -> Unit,
-) : BottomSheetDialogFragment() {
+) : BaseBottomSheetDialog() {
 
     private var _binding: DialogFilterBinding? = null
     private val binding get() = _binding!!
@@ -57,29 +54,6 @@ class FilterBottomSheetDialog(
         binding.btnApply.setOnClickListener {
             onFilterApplied(FilterData(selectedCategories.toList(), selectedLanguage, selectedSort))
             dismiss()
-        }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        setupBottomSheetBehavior()
-    }
-
-    private fun setupBottomSheetBehavior() {
-        (dialog as? BottomSheetDialog)?.let { bottomSheetDialog ->
-            val bottomSheet = bottomSheetDialog.findViewById<FrameLayout>(
-                com.google.android.material.R.id.design_bottom_sheet,
-            )
-            bottomSheet?.let {
-                it.setBackgroundResource(android.R.color.transparent)
-                val behavior = BottomSheetBehavior.from(it)
-                behavior.state = BottomSheetBehavior.STATE_EXPANDED
-                behavior.skipCollapsed = true
-
-                val layoutParams = it.layoutParams
-                layoutParams.height = (resources.displayMetrics.heightPixels * HEIGHT_MULTIPLIER).toInt()
-                it.layoutParams = layoutParams
-            }
         }
     }
 
@@ -189,6 +163,5 @@ class FilterBottomSheetDialog(
 
     companion object {
         const val TAG = "FilterBottomSheetDialog"
-        private const val HEIGHT_MULTIPLIER = 0.9
     }
 }

@@ -6,15 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.core.view.isVisible
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.chip.Chip
 import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.DialogReportBinding
 import com.thanh0x.coursedeals.databinding.ItemReportReasonBinding
+import com.thanh0x.coursedeals.ui.base.BaseBottomSheetDialog
 
 class ReportBottomSheetDialog(
     private val onReportSubmitted: (String, String?) -> Unit
-) : BottomSheetDialogFragment() {
+) : BaseBottomSheetDialog() {
 
     private var _binding
     : DialogReportBinding? = null
@@ -66,13 +66,13 @@ class ReportBottomSheetDialog(
             val reasonStr = getString(reasonResId)
             val itemBinding = ItemReportReasonBinding.inflate(layoutInflater, binding.cgReasons, false)
             itemBinding.chip.text = reasonStr
-            
+
             itemBinding.chip.setOnClickListener {
                 clearGroupSelection()
                 selectedReason = reasonStr
                 itemBinding.cvCheck.isVisible = true
                 itemBinding.chip.isChecked = true
-                
+
                 binding.tilOtherReason.isVisible = reasonResId == R.string.report_reason_other
                 if (binding.tilOtherReason.isVisible) {
                     binding.tietOtherReason.requestFocus()
