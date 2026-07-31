@@ -37,7 +37,8 @@
         </activity>
         <activity
             android:name=".ui.login.LoginActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:screenOrientation="fullSensor" />
         <activity
             android:name=".ui.detail.CouponDetailActivity"
             android:exported="true" />
