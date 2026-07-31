@@ -78,7 +78,11 @@ class HomeFragment : BaseFragment() {
         // Show history when focused even if empty
         searchAutoComplete.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus && binding.svCouponCourse.query.isNullOrBlank()) {
-                searchAutoComplete.showDropDown()
+                searchAutoComplete.post {
+                    if (searchAutoComplete.isAttachedToWindow && searchAutoComplete.hasFocus()) {
+                        searchAutoComplete.showDropDown()
+                    }
+                }
             }
         }
     }
@@ -215,7 +219,11 @@ class HomeFragment : BaseFragment() {
         suggestionsAdapter.addAll(suggestions)
 
         if (searchAutoComplete.hasFocus() && suggestions.isNotEmpty()) {
-            searchAutoComplete.showDropDown()
+            searchAutoComplete.post {
+                if (searchAutoComplete.isAttachedToWindow && searchAutoComplete.hasFocus()) {
+                    searchAutoComplete.showDropDown()
+                }
+            }
         }
     }
 
