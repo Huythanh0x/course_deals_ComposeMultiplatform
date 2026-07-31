@@ -25,7 +25,7 @@ class CouponDetailActivity : BaseActivity() {
         binding = ActivityCouponDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setupToolbar()
-        
+
         val courseId = intent.extras?.getInt(BundleKey.TO_DETAIL_ACTIVITY)
         if (courseId != null) {
             setupObservers(courseId)
@@ -87,7 +87,7 @@ class CouponDetailActivity : BaseActivity() {
         Timber.d("COUPON DETAIL: ${coupon.couponUrl}")
         MapperToView(applicationContext).let {
             binding.rbCouponDetail.rating = it.mapRating(coupon.rating)
-            binding.tvTimeLeft.text = it.mapTimeLeft(coupon.expiredDate)
+            binding.tvTimeLeft.text = it.mapTimeLeft(coupon.expiredTime)
             binding.tvContentLength.text = it.mapContentLength(coupon.contentLength)
             binding.tvCouponLeft.text = (coupon.usesRemaining ?: 0).toString()
             binding.tvCourseLevel.text = coupon.level ?: ""

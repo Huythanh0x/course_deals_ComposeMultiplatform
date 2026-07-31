@@ -17,8 +17,8 @@ data class CouponDto(
     val couponUrl: String? = null,
     @SerializedName("description")
     val description: String? = null,
-    @SerializedName("expiredDate")
-    val expiredDate: Double? = null,
+    @SerializedName("expiredTime")
+    val expiredTime: Long? = null,
     @SerializedName("heading")
     val heading: String? = null,
     @SerializedName("language")
@@ -44,7 +44,7 @@ data class CouponDto(
     @SerializedName("isNew")
     val isNew: Boolean? = null,
     @SerializedName("createdAt")
-    val createdAt: List<Int>? = null,
+    val createdAt: Long? = null,
     @SerializedName("updatedAt")
-    val updatedAt: List<Int>? = null
+    val updatedAt: Long? = null
 )

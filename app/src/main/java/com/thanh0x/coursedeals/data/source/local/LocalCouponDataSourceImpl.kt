@@ -22,7 +22,7 @@ class LocalCouponDataSourceImpl @Inject constructor(private val couponDao: Coupo
             "Rating" -> "ORDER BY rating DESC"
             "Students" -> "ORDER BY students DESC"
             "Reviews" -> "ORDER BY reviews DESC"
-            "Expiring Soon" -> "ORDER BY expired_date ASC"
+            "Expiring Soon" -> "ORDER BY expired_time ASC"
             "Newest" -> "ORDER BY created_at DESC"
             else -> "ORDER BY created_at DESC"
         }

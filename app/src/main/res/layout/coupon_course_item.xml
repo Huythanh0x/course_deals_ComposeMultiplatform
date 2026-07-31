@@ -46,7 +46,7 @@
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvTimeLeft"
-                        app:timeLeft="@{coupon.expiredDate}"
+                        app:timeLeft="@{coupon.expiredTime}"
                         android:layout_width="wrap_content"
                         android:layout_height="18dp"
                         android:gravity="center"
@@ -161,11 +161,11 @@
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvNumberOfReviews"
+                    app:displayNumberOfReviews="@{coupon.reviews}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:layout_marginBottom="6dp"
-                    android:text="@{String.valueOf(coupon.reviews)}"
                     android:textColor="@color/m3_on_surface_variant"
                     android:textSize="10sp"
                     app:layout_constraintBottom_toBottomOf="parent"
