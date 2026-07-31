@@ -7,6 +7,7 @@ import androidx.paging.map
 import androidx.room.withTransaction
 import com.thanh0x.coursedeals.data.mapper.toDomain
 import com.thanh0x.coursedeals.data.mapper.toEntity
+import com.thanh0x.coursedeals.data.model.SearchHistory
 import com.thanh0x.coursedeals.data.source.LocalCouponDataSource
 import com.thanh0x.coursedeals.data.source.local.CouponDatabase
 import com.thanh0x.coursedeals.data.source.remote.CouponService
@@ -73,26 +74,25 @@ class CouponRepositoryImpl @Inject constructor(
         return Pager(
             config = PagingConfig(
                 pageSize = Constant.ITEMS_PER_PAGE,
-                enablePlaceholders = false
-            ),
-            pagingSourceFactory = {
-                localCouponDataSource.getFilteredCoupons(query, filter)
-            }
-        ).flow.map { pagingData ->
+                enablePlaceholders = false,
+            )
+        ) {
+            localCouponDataSource.getFilteredCoupons(query, filter)
+        }.flow.map { pagingData ->
             pagingData.map { entity -> entity.toDomain() }
         }
     }
 
     override suspend fun syncAllCoupons(force: Boolean) {
         val currentTime = System.currentTimeMillis()
-        if (!force && (currentTime - lastSyncTimestamp < SYNC_THRESHOLD_MS)) {
+        if (!force && ((currentTime - lastSyncTimestamp) < SYNC_THRESHOLD_MS)) {
             return
         }
 
         try {
             val response = couponService.fetchAllCoupons()
             val body = response.body()
-            if (response.isSuccessful && body != null) {
+            if ((response.isSuccessful) && (body != null)) {
                 couponDatabase.withTransaction {
                     localCouponDataSource.clearALlCoupons()
                     localCouponDataSource.insertCoupons(body.courses.map { it.toEntity() })
@@ -103,7 +103,7 @@ class CouponRepositoryImpl @Inject constructor(
                     CouponMetadata(
                         totalCoupon = body.totalCoupon,
                         lastFetchTime = body.lastFetchTime,
-                        localFetchTime = currentTime
+                        localFetchTime = currentTime,
                     )
                 )
             }
@@ -128,11 +128,26 @@ class CouponRepositoryImpl @Inject constructor(
     override fun getFilteredCountFlow(query: String?, filter: FilterData): Flow<Int> =
         localCouponDataSource.getFilteredCount(query, filter)
 
+    override suspend fun getRecentSearches(): List<String> =
+        couponDatabase.searchHistoryDao().getRecentSearches()
+
+    override suspend fun getMatchingHistory(query: String): List<String> =
+        couponDatabase.searchHistoryDao().getMatchingHistory(query.lowercase())
+
     override suspend fun getSearchSuggestions(query: String): List<String> {
         val lowercaseQuery = query.lowercase()
-        return keywordCache.filter { it.startsWith(lowercaseQuery) }
+        return keywordCache.asSequence()
+            .filter { it.startsWith(lowercaseQuery) }
             .sorted()
             .take(10)
+            .toList()
+    }
+
+    override suspend fun saveSearchQuery(query: String) {
+        if (query.isBlank()) return
+        couponDatabase.searchHistoryDao().insert(
+            SearchHistory(query.trim().lowercase(), System.currentTimeMillis())
+        )
     }
 
     override fun getShowLocalFetchTime(): Flow<Boolean> =

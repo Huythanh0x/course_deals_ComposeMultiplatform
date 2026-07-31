@@ -8,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Filter
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
@@ -15,12 +17,13 @@ import androidx.paging.LoadState
 import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.FragmentHomeBinding
 import com.thanh0x.coursedeals.domain.model.FilterData
+import com.thanh0x.coursedeals.domain.model.SearchSuggestion
+import com.thanh0x.coursedeals.domain.model.SuggestionType
 import com.thanh0x.coursedeals.ui.base.BaseFragment
 import com.thanh0x.coursedeals.ui.detail.CouponDetailActivity
 import com.thanh0x.coursedeals.util.BundleKey
 import com.thanh0x.coursedeals.util.MapperToView
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
 
 @AndroidEntryPoint
 class HomeFragment : BaseFragment() {
@@ -58,15 +61,22 @@ class HomeFragment : BaseFragment() {
             requireContext(),
             R.layout.item_search_suggestion,
             android.R.id.text1,
-            mutableListOf()
+            mutableListOf(),
         )
         searchAutoComplete.setAdapter(suggestionsAdapter)
-        searchAutoComplete.threshold = 1
+        searchAutoComplete.threshold = 0
         searchAutoComplete.setDropDownBackgroundResource(R.drawable.bg_search_suggestion_popup)
         searchAutoComplete.dropDownVerticalOffset = 8
         searchAutoComplete.setOnItemClickListener { parent, _, position, _ ->
-            val suggestion = parent.getItemAtPosition(position) as String
-            binding.svCouponCourse.setQuery(suggestion, true)
+            val suggestion = parent.getItemAtPosition(position) as SearchSuggestion
+            binding.svCouponCourse.setQuery(suggestion.text, true)
+        }
+
+        // Show history when focused even if empty
+        searchAutoComplete.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus && binding.svCouponCourse.query.isNullOrBlank()) {
+                searchAutoComplete.showDropDown()
+            }
         }
     }
 
@@ -155,7 +165,7 @@ class HomeFragment : BaseFragment() {
 
         binding.tvStatUpdated.text = getString(
             labelResId,
-            mapper.mapTimeAgo(timestamp)
+            mapper.mapTimeAgo(timestamp),
         )
 
         binding.tvStatUpdated.isVisible = !isFiltered
@@ -192,7 +202,7 @@ class HomeFragment : BaseFragment() {
             errorState?.let {
                 showAlertDialog(
                     getString(R.string.fetch_error_title),
-                    it.error.localizedMessage ?: getString(R.string.error_fetching_null_coupon)
+                    it.error.localizedMessage ?: getString(R.string.error_fetching_null_coupon),
                 )
             }
         }
@@ -207,10 +217,27 @@ class HomeFragment : BaseFragment() {
         context: Context,
         resource: Int,
         textViewResourceId: Int,
-        objects: List<String>,
-    ) : ArrayAdapter<String>(context, resource, textViewResourceId, objects) {
+        objects: List<SearchSuggestion>,
+    ) : ArrayAdapter<SearchSuggestion>(context, resource, textViewResourceId, objects) {
 
-        private val list = objects as MutableList<String>
+        private val list = objects as MutableList<SearchSuggestion>
+
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+            val view = super.getView(position, convertView, parent)
+            val suggestion = getItem(position)
+            val iconView = view.findViewById<ImageView>(R.id.ivSuggestionIcon)
+            val textView = view.findViewById<TextView>(android.R.id.text1)
+
+            suggestion?.let {
+                textView.text = it.text
+                val iconRes = when (it.type) {
+                    SuggestionType.HISTORY -> R.drawable.ic_clock
+                    SuggestionType.KEYWORD -> R.drawable.ic_search
+                }
+                iconView.setImageResource(iconRes)
+            }
+            return view
+        }
 
         override fun getFilter(): Filter {
             return object : Filter() {
@@ -230,7 +257,9 @@ class HomeFragment : BaseFragment() {
 
     private val queryTextChangeListener = object : SearchView.OnQueryTextListener {
         override fun onQueryTextSubmit(query: String?): Boolean {
-            Timber.d("SUBMITTED TEXT: $query")
+            query?.let {
+                homeViewModel.onSearchSubmitted(it)
+            }
             return true
         }
 

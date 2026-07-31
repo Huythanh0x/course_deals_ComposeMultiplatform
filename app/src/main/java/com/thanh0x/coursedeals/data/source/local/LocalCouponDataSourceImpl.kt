@@ -62,7 +62,7 @@ class LocalCouponDataSourceImpl @Inject constructor(private val couponDao: Coupo
         }
 
         // Language
-        if (filter.language != null && filter.language != "All") {
+        if ((filter.language != null) && (filter.language != "All")) {
             if (filter.language == "English") {
                 conditions.add("LOWER(language) = ?")
                 args.add("english")

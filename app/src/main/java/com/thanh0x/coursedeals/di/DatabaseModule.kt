@@ -20,6 +20,10 @@ object DatabaseModule {
 
     @Singleton
     @Provides
+    fun provideSearchHistoryDao(couponDatabase: CouponDatabase) = couponDatabase.searchHistoryDao()
+
+    @Singleton
+    @Provides
     fun provideDataBase(@ApplicationContext context: Context) =
         Room
             .databaseBuilder(context, CouponDatabase::class.java, Constant.COUPON_DATABASE_NAME)

@@ -6,6 +6,8 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.thanh0x.coursedeals.domain.model.Coupon
 import com.thanh0x.coursedeals.domain.model.FilterData
+import com.thanh0x.coursedeals.domain.model.SearchSuggestion
+import com.thanh0x.coursedeals.domain.model.SuggestionType
 import com.thanh0x.coursedeals.domain.repository.CouponRepository
 import com.thanh0x.coursedeals.ui.base.UiEvent
 import com.thanh0x.coursedeals.util.NetworkUtil
@@ -20,7 +22,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
@@ -32,7 +33,7 @@ import kotlin.time.Duration.Companion.milliseconds
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val couponRepository: CouponRepository,
-    private val networkUtil: NetworkUtil
+    private val networkUtil: NetworkUtil,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -62,14 +63,35 @@ class HomeViewModel @Inject constructor(
             uiState
                 .map { it.query }
                 .distinctUntilChanged()
-//                .debounce(300.milliseconds)
+                .debounce(300.milliseconds)
                 .collectLatest { query ->
-                    if (query.isNotBlank() && query.length >= 2) {
-                        val list = couponRepository.getSearchSuggestions(query)
-                        _uiState.update { it.copy(suggestions = list) }
+                    val history: List<SearchSuggestion>
+                    val keywords: List<SearchSuggestion>
+
+                    if (query.isBlank()) {
+                        history = couponRepository.getRecentSearches().map {
+                            SearchSuggestion(it, SuggestionType.HISTORY)
+                        }
+                        keywords = emptyList()
                     } else {
-                        _uiState.update { it.copy(suggestions = emptyList()) }
+                        history = couponRepository.getMatchingHistory(query).map {
+                            SearchSuggestion(it, SuggestionType.HISTORY)
+                        }
+                        keywords = if (query.length >= 2) {
+                            couponRepository.getSearchSuggestions(query).map {
+                                SearchSuggestion(it, SuggestionType.KEYWORD)
+                            }
+                        } else {
+                            emptyList()
+                        }
                     }
+
+                    // Combine, prioritize history, remove duplicates by text
+                    val combined = (history + keywords).asSequence()
+                        .distinctBy { it.text }
+                        .take(10)
+                        .toList()
+                    _uiState.update { it.copy(suggestions = combined) }
                 }
         }
     }
@@ -93,7 +115,7 @@ class HomeViewModel @Inject constructor(
                     it.copy(
                         statDeals = metadata.totalCoupon,
                         statUpdatedTimestamp = metadata.lastFetchTime,
-                        statFetchedTimestamp = metadata.localFetchTime
+                        statFetchedTimestamp = metadata.localFetchTime,
                     )
                 }
             }
@@ -111,13 +133,13 @@ class HomeViewModel @Inject constructor(
                 .collectLatest { count ->
                     _uiState.update {
                         val isFiltered = it.query.isNotBlank() ||
-                            it.filter.categories.isNotEmpty() ||
-                            it.filter.language != null ||
-                            it.filter.sortBy != null
+                            (it.filter.categories.isNotEmpty()) ||
+                            (it.filter.language != null) ||
+                            (it.filter.sortBy != null)
 
                         it.copy(
                             matchingDeals = count,
-                            isEmptyState = count == 0 && isFiltered
+                            isEmptyState = (count == 0) && isFiltered,
                         )
                     }
                 }
@@ -154,6 +176,12 @@ class HomeViewModel @Inject constructor(
 
     fun updateQuery(query: String) {
         _uiState.update { it.copy(query = query) }
+    }
+
+    fun onSearchSubmitted(query: String) {
+        viewModelScope.launch {
+            couponRepository.saveSearchQuery(query)
+        }
     }
 
     fun updateFilter(filter: FilterData) {
