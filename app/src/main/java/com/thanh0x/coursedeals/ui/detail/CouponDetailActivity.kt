@@ -86,9 +86,9 @@ class CouponDetailActivity : BaseActivity() {
     private fun bindingCouponDataToView(coupon: Coupon) {
         Timber.d("COUPON DETAIL: ${coupon.couponUrl}")
         MapperToView(applicationContext).let {
+            binding.tvRatingValue.text = it.mapRatingValue(coupon.rating)
             binding.rbCouponDetail.rating = it.mapRating(coupon.rating)
             binding.tvTimeLeft.text = it.mapTimeLeft(coupon.expiredTime)
-            binding.tvContentLength.text = it.mapContentLength(coupon.contentLength)
             binding.tvCouponLeft.text = (coupon.usesRemaining ?: 0).toString()
             binding.tvCourseLevel.text = coupon.level ?: ""
             binding.tvLanguage.text = coupon.language ?: ""

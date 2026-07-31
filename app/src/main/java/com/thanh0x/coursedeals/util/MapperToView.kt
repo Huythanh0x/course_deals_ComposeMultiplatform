@@ -84,6 +84,10 @@ class MapperToView(val context: Context) {
         return rating?.toFloat() ?: 0f
     }
 
+    fun mapRatingValue(rating: Double?): String {
+        return "%.1f".format(rating ?: 0.0)
+    }
+
     fun mapNumberOfReview(numberOfReview: Int?): String {
         if (numberOfReview == null) return context.getString(R.string.few_review, 0)
         return if (numberOfReview <= 1) {

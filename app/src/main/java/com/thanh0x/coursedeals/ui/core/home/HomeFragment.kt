@@ -195,9 +195,20 @@ class HomeFragment : BaseFragment() {
         binding.srlHome.isRefreshing = state.isSyncing
         binding.llEmptyState.isVisible = state.isEmptyState
 
+        updateSuggestions(state.suggestions)
+    }
+
+    private fun updateSuggestions(suggestions: List<SearchSuggestion>) {
+        val searchAutoComplete = binding.svCouponCourse.findViewById<android.widget.AutoCompleteTextView>(
+            androidx.appcompat.R.id.search_src_text,
+        )
+
         suggestionsAdapter.clear()
-        suggestionsAdapter.addAll(state.suggestions)
-        suggestionsAdapter.notifyDataSetChanged()
+        suggestionsAdapter.addAll(suggestions)
+
+        if (searchAutoComplete.hasFocus() && suggestions.isNotEmpty()) {
+            searchAutoComplete.showDropDown()
+        }
     }
 
     private fun observePagingData() {
@@ -241,8 +252,6 @@ class HomeFragment : BaseFragment() {
         objects: List<SearchSuggestion>,
     ) : ArrayAdapter<SearchSuggestion>(context, resource, textViewResourceId, objects) {
 
-        private val list = objects as MutableList<SearchSuggestion>
-
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
             val view = super.getView(position, convertView, parent)
             val suggestion = getItem(position)
@@ -264,13 +273,21 @@ class HomeFragment : BaseFragment() {
             return object : Filter() {
                 override fun performFiltering(constraint: CharSequence?): FilterResults {
                     val results = FilterResults()
-                    results.values = list
-                    results.count = list.size
+                    val allItems = mutableListOf<SearchSuggestion>()
+                    for (i in 0 until count) {
+                        getItem(i)?.let { allItems.add(it) }
+                    }
+                    results.values = allItems
+                    results.count = allItems.size
                     return results
                 }
 
                 override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
                     notifyDataSetChanged()
+                }
+
+                override fun convertResultToString(resultValue: Any?): CharSequence {
+                    return (resultValue as? SearchSuggestion)?.text ?: ""
                 }
             }
         }

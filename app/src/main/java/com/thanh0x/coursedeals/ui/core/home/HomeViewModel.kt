@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
@@ -46,20 +47,36 @@ class HomeViewModel @Inject constructor(
     private val _uiEvent = MutableSharedFlow<UiEvent>()
     val uiEvent = _uiEvent.asSharedFlow()
 
-    val items: Flow<PagingData<Coupon>> = uiState
-        .map { it.query to it.filter }
-        .distinctUntilChanged()
-        .flatMapLatest { (query, filter) ->
-            couponRepository.getCouponsPager(query, filter)
-        }
-        .cachedIn(viewModelScope)
+    private val _queryTrigger = MutableStateFlow("")
+
+    val items: Flow<PagingData<Coupon>> = combine(
+        _queryTrigger,
+        uiState.map { it.filter }.distinctUntilChanged()
+    ) { query, filter ->
+        query to filter
+    }.flatMapLatest { (query, filter) ->
+        couponRepository.getCouponsPager(query, filter)
+    }.cachedIn(viewModelScope)
 
     init {
         observeMetadata()
         observeSettings()
         observeFilteredCount()
         observeSuggestions()
+        observeQueryChanges()
         syncAllCoupons()
+    }
+
+    private fun observeQueryChanges() {
+        viewModelScope.launch {
+            uiState
+                .map { it.query }
+                .distinctUntilChanged()
+                .debounce(FILTER_DEBOUNCE_MS.milliseconds)
+                .collectLatest { query ->
+                    _queryTrigger.value = query
+                }
+        }
     }
 
     private fun observeSuggestions() {
@@ -128,25 +145,26 @@ class HomeViewModel @Inject constructor(
 
     private fun observeFilteredCount() {
         viewModelScope.launch {
-            uiState
-                .map { it.query to it.filter }
-                .distinctUntilChanged()
-                .flatMapLatest { (query, filter) ->
-                    couponRepository.getFilteredCountFlow(query, filter)
-                }
-                .collectLatest { count ->
-                    _uiState.update {
-                        val isFiltered = it.query.isNotBlank() ||
-                            (it.filter.categories.isNotEmpty()) ||
-                            (it.filter.language != CourseLanguage.ALL) ||
-                            (it.filter.sortBy != SortOption.NEWEST)
+            combine(
+                _queryTrigger,
+                uiState.map { it.filter }.distinctUntilChanged()
+            ) { query, filter ->
+                query to filter
+            }.flatMapLatest { (query, filter) ->
+                couponRepository.getFilteredCountFlow(query, filter)
+            }.collectLatest { count ->
+                _uiState.update {
+                    val isFiltered = _queryTrigger.value.isNotBlank() ||
+                        (it.filter.categories.isNotEmpty()) ||
+                        (it.filter.language != CourseLanguage.ALL) ||
+                        (it.filter.sortBy != SortOption.NEWEST)
 
-                        it.copy(
-                            matchingDeals = count,
-                            isEmptyState = (count == 0) && isFiltered,
-                        )
-                    }
+                    it.copy(
+                        matchingDeals = count,
+                        isEmptyState = (count == 0) && isFiltered,
+                    )
                 }
+            }
         }
     }
 
@@ -165,6 +183,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun resetFilters() {
+        _queryTrigger.value = ""
         _uiState.update {
             it.copy(
                 query = "",
@@ -183,6 +202,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun onSearchSubmitted(query: String) {
+        _queryTrigger.value = query
         viewModelScope.launch {
             searchRepository.saveSearchQuery(query)
         }
@@ -194,6 +214,7 @@ class HomeViewModel @Inject constructor(
 
     companion object {
         private const val DEBOUNCE_MS = 300L
+        private const val FILTER_DEBOUNCE_MS = 1000L
         private const val MIN_QUERY_LENGTH = 2
         private const val MAX_SUGGESTIONS = 10
     }

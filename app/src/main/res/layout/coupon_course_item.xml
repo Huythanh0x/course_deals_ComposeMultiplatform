@@ -113,16 +113,31 @@
                     app:layout_constraintTop_toBottomOf="@+id/tvCourseAuthor"
                     tools:text="Development" />
 
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tvRatingValue"
+                    app:displayRatingValue="@{coupon.rating}"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:textColor="@color/golden"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/rbCourse"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/rbCourse"
+                    tools:text="4.2" />
+
                 <RatingBar
                     android:id="@+id/rbCourse"
                     style="@style/Widget.AppCompat.RatingBar.Small"
                     app:displayRating="@{coupon.rating}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
                     android:layout_marginTop="2dp"
                     android:numStars="5"
                     android:theme="@style/rating_bar"
-                    app:layout_constraintStart_toStartOf="@+id/tvCourseCategory"
+                    app:layout_constraintStart_toEndOf="@+id/tvRatingValue"
                     app:layout_constraintTop_toBottomOf="@+id/tvCourseCategory" />
 
                 <androidx.appcompat.widget.AppCompatImageView

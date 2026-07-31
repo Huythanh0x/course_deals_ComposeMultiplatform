@@ -120,16 +120,30 @@
                         app:layout_constraintTop_toBottomOf="@+id/tvCourseAuthor"
                         tools:text="Social Media Marketing" />
 
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/tvRatingValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:textColor="@color/golden"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="@+id/rbCouponDetail"
+                        app:layout_constraintStart_toStartOf="@+id/tvCourseCategory"
+                        app:layout_constraintTop_toTopOf="@+id/rbCouponDetail"
+                        tools:text="4.2" />
+
                     <RatingBar
                         android:id="@+id/rbCouponDetail"
                         style="@style/Widget.AppCompat.RatingBar.Small"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
                         android:layout_marginTop="2dp"
                         android:layout_marginBottom="4dp"
                         android:numStars="5"
                         android:theme="@style/rating_bar"
-                        app:layout_constraintStart_toStartOf="@+id/tvCourseCategory"
+                        app:layout_constraintStart_toEndOf="@+id/tvRatingValue"
                         app:layout_constraintTop_toBottomOf="@+id/tvCourseCategory" />
 
                     <androidx.appcompat.widget.AppCompatImageView

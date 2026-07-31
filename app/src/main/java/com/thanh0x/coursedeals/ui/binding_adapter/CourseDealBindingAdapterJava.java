@@ -33,6 +33,11 @@ public class CourseDealBindingAdapterJava {
         ratingBar.setRating(new MapperToView(ratingBar.getContext()).mapRating(rating));
     }
 
+    @BindingAdapter("displayRatingValue")
+    public static void displayRatingValue(TextView textView, Double rating) {
+        textView.setText(new MapperToView(textView.getContext()).mapRatingValue(rating));
+    }
+
     @BindingAdapter("parseHTML")
     public static void parseHTML(TextView textView, String htmlString) {
         textView.setText(new MapperToView(textView.getContext()).mapHTMLContent(htmlString));
