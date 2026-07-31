@@ -41,6 +41,9 @@ class LocalCouponDataSourceImpl @Inject constructor(private val couponDao: Coupo
         return couponDao.getFilteredCount(sqliteQuery)
     }
 
+    override suspend fun getSearchSuggestions(query: String): List<String> =
+        couponDao.getSearchSuggestions(query.lowercase())
+
     private fun buildConditions(query: String?, filter: FilterData): Pair<String, List<Any>> {
         val conditions = mutableListOf<String>()
         val args = mutableListOf<Any>()

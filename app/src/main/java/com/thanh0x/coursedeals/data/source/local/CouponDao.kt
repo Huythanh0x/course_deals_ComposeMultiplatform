@@ -36,6 +36,9 @@ interface CouponDao {
     @RawQuery(observedEntities = [Coupon::class])
     fun getFilteredCount(query: SupportSQLiteQuery): kotlinx.coroutines.flow.Flow<Int>
 
+    @Query("SELECT title FROM ${Constant.COUPON_TABLE_NAME} WHERE LOWER(title) LIKE '%' || :query || '%' LIMIT 10")
+    suspend fun getSearchSuggestions(query: String): List<String>
+
     @Query("DELETE FROM ${Constant.COUPON_TABLE_NAME}")
     suspend fun clearAllCoupons(): Int
 }

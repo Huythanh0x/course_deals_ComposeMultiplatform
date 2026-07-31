@@ -17,10 +17,14 @@ import com.thanh0x.coursedeals.domain.repository.CouponRepository
 import com.thanh0x.coursedeals.domain.source.LocalSettingsDataSource
 import com.thanh0x.coursedeals.domain.source.RemoteCouponDataSource
 import com.thanh0x.coursedeals.util.Constant
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -35,6 +39,33 @@ class CouponRepositoryImpl @Inject constructor(
     private val _metadataFlow = MutableSharedFlow<CouponMetadata>(replay = 1)
 
     private var lastSyncTimestamp: Long = 0
+    private var keywordCache: Set<String> = emptySet()
+    private val repositoryScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+    init {
+        repositoryScope.launch {
+            rebuildKeywordCache()
+        }
+    }
+
+    private suspend fun rebuildKeywordCache() {
+        try {
+            val coupons = localCouponDataSource.getAllCoupons()
+            val allKeywords = mutableSetOf<String>()
+            coupons.forEach { coupon ->
+                coupon.title?.let { title ->
+                    val words = title.lowercase()
+                        .split(Regex("[^a-zA-Z0-9]"))
+                        .filter { it.length >= 2 }
+                    allKeywords.addAll(words)
+                }
+            }
+            keywordCache = allKeywords
+            Timber.d("KeywordCache: Rebuilt with ${keywordCache.size} unique keywords")
+        } catch (e: Exception) {
+            Timber.e(e, "KeywordCache: Failed to rebuild")
+        }
+    }
 
     override suspend fun getAllCoupons() = localCouponDataSource.getAllCoupons().map { it.toDomain() }
 
@@ -66,6 +97,7 @@ class CouponRepositoryImpl @Inject constructor(
                     localCouponDataSource.clearALlCoupons()
                     localCouponDataSource.insertCoupons(body.courses.map { it.toEntity() })
                 }
+                rebuildKeywordCache()
                 lastSyncTimestamp = currentTime
                 _metadataFlow.emit(
                     CouponMetadata(
@@ -95,6 +127,13 @@ class CouponRepositoryImpl @Inject constructor(
 
     override fun getFilteredCountFlow(query: String?, filter: FilterData): Flow<Int> =
         localCouponDataSource.getFilteredCount(query, filter)
+
+    override suspend fun getSearchSuggestions(query: String): List<String> {
+        val lowercaseQuery = query.lowercase()
+        return keywordCache.filter { it.startsWith(lowercaseQuery) }
+            .sorted()
+            .take(10)
+    }
 
     override fun getShowLocalFetchTime(): Flow<Boolean> =
         localSettingsDataSource.getShowLocalFetchTime()

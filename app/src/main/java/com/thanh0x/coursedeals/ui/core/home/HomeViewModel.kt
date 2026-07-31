@@ -11,20 +11,24 @@ import com.thanh0x.coursedeals.ui.base.UiEvent
 import com.thanh0x.coursedeals.util.NetworkUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val couponRepository: CouponRepository,
@@ -49,7 +53,25 @@ class HomeViewModel @Inject constructor(
         observeMetadata()
         observeSettings()
         observeFilteredCount()
+        observeSuggestions()
         syncAllCoupons()
+    }
+
+    private fun observeSuggestions() {
+        viewModelScope.launch {
+            uiState
+                .map { it.query }
+                .distinctUntilChanged()
+//                .debounce(300.milliseconds)
+                .collectLatest { query ->
+                    if (query.isNotBlank() && query.length >= 2) {
+                        val list = couponRepository.getSearchSuggestions(query)
+                        _uiState.update { it.copy(suggestions = list) }
+                    } else {
+                        _uiState.update { it.copy(suggestions = emptyList()) }
+                    }
+                }
+        }
     }
 
     private fun syncAllCoupons(force: Boolean = false) {

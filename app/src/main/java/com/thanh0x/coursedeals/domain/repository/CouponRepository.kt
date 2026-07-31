@@ -14,6 +14,8 @@ interface CouponRepository {
 
     fun getFilteredCountFlow(query: String?, filter: FilterData): Flow<Int>
 
+    suspend fun getSearchSuggestions(query: String): List<String>
+
     suspend fun syncAllCoupons(force: Boolean = false)
 
     suspend fun insertCoupon(coupon: Coupon)

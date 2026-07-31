@@ -6,6 +6,7 @@ data class HomeUiState(
     val isInternetAvailable: Boolean = true,
     val isSyncing: Boolean = false,
     val query: String = "",
+    val suggestions: List<String> = emptyList(),
     val filter: FilterData = FilterData(),
     val statDeals: Long = 0,
     val matchingDeals: Int = 0,

@@ -1,10 +1,13 @@
 package com.thanh0x.coursedeals.ui.core.home
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.Filter
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
@@ -24,12 +27,15 @@ class HomeFragment : BaseFragment() {
     private var _binding: FragmentHomeBinding? = null
     private val homeViewModel: HomeViewModel by viewModels()
     private lateinit var couponCoursePagingAdapter: CouponCoursePagingViewAdapter
+    private lateinit var suggestionsAdapter: NoFilterArrayAdapter
     private val binding get() = _binding!!
 
     private var currentFilter = FilterData()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
@@ -40,11 +46,32 @@ class HomeFragment : BaseFragment() {
         setupAdapter()
         setupListeners()
         setupObservers()
+        setupSearchViewSuggestions()
         homeViewModel.checkIfInternetAvailable()
     }
 
+    private fun setupSearchViewSuggestions() {
+        val searchAutoComplete = binding.svCouponCourse.findViewById<android.widget.AutoCompleteTextView>(
+            androidx.appcompat.R.id.search_src_text,
+        )
+        suggestionsAdapter = NoFilterArrayAdapter(
+            requireContext(),
+            R.layout.item_search_suggestion,
+            android.R.id.text1,
+            mutableListOf()
+        )
+        searchAutoComplete.setAdapter(suggestionsAdapter)
+        searchAutoComplete.threshold = 1
+        searchAutoComplete.setDropDownBackgroundResource(R.drawable.bg_search_suggestion_popup)
+        searchAutoComplete.dropDownVerticalOffset = 8
+        searchAutoComplete.setOnItemClickListener { parent, _, position, _ ->
+            val suggestion = parent.getItemAtPosition(position) as String
+            binding.svCouponCourse.setQuery(suggestion, true)
+        }
+    }
+
     private fun setupAdapter() {
-        couponCoursePagingAdapter = CouponCoursePagingViewAdapter() { clickedCoupon ->
+        couponCoursePagingAdapter = CouponCoursePagingViewAdapter { clickedCoupon ->
             val detailIntent = Intent(requireContext(), CouponDetailActivity::class.java)
             detailIntent.putExtra(BundleKey.TO_DETAIL_ACTIVITY, clickedCoupon.courseId)
             startActivity(detailIntent)
@@ -91,7 +118,7 @@ class HomeFragment : BaseFragment() {
         if (!state.isInternetAvailable) {
             showAlertDialog(
                 getString(R.string.fetch_error_title),
-                getString(R.string.no_internet_message)
+                getString(R.string.no_internet_message),
             )
         }
 
@@ -102,9 +129,9 @@ class HomeFragment : BaseFragment() {
         }
 
         val isFiltered = state.query.isNotBlank() ||
-            state.filter.categories.isNotEmpty() ||
-            state.filter.language != null ||
-            state.filter.sortBy != null
+            (state.filter.categories.isNotEmpty()) ||
+            (state.filter.language != null) ||
+            (state.filter.sortBy != null)
 
         val mapper = MapperToView(requireContext())
 
@@ -136,6 +163,10 @@ class HomeFragment : BaseFragment() {
 
         binding.srlHome.isRefreshing = state.isSyncing
         binding.llEmptyState.isVisible = state.isEmptyState
+
+        suggestionsAdapter.clear()
+        suggestionsAdapter.addAll(state.suggestions)
+        suggestionsAdapter.notifyDataSetChanged()
     }
 
     private fun observePagingData() {
@@ -147,16 +178,16 @@ class HomeFragment : BaseFragment() {
     private fun observePagingLoadState() {
         collectFlow(couponCoursePagingAdapter.loadStateFlow) { loadState ->
             val isRefreshing = loadState.refresh is LoadState.Loading
-            binding.pbHome.isVisible = isRefreshing && couponCoursePagingAdapter.itemCount == 0
+            binding.pbHome.isVisible = isRefreshing && (couponCoursePagingAdapter.itemCount == 0)
 
             binding.lpiLoadPreviousPage.isVisible = loadState.source.prepend is LoadState.Loading
             binding.lpiLoadNextPage.isVisible = loadState.source.append is LoadState.Loading
 
-            val errorState = loadState.source.append as? LoadState.Error
-                ?: loadState.source.prepend as? LoadState.Error
-                ?: loadState.append as? LoadState.Error
-                ?: loadState.prepend as? LoadState.Error
-                ?: loadState.refresh as? LoadState.Error
+            val errorState = (loadState.source.append as? LoadState.Error)
+                ?: (loadState.source.prepend as? LoadState.Error)
+                ?: (loadState.append as? LoadState.Error)
+                ?: (loadState.prepend as? LoadState.Error)
+                ?: (loadState.refresh as? LoadState.Error)
 
             errorState?.let {
                 showAlertDialog(
@@ -170,6 +201,31 @@ class HomeFragment : BaseFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private class NoFilterArrayAdapter(
+        context: Context,
+        resource: Int,
+        textViewResourceId: Int,
+        objects: List<String>,
+    ) : ArrayAdapter<String>(context, resource, textViewResourceId, objects) {
+
+        private val list = objects as MutableList<String>
+
+        override fun getFilter(): Filter {
+            return object : Filter() {
+                override fun performFiltering(constraint: CharSequence?): FilterResults {
+                    val results = FilterResults()
+                    results.values = list
+                    results.count = list.size
+                    return results
+                }
+
+                override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                    notifyDataSetChanged()
+                }
+            }
+        }
     }
 
     private val queryTextChangeListener = object : SearchView.OnQueryTextListener {
@@ -193,10 +249,10 @@ class HomeFragment : BaseFragment() {
     }
 
     private fun showSubmitDealDialog() {
-        val dialog = SubmitDealBottomSheet { url ->
+        val dialog = SubmitDealBottomSheet { _ ->
             showAlertDialog(
                 getString(R.string.submit_deal_title),
-                getString(R.string.submit_success_msg)
+                getString(R.string.submit_success_msg),
             )
         }
         dialog.show(childFragmentManager, SubmitDealBottomSheet.TAG)

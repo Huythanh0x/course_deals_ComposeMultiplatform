@@ -13,6 +13,8 @@ interface LocalCouponDataSource {
 
     fun getFilteredCount(query: String?, filter: FilterData): kotlinx.coroutines.flow.Flow<Int>
 
+    suspend fun getSearchSuggestions(query: String): List<String>
+
     suspend fun insertCoupon(coupon: Coupon)
 
     suspend fun insertCoupons(coupons: List<Coupon>)
