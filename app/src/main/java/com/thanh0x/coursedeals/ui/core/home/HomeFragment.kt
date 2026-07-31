@@ -70,6 +70,7 @@ class HomeFragment : BaseFragment() {
         searchAutoComplete.setOnItemClickListener { parent, _, position, _ ->
             val suggestion = parent.getItemAtPosition(position) as SearchSuggestion
             binding.svCouponCourse.setQuery(suggestion.text, true)
+            clearSearchFocus()
         }
 
         // Show history when focused even if empty
@@ -82,6 +83,7 @@ class HomeFragment : BaseFragment() {
 
     private fun setupAdapter() {
         couponCoursePagingAdapter = CouponCoursePagingViewAdapter { clickedCoupon ->
+            clearSearchFocus()
             val detailIntent = Intent(requireContext(), CouponDetailActivity::class.java)
             detailIntent.putExtra(BundleKey.TO_DETAIL_ACTIVITY, clickedCoupon.courseId)
             startActivity(detailIntent)
@@ -90,6 +92,22 @@ class HomeFragment : BaseFragment() {
     }
 
     private fun setupListeners() {
+        binding.clHomeRoot.setOnClickListener {
+            clearSearchFocus()
+        }
+        binding.rvCouponCourse.addOnScrollListener(
+            object : androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
+                override fun onScrollStateChanged(
+                    recyclerView: androidx.recyclerview.widget.RecyclerView,
+                    newState: Int,
+                ) {
+                    super.onScrollStateChanged(recyclerView, newState)
+                    if (newState != androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE) {
+                        clearSearchFocus()
+                    }
+                }
+            },
+        )
         binding.svCouponCourse.setOnQueryTextListener(queryTextChangeListener)
         binding.btnFilter.setOnClickListener {
             showFilterDialog()
@@ -259,6 +277,7 @@ class HomeFragment : BaseFragment() {
         override fun onQueryTextSubmit(query: String?): Boolean {
             query?.let {
                 homeViewModel.onSearchSubmitted(it)
+                clearSearchFocus()
             }
             return true
         }
@@ -289,5 +308,10 @@ class HomeFragment : BaseFragment() {
 
     private fun applyFilters() {
         homeViewModel.updateFilter(currentFilter)
+    }
+
+    private fun clearSearchFocus() {
+        binding.svCouponCourse.clearFocus()
+        hideKeyboard()
     }
 }

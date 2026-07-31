@@ -8,9 +8,13 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clHomeRoot"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/m3_surface_container_low">
+        android:background="@color/m3_surface_container_low"
+        android:clickable="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
 
         <!-- Search Bar + Filter -->
         <com.google.android.material.card.MaterialCardView

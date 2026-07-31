@@ -3,6 +3,7 @@ package com.thanh0x.coursedeals.ui.base
 import android.content.res.ColorStateList
 import android.util.TypedValue
 import android.view.LayoutInflater
+import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -15,7 +16,6 @@ import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.ui.customview.LoadingDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.lang.Long.max
@@ -30,14 +30,6 @@ abstract class BaseActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 flow.collect { action(it) }
-            }
-        }
-    }
-
-    fun <T> collectLatestFlow(flow: Flow<T>, action: suspend (T) -> Unit) {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                flow.collectLatest { action(it) }
             }
         }
     }
@@ -80,11 +72,16 @@ abstract class BaseActivity : AppCompatActivity() {
         }
     }
 
+    fun hideKeyboard() {
+        val imm = getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
+        imm?.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+    }
+
     fun showAlertDialog(
         title: String,
         message: String,
         cause: String? = null,
-        onPositiveClick: (() -> Unit)? = null
+        onPositiveClick: (() -> Unit)? = null,
     ) {
         if (isFinishing || isDestroyed) return
         val headerView = LayoutInflater.from(this).inflate(R.layout.layout_dialog_header, null)
