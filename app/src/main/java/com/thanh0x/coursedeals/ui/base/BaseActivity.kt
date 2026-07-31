@@ -1,7 +1,6 @@
 package com.thanh0x.coursedeals.ui.base
 
 import android.content.res.ColorStateList
-import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.widget.ImageView

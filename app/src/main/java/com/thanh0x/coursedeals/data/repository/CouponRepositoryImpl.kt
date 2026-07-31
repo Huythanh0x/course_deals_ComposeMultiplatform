@@ -34,6 +34,8 @@ class CouponRepositoryImpl @Inject constructor(
 
     private val _metadataFlow = MutableSharedFlow<CouponMetadata>(replay = 1)
 
+    private var lastSyncTimestamp: Long = 0
+
     override suspend fun getAllCoupons() = localCouponDataSource.getAllCoupons().map { it.toDomain() }
 
     override fun getCouponsPager(query: String?, filter: FilterData): Flow<PagingData<Coupon>> {
@@ -49,9 +51,6 @@ class CouponRepositoryImpl @Inject constructor(
             pagingData.map { entity -> entity.toDomain() }
         }
     }
-
-    private var lastSyncTimestamp: Long = 0
-    private val SYNC_THRESHOLD_MS = 15 * 60 * 1000L // 15 minutes
 
     override suspend fun syncAllCoupons(force: Boolean) {
         val currentTime = System.currentTimeMillis()
@@ -76,7 +75,7 @@ class CouponRepositoryImpl @Inject constructor(
                     )
                 )
             }
-        } catch (e: Exception) {
+        } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
             Timber.e(e, "syncAllCoupons: Failed to sync deals")
         }
     }
@@ -106,4 +105,12 @@ class CouponRepositoryImpl @Inject constructor(
 
     override suspend fun fetchCouponDetail(courseId: Int) =
         remoteCouponDataSource.fetchCouponDetail(courseId)
+
+    companion object {
+        private const val SYNC_INTERVAL_MINUTES = 15
+        private const val SECONDS_IN_MINUTE = 60
+        private const val MILLIS_IN_SECOND = 1000
+        private const val SYNC_THRESHOLD_MS =
+            SYNC_INTERVAL_MINUTES * SECONDS_IN_MINUTE * MILLIS_IN_SECOND.toLong()
+    }
 }

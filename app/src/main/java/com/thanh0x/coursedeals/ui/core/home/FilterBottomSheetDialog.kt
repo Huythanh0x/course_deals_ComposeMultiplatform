@@ -45,8 +45,8 @@ class FilterBottomSheetDialog(
         super.onViewCreated(view, savedInstanceState)
 
         selectedCategories.addAll(initialFilter.categories)
-        selectedLanguage = initialFilter.language
-        selectedSort = initialFilter.sortBy
+        selectedLanguage = initialFilter.language ?: "All"
+        selectedSort = initialFilter.sortBy ?: "Newest"
 
         setupCategoryGroup()
         setupLanguageGroup()
@@ -136,11 +136,28 @@ class FilterBottomSheetDialog(
 
     private fun resetFilters() {
         selectedCategories.clear()
-        selectedLanguage = null
-        selectedSort = null
+        selectedLanguage = "All"
+        selectedSort = "Newest"
+
         clearGroupSelection(binding.cgCategories)
         clearGroupSelection(binding.cgLanguages)
         clearGroupSelection(binding.cgSort)
+
+        // Select defaults
+        updateChipSelection(binding.cgLanguages, "All")
+        updateChipSelection(binding.cgSort, "Newest")
+    }
+
+    private fun updateChipSelection(group: ViewGroup, text: String) {
+        for (i in 0 until group.childCount) {
+            val container = group.getChildAt(i) as ViewGroup
+            val chip = container.findViewById<Chip>(R.id.chip)
+            val check = container.findViewById<View>(R.id.cvCheck)
+            if (chip.text == text) {
+                chip.isChecked = true
+                check.isVisible = true
+            }
+        }
     }
 
     override fun onDestroyView() {

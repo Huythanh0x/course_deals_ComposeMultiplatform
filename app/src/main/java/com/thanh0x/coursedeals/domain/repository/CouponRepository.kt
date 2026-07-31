@@ -1,7 +1,6 @@
 package com.thanh0x.coursedeals.domain.repository
 
 import androidx.paging.PagingData
-import androidx.paging.PagingSource
 import com.thanh0x.coursedeals.domain.model.AppResult
 import com.thanh0x.coursedeals.domain.model.Coupon
 import com.thanh0x.coursedeals.domain.model.CouponMetadata

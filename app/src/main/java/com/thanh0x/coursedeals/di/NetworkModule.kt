@@ -5,7 +5,6 @@ import com.thanh0x.coursedeals.data.source.remote.CouponService
 import com.thanh0x.coursedeals.data.source.remote.RemoteAuthenticationDataSourceImpl
 import com.thanh0x.coursedeals.data.source.remote.RemoteCouponDataSourceImpl
 import com.thanh0x.coursedeals.data.source.remote.UserAuthenticationService
-import com.thanh0x.coursedeals.domain.model.Coupon
 import com.thanh0x.coursedeals.util.Constant
 import com.thanh0x.coursedeals.util.NetworkStatusCode
 import dagger.Module
