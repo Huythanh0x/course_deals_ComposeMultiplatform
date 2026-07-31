@@ -16,8 +16,10 @@ import androidx.fragment.app.viewModels
 import androidx.paging.LoadState
 import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.FragmentHomeBinding
+import com.thanh0x.coursedeals.domain.model.CourseLanguage
 import com.thanh0x.coursedeals.domain.model.FilterData
 import com.thanh0x.coursedeals.domain.model.SearchSuggestion
+import com.thanh0x.coursedeals.domain.model.SortOption
 import com.thanh0x.coursedeals.domain.model.SuggestionType
 import com.thanh0x.coursedeals.ui.base.BaseFragment
 import com.thanh0x.coursedeals.ui.detail.CouponDetailActivity
@@ -158,8 +160,8 @@ class HomeFragment : BaseFragment() {
 
         val isFiltered = state.query.isNotBlank() ||
             (state.filter.categories.isNotEmpty()) ||
-            (state.filter.language != null) ||
-            (state.filter.sortBy != null)
+            (state.filter.language != CourseLanguage.ALL) ||
+            (state.filter.sortBy != SortOption.NEWEST)
 
         val mapper = MapperToView(requireContext())
 

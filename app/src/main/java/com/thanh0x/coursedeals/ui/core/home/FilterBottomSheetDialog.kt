@@ -13,7 +13,10 @@ import com.google.android.material.chip.Chip
 import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.DialogFilterBinding
 import com.thanh0x.coursedeals.databinding.ItemCategoryPickerBinding
+import com.thanh0x.coursedeals.domain.model.CourseCategory
+import com.thanh0x.coursedeals.domain.model.CourseLanguage
 import com.thanh0x.coursedeals.domain.model.FilterData
+import com.thanh0x.coursedeals.domain.model.SortOption
 
 class FilterBottomSheetDialog(
     private val initialFilter: FilterData,
@@ -23,22 +26,14 @@ class FilterBottomSheetDialog(
     private var _binding: DialogFilterBinding? = null
     private val binding get() = _binding!!
 
-    private val categories = listOf(
-        "Development", "Design", "Business", "IT & Software", "Marketing",
-        "Personal Development", "Photography", "Music", "Health & Fitness", "Finance"
-    )
-
-    private val languages = listOf("All", "English", "Others")
-    private val sortOptions = listOf("Rating", "Students", "Reviews", "Expiring Soon", "Newest")
-
-    private val selectedCategories = mutableSetOf<String>()
-    private var selectedLanguage: String? = null
-    private var selectedSort: String? = null
+    private val selectedCategories = mutableSetOf<CourseCategory>()
+    private var selectedLanguage: CourseLanguage = CourseLanguage.ALL
+    private var selectedSort: SortOption = SortOption.NEWEST
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = DialogFilterBinding.inflate(inflater, container, false)
         return binding.root
@@ -48,8 +43,8 @@ class FilterBottomSheetDialog(
         super.onViewCreated(view, savedInstanceState)
 
         selectedCategories.addAll(initialFilter.categories)
-        selectedLanguage = initialFilter.language ?: "All"
-        selectedSort = initialFilter.sortBy ?: "Newest"
+        selectedLanguage = initialFilter.language
+        selectedSort = initialFilter.sortBy
 
         setupCategoryGroup()
         setupLanguageGroup()
@@ -89,9 +84,9 @@ class FilterBottomSheetDialog(
     }
 
     private fun setupCategoryGroup() {
-        categories.forEach { category ->
+        CourseCategory.entries.forEach { category ->
             val itemBinding = ItemCategoryPickerBinding.inflate(layoutInflater, binding.cgCategories, false)
-            itemBinding.chip.text = category
+            itemBinding.chip.text = getString(category.displayResId)
 
             val isSelected = selectedCategories.contains(category)
             itemBinding.cvCheck.isVisible = isSelected
@@ -113,9 +108,9 @@ class FilterBottomSheetDialog(
     }
 
     private fun setupLanguageGroup() {
-        languages.forEach { language ->
+        CourseLanguage.entries.forEach { language ->
             val itemBinding = ItemCategoryPickerBinding.inflate(layoutInflater, binding.cgLanguages, false)
-            itemBinding.chip.text = language
+            itemBinding.chip.text = getString(language.displayResId)
 
             val isSelected = selectedLanguage == language
             itemBinding.cvCheck.isVisible = isSelected
@@ -132,9 +127,9 @@ class FilterBottomSheetDialog(
     }
 
     private fun setupSortGroup() {
-        sortOptions.forEach { option ->
+        SortOption.entries.forEach { option ->
             val itemBinding = ItemCategoryPickerBinding.inflate(layoutInflater, binding.cgSort, false)
-            itemBinding.chip.text = option
+            itemBinding.chip.text = getString(option.displayResId)
 
             val isSelected = selectedSort == option
             itemBinding.cvCheck.isVisible = isSelected
@@ -162,19 +157,20 @@ class FilterBottomSheetDialog(
 
     private fun resetFilters() {
         selectedCategories.clear()
-        selectedLanguage = "All"
-        selectedSort = "Newest"
+        selectedLanguage = CourseLanguage.ALL
+        selectedSort = SortOption.NEWEST
 
         clearGroupSelection(binding.cgCategories)
         clearGroupSelection(binding.cgLanguages)
         clearGroupSelection(binding.cgSort)
 
         // Select defaults
-        updateChipSelection(binding.cgLanguages, "All")
-        updateChipSelection(binding.cgSort, "Newest")
+        updateChipSelection(binding.cgLanguages, CourseLanguage.ALL.displayResId)
+        updateChipSelection(binding.cgSort, SortOption.NEWEST.displayResId)
     }
 
-    private fun updateChipSelection(group: ViewGroup, text: String) {
+    private fun updateChipSelection(group: ViewGroup, displayResId: Int) {
+        val text = getString(displayResId)
         for (i in 0 until group.childCount) {
             val container = group.getChildAt(i) as ViewGroup
             val chip = container.findViewById<Chip>(R.id.chip)

@@ -4,7 +4,9 @@ import androidx.paging.PagingSource
 import androidx.sqlite.db.SimpleSQLiteQuery
 import com.thanh0x.coursedeals.data.model.Coupon
 import com.thanh0x.coursedeals.data.source.LocalCouponDataSource
+import com.thanh0x.coursedeals.domain.model.CourseLanguage
 import com.thanh0x.coursedeals.domain.model.FilterData
+import com.thanh0x.coursedeals.domain.model.SortOption
 import com.thanh0x.coursedeals.util.Constant
 import javax.inject.Inject
 
@@ -19,12 +21,11 @@ class LocalCouponDataSourceImpl @Inject constructor(private val couponDao: Coupo
 
         // Sort By
         val orderClause = when (filter.sortBy) {
-            "Rating" -> "ORDER BY rating DESC"
-            "Students" -> "ORDER BY students DESC"
-            "Reviews" -> "ORDER BY reviews DESC"
-            "Expiring Soon" -> "ORDER BY expired_time ASC"
-            "Newest" -> "ORDER BY created_at DESC"
-            else -> "ORDER BY created_at DESC"
+            SortOption.RATING -> "ORDER BY rating DESC"
+            SortOption.STUDENTS -> "ORDER BY students DESC"
+            SortOption.REVIEWS -> "ORDER BY reviews DESC"
+            SortOption.EXPIRING_SOON -> "ORDER BY expired_time ASC"
+            SortOption.NEWEST -> "ORDER BY created_at DESC"
         }
 
         val sql = "SELECT * FROM ${Constant.COUPON_TABLE_NAME} $whereClause $orderClause"
@@ -58,18 +59,20 @@ class LocalCouponDataSourceImpl @Inject constructor(private val couponDao: Coupo
         if (filter.categories.isNotEmpty()) {
             val placeholders = filter.categories.joinToString(",") { "?" }
             conditions.add("category IN ($placeholders)")
-            args.addAll(filter.categories)
+            args.addAll(filter.categories.map { it.dbValue })
         }
 
         // Language
-        if ((filter.language != null) && (filter.language != "All")) {
-            if (filter.language == "English") {
+        when (filter.language) {
+            CourseLanguage.ENGLISH -> {
                 conditions.add("LOWER(language) = ?")
                 args.add("english")
-            } else if (filter.language == "Others") {
+            }
+            CourseLanguage.OTHERS -> {
                 conditions.add("(LOWER(language) != ? OR language IS NULL)")
                 args.add("english")
             }
+            CourseLanguage.ALL -> { /* No condition */ }
         }
 
         val whereClause = if (conditions.isNotEmpty()) {

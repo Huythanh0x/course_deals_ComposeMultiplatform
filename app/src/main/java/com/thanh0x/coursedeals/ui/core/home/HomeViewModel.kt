@@ -5,8 +5,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.thanh0x.coursedeals.domain.model.Coupon
+import com.thanh0x.coursedeals.domain.model.CourseLanguage
 import com.thanh0x.coursedeals.domain.model.FilterData
 import com.thanh0x.coursedeals.domain.model.SearchSuggestion
+import com.thanh0x.coursedeals.domain.model.SortOption
 import com.thanh0x.coursedeals.domain.model.SuggestionType
 import com.thanh0x.coursedeals.domain.repository.CouponRepository
 import com.thanh0x.coursedeals.domain.repository.SearchRepository
@@ -136,8 +138,8 @@ class HomeViewModel @Inject constructor(
                     _uiState.update {
                         val isFiltered = it.query.isNotBlank() ||
                             (it.filter.categories.isNotEmpty()) ||
-                            (it.filter.language != null) ||
-                            (it.filter.sortBy != null)
+                            (it.filter.language != CourseLanguage.ALL) ||
+                            (it.filter.sortBy != SortOption.NEWEST)
 
                         it.copy(
                             matchingDeals = count,
