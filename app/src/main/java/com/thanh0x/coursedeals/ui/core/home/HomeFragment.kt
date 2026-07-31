@@ -161,7 +161,8 @@ class HomeFragment : BaseFragment() {
         val isFiltered = state.query.isNotBlank() ||
             (state.filter.categories.isNotEmpty()) ||
             (state.filter.language != CourseLanguage.ALL) ||
-            (state.filter.sortBy != SortOption.NEWEST)
+            (state.filter.sortBy != SortOption.NEWEST) ||
+            (state.filter.minRating > 0.0)
 
         val mapper = MapperToView(requireContext())
 
