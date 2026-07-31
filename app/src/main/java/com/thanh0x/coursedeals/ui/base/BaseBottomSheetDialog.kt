@@ -18,7 +18,6 @@ abstract class BaseBottomSheetDialog : BottomSheetDialogFragment() {
                 com.google.android.material.R.id.design_bottom_sheet,
             )
             bottomSheet?.let {
-                it.setBackgroundResource(android.R.color.transparent)
                 val behavior = BottomSheetBehavior.from(it)
                 behavior.state = BottomSheetBehavior.STATE_EXPANDED
                 behavior.skipCollapsed = true
