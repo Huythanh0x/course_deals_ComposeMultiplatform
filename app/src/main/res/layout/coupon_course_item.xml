@@ -72,7 +72,7 @@
                     android:id="@+id/tvCourseTitle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/spacing_6"
+                    android:layout_marginHorizontal="@dimen/spacing_8"
                     android:layout_marginTop="@dimen/spacing_4"
                     android:ellipsize="end"
                     android:lines="2"
@@ -146,7 +146,7 @@
                     android:layout_height="@dimen/spacing_12"
                     android:layout_marginTop="@dimen/spacing_2"
                     android:src="@drawable/ic_students"
-                    app:layout_constraintStart_toStartOf="@+id/rbCourse"
+                    app:layout_constraintStart_toStartOf="@+id/tvRatingValue"
                     app:layout_constraintTop_toBottomOf="@+id/rbCourse"
                     app:tint="@color/m3_on_surface_variant" />
 
@@ -155,6 +155,7 @@
                     app:displayNumberOfStudents="@{coupon.students}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:includeFontPadding="false"
                     android:layout_marginStart="@dimen/spacing_4"
                     android:textColor="@color/m3_on_surface_variant"
                     android:textSize="@dimen/text_size_label_small"
@@ -180,6 +181,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/spacing_4"
+                    android:includeFontPadding="false"
                     android:layout_marginBottom="@dimen/spacing_6"
                     android:textColor="@color/m3_on_surface_variant"
                     android:textSize="@dimen/text_size_label_small"
