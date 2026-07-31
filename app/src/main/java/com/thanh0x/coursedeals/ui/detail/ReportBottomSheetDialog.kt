@@ -13,7 +13,7 @@ import com.thanh0x.coursedeals.databinding.ItemReportReasonBinding
 import com.thanh0x.coursedeals.ui.base.BaseBottomSheetDialog
 
 class ReportBottomSheetDialog(
-    private val onReportSubmitted: (String, String?) -> Unit
+    private val onReportSubmitted: (String, String?) -> Unit,
 ) : BaseBottomSheetDialog() {
 
     private var _binding

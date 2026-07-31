@@ -62,7 +62,7 @@ class CouponDetailActivity : BaseActivity() {
             bindingCouponDataToView(it)
             setOnclickButtons(it)
         } ?: run {
-            if (!state.isLoading && state.error == null) {
+            if ((!state.isLoading) && (state.error == null)) {
                 couponDetailViewModel.fetchCouponDetail(courseId)
             }
         }
@@ -84,18 +84,23 @@ class CouponDetailActivity : BaseActivity() {
     }
 
     private fun bindingCouponDataToView(coupon: Coupon) {
-        Timber.d("COUPON DETAIL: ${coupon.couponUrl}")
-        MapperToView(applicationContext).let {
-            binding.tvRatingValue.text = it.mapRatingValue(coupon.rating)
-            binding.rbCouponDetail.rating = it.mapRating(coupon.rating)
-            binding.tvTimeLeft.text = it.mapTimeLeft(coupon.expiredTime)
+        Timber.d("COUPON DETAIL BINDING: $coupon")
+        MapperToView(this).let { mapper ->
+            binding.tvRatingValue.text = mapper.mapRatingValue(coupon.rating)
+            binding.rbCouponDetail.rating = mapper.mapRating(coupon.rating)
+            binding.tvTimeLeft.text = mapper.mapTimeLeft(coupon.expiredTime)
+
+            val durationText = mapper.mapContentLength(coupon.contentLength)
+            Timber.d("COUPON DURATION TEXT: $durationText")
+            binding.tvContentLength.text = durationText
+
             binding.tvCouponLeft.text = (coupon.usesRemaining ?: 0).toString()
             binding.tvCourseLevel.text = coupon.level ?: ""
             binding.tvLanguage.text = coupon.language ?: ""
-            binding.tvCourseDescription.text = it.mapHTMLContent(coupon.description)
+            binding.tvCourseDescription.text = mapper.mapHTMLContent(coupon.description)
             binding.tvCourseHeadingTitle.text = coupon.heading ?: ""
-            binding.tvNumberOfStudent.text = it.mapNumberOfStudent(coupon.students)
-            binding.tvNumberOfReview.text = it.mapNumberOfReview(coupon.reviews)
+            binding.tvNumberOfStudent.text = mapper.mapNumberOfStudent(coupon.students)
+            binding.tvNumberOfReview.text = mapper.mapNumberOfReview(coupon.reviews)
             binding.tvCourseTitle.text = coupon.title ?: ""
             binding.tvCourseAuthor.text = coupon.author ?: ""
             binding.tvCourseCategory.text = coupon.category ?: ""
@@ -124,7 +129,7 @@ class CouponDetailActivity : BaseActivity() {
         showAlertDialog(
             getString(R.string.coupon_detail_error_title),
             getString(R.string.error_fetching_null_coupon),
-            cause
+            cause,
         ) {
             finish()
         }
@@ -133,17 +138,17 @@ class CouponDetailActivity : BaseActivity() {
     private fun showNoInternetDialog() {
         showAlertDialog(
             getString(R.string.no_internet_title),
-            getString(R.string.no_internet_message)
+            getString(R.string.no_internet_message),
         ) {
             couponDetailViewModel.checkIfInternetAvailable()
         }
     }
 
     private fun showReportDialog() {
-        val dialog = ReportBottomSheetDialog { reason, otherDetails ->
+        val dialog = ReportBottomSheetDialog { _, _ ->
             showAlertDialog(
                 getString(R.string.action_report_title),
-                getString(R.string.report_submit_success)
+                getString(R.string.report_submit_success),
             )
         }
         dialog.show(supportFragmentManager, ReportBottomSheetDialog.TAG)

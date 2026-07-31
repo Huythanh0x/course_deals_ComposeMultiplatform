@@ -12,7 +12,7 @@ import com.thanh0x.coursedeals.ui.base.BaseBottomSheetDialog
 
 class CategoryPickerDialog(
     private val initialSelected: List<String>,
-    private val onCategoriesSelected: (List<String>) -> Unit
+    private val onCategoriesSelected: (List<String>) -> Unit,
 ) : BaseBottomSheetDialog() {
 
     private var _binding: DialogCategoryPickerBinding? = null

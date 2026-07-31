@@ -64,7 +64,10 @@ class SearchRepositoryImpl @Inject constructor(
     override suspend fun saveSearchQuery(query: String) {
         if (query.isBlank()) return
         couponDatabase.searchHistoryDao().insert(
-            SearchHistory(query.trim().lowercase(), System.currentTimeMillis())
+            SearchHistory(
+                query.trim().lowercase(),
+                System.currentTimeMillis(),
+            ),
         )
     }
 

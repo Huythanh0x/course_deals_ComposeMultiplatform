@@ -90,7 +90,7 @@ class FilterBottomSheetDialog(
         return if (value == 0.0f) {
             0.0
         } else {
-            MIN_QUALIFIED_RATING + (value - 1.0) / RATING_STEP_FACTOR
+            MIN_QUALIFIED_RATING + ((value - 1.0) / RATING_STEP_FACTOR)
         }
     }
 
@@ -98,7 +98,7 @@ class FilterBottomSheetDialog(
         return if (rating <= 0.0) {
             0.0f
         } else {
-            ((rating - MIN_QUALIFIED_RATING) * RATING_STEP_FACTOR + 1.0)
+            (((rating - MIN_QUALIFIED_RATING) * RATING_STEP_FACTOR) + 1.0)
                 .toFloat()
                 .coerceIn(0.0f, MAX_SLIDER_VALUE)
         }

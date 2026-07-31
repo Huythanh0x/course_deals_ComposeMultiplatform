@@ -12,7 +12,7 @@ import com.thanh0x.coursedeals.databinding.DialogSubmitDealBinding
 import com.thanh0x.coursedeals.ui.base.BaseBottomSheetDialog
 
 class SubmitDealBottomSheet(
-    private val onDealSubmitted: (String) -> Unit
+    private val onDealSubmitted: (String) -> Unit,
 ) : BaseBottomSheetDialog() {
 
     private var _binding: DialogSubmitDealBinding? = null

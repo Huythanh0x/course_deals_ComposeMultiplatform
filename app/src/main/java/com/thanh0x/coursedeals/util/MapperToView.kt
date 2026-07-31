@@ -14,24 +14,26 @@ class MapperToView(val context: Context) {
         return when (durationInMinutes) {
             -1L -> context.getString(R.string.unknown_time_left)
             in 0..1 -> context.getString(
-                R.string.few_minute_left, durationInMinutes
+                R.string.few_minute_left,
+                durationInMinutes,
             )
 
             in 2..minutesInHour -> context.getString(
-                R.string.lots_of_minutes_left, durationInMinutes
+                R.string.lots_of_minutes_left,
+                durationInMinutes,
             )
 
             in (minutesInHour + 1)..minutesInDay -> context.getString(
-                R.string.lots_of_hours_left, durationInMinutes / minutesInHour
+                R.string.lots_of_hours_left,
+                durationInMinutes / minutesInHour,
             )
 
             in (minutesInDay + 1)..minutesInMonth -> context.getString(
-                R.string.lots_of_days_left, durationInMinutes / minutesInDay
+                R.string.lots_of_days_left,
+                durationInMinutes / minutesInDay,
             )
 
-            else -> context.getString(
-                R.string.unknown_time_left
-            )
+            else -> context.getString(R.string.unknown_time_left)
         }
     }
 
@@ -43,35 +45,40 @@ class MapperToView(val context: Context) {
         return when (minutesAgo) {
             -1L -> context.getString(R.string.unknown_time_ago)
             in 0..1 -> context.getString(R.string.few_minute_ago)
-            in 2..minutesInHour -> context.getString(R.string.lots_of_minutes_ago, minutesAgo)
+            in 2..minutesInHour -> context.getString(
+                R.string.lots_of_minutes_ago,
+                minutesAgo,
+            )
             in (minutesInHour + 1)..minutesInDay -> context.getString(
                 R.string.lots_of_hours_ago,
-                minutesAgo / minutesInHour
+                minutesAgo / minutesInHour,
             )
 
-            else -> context.getString(R.string.lots_of_days_ago, minutesAgo / minutesInDay)
+            else -> context.getString(
+                R.string.lots_of_days_ago,
+                minutesAgo / minutesInDay,
+            )
         }
     }
 
     fun mapContentLength(contentLength: Int?): String {
-        if (contentLength == null) return context.getString(R.string.unknown_content_length)
         val minutesInHour = Constant.MINUTES_IN_HOUR
         return when (contentLength) {
-            in 0..1 -> context.getString(
-                R.string.few_content_length, contentLength
-            )
-
-            in 2..minutesInHour -> context.getString(
-                R.string.lots_of_content_length, contentLength
-            )
-
-            in (minutesInHour + 1)..Int.MAX_VALUE -> context.getString(
-                R.string.hours_content_length, contentLength / minutesInHour
-            )
-
-            else -> context.getString(
-                R.string.unknown_content_length
-            )
+            null -> context.getString(R.string.unknown_content_length)
+            0 -> context.getString(R.string.text_practice_test)
+            else -> {
+                if (contentLength < minutesInHour) {
+                    context.getString(R.string.lots_of_content_length, contentLength)
+                } else {
+                    val hours = contentLength.toDouble() / minutesInHour
+                    val formattedHours = if ((hours % 1.0) == 0.0) {
+                        hours.toInt().toString()
+                    } else {
+                        "%.1f".format(java.util.Locale.US, hours)
+                    }
+                    context.getString(R.string.hours_content_length, formattedHours)
+                }
+            }
         }
     }
 
@@ -85,22 +92,28 @@ class MapperToView(val context: Context) {
     }
 
     fun mapRatingValue(rating: Double?): String {
-        return "%.1f".format(rating ?: 0.0)
+        return "%.1f".format(
+            java.util.Locale.US,
+            rating ?: 0.0,
+        )
     }
 
     fun mapNumberOfReview(numberOfReview: Int?): String {
         if (numberOfReview == null) return context.getString(R.string.few_review, 0)
         return if (numberOfReview <= 1) {
             context.getString(
-                R.string.few_review, numberOfReview
+                R.string.few_review,
+                numberOfReview,
             )
         } else if (numberOfReview > Constant.THRESHOLD_THOUSANDS) {
             context.getString(
-                R.string.thousands_reviews, numberOfReview / Constant.THRESHOLD_THOUSANDS
+                R.string.thousands_reviews,
+                numberOfReview / Constant.THRESHOLD_THOUSANDS,
             )
         } else {
             context.getString(
-                R.string.lots_of_review, numberOfReview
+                R.string.lots_of_review,
+                numberOfReview,
             )
         }
     }
@@ -109,15 +122,18 @@ class MapperToView(val context: Context) {
         if (numberOfStudent == null) return context.getString(R.string.few_student, 0)
         return if (numberOfStudent <= 1) {
             context.getString(
-                R.string.few_student, numberOfStudent
+                R.string.few_student,
+                numberOfStudent,
             )
         } else if (numberOfStudent > Constant.THRESHOLD_THOUSANDS) {
             context.getString(
-                R.string.thousand_students, numberOfStudent / Constant.THRESHOLD_THOUSANDS
+                R.string.thousand_students,
+                numberOfStudent / Constant.THRESHOLD_THOUSANDS,
             )
         } else {
             context.getString(
-                R.string.lots_of_student, numberOfStudent
+                R.string.lots_of_student,
+                numberOfStudent,
             )
         }
     }

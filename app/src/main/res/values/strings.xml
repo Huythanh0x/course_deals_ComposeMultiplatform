@@ -22,9 +22,10 @@
     <string name="few_student">%d student</string>
     <string name="lots_of_student">%d students</string>
     <string name="thousand_students">%dK students</string>
-    <string name="few_content_length">%d minute</string>
-    <string name="lots_of_content_length">%d minutes</string>
-    <string name="hours_content_length">%d hours</string>
+    <string name="few_content_length">%dm</string>
+    <string name="lots_of_content_length">%dm</string>
+    <string name="hours_content_length">%sh</string>
+    <string name="text_practice_test">Practice Test</string>
     <string name="unknown_content_length">unknown</string>
     <string name="few_minute_left">%d minute</string>
     <string name="lots_of_minutes_left">%d minutes</string>

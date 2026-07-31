@@ -27,7 +27,7 @@
             app:cardBackgroundColor="@color/m3_surface_container_high"
             app:cardCornerRadius="@dimen/corner_radius_large"
             app:cardElevation="0dp"
-            app:layout_constraintEnd_toStartOf="@+id/btnFilter"
+            app:layout_constraintEnd_toStartOf="@+id/flFilterContainer"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:strokeWidth="0dp">
@@ -43,16 +43,33 @@
 
         </com.google.android.material.card.MaterialCardView>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnFilter"
-            style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
-            android:layout_width="@dimen/filter_button_size"
-            android:layout_height="@dimen/filter_button_size"
+        <FrameLayout
+            android:id="@+id/flFilterContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/spacing_16"
-            app:icon="@drawable/ic_filter"
             app:layout_constraintBottom_toBottomOf="@+id/cvSearchContainer"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/cvSearchContainer" />
+            app:layout_constraintTop_toTopOf="@+id/cvSearchContainer">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnFilter"
+                style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+                android:layout_width="@dimen/filter_button_size"
+                android:layout_height="@dimen/filter_button_size"
+                app:icon="@drawable/ic_filter" />
+
+            <View
+                android:id="@+id/vFilterBadge"
+                android:layout_width="@dimen/spacing_10"
+                android:layout_height="@dimen/spacing_10"
+                android:layout_gravity="top|end"
+                android:layout_marginTop="@dimen/spacing_6"
+                android:layout_marginEnd="@dimen/spacing_6"
+                android:background="@drawable/bg_filter_badge"
+                android:visibility="gone"
+                tools:visibility="visible" />
+        </FrameLayout>
 
         <!-- Stat Line + Submit Deal -->
         <com.google.android.material.textview.MaterialTextView

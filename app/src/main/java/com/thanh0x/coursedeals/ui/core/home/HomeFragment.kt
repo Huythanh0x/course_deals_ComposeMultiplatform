@@ -164,6 +164,13 @@ class HomeFragment : BaseFragment() {
             (state.filter.sortBy != SortOption.NEWEST) ||
             (state.filter.minRating > 0.0)
 
+        val hasActiveFilters = (state.filter.categories.isNotEmpty()) ||
+            (state.filter.language != CourseLanguage.ALL) ||
+            (state.filter.sortBy != SortOption.NEWEST) ||
+            (state.filter.minRating > 0.0)
+
+        binding.vFilterBadge.isVisible = hasActiveFilters
+
         val mapper = MapperToView(requireContext())
 
         binding.tvStatDeals.text = if (isFiltered) {

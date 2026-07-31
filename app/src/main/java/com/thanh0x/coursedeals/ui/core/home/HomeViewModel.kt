@@ -147,7 +147,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             combine(
                 _queryTrigger,
-                uiState.map { it.filter }.distinctUntilChanged()
+                uiState.map { it.filter }.distinctUntilChanged(),
             ) { query, filter ->
                 query to filter
             }.flatMapLatest { (query, filter) ->
