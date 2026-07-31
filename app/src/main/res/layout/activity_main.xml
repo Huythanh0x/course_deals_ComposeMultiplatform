@@ -29,7 +29,7 @@
             android:id="@+id/bottomNavigationView"
             style="@style/Widget.CourseDeal.BottomNavigationView"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="@dimen/spacing_80"
             app:backgroundTint="@color/m3_surface_container"
             app:itemIconTint="@color/bnv_item_color"
             app:itemTextColor="@color/bnv_item_color"

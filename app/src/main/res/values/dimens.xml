@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Spacing Scale (4dp grid) -->
+    <dimen name="spacing_1">1dp</dimen>
+    <dimen name="spacing_2">2dp</dimen>
+    <dimen name="spacing_4">4dp</dimen>
+    <dimen name="spacing_5">5dp</dimen>
+    <dimen name="spacing_6">6dp</dimen>
+    <dimen name="spacing_7">7dp</dimen>
+    <dimen name="spacing_8">8dp</dimen>
+    <dimen name="spacing_10">10dp</dimen>
+    <dimen name="spacing_12">12dp</dimen>
+    <dimen name="spacing_14">14dp</dimen>
+    <dimen name="spacing_16">16dp</dimen>
+    <dimen name="spacing_18">18dp</dimen>
+    <dimen name="spacing_20">20dp</dimen>
+    <dimen name="spacing_24">24dp</dimen>
+    <dimen name="spacing_28">28dp</dimen>
+    <dimen name="spacing_29">29dp</dimen>
+    <dimen name="spacing_32">32dp</dimen>
+    <dimen name="spacing_40">40dp</dimen>
+    <dimen name="spacing_48">48dp</dimen>
+    <dimen name="spacing_56">56dp</dimen>
+    <dimen name="spacing_58">58dp</dimen>
+    <dimen name="spacing_64">64dp</dimen>
+    <dimen name="spacing_72">72dp</dimen>
+    <dimen name="spacing_80">80dp</dimen>
+    <dimen name="spacing_172">172dp</dimen>
+
+    <!-- Typography Scale -->
+    <dimen name="text_size_caption">9sp</dimen>
+    <dimen name="text_size_label_small">10sp</dimen>
+    <dimen name="text_size_label_medium">11sp</dimen>
+    <dimen name="text_size_label_large">12sp</dimen>
+    <dimen name="text_size_body_small">11sp</dimen>
+    <dimen name="text_size_body_medium">12sp</dimen>
+    <dimen name="text_size_body_large">14sp</dimen>
+    <dimen name="text_size_title_small">13sp</dimen>
+    <dimen name="text_size_title_medium">16sp</dimen>
+    <dimen name="text_size_title_large">20sp</dimen>
+    <dimen name="text_size_headline_small">24sp</dimen>
+    <dimen name="line_height_body_large">24sp</dimen>
+
+    <!-- Component Specifics -->
+    <dimen name="search_bar_height">48dp</dimen>
+    <dimen name="filter_button_size">48dp</dimen>
+    <dimen name="course_item_radius">16dp</dimen>
+    <dimen name="corner_radius_small">8dp</dimen>
+    <dimen name="corner_radius_medium">16dp</dimen>
+    <dimen name="corner_radius_large">24dp</dimen>
+    <dimen name="icon_size_small">16dp</dimen>
+    <dimen name="icon_size_medium">20dp</dimen>
+    <dimen name="icon_size_large">24dp</dimen>
+    <dimen name="elevation_low">1dp</dimen>
+    <dimen name="elevation_medium">2dp</dimen>
+    <dimen name="elevation_high">8dp</dimen>
+    <dimen name="button_height_large">56dp</dimen>
+    <dimen name="empty_state_icon_size">80dp</dimen>
+    <dimen name="info_item_height_small">18dp</dimen>
+    <dimen name="info_item_height_medium">24dp</dimen>
+</resources>

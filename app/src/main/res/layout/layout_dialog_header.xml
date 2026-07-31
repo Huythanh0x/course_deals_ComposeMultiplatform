@@ -4,12 +4,12 @@
     android:layout_height="wrap_content"
     android:gravity="center"
     android:orientation="horizontal"
-    android:padding="24dp">
+    android:padding="@dimen/spacing_24">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/ivDialogLogo"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="@dimen/spacing_24"
+        android:layout_height="@dimen/spacing_24"
         android:src="@drawable/ic_logo_mark"
         android:tint="?attr/colorPrimary" />
 
@@ -17,7 +17,7 @@
         android:id="@+id/tvDialogTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="2dp"
+        android:layout_marginStart="@dimen/spacing_2"
         android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
         android:textColor="?attr/colorOnSurface"
         android:textStyle="bold" />

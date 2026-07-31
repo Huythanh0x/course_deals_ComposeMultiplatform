@@ -49,11 +49,11 @@
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="8dp"
+                        android:layout_marginTop="@dimen/spacing_8"
+                        android:layout_marginEnd="@dimen/spacing_8"
                         app:cardBackgroundColor="@color/m3_error_container"
-                        app:cardCornerRadius="10dp"
-                        app:cardElevation="2dp"
+                        app:cardCornerRadius="@dimen/corner_radius_small"
+                        app:cardElevation="@dimen/elevation_medium"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:strokeWidth="0dp">
@@ -61,11 +61,11 @@
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/tvTimeLeft"
                             android:layout_width="wrap_content"
-                            android:layout_height="24dp"
+                            android:layout_height="@dimen/info_item_height_medium"
                             android:gravity="center"
-                            android:paddingHorizontal="12dp"
+                            android:paddingHorizontal="@dimen/spacing_12"
                             android:textColor="@color/m3_on_error_container"
-                            android:textSize="12sp"
+                            android:textSize="@dimen/text_size_label_large"
                             android:textStyle="bold" />
                     </com.google.android.material.card.MaterialCardView>
 
@@ -73,10 +73,10 @@
                         android:id="@+id/tvCourseTitle"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="16dp"
-                        android:layout_marginTop="2dp"
+                        android:layout_marginHorizontal="@dimen/spacing_16"
+                        android:layout_marginTop="@dimen/spacing_2"
                         android:textColor="@color/m3_on_surface"
-                        android:textSize="20sp"
+                        android:textSize="@dimen/text_size_title_large"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -90,7 +90,7 @@
                         android:layout_marginTop="0dp"
                         android:lines="1"
                         android:textColor="@color/m3_on_surface_variant"
-                        android:textSize="13sp"
+                        android:textSize="@dimen/text_size_title_small"
                         app:layout_constraintEnd_toEndOf="@+id/tvCourseTitle"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="@+id/tvCourseTitle"
@@ -114,7 +114,7 @@
                         android:layout_marginTop="0dp"
                         android:textColor="@color/m3_primary"
                         android:textStyle="bold"
-                        android:textSize="13sp"
+                        android:textSize="@dimen/text_size_title_small"
                         app:layout_constraintEnd_toEndOf="@+id/tvCourseAuthor"
                         app:layout_constraintStart_toStartOf="@+id/tvCourseAuthor"
                         app:layout_constraintTop_toBottomOf="@+id/tvCourseAuthor"
@@ -124,9 +124,9 @@
                         android:id="@+id/tvRatingValue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
+                        android:layout_marginTop="@dimen/spacing_2"
                         android:textColor="@color/golden"
-                        android:textSize="13sp"
+                        android:textSize="@dimen/text_size_title_small"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="@+id/rbCouponDetail"
                         app:layout_constraintStart_toStartOf="@+id/tvCourseCategory"
@@ -138,9 +138,9 @@
                         style="@style/Widget.AppCompat.RatingBar.Small"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:layout_marginTop="2dp"
-                        android:layout_marginBottom="4dp"
+                        android:layout_marginStart="@dimen/spacing_4"
+                        android:layout_marginTop="@dimen/spacing_2"
+                        android:layout_marginBottom="@dimen/spacing_4"
                         android:numStars="5"
                         android:theme="@style/rating_bar"
                         app:layout_constraintStart_toEndOf="@+id/tvRatingValue"
@@ -148,9 +148,9 @@
 
                     <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/ivStudents"
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:layout_marginStart="4dp"
+                        android:layout_width="@dimen/spacing_16"
+                        android:layout_height="@dimen/spacing_16"
+                        android:layout_marginStart="@dimen/spacing_4"
                         android:src="@drawable/ic_students"
                         app:layout_constraintBottom_toBottomOf="@+id/rbCouponDetail"
                         app:layout_constraintStart_toEndOf="@+id/rbCouponDetail"
@@ -161,19 +161,19 @@
                         android:id="@+id/tvNumberOfStudent"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
+                        android:layout_marginStart="@dimen/spacing_4"
                         android:text="@string/loading_student_text"
                         android:textColor="@color/m3_on_surface_variant"
-                        android:textSize="11sp"
+                        android:textSize="@dimen/text_size_body_small"
                         app:layout_constraintBottom_toBottomOf="@+id/ivStudents"
                         app:layout_constraintStart_toEndOf="@+id/ivStudents"
                         app:layout_constraintTop_toTopOf="@+id/ivStudents" />
 
                     <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/ivReviews"
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:layout_marginStart="8dp"
+                        android:layout_width="@dimen/spacing_16"
+                        android:layout_height="@dimen/spacing_16"
+                        android:layout_marginStart="@dimen/spacing_8"
                         android:src="@drawable/ic_comment"
                         app:layout_constraintBottom_toBottomOf="@+id/ivStudents"
                         app:layout_constraintStart_toEndOf="@+id/tvNumberOfStudent"
@@ -184,10 +184,10 @@
                         android:id="@+id/tvNumberOfReview"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
+                        android:layout_marginStart="@dimen/spacing_4"
                         android:text="@string/loading_review_text"
                         android:textColor="@color/m3_on_surface_variant"
-                        android:textSize="11sp"
+                        android:textSize="@dimen/text_size_body_small"
                         app:layout_constraintBottom_toBottomOf="@+id/ivReviews"
                         app:layout_constraintStart_toEndOf="@+id/ivReviews"
                         app:layout_constraintTop_toTopOf="@+id/ivReviews" />
@@ -196,7 +196,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:clipToPadding="false"
-                        android:paddingHorizontal="16dp"
+                        android:paddingHorizontal="@dimen/spacing_16"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/rbCouponDetail">
@@ -204,7 +204,7 @@
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginVertical="4dp"
+                            android:layout_marginVertical="@dimen/spacing_4"
                             android:orientation="horizontal"
                             android:scrollbars="none">
 
@@ -216,12 +216,12 @@
                                 android:backgroundTint="@color/m3_surface_container"
                                 android:gravity="center"
                                 android:orientation="vertical"
-                                android:padding="4dp">
+                                android:padding="@dimen/spacing_4">
 
                                 <androidx.appcompat.widget.AppCompatImageView
-                                    android:layout_width="18dp"
-                                    android:layout_height="18dp"
-                                    android:layout_marginBottom="2dp"
+                                    android:layout_width="@dimen/spacing_18"
+                                    android:layout_height="@dimen/spacing_18"
+                                    android:layout_marginBottom="@dimen/spacing_2"
                                     android:src="@drawable/ic_coupon"
                                     app:tint="@color/m3_on_surface_variant" />
 
@@ -231,7 +231,7 @@
                                     android:layout_height="wrap_content"
                                     android:textAlignment="center"
                                     android:textColor="@color/m3_on_surface"
-                                    android:textSize="13sp"
+                                    android:textSize="@dimen/text_size_title_small"
                                     android:textStyle="bold"
                                     tools:text="701" />
 
@@ -241,24 +241,24 @@
                                     android:text="@string/text_coupons_left"
                                     android:textAlignment="center"
                                     android:textColor="@color/m3_on_surface_variant"
-                                    android:textSize="9sp" />
+                                    android:textSize="@dimen/text_size_caption" />
                             </LinearLayout>
 
                             <LinearLayout
                                 android:id="@+id/llCourseLengthContainer"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="4dp"
+                                android:layout_marginStart="@dimen/spacing_4"
                                 android:background="@drawable/bg_info_item"
                                 android:backgroundTint="@color/m3_surface_container"
                                 android:gravity="center"
                                 android:orientation="vertical"
-                                android:padding="4dp">
+                                android:padding="@dimen/spacing_4">
 
                                 <androidx.appcompat.widget.AppCompatImageView
-                                    android:layout_width="18dp"
-                                    android:layout_height="18dp"
-                                    android:layout_marginBottom="2dp"
+                                    android:layout_width="@dimen/spacing_18"
+                                    android:layout_height="@dimen/spacing_18"
+                                    android:layout_marginBottom="@dimen/spacing_2"
                                     android:src="@drawable/ic_clock"
                                     app:tint="@color/m3_on_surface_variant" />
 
@@ -268,7 +268,7 @@
                                     android:layout_height="wrap_content"
                                     android:textAlignment="center"
                                     android:textColor="@color/m3_on_surface"
-                                    android:textSize="13sp"
+                                    android:textSize="@dimen/text_size_title_small"
                                     android:textStyle="bold"
                                     tools:text="7.5h" />
 
@@ -278,24 +278,24 @@
                                     android:text="@string/text_content_length"
                                     android:textAlignment="center"
                                     android:textColor="@color/m3_on_surface_variant"
-                                    android:textSize="9sp" />
+                                    android:textSize="@dimen/text_size_caption" />
                             </LinearLayout>
 
                             <LinearLayout
                                 android:id="@+id/llCourseLevelContainer"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="4dp"
+                                android:layout_marginStart="@dimen/spacing_4"
                                 android:background="@drawable/bg_info_item"
                                 android:backgroundTint="@color/m3_surface_container"
                                 android:gravity="center"
                                 android:orientation="vertical"
-                                android:padding="4dp">
+                                android:padding="@dimen/spacing_4">
 
                                 <androidx.appcompat.widget.AppCompatImageView
-                                    android:layout_width="18dp"
-                                    android:layout_height="18dp"
-                                    android:layout_marginBottom="2dp"
+                                    android:layout_width="@dimen/spacing_18"
+                                    android:layout_height="@dimen/spacing_18"
+                                    android:layout_marginBottom="@dimen/spacing_2"
                                     android:src="@drawable/ic_level"
                                     app:tint="@color/m3_on_surface_variant" />
 
@@ -305,7 +305,7 @@
                                     android:layout_height="wrap_content"
                                     android:textAlignment="center"
                                     android:textColor="@color/m3_on_surface"
-                                    android:textSize="13sp"
+                                    android:textSize="@dimen/text_size_title_small"
                                     android:textStyle="bold"
                                     tools:text="All Levels" />
 
@@ -315,24 +315,24 @@
                                     android:text="@string/text_course_level"
                                     android:textAlignment="center"
                                     android:textColor="@color/m3_on_surface_variant"
-                                    android:textSize="9sp" />
+                                    android:textSize="@dimen/text_size_caption" />
                             </LinearLayout>
 
                             <LinearLayout
                                 android:id="@+id/llCourseLanguageContainer"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="4dp"
+                                android:layout_marginStart="@dimen/spacing_4"
                                 android:background="@drawable/bg_info_item"
                                 android:backgroundTint="@color/m3_surface_container"
                                 android:gravity="center"
                                 android:orientation="vertical"
-                                android:padding="4dp">
+                                android:padding="@dimen/spacing_4">
 
                                 <androidx.appcompat.widget.AppCompatImageView
-                                    android:layout_width="18dp"
-                                    android:layout_height="18dp"
-                                    android:layout_marginBottom="2dp"
+                                    android:layout_width="@dimen/spacing_18"
+                                    android:layout_height="@dimen/spacing_18"
+                                    android:layout_marginBottom="@dimen/spacing_2"
                                     android:src="@drawable/ic_language"
                                     app:tint="@color/m3_on_surface_variant" />
 
@@ -342,7 +342,7 @@
                                     android:layout_height="wrap_content"
                                     android:textAlignment="center"
                                     android:textColor="@color/m3_on_surface"
-                                    android:textSize="13sp"
+                                    android:textSize="@dimen/text_size_title_small"
                                     android:textStyle="bold"
                                     tools:text="English" />
 
@@ -352,7 +352,7 @@
                                     android:text="@string/text_language"
                                     android:textAlignment="center"
                                     android:textColor="@color/m3_on_surface_variant"
-                                    android:textSize="9sp" />
+                                    android:textSize="@dimen/text_size_caption" />
                             </LinearLayout>
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -366,7 +366,7 @@
                 android:id="@+id/nsvCourseDetail"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="@dimen/spacing_4"
                 app:layout_constraintBottom_toTopOf="@id/clActionContainer"
                 app:layout_constraintEnd_toEndOf="@+id/cvContainer"
                 app:layout_constraintStart_toStartOf="@+id/cvContainer"
@@ -380,11 +380,11 @@
                         android:id="@+id/tvCourseHeading"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="10dp"
-                        android:layout_marginTop="20dp"
+                        android:layout_marginHorizontal="@dimen/spacing_10"
+                        android:layout_marginTop="@dimen/spacing_20"
                         android:text="@string/header_heading"
                         android:textColor="@color/headingTitle"
-                        android:textSize="16sp"
+                        android:textSize="@dimen/text_size_title_medium"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -394,9 +394,9 @@
                         android:id="@+id/tvCourseHeadingTitle"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
+                        android:layout_marginTop="@dimen/spacing_4"
                         android:textColor="@color/primaryTextColor"
-                        android:textSize="14sp"
+                        android:textSize="@dimen/text_size_body_large"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="@+id/tvCourseHeading"
                         app:layout_constraintStart_toStartOf="@+id/tvCourseHeading"
@@ -406,10 +406,10 @@
                         android:id="@+id/tvDescription"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
+                        android:layout_marginTop="@dimen/spacing_20"
                         android:text="@string/header_description"
                         android:textColor="@color/headingTitle"
-                        android:textSize="16sp"
+                        android:textSize="@dimen/text_size_title_medium"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="@+id/tvCourseHeadingTitle"
                         app:layout_constraintStart_toStartOf="@+id/tvCourseHeading"
@@ -421,7 +421,7 @@
                         android:layout_height="wrap_content"
                         android:textColor="?attr/colorOnSurface"
                         android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-                        android:lineHeight="24sp"
+                        android:lineHeight="@dimen/line_height_body_large"
                         app:layout_constraintEnd_toEndOf="@id/tvDescription"
                         app:layout_constraintStart_toStartOf="@+id/tvDescription"
                         app:layout_constraintTop_toBottomOf="@id/tvDescription" />
@@ -433,10 +433,10 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/clActionContainer"
                 android:layout_width="0dp"
-                android:layout_height="80dp"
+                android:layout_height="@dimen/spacing_80"
                 android:background="@color/m3_surface"
-                android:elevation="8dp"
-                android:paddingHorizontal="8dp"
+                android:elevation="@dimen/elevation_high"
+                android:paddingHorizontal="@dimen/spacing_8"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent">
@@ -448,10 +448,10 @@
                     android:layout_height="wrap_content"
                     android:text="@string/text_button_share"
                     android:textColor="@color/m3_on_surface_variant"
-                    android:textSize="11sp"
+                    android:textSize="@dimen/text_size_body_small"
                     app:icon="@drawable/ic_share"
                     app:iconGravity="top"
-                    app:iconSize="24dp"
+                    app:iconSize="@dimen/spacing_24"
                     app:iconTint="@color/m3_on_surface_variant"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/btnEnroll"
@@ -463,11 +463,11 @@
                     android:id="@+id/btnEnroll"
                     style="@style/Widget.Material3.Button"
                     android:layout_width="0dp"
-                    android:layout_height="56dp"
-                    android:layout_marginHorizontal="8dp"
+                    android:layout_height="@dimen/button_height_large"
+                    android:layout_marginHorizontal="@dimen/spacing_8"
                     android:text="@string/text_button_enroll_now"
-                    android:textSize="14sp"
-                    app:cornerRadius="28dp"
+                    android:textSize="@dimen/text_size_body_large"
+                    app:cornerRadius="@dimen/spacing_28"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_weight="1.5"

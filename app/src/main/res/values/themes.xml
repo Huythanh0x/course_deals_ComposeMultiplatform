@@ -55,7 +55,7 @@
     </style>
 
     <style name="TextAppearance.CourseDeal.LabelMedium" parent="TextAppearance.Material3.LabelMedium">
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">@dimen/text_size_label_large</item>
     </style>
 
     <style name="Widget.CourseDeal.CircularProgressIndicator" parent="Widget.Material3.CircularProgressIndicator">

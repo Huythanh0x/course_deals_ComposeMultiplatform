@@ -20,12 +20,12 @@
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cvSearchContainer"
             android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginEnd="8dp"
+            android:layout_height="@dimen/search_bar_height"
+            android:layout_marginStart="@dimen/spacing_16"
+            android:layout_marginTop="@dimen/spacing_12"
+            android:layout_marginEnd="@dimen/spacing_8"
             app:cardBackgroundColor="@color/m3_surface_container_high"
-            app:cardCornerRadius="24dp"
+            app:cardCornerRadius="@dimen/corner_radius_large"
             app:cardElevation="0dp"
             app:layout_constraintEnd_toStartOf="@+id/btnFilter"
             app:layout_constraintStart_toStartOf="parent"
@@ -46,9 +46,9 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnFilter"
             style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginEnd="16dp"
+            android:layout_width="@dimen/filter_button_size"
+            android:layout_height="@dimen/filter_button_size"
+            android:layout_marginEnd="@dimen/spacing_16"
             app:icon="@drawable/ic_filter"
             app:layout_constraintBottom_toBottomOf="@+id/cvSearchContainer"
             app:layout_constraintEnd_toEndOf="parent"
@@ -59,8 +59,8 @@
             android:id="@+id/tvStatDeals"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginStart="@dimen/spacing_16"
+            android:layout_marginTop="@dimen/spacing_16"
             android:text="@string/stat_deals"
             android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
             android:textColor="?attr/colorOnSurface"
@@ -72,7 +72,7 @@
             android:id="@+id/tvStatUpdated"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="@dimen/spacing_8"
             android:text="@string/stat_updated"
             android:textAppearance="@style/TextAppearance.Material3.BodySmall"
             android:textColor="?attr/colorOnSurfaceVariant"
@@ -85,7 +85,7 @@
             android:id="@+id/llSecondaryContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
+            android:layout_marginEnd="@dimen/spacing_16"
             android:minWidth="0dp"
             android:minHeight="0dp"
             app:layout_constraintBottom_toBottomOf="@+id/tvStatDeals"
@@ -97,14 +97,14 @@
                 style="@style/Widget.Material3.Button.TonalButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="6dp"
+                android:paddingHorizontal="@dimen/spacing_16"
+                android:paddingVertical="@dimen/spacing_6"
                 android:text="@string/btn_clear"
-                android:textSize="12sp"
+                android:textSize="@dimen/text_size_body_medium"
                 android:textStyle="bold"
                 android:visibility="gone"
                 app:icon="@drawable/ic_close"
-                app:iconSize="16dp"
+                app:iconSize="@dimen/spacing_16"
                 tools:visibility="visible" />
 
             <com.google.android.material.button.MaterialButton
@@ -112,13 +112,13 @@
                 style="@style/Widget.Material3.Button.TonalButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingHorizontal="12dp"
-                android:paddingVertical="6dp"
+                android:paddingHorizontal="@dimen/spacing_12"
+                android:paddingVertical="@dimen/spacing_6"
                 android:text="@string/submit_deal"
-                android:textSize="12sp"
+                android:textSize="@dimen/text_size_body_medium"
                 android:textStyle="bold"
                 app:icon="@drawable/ic_logo_mark"
-                app:iconSize="14dp"
+                app:iconSize="@dimen/spacing_14"
                 tools:visibility="gone" />
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
@@ -126,7 +126,7 @@
             android:id="@+id/srlHome"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="@dimen/spacing_8"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/llSecondaryContainer">
 
@@ -134,9 +134,9 @@
                 android:id="@+id/rvCouponCourse"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginHorizontal="2dp"
+                android:layout_marginHorizontal="@dimen/spacing_2"
                 android:clipToPadding="false"
-                android:paddingBottom="16dp"
+                android:paddingBottom="@dimen/spacing_16"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:spanCount="2"
                 tools:listitem="@layout/coupon_course_item" />
@@ -149,7 +149,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="vertical"
-            android:padding="32dp"
+            android:padding="@dimen/spacing_32"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -158,8 +158,8 @@
             tools:visibility="visible">
 
             <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="80dp"
-                android:layout_height="80dp"
+                android:layout_width="@dimen/empty_state_icon_size"
+                android:layout_height="@dimen/empty_state_icon_size"
                 android:alpha="0.5"
                 android:src="@drawable/ic_search"
                 app:tint="?attr/colorOnSurfaceVariant" />
@@ -167,7 +167,7 @@
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="@dimen/spacing_16"
                 android:gravity="center"
                 android:text="@string/empty_state_message"
                 android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
@@ -178,7 +178,7 @@
                 style="@style/Widget.Material3.Button.TonalButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="@dimen/spacing_24"
                 android:text="@string/btn_reset_filters" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>

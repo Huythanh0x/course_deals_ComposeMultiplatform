@@ -5,14 +5,14 @@
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground"
     android:gravity="center_vertical"
-    android:minHeight="48dp"
+    android:minHeight="@dimen/spacing_48"
     android:orientation="horizontal"
-    android:paddingHorizontal="16dp">
+    android:paddingHorizontal="@dimen/spacing_16">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/ivSuggestionIcon"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="@dimen/icon_size_medium"
+        android:layout_height="@dimen/icon_size_medium"
         android:alpha="0.6"
         android:src="@drawable/ic_search"
         app:tint="?attr/colorOnSurface" />
@@ -21,7 +21,7 @@
         android:id="@android:id/text1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
+        android:layout_marginStart="@dimen/spacing_12"
         android:textAppearance="?attr/textAppearanceBodyLarge"
         android:textColor="?attr/colorOnSurface" />
 
