@@ -9,5 +9,5 @@ data class SearchHistory(
     @PrimaryKey
     val query: String,
     @ColumnInfo(name = "timestamp")
-    val timestamp: Long
+    val timestamp: Long,
 )

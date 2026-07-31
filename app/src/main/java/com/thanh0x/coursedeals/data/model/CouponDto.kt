@@ -46,5 +46,5 @@ data class CouponDto(
     @SerializedName("createdAt")
     val createdAt: Long? = null,
     @SerializedName("updatedAt")
-    val updatedAt: Long? = null
+    val updatedAt: Long? = null,
 )

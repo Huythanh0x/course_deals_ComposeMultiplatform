@@ -1,6 +1,7 @@
 package com.thanh0x.coursedeals.di
 
 import com.thanh0x.coursedeals.data.repository.CouponRepositoryImpl
+import com.thanh0x.coursedeals.data.repository.SearchRepositoryImpl
 import com.thanh0x.coursedeals.data.repository.UserAuthenticationRepositoryImpl
 import com.thanh0x.coursedeals.data.repository.UserProfileRepositoryImpl
 import com.thanh0x.coursedeals.data.source.datastore.LocalAuthenticationDataSourceImpl
@@ -10,6 +11,7 @@ import com.thanh0x.coursedeals.data.source.local.LocalCouponDataSourceImpl
 import com.thanh0x.coursedeals.data.source.remote.RemoteAuthenticationDataSourceImpl
 import com.thanh0x.coursedeals.data.source.remote.RemoteCouponDataSourceImpl
 import com.thanh0x.coursedeals.domain.repository.CouponRepository
+import com.thanh0x.coursedeals.domain.repository.SearchRepository
 import com.thanh0x.coursedeals.domain.repository.UserAuthenticationRepository
 import com.thanh0x.coursedeals.domain.repository.UserProfileRepository
 import com.thanh0x.coursedeals.data.source.LocalCouponDataSource
@@ -38,6 +40,12 @@ abstract class RepositoryModule {
     abstract fun bindCouponRepository(
         impl: CouponRepositoryImpl
     ): CouponRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindSearchRepository(
+        impl: SearchRepositoryImpl
+    ): SearchRepository
 
     @Binds
     @Singleton

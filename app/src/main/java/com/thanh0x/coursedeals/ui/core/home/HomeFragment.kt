@@ -66,7 +66,7 @@ class HomeFragment : BaseFragment() {
         searchAutoComplete.setAdapter(suggestionsAdapter)
         searchAutoComplete.threshold = 0
         searchAutoComplete.setDropDownBackgroundResource(R.drawable.bg_search_suggestion_popup)
-        searchAutoComplete.dropDownVerticalOffset = 8
+        searchAutoComplete.dropDownVerticalOffset = DROPDOWN_VERTICAL_OFFSET
         searchAutoComplete.setOnItemClickListener { parent, _, position, _ ->
             val suggestion = parent.getItemAtPosition(position) as SearchSuggestion
             binding.svCouponCourse.setQuery(suggestion.text, true)
@@ -314,5 +314,9 @@ class HomeFragment : BaseFragment() {
     private fun clearSearchFocus() {
         binding.svCouponCourse.clearFocus()
         hideKeyboard()
+    }
+
+    companion object {
+        private const val DROPDOWN_VERTICAL_OFFSET = 8
     }
 }

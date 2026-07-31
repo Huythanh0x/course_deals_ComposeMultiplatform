@@ -22,5 +22,5 @@ data class Coupon(
     val usesRemaining: Int?,
     val isNew: Boolean?,
     val createdAt: Long? = null,
-    val updatedAt: Long? = null
+    val updatedAt: Long? = null,
 )

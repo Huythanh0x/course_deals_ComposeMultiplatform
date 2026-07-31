@@ -14,7 +14,7 @@ import com.thanh0x.coursedeals.domain.model.FilterData
 
 class FilterBottomSheetDialog(
     private val initialFilter: FilterData,
-    private val onFilterApplied: (FilterData) -> Unit
+    private val onFilterApplied: (FilterData) -> Unit,
 ) : BottomSheetDialogFragment() {
 
     private var _binding: DialogFilterBinding? = null

@@ -27,7 +27,7 @@ fun CouponDto.toDomain(): CouponDomain {
         usesRemaining = usesRemaining,
         isNew = isNew,
         createdAt = createdAt,
-        updatedAt = updatedAt
+        updatedAt = updatedAt,
     )
 }
 
@@ -54,7 +54,7 @@ fun CouponDto.toEntity(): CouponEntity {
         usesRemaining = usesRemaining,
         isNew = isNew,
         createdAt = createdAt,
-        updatedAt = updatedAt
+        updatedAt = updatedAt,
     )
 }
 
@@ -81,7 +81,7 @@ fun CouponEntity.toDomain(): CouponDomain {
         usesRemaining = usesRemaining,
         isNew = isNew,
         createdAt = createdAt,
-        updatedAt = updatedAt
+        updatedAt = updatedAt,
     )
 }
 
@@ -108,6 +108,6 @@ fun CouponDomain.toEntity(): CouponEntity {
         usesRemaining = usesRemaining,
         isNew = isNew,
         createdAt = createdAt,
-        updatedAt = updatedAt
+        updatedAt = updatedAt,
     )
 }

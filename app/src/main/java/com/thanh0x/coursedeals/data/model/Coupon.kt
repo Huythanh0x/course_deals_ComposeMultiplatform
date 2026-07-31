@@ -75,5 +75,5 @@ data class Coupon(
     val createdAt: Long? = null,
 
     @ColumnInfo(name = "updated_at")
-    val updatedAt: Long? = null
+    val updatedAt: Long? = null,
 ) : Parcelable

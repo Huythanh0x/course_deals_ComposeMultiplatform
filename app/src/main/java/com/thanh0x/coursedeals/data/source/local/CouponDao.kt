@@ -26,7 +26,7 @@ interface CouponDao {
 
     @Query(
         "SELECT * FROM ${Constant.COUPON_TABLE_NAME} " +
-            "WHERE LOWER(title) LIKE '%' || :searchQuery || '%' ORDER BY created_at DESC"
+            "WHERE LOWER(title) LIKE '%' || :searchQuery || '%' ORDER BY created_at DESC",
     )
     fun queryCouponByName(searchQuery: String): PagingSource<Int, Coupon>
 

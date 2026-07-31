@@ -9,6 +9,7 @@ import com.thanh0x.coursedeals.domain.model.FilterData
 import com.thanh0x.coursedeals.domain.model.SearchSuggestion
 import com.thanh0x.coursedeals.domain.model.SuggestionType
 import com.thanh0x.coursedeals.domain.repository.CouponRepository
+import com.thanh0x.coursedeals.domain.repository.SearchRepository
 import com.thanh0x.coursedeals.ui.base.UiEvent
 import com.thanh0x.coursedeals.util.NetworkUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,6 +34,7 @@ import kotlin.time.Duration.Companion.milliseconds
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val couponRepository: CouponRepository,
+    private val searchRepository: SearchRepository,
     private val networkUtil: NetworkUtil,
 ) : ViewModel() {
 
@@ -63,22 +65,22 @@ class HomeViewModel @Inject constructor(
             uiState
                 .map { it.query }
                 .distinctUntilChanged()
-                .debounce(300.milliseconds)
+                .debounce(DEBOUNCE_MS.milliseconds)
                 .collectLatest { query ->
                     val history: List<SearchSuggestion>
                     val keywords: List<SearchSuggestion>
 
                     if (query.isBlank()) {
-                        history = couponRepository.getRecentSearches().map {
+                        history = searchRepository.getRecentSearches().map {
                             SearchSuggestion(it, SuggestionType.HISTORY)
                         }
                         keywords = emptyList()
                     } else {
-                        history = couponRepository.getMatchingHistory(query).map {
+                        history = searchRepository.getMatchingHistory(query).map {
                             SearchSuggestion(it, SuggestionType.HISTORY)
                         }
-                        keywords = if (query.length >= 2) {
-                            couponRepository.getSearchSuggestions(query).map {
+                        keywords = if (query.length >= MIN_QUERY_LENGTH) {
+                            searchRepository.getSearchSuggestions(query).map {
                                 SearchSuggestion(it, SuggestionType.KEYWORD)
                             }
                         } else {
@@ -89,7 +91,7 @@ class HomeViewModel @Inject constructor(
                     // Combine, prioritize history, remove duplicates by text
                     val combined = (history + keywords).asSequence()
                         .distinctBy { it.text }
-                        .take(10)
+                        .take(MAX_SUGGESTIONS)
                         .toList()
                     _uiState.update { it.copy(suggestions = combined) }
                 }
@@ -164,7 +166,7 @@ class HomeViewModel @Inject constructor(
         _uiState.update {
             it.copy(
                 query = "",
-                filter = FilterData()
+                filter = FilterData(),
             )
         }
     }
@@ -180,11 +182,17 @@ class HomeViewModel @Inject constructor(
 
     fun onSearchSubmitted(query: String) {
         viewModelScope.launch {
-            couponRepository.saveSearchQuery(query)
+            searchRepository.saveSearchQuery(query)
         }
     }
 
     fun updateFilter(filter: FilterData) {
         _uiState.update { it.copy(filter = filter) }
+    }
+
+    companion object {
+        private const val DEBOUNCE_MS = 300L
+        private const val MIN_QUERY_LENGTH = 2
+        private const val MAX_SUGGESTIONS = 10
     }
 }
