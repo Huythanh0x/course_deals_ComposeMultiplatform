@@ -20,7 +20,8 @@
         <activity
             android:name=".MainActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustPan" />
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="fullSensor"/>
         <activity
             android:name=".ui.enroll.CouponEnrollActivity"
             android:exported="false" />

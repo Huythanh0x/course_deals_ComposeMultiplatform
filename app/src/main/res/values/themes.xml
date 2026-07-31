@@ -27,6 +27,7 @@
 
         <!-- Component Styles -->
         <item name="bottomNavigationStyle">@style/Widget.CourseDeal.BottomNavigationView</item>
+        <item name="navigationRailStyle">@style/Widget.CourseDeal.NavigationRailView</item>
         <item name="materialCardViewStyle">@style/Widget.Material3.CardView.Elevated</item>
 
         <!-- Shape mapping -->
@@ -52,6 +53,12 @@
     <style name="Widget.CourseDeal.BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
         <item name="itemTextAppearanceActive">@style/TextAppearance.CourseDeal.LabelMedium</item>
         <item name="itemTextAppearanceInactive">@style/TextAppearance.CourseDeal.LabelMedium</item>
+    </style>
+
+    <style name="Widget.CourseDeal.NavigationRailView" parent="Widget.Material3.NavigationRailView">
+        <item name="itemTextAppearanceActive">@style/TextAppearance.CourseDeal.LabelMedium</item>
+        <item name="itemTextAppearanceInactive">@style/TextAppearance.CourseDeal.LabelMedium</item>
+        <item name="menuGravity">center</item>
     </style>
 
     <style name="TextAppearance.CourseDeal.LabelMedium" parent="TextAppearance.Material3.LabelMedium">

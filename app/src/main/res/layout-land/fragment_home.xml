@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clHomeRoot"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/m3_surface_container_low"
+        android:clickable="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+
+        <!-- Header Row 1: Search & Filter -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cvSearchContainer"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/search_bar_height"
+            android:layout_marginStart="@dimen/spacing_16"
+            android:layout_marginTop="@dimen/spacing_8"
+            android:layout_marginEnd="@dimen/spacing_8"
+            app:cardBackgroundColor="@color/m3_surface_container_high"
+            app:cardCornerRadius="@dimen/corner_radius_large"
+            app:cardElevation="0dp"
+            app:layout_constraintEnd_toStartOf="@+id/flFilterContainer"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:strokeWidth="0dp">
+
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/svCouponCourse"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:iconifiedByDefault="false"
+                app:queryBackground="@android:color/transparent"
+                app:queryHint="@string/search_here_hint_search"
+                app:searchIcon="@drawable/ic_search" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <FrameLayout
+            android:id="@+id/flFilterContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/spacing_16"
+            app:layout_constraintBottom_toBottomOf="@+id/cvSearchContainer"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/cvSearchContainer">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnFilter"
+                style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+                android:layout_width="@dimen/filter_button_size"
+                android:layout_height="@dimen/filter_button_size"
+                app:icon="@drawable/ic_filter" />
+
+            <View
+                android:id="@+id/vFilterBadge"
+                android:layout_width="@dimen/spacing_10"
+                android:layout_height="@dimen/spacing_10"
+                android:layout_gravity="top|end"
+                android:layout_marginTop="@dimen/spacing_6"
+                android:layout_marginEnd="@dimen/spacing_6"
+                android:background="@drawable/bg_filter_badge"
+                android:visibility="gone"
+                tools:visibility="visible" />
+        </FrameLayout>
+
+        <!-- Header Row 2: Stats & Submit (Pinned to the sides) -->
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvStatDeals"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_16"
+            android:layout_marginTop="@dimen/spacing_8"
+            android:text="@string/stat_deals"
+            android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+            android:textColor="?attr/colorOnSurface"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cvSearchContainer"
+            tools:text="128 deals" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvStatUpdated"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_8"
+            android:text="@string/stat_updated"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            app:layout_constraintBottom_toBottomOf="@+id/tvStatDeals"
+            app:layout_constraintStart_toEndOf="@+id/tvStatDeals"
+            app:layout_constraintTop_toTopOf="@+id/tvStatDeals"
+            tools:text="Updated 2h ago" />
+
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:id="@+id/llSecondaryContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/spacing_16"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            app:layout_constraintBottom_toBottomOf="@+id/tvStatDeals"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tvStatDeals">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnClearFilters"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="@dimen/spacing_16"
+                android:paddingVertical="@dimen/spacing_6"
+                android:text="@string/btn_clear"
+                android:textSize="@dimen/text_size_body_medium"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:icon="@drawable/ic_close"
+                app:iconSize="@dimen/spacing_16"
+                tools:visibility="visible" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSubmitDeal"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="@dimen/spacing_12"
+                android:paddingVertical="@dimen/spacing_6"
+                android:text="@string/submit_deal"
+                android:textSize="@dimen/text_size_body_medium"
+                android:textStyle="bold"
+                app:icon="@drawable/ic_logo_mark"
+                app:iconSize="@dimen/spacing_14"
+                tools:visibility="gone" />
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/srlHome"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/spacing_4"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/llSecondaryContainer">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvCouponCourse"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="@dimen/spacing_2"
+                android:clipToPadding="false"
+                android:paddingBottom="@dimen/spacing_16"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:spanCount="3"
+                tools:listitem="@layout/coupon_course_item" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <!-- Empty State View -->
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/llEmptyState"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_16"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/srlHome"
+            tools:visibility="visible">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="@dimen/empty_state_icon_size"
+                android:layout_height="@dimen/empty_state_icon_size"
+                android:alpha="0.5"
+                android:src="@drawable/ic_search"
+                app:tint="?attr/colorOnSurfaceVariant" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_8"
+                android:gravity="center"
+                android:text="@string/empty_state_message"
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                android:textColor="?attr/colorOnSurfaceVariant" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnResetFilters"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_16"
+                android:text="@string/btn_reset_filters" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/pbHome"
+            style="@style/Widget.CourseDeal.CircularProgressIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/lpiLoadPreviousPage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/lpiLoadNextPage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
