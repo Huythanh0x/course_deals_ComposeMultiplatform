@@ -78,6 +78,7 @@
     <string name="stat_fetched">· Fetched %1$s</string>
     <string name="empty_state_message">No courses matching your criteria</string>
     <string name="btn_reset_filters">Reset Filters</string>
+    <string name="btn_clear">Clear</string>
     <string name="fav_cats_title">Favorite Categories</string>
     <string name="fav_kws_title">Favorite Keywords</string>
     <string name="kw_hint">Add keyword</string>

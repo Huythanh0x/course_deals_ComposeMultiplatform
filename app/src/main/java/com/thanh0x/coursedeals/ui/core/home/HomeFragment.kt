@@ -66,6 +66,9 @@ class HomeFragment : BaseFragment() {
         binding.srlHome.setOnRefreshListener {
             homeViewModel.refreshCoupons()
         }
+        binding.btnClearFilters.setOnClickListener {
+            homeViewModel.resetFilters()
+        }
         binding.btnResetFilters.setOnClickListener {
             homeViewModel.resetFilters()
         }
@@ -129,6 +132,7 @@ class HomeFragment : BaseFragment() {
         )
 
         binding.tvStatUpdated.isVisible = !isFiltered
+        binding.btnClearFilters.isVisible = isFiltered
 
         binding.srlHome.isRefreshing = state.isSyncing
         binding.llEmptyState.isVisible = state.isEmptyState

@@ -77,6 +77,26 @@
             app:layout_constraintTop_toTopOf="@+id/tvStatDeals"
             tools:text="Updated 2h ago" />
 
+        <Button
+            android:id="@+id/btnClearFilters"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_marginStart="8dp"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="2dp"
+            android:text="@string/btn_clear"
+            android:textSize="11sp"
+            android:textAlignment="center"
+            android:visibility="gone"
+            app:cornerRadius="16dp"
+            app:icon="@drawable/ic_close"
+            app:iconSize="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/tvStatDeals"
+            app:layout_constraintStart_toEndOf="@+id/tvStatDeals"
+            app:layout_constraintTop_toTopOf="@+id/tvStatDeals"
+            tools:visibility="visible" />
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSubmitDeal"
             style="@style/Widget.Material3.Button.TonalButton"
