@@ -13,7 +13,7 @@ import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.DialogSubmitDealBinding
 import com.thanh0x.coursedeals.ui.base.BaseBottomSheetDialog
 
-class SubmitDealBottomSheet : BaseBottomSheetDialog() {
+class SubmitDealBottomSheet() : BaseBottomSheetDialog() {
 
     private var _binding: DialogSubmitDealBinding? = null
     private val binding get() = _binding!!
@@ -30,9 +30,11 @@ class SubmitDealBottomSheet : BaseBottomSheetDialog() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.tietUrl.requestFocus()
-        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.showSoftInput(binding.tietUrl, InputMethodManager.SHOW_IMPLICIT)
+        binding.tietUrl.post {
+            binding.tietUrl.requestFocus()
+            val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(binding.tietUrl, InputMethodManager.SHOW_IMPLICIT)
+        }
 
         binding.btnCancel.setOnClickListener {
             dismiss()
@@ -53,6 +55,7 @@ class SubmitDealBottomSheet : BaseBottomSheetDialog() {
     }
 
     private fun validateAndSubmit() {
+        binding.tietUrl.clearFocus()
         hideKeyboard()
         val url = binding.tietUrl.text.toString().trim()
         if (url.isEmpty()) {

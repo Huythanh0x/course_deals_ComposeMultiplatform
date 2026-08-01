@@ -17,7 +17,9 @@ abstract class BaseBottomSheetDialog : BottomSheetDialogFragment() {
     fun hideKeyboard() {
         val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
         val view = dialog?.currentFocus ?: view
-        imm?.hideSoftInputFromWindow(view?.windowToken, 0)
+        view?.let {
+            imm?.hideSoftInputFromWindow(it.windowToken, 0)
+        }
     }
 
     private fun setupBottomSheetBehavior() {

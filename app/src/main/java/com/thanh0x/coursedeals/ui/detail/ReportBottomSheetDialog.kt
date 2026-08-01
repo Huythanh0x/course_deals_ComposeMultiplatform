@@ -8,12 +8,13 @@ import android.view.inputmethod.EditorInfo
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
+import com.google.android.material.chip.Chip
 import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.DialogReportBinding
 import com.thanh0x.coursedeals.ui.base.BaseBottomSheetDialog
 import com.thanh0x.coursedeals.ui.customview.SelectableChipView
 
-class ReportBottomSheetDialog : BaseBottomSheetDialog() {
+class ReportBottomSheetDialog() : BaseBottomSheetDialog() {
 
     private var _binding: DialogReportBinding? = null
     private val binding get() = _binding!!
@@ -90,6 +91,7 @@ class ReportBottomSheetDialog : BaseBottomSheetDialog() {
     }
 
     private fun validateAndSubmit() {
+        binding.tietOtherReason.clearFocus()
         hideKeyboard()
         if (selectedReason == null) {
             return

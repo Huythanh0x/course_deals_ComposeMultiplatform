@@ -12,7 +12,7 @@ import com.thanh0x.coursedeals.domain.model.CourseCategory
 import com.thanh0x.coursedeals.ui.base.BaseBottomSheetDialog
 import com.thanh0x.coursedeals.ui.customview.SelectableChipView
 
-class CategoryPickerDialog : BaseBottomSheetDialog() {
+class CategoryPickerDialog() : BaseBottomSheetDialog() {
 
     private var _binding: DialogCategoryPickerBinding? = null
     private val binding get() = _binding!!

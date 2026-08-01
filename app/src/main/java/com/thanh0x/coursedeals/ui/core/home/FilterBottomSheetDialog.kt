@@ -15,7 +15,7 @@ import com.thanh0x.coursedeals.domain.model.SortOption
 import com.thanh0x.coursedeals.ui.base.BaseBottomSheetDialog
 import com.thanh0x.coursedeals.ui.customview.SelectableChipView
 
-class FilterBottomSheetDialog : BaseBottomSheetDialog() {
+class FilterBottomSheetDialog() : BaseBottomSheetDialog() {
 
     private var _binding: DialogFilterBinding? = null
     private val binding get() = _binding!!
