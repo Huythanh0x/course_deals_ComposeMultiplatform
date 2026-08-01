@@ -3,7 +3,7 @@ package com.thanh0x.coursedeals.di
 import android.content.Context
 import androidx.room.Room
 import com.thanh0x.coursedeals.data.source.local.CouponDatabase
-import com.thanh0x.coursedeals.util.Constant
+import com.thanh0x.coursedeals.core.common.Constant
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

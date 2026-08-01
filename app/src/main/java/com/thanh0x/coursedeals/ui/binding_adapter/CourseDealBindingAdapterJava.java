@@ -4,7 +4,7 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import androidx.databinding.BindingAdapter;
-import com.thanh0x.coursedeals.R;
+import com.thanh0x.coursedeals.core.ui.R;
 import com.thanh0x.coursedeals.util.MapperToView;
 import com.squareup.picasso.Picasso;
 

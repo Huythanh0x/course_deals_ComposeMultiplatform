@@ -4,10 +4,10 @@ import androidx.paging.PagingSource
 import androidx.sqlite.db.SimpleSQLiteQuery
 import com.thanh0x.coursedeals.data.model.Coupon
 import com.thanh0x.coursedeals.data.source.LocalCouponDataSource
-import com.thanh0x.coursedeals.domain.model.CourseLanguage
-import com.thanh0x.coursedeals.domain.model.FilterData
-import com.thanh0x.coursedeals.domain.model.SortOption
-import com.thanh0x.coursedeals.util.Constant
+import com.thanh0x.coursedeals.domain.coupons.CourseLanguage
+import com.thanh0x.coursedeals.domain.coupons.FilterData
+import com.thanh0x.coursedeals.domain.coupons.SortOption
+import com.thanh0x.coursedeals.core.common.Constant
 import javax.inject.Inject
 
 class LocalCouponDataSourceImpl @Inject constructor(private val couponDao: CouponDao) :

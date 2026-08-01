@@ -1,6 +1,6 @@
 package com.thanh0x.coursedeals.ui.detail
 
-import com.thanh0x.coursedeals.domain.model.Coupon
+import com.thanh0x.coursedeals.domain.coupons.Coupon
 
 data class CouponDetailUiState(
     val isLoading: Boolean = false,

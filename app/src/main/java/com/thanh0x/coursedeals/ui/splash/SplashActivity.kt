@@ -5,11 +5,12 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
+import com.thanh0x.coursedeals.core.ui.R as CoreR
 import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.ActivitySplashBinding
-import com.thanh0x.coursedeals.ui.base.BaseActivity
+import com.thanh0x.coursedeals.core.ui.BaseActivity
 import com.thanh0x.coursedeals.ui.login.LoginActivity
-import com.thanh0x.coursedeals.util.Constant
+import com.thanh0x.coursedeals.core.common.Constant
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -21,7 +22,7 @@ import kotlin.time.Duration.Companion.milliseconds
 class SplashActivity : BaseActivity() {
     lateinit var binding: ActivitySplashBinding
     private val startedTime = System.currentTimeMillis()
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_splash)

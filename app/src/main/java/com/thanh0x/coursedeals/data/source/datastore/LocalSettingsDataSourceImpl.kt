@@ -5,7 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import com.thanh0x.coursedeals.domain.source.LocalSettingsDataSource
-import com.thanh0x.coursedeals.util.Constant
+import com.thanh0x.coursedeals.core.common.Constant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject

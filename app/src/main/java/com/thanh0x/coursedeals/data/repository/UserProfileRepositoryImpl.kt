@@ -1,8 +1,8 @@
 package com.thanh0x.coursedeals.data.repository
 
-import com.thanh0x.coursedeals.domain.model.AppResult
-import com.thanh0x.coursedeals.domain.model.UserPreferences
-import com.thanh0x.coursedeals.domain.repository.UserProfileRepository
+import com.thanh0x.coursedeals.core.common.AppResult
+import com.thanh0x.coursedeals.domain.user.UserPreferences
+import com.thanh0x.coursedeals.domain.user.UserProfileRepository
 import com.thanh0x.coursedeals.domain.source.LocalUserProfileDataSource
 import com.thanh0x.coursedeals.domain.source.RemoteUserProfileDataSource
 import javax.inject.Inject

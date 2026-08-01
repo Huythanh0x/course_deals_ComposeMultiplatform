@@ -2,8 +2,8 @@ package com.thanh0x.coursedeals.data.source.remote
 
 import com.thanh0x.coursedeals.data.model.toDomain
 import com.thanh0x.coursedeals.data.model.toDto
-import com.thanh0x.coursedeals.domain.model.AppResult
-import com.thanh0x.coursedeals.domain.model.UserPreferences
+import com.thanh0x.coursedeals.core.common.AppResult
+import com.thanh0x.coursedeals.domain.user.UserPreferences
 import com.thanh0x.coursedeals.domain.source.RemoteUserProfileDataSource
 import timber.log.Timber
 import javax.inject.Inject

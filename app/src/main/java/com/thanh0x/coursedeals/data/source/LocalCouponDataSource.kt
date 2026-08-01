@@ -2,7 +2,7 @@ package com.thanh0x.coursedeals.data.source
 
 import androidx.paging.PagingSource
 import com.thanh0x.coursedeals.data.model.Coupon
-import com.thanh0x.coursedeals.domain.model.FilterData
+import com.thanh0x.coursedeals.domain.coupons.FilterData
 
 interface LocalCouponDataSource {
     suspend fun getAllCoupons(): List<Coupon>

@@ -7,7 +7,7 @@ import androidx.navigation.Navigation
 import androidx.navigation.ui.NavigationUI
 import com.google.android.material.navigation.NavigationBarView
 import com.thanh0x.coursedeals.databinding.ActivityMainBinding
-import com.thanh0x.coursedeals.ui.base.BaseActivity
+import com.thanh0x.coursedeals.core.ui.BaseActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

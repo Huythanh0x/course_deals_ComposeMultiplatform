@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <declare-styleable name="SelectableChipView">
-        <attr name="chipText" format="string" />
-        <attr name="chipHeight" format="dimension" />
-        <attr name="android:checked" />
-    </declare-styleable>
-</resources>

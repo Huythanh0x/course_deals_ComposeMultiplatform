@@ -9,10 +9,10 @@ import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.fragment.app.viewModels
-import com.thanh0x.coursedeals.R
+import com.thanh0x.coursedeals.core.ui.R
 import com.thanh0x.coursedeals.databinding.FragmentCourseBinding
-import com.thanh0x.coursedeals.ui.base.BaseFragment
-import com.thanh0x.coursedeals.util.Constant
+import com.thanh0x.coursedeals.core.ui.BaseFragment
+import com.thanh0x.coursedeals.core.common.Constant
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -20,7 +20,7 @@ class CourseFragment : BaseFragment() {
     private var _binding: FragmentCourseBinding? = null
     val binding get() = _binding!!
     private val courseViewModel: CourseViewModel by viewModels()
-    
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {

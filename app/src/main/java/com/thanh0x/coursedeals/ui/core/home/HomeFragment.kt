@@ -14,14 +14,15 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.paging.LoadState
+import com.thanh0x.coursedeals.core.ui.R as CoreR
 import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.FragmentHomeBinding
-import com.thanh0x.coursedeals.domain.model.CourseLanguage
-import com.thanh0x.coursedeals.domain.model.FilterData
-import com.thanh0x.coursedeals.domain.model.SearchSuggestion
-import com.thanh0x.coursedeals.domain.model.SortOption
-import com.thanh0x.coursedeals.domain.model.SuggestionType
-import com.thanh0x.coursedeals.ui.base.BaseFragment
+import com.thanh0x.coursedeals.domain.coupons.CourseLanguage
+import com.thanh0x.coursedeals.domain.coupons.FilterData
+import com.thanh0x.coursedeals.domain.coupons.SearchSuggestion
+import com.thanh0x.coursedeals.domain.coupons.SortOption
+import com.thanh0x.coursedeals.domain.coupons.SuggestionType
+import com.thanh0x.coursedeals.core.ui.BaseFragment
 import com.thanh0x.coursedeals.ui.detail.CouponDetailActivity
 import com.thanh0x.coursedeals.util.BundleKey
 import com.thanh0x.coursedeals.util.MapperToView
@@ -75,8 +76,8 @@ class HomeFragment : BaseFragment() {
             val url = bundle.getString(SubmitDealBottomSheet.EXTRA_COUPON_URL)
             url?.let {
                 showAlertDialog(
-                    getString(R.string.submit_deal_title),
-                    getString(R.string.submit_success_msg),
+                    getString(CoreR.string.submit_deal_title),
+                    getString(CoreR.string.submit_success_msg),
                 )
             }
         }
@@ -88,13 +89,13 @@ class HomeFragment : BaseFragment() {
         )
         suggestionsAdapter = NoFilterArrayAdapter(
             requireContext(),
-            R.layout.item_search_suggestion,
+            CoreR.layout.item_search_suggestion,
             android.R.id.text1,
             mutableListOf(),
         )
         searchAutoComplete.setAdapter(suggestionsAdapter)
         searchAutoComplete.threshold = 0
-        searchAutoComplete.setDropDownBackgroundResource(R.drawable.bg_search_suggestion_popup)
+        searchAutoComplete.setDropDownBackgroundResource(CoreR.drawable.bg_search_suggestion_popup)
         searchAutoComplete.dropDownVerticalOffset = DROPDOWN_VERTICAL_OFFSET
         searchAutoComplete.setOnItemClickListener { parent, _, position, _ ->
             val suggestion = parent.getItemAtPosition(position) as SearchSuggestion
@@ -178,8 +179,8 @@ class HomeFragment : BaseFragment() {
     private fun handleUiState(state: HomeUiState) {
         if (!state.isInternetAvailable) {
             showAlertDialog(
-                getString(R.string.fetch_error_title),
-                getString(R.string.no_internet_message),
+                getString(CoreR.string.fetch_error_title),
+                getString(CoreR.string.no_internet_message),
             )
         }
 
@@ -205,9 +206,9 @@ class HomeFragment : BaseFragment() {
         val mapper = MapperToView(requireContext())
 
         binding.tvStatDeals.text = if (isFiltered) {
-            getString(R.string.stat_matching_deals, state.matchingDeals, state.statDeals)
+            getString(CoreR.string.stat_matching_deals, state.matchingDeals, state.statDeals)
         } else {
-            getString(R.string.stat_deals, state.statDeals)
+            getString(CoreR.string.stat_deals, state.statDeals)
         }
 
         val timestamp = if (state.showLocalFetchTime) {
@@ -217,9 +218,9 @@ class HomeFragment : BaseFragment() {
         }
 
         val labelResId = if (state.showLocalFetchTime) {
-            R.string.stat_fetched
+            CoreR.string.stat_fetched
         } else {
-            R.string.stat_updated
+            CoreR.string.stat_updated
         }
 
         binding.tvStatUpdated.text = getString(
@@ -276,8 +277,8 @@ class HomeFragment : BaseFragment() {
 
             errorState?.let {
                 showAlertDialog(
-                    getString(R.string.fetch_error_title),
-                    it.error.localizedMessage ?: getString(R.string.error_fetching_null_coupon),
+                    getString(CoreR.string.fetch_error_title),
+                    it.error.localizedMessage ?: getString(CoreR.string.error_fetching_null_coupon),
                 )
             }
         }
@@ -298,14 +299,14 @@ class HomeFragment : BaseFragment() {
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
             val view = super.getView(position, convertView, parent)
             val suggestion = getItem(position)
-            val iconView = view.findViewById<ImageView>(R.id.ivSuggestionIcon)
+            val iconView = view.findViewById<ImageView>(CoreR.id.ivSuggestionIcon)
             val textView = view.findViewById<TextView>(android.R.id.text1)
 
             suggestion?.let {
                 textView.text = it.text
                 val iconRes = when (it.type) {
-                    SuggestionType.HISTORY -> R.drawable.ic_clock
-                    SuggestionType.KEYWORD -> R.drawable.ic_search
+                    SuggestionType.HISTORY -> CoreR.drawable.ic_clock
+                    SuggestionType.KEYWORD -> CoreR.drawable.ic_search
                 }
                 iconView.setImageResource(iconRes)
             }

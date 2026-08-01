@@ -2,8 +2,11 @@ package com.thanh0x.coursedeals.ui.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.thanh0x.coursedeals.domain.model.AppResult
-import com.thanh0x.coursedeals.domain.usecase.remotecoupon.FetchCouponDetailUseCase
+import com.thanh0x.coursedeals.core.common.AppResult
+import com.thanh0x.coursedeals.domain.coupons.Coupon
+import com.thanh0x.coursedeals.domain.coupons.CouponRepository
+import com.thanh0x.coursedeals.domain.coupons.usecase.FetchCouponDetailUseCase
+import com.thanh0x.coursedeals.core.ui.UiEvent
 import com.thanh0x.coursedeals.util.NetworkUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -21,13 +24,13 @@ class CouponDetailViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(CouponDetailUiState())
     val uiState = _uiState.asStateFlow()
-    
+
     fun fetchCouponDetail(courseId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.update { it.copy(isLoading = true, error = null) }
             val result = fetchCouponDetailUseCase(courseId)
             _uiState.update { it.copy(isLoading = false) }
-            
+
             when (result) {
                 is AppResult.Success -> {
                     _uiState.update { it.copy(coupon = result.data) }

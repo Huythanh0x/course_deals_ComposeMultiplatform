@@ -3,7 +3,7 @@ package com.thanh0x.coursedeals.data.repository
 import com.thanh0x.coursedeals.data.model.SearchHistory
 import com.thanh0x.coursedeals.data.source.LocalCouponDataSource
 import com.thanh0x.coursedeals.data.source.local.CouponDatabase
-import com.thanh0x.coursedeals.domain.repository.SearchRepository
+import com.thanh0x.coursedeals.domain.coupons.SearchRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

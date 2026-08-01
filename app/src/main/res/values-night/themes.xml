@@ -1,9 +1,3 @@
 <resources>
-    <!-- Dark theme overrides if any (otherwise it uses Base.Theme.CourseDeals from values/themes.xml) -->
     <style name="Theme.CourseDeals" parent="Base.Theme.CourseDeals" />
-
-    <style name="rating_bar" parent="Theme.AppCompat">
-        <item name="colorControlNormal">@color/grey</item>
-        <item name="colorControlActivated">@color/golden</item>
-    </style>
 </resources>

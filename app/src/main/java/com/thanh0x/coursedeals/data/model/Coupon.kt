@@ -4,7 +4,7 @@ import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.thanh0x.coursedeals.util.Constant
+import com.thanh0x.coursedeals.core.common.Constant
 import kotlinx.parcelize.Parcelize
 
 @Entity(Constant.COUPON_TABLE_NAME)

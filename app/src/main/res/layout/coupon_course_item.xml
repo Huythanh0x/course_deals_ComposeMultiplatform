@@ -7,7 +7,7 @@
 
         <variable
             name="coupon"
-            type="com.thanh0x.coursedeals.domain.model.Coupon" />
+            type="com.thanh0x.coursedeals.domain.coupons.Coupon" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

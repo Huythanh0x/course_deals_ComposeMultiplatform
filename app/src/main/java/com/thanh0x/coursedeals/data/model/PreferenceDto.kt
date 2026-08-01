@@ -1,7 +1,7 @@
 package com.thanh0x.coursedeals.data.model
 
 import com.google.gson.annotations.SerializedName
-import com.thanh0x.coursedeals.domain.model.UserPreferences
+import com.thanh0x.coursedeals.domain.user.UserPreferences
 
 data class PreferenceDto(
     @SerializedName("categories")

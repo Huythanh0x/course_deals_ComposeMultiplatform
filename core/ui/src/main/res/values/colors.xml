@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Material 3 Color Roles (Light) -->
+    <color name="m3_primary">#0B57D0</color>
+    <color name="m3_on_primary">#FFFFFF</color>
+    <color name="m3_primary_container">#D3E3FD</color>
+    <color name="m3_on_primary_container">#041E49</color>
+
+    <color name="m3_tertiary_container">#FFD8E4</color>
+    <color name="m3_on_tertiary_container">#31111D</color>
+
+    <color name="m3_surface">#FDFCFF</color>
+    <color name="m3_surface_container_low">#F7F9FF</color>
+    <color name="m3_surface_container">#F1F3FB</color>
+    <color name="m3_surface_container_high">#EBEDF6</color>
+
+    <color name="m3_on_surface">#1A1C1E</color>
+    <color name="m3_on_surface_variant">#44474E</color>
+
+    <color name="m3_outline">#74777F</color>
+    <color name="m3_outline_variant">#C4C6D0</color>
+
+    <color name="m3_error_container">#FFDAD6</color>
+    <color name="m3_on_error_container">#410002</color>
+
+    <!-- Semantic & Component Colors -->
+    <color name="rating_amber">#E8A33D</color>
+
+    <!-- Legacy / Compatibility Colors (mapped to M3) -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="grey">@color/m3_outline</color>
+    <color name="golden">@color/rating_amber</color>
+</resources>

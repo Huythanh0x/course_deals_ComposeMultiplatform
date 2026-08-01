@@ -6,14 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
+import com.thanh0x.coursedeals.core.ui.R as CoreR
 import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.DialogFilterBinding
-import com.thanh0x.coursedeals.domain.model.CourseCategory
-import com.thanh0x.coursedeals.domain.model.CourseLanguage
-import com.thanh0x.coursedeals.domain.model.FilterData
-import com.thanh0x.coursedeals.domain.model.SortOption
-import com.thanh0x.coursedeals.ui.base.BaseBottomSheetDialog
-import com.thanh0x.coursedeals.ui.customview.SelectableChipView
+import com.thanh0x.coursedeals.domain.coupons.CourseCategory
+import com.thanh0x.coursedeals.domain.coupons.CourseLanguage
+import com.thanh0x.coursedeals.domain.coupons.FilterData
+import com.thanh0x.coursedeals.domain.coupons.SortOption
+import com.thanh0x.coursedeals.core.ui.BaseBottomSheetDialog
+import com.thanh0x.coursedeals.core.ui.SelectableChipView
 
 class FilterBottomSheetDialog() : BaseBottomSheetDialog() {
 
@@ -72,9 +73,9 @@ class FilterBottomSheetDialog() : BaseBottomSheetDialog() {
         binding.sliderRating.setLabelFormatter { value ->
             val rating = sliderToRating(value)
             if (rating > 0.0) {
-                getString(R.string.filter_rating_format, rating)
+                getString(CoreR.string.filter_rating_format, rating)
             } else {
-                getString(R.string.filter_rating_any)
+                getString(CoreR.string.filter_rating_any)
             }
         }
 
@@ -104,9 +105,9 @@ class FilterBottomSheetDialog() : BaseBottomSheetDialog() {
 
     private fun updateRatingLabel(rating: Double) {
         binding.tvCurrentRating.text = if (rating > 0.0) {
-            getString(R.string.filter_rating_format, rating)
+            getString(CoreR.string.filter_rating_format, rating)
         } else {
-            getString(R.string.filter_rating_any)
+            getString(CoreR.string.filter_rating_any)
         }
     }
 
@@ -114,7 +115,7 @@ class FilterBottomSheetDialog() : BaseBottomSheetDialog() {
         CourseCategory.entries.forEach { category ->
             val chipView = SelectableChipView(requireContext()).apply {
                 setText(getString(category.displayResId))
-                setChipHeight(resources.getDimensionPixelSize(R.dimen.spacing_32))
+                setChipHeight(resources.getDimensionPixelSize(CoreR.dimen.spacing_32))
 
                 // Wrap content for horizontal ChipGroup flow
                 layoutParams = ViewGroup.LayoutParams(
@@ -139,7 +140,7 @@ class FilterBottomSheetDialog() : BaseBottomSheetDialog() {
         CourseLanguage.entries.forEach { language ->
             val chipView = SelectableChipView(requireContext()).apply {
                 setText(getString(language.displayResId))
-                setChipHeight(resources.getDimensionPixelSize(R.dimen.spacing_32))
+                setChipHeight(resources.getDimensionPixelSize(CoreR.dimen.spacing_32))
 
                 layoutParams = ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -161,7 +162,7 @@ class FilterBottomSheetDialog() : BaseBottomSheetDialog() {
         SortOption.entries.forEach { option ->
             val chipView = SelectableChipView(requireContext()).apply {
                 setText(getString(option.displayResId))
-                setChipHeight(resources.getDimensionPixelSize(R.dimen.spacing_32))
+                setChipHeight(resources.getDimensionPixelSize(CoreR.dimen.spacing_32))
 
                 layoutParams = ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.WRAP_CONTENT,

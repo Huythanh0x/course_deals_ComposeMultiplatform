@@ -5,9 +5,9 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import com.thanh0x.coursedeals.R
+import com.thanh0x.coursedeals.core.ui.R
 import com.thanh0x.coursedeals.databinding.ActivityCouponEnrollBinding
-import com.thanh0x.coursedeals.ui.base.BaseActivity
+import com.thanh0x.coursedeals.core.ui.BaseActivity
 import com.thanh0x.coursedeals.util.BundleKey
 
 class CouponEnrollActivity : BaseActivity() {

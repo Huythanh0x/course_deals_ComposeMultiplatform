@@ -1,8 +1,8 @@
 package com.thanh0x.coursedeals.domain.source
 
-import com.thanh0x.coursedeals.domain.model.AppResult
-import com.thanh0x.coursedeals.domain.model.AuthCredentials
-import com.thanh0x.coursedeals.domain.model.TokenData
+import com.thanh0x.coursedeals.core.common.AppResult
+import com.thanh0x.coursedeals.domain.user.AuthCredentials
+import com.thanh0x.coursedeals.domain.user.TokenData
 
 interface RemoteAuthenticationDataSource {
     suspend fun register(credentials: AuthCredentials): AppResult<Unit>

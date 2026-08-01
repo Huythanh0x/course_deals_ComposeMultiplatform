@@ -1,7 +1,7 @@
 package com.thanh0x.coursedeals.domain.source
 
-import com.thanh0x.coursedeals.domain.model.AppResult
-import com.thanh0x.coursedeals.domain.model.UserPreferences
+import com.thanh0x.coursedeals.core.common.AppResult
+import com.thanh0x.coursedeals.domain.user.UserPreferences
 
 interface RemoteUserProfileDataSource {
     suspend fun getPreferences(): AppResult<UserPreferences>

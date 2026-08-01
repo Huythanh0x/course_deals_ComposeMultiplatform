@@ -2,15 +2,15 @@ package com.thanh0x.coursedeals.data.source.remote
 
 import com.thanh0x.coursedeals.data.mapper.toDomain
 import com.thanh0x.coursedeals.data.mapper.toDto
-import com.thanh0x.coursedeals.domain.model.AppResult
-import com.thanh0x.coursedeals.domain.model.AuthCredentials
-import com.thanh0x.coursedeals.domain.model.TokenData
+import com.thanh0x.coursedeals.core.common.AppResult
+import com.thanh0x.coursedeals.domain.user.AuthCredentials
+import com.thanh0x.coursedeals.domain.user.TokenData
 import com.thanh0x.coursedeals.domain.source.RemoteAuthenticationDataSource
 import timber.log.Timber
 
 class RemoteAuthenticationDataSourceImpl(private val userAuthenticationService: UserAuthenticationService) :
     RemoteAuthenticationDataSource {
-    
+
     @Suppress("TooGenericExceptionCaught")
     override suspend fun register(credentials: AuthCredentials): AppResult<Unit> {
         return try {

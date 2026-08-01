@@ -7,8 +7,9 @@ import com.thanh0x.coursedeals.data.source.remote.RemoteCouponDataSourceImpl
 import com.thanh0x.coursedeals.data.source.remote.RemoteUserProfileDataSourceImpl
 import com.thanh0x.coursedeals.data.source.remote.UserAuthenticationService
 import com.thanh0x.coursedeals.data.source.remote.UserProfileService
-import com.thanh0x.coursedeals.util.Constant
-import com.thanh0x.coursedeals.util.NetworkStatusCode
+import com.thanh0x.coursedeals.core.common.Constant
+import com.thanh0x.coursedeals.core.common.NetworkStatusCode
+import com.thanh0x.coursedeals.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -101,7 +102,7 @@ object NetworkModule {
         okHttpClient: OkHttpClient,
         gsonConverterFactory: GsonConverterFactory
     ): Retrofit {
-        return Retrofit.Builder().baseUrl(Constant.BASE_URL_API).client(okHttpClient)
+        return Retrofit.Builder().baseUrl(BuildConfig.BASE_URL_API).client(okHttpClient)
             .addConverterFactory(gsonConverterFactory).build()
     }
 

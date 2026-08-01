@@ -1,9 +1,9 @@
 package com.thanh0x.coursedeals.data.repository
 
-import com.thanh0x.coursedeals.domain.model.AppResult
-import com.thanh0x.coursedeals.domain.model.AuthCredentials
-import com.thanh0x.coursedeals.domain.model.TokenData
-import com.thanh0x.coursedeals.domain.repository.UserAuthenticationRepository
+import com.thanh0x.coursedeals.core.common.AppResult
+import com.thanh0x.coursedeals.domain.user.AuthCredentials
+import com.thanh0x.coursedeals.domain.user.TokenData
+import com.thanh0x.coursedeals.domain.user.UserAuthenticationRepository
 import com.thanh0x.coursedeals.domain.source.LocalAuthenticationDataSource
 import com.thanh0x.coursedeals.domain.source.RemoteAuthenticationDataSource
 import javax.inject.Inject

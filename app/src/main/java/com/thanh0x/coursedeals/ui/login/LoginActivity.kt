@@ -5,10 +5,11 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
 import com.thanh0x.coursedeals.MainActivity
+import com.thanh0x.coursedeals.core.ui.R as CoreR
 import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.ActivityLoginBinding
-import com.thanh0x.coursedeals.ui.base.BaseActivity
-import com.thanh0x.coursedeals.ui.base.UiEvent
+import com.thanh0x.coursedeals.core.ui.BaseActivity
+import com.thanh0x.coursedeals.core.ui.UiEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -57,9 +58,9 @@ class LoginActivity : BaseActivity() {
         }
 
         state.error?.let {
-            showAlertDialog(getString(R.string.login_error_title), it)
+            showAlertDialog(getString(CoreR.string.login_error_title), it)
         }
-        
+
         binding.btnFingerprint.isEnabled = state.isFingerprintEnabled
     }
 
@@ -80,8 +81,8 @@ class LoginActivity : BaseActivity() {
             navigateToMainScreen()
         } else {
             showAlertDialog(
-                resources.getString(R.string.no_internet_title),
-                resources.getString(R.string.no_internet_message)
+                resources.getString(CoreR.string.no_internet_title),
+                resources.getString(CoreR.string.no_internet_message)
             )
         }
     }

@@ -2,7 +2,9 @@ package com.thanh0x.coursedeals.util
 
 import android.content.Context
 import android.text.Html
-import com.thanh0x.coursedeals.R
+import com.thanh0x.coursedeals.core.ui.R
+import com.thanh0x.coursedeals.core.common.Constant
+import com.thanh0x.coursedeals.core.common.TimeLeft
 
 class MapperToView(val context: Context) {
     fun mapTimeLeft(expiredDate: Long?): String {

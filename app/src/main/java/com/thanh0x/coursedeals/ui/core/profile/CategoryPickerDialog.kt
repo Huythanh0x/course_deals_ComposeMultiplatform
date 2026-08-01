@@ -6,11 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
+import com.thanh0x.coursedeals.core.ui.R as CoreR
 import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.DialogCategoryPickerBinding
-import com.thanh0x.coursedeals.domain.model.CourseCategory
-import com.thanh0x.coursedeals.ui.base.BaseBottomSheetDialog
-import com.thanh0x.coursedeals.ui.customview.SelectableChipView
+import com.thanh0x.coursedeals.domain.coupons.CourseCategory
+import com.thanh0x.coursedeals.core.ui.BaseBottomSheetDialog
+import com.thanh0x.coursedeals.core.ui.SelectableChipView
 
 class CategoryPickerDialog() : BaseBottomSheetDialog() {
 
@@ -37,7 +38,7 @@ class CategoryPickerDialog() : BaseBottomSheetDialog() {
             val categoryStr = getString(category.displayResId)
             val chipView = SelectableChipView(requireContext()).apply {
                 setText(categoryStr)
-                setChipHeight(resources.getDimensionPixelSize(R.dimen.spacing_32))
+                setChipHeight(resources.getDimensionPixelSize(CoreR.dimen.spacing_32))
 
                 // Wrap content for horizontal ChipGroup flow
                 layoutParams = ViewGroup.LayoutParams(

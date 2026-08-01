@@ -3,15 +3,15 @@ package com.thanh0x.coursedeals.ui.login
 import androidx.biometric.BiometricPrompt
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.thanh0x.coursedeals.domain.model.AppResult
-import com.thanh0x.coursedeals.domain.usecase.authentication.LoginUseCase
-import com.thanh0x.coursedeals.domain.usecase.authentication.fingerprint.CryptographyManagerUseCase
-import com.thanh0x.coursedeals.domain.usecase.authentication.fingerprint.SettingFingerprintUseCase
-import com.thanh0x.coursedeals.domain.usecase.authentication.jwt.ClearLocalTokenUseCase
-import com.thanh0x.coursedeals.domain.usecase.authentication.jwt.RequestAccessTokenUseCase
-import com.thanh0x.coursedeals.domain.usecase.authentication.jwt.SaveJwtTokenUseCase
-import com.thanh0x.coursedeals.domain.usecase.userprofile.SettingUserProfileUseCase
-import com.thanh0x.coursedeals.ui.base.UiEvent
+import com.thanh0x.coursedeals.core.common.AppResult
+import com.thanh0x.coursedeals.domain.user.usecase.LoginUseCase
+import com.thanh0x.coursedeals.domain.user.usecase.CryptographyManagerUseCase
+import com.thanh0x.coursedeals.domain.user.usecase.SettingFingerprintUseCase
+import com.thanh0x.coursedeals.domain.user.usecase.ClearLocalTokenUseCase
+import com.thanh0x.coursedeals.domain.user.usecase.RequestAccessTokenUseCase
+import com.thanh0x.coursedeals.domain.user.usecase.SaveJwtTokenUseCase
+import com.thanh0x.coursedeals.domain.user.usecase.SettingUserProfileUseCase
+import com.thanh0x.coursedeals.core.ui.UiEvent
 import com.thanh0x.coursedeals.util.NetworkUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -52,7 +52,7 @@ class LoginViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true, error = null) }
             val result = loginUseCase(username, password)
             _uiState.update { it.copy(isLoading = false) }
-            
+
             when (result) {
                 is AppResult.Success -> {
                     saveJwtTokenUseCase(result.data.accessToken)
@@ -96,7 +96,7 @@ class LoginViewModel @Inject constructor(
             val result = requestAccessTokenUseCase()
             _uiState.update { it.copy(isLoading = false) }
             Timber.d("ACCESS TOKEN RESPONSE: $result")
-            
+
             if (result is AppResult.Success) {
                 clearFingerprintToken()
                 saveAccessToken(result.data.accessToken)

@@ -4,10 +4,11 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
+import com.thanh0x.coursedeals.core.ui.R as CoreR
 import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.ActivityCouponDetailBinding
-import com.thanh0x.coursedeals.domain.model.Coupon
-import com.thanh0x.coursedeals.ui.base.BaseActivity
+import com.thanh0x.coursedeals.domain.coupons.Coupon
+import com.thanh0x.coursedeals.core.ui.BaseActivity
 import com.thanh0x.coursedeals.ui.enroll.CouponEnrollActivity
 import com.thanh0x.coursedeals.util.BundleKey
 import com.thanh0x.coursedeals.util.MapperToView
@@ -49,7 +50,7 @@ class CouponDetailActivity : BaseActivity() {
         }
 
         if (state.isLoading) {
-            showLoading(getString(R.string.dialog_loading_text))
+            showLoading(getString(CoreR.string.dialog_loading_text))
         } else {
             hideLoading()
         }
@@ -75,8 +76,8 @@ class CouponDetailActivity : BaseActivity() {
             this,
         ) { _, _ ->
             showAlertDialog(
-                getString(R.string.action_report_title),
-                getString(R.string.report_submit_success),
+                getString(CoreR.string.action_report_title),
+                getString(CoreR.string.report_submit_success),
             )
         }
     }
@@ -119,8 +120,8 @@ class CouponDetailActivity : BaseActivity() {
             binding.tvCourseCategory.text = coupon.category ?: ""
             Picasso.get()
                 .load(coupon.previewImage)
-                .error(R.drawable.error_loading_image)
-                .placeholder(R.drawable.progress_animation)
+                .error(CoreR.drawable.error_loading_image)
+                .placeholder(CoreR.drawable.progress_animation)
                 .into(binding.ivPreview)
         }
     }
@@ -140,8 +141,8 @@ class CouponDetailActivity : BaseActivity() {
     private fun showFetchingErrorDialog(cause: String) {
         Timber.e("showFetchingErrorDialog: $cause")
         showAlertDialog(
-            getString(R.string.coupon_detail_error_title),
-            getString(R.string.error_fetching_null_coupon),
+            getString(CoreR.string.coupon_detail_error_title),
+            getString(CoreR.string.error_fetching_null_coupon),
             cause,
         ) {
             finish()
@@ -150,8 +151,8 @@ class CouponDetailActivity : BaseActivity() {
 
     private fun showNoInternetDialog() {
         showAlertDialog(
-            getString(R.string.no_internet_title),
-            getString(R.string.no_internet_message),
+            getString(CoreR.string.no_internet_title),
+            getString(CoreR.string.no_internet_message),
         ) {
             couponDetailViewModel.checkIfInternetAvailable()
         }

@@ -9,9 +9,10 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
+import com.thanh0x.coursedeals.core.ui.R as CoreR
 import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.DialogSubmitDealBinding
-import com.thanh0x.coursedeals.ui.base.BaseBottomSheetDialog
+import com.thanh0x.coursedeals.core.ui.BaseBottomSheetDialog
 
 class SubmitDealBottomSheet() : BaseBottomSheetDialog() {
 
@@ -59,9 +60,9 @@ class SubmitDealBottomSheet() : BaseBottomSheetDialog() {
         hideKeyboard()
         val url = binding.tietUrl.text.toString().trim()
         if (url.isEmpty()) {
-            binding.tilUrl.error = getString(R.string.url_error_invalid)
+            binding.tilUrl.error = getString(CoreR.string.url_error_invalid)
         } else if (!url.contains("udemy.com")) {
-            binding.tilUrl.error = getString(R.string.url_error_invalid)
+            binding.tilUrl.error = getString(CoreR.string.url_error_invalid)
         } else {
             binding.tilUrl.error = null
             setFragmentResult(REQUEST_KEY, bundleOf(EXTRA_COUPON_URL to url))

@@ -1,7 +1,7 @@
 package com.thanh0x.coursedeals.ui.core.home
 
-import com.thanh0x.coursedeals.domain.model.FilterData
-import com.thanh0x.coursedeals.domain.model.SearchSuggestion
+import com.thanh0x.coursedeals.domain.coupons.FilterData
+import com.thanh0x.coursedeals.domain.coupons.SearchSuggestion
 
 data class HomeUiState(
     val isInternetAvailable: Boolean = true,

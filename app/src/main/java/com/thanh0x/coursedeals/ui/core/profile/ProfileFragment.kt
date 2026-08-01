@@ -19,14 +19,16 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.thanh0x.coursedeals.core.ui.R as CoreR
 import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.FragmentProfileBinding
-import com.thanh0x.coursedeals.domain.logic.fingerprint.BiometricPromptUtils
-import com.thanh0x.coursedeals.domain.model.AppResult
-import com.thanh0x.coursedeals.ui.base.BaseFragment
-import com.thanh0x.coursedeals.ui.base.UiEvent
+import com.thanh0x.coursedeals.core.ui.BiometricPromptUtils
+import com.thanh0x.coursedeals.core.common.AppResult
+import com.thanh0x.coursedeals.domain.user.TokenData
+import com.thanh0x.coursedeals.core.ui.BaseFragment
+import com.thanh0x.coursedeals.core.ui.UiEvent
 import com.thanh0x.coursedeals.ui.login.LoginActivity
-import com.thanh0x.coursedeals.util.NetworkStatusCode
+import com.thanh0x.coursedeals.core.common.NetworkStatusCode
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -83,10 +85,10 @@ class ProfileFragment : BaseFragment() {
         }
 
         binding.tvDevEmail.setOnClickListener {
-            val devEmailAddress = getString(R.string.dev_email)
+            val devEmailAddress = getString(CoreR.string.dev_email)
             val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
                 data = Uri.parse("mailto:$devEmailAddress")
-                putExtra(Intent.EXTRA_SUBJECT, getString(R.string.email_send_title))
+                putExtra(Intent.EXTRA_SUBJECT, getString(CoreR.string.email_send_title))
             }
 
             try {
@@ -94,14 +96,14 @@ class ProfileFragment : BaseFragment() {
             } catch (e: android.content.ActivityNotFoundException) {
                 Timber.e(e, "Failed to send email: No activity found")
                 showAlertDialog(
-                    getString(R.string.email_failed_to_send),
-                    getString(R.string.email_cannot_find_client_app),
+                    getString(CoreR.string.email_failed_to_send),
+                    getString(CoreR.string.email_cannot_find_client_app),
                 )
             }
         }
 
         binding.tvDevWebsite.setOnClickListener {
-            val devWebsiteAddress = getString(R.string.dev_website)
+            val devWebsiteAddress = getString(CoreR.string.dev_website)
             val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(devWebsiteAddress))
 
             try {
@@ -120,8 +122,8 @@ class ProfileFragment : BaseFragment() {
             if (isChecked) {
                 if (!profileViewModel.isNetworkAvailable()) {
                     showAlertDialog(
-                        getString(R.string.no_internet_title),
-                        getString(R.string.no_internet_message),
+                        getString(CoreR.string.no_internet_title),
+                        getString(CoreR.string.no_internet_message),
                     )
                     binding.swEnableFingerPrint.isChecked = false
                 } else {
@@ -253,7 +255,7 @@ class ProfileFragment : BaseFragment() {
         ).apply {
             this.text = text
             isCloseIconVisible = true
-            setCloseIconResource(R.drawable.ic_close)
+            setCloseIconResource(CoreR.drawable.ic_close)
             closeIconSize = 18f * resources.displayMetrics.density
             chipIconTint = android.content.res.ColorStateList.valueOf(
                 com.google.android.material.color.MaterialColors.getColor(
@@ -314,33 +316,31 @@ class ProfileFragment : BaseFragment() {
                 BiometricPromptUtils.createBiometricPrompt(requireActivity() as AppCompatActivity, {
                     lifecycleScope.launch {
                         val result = profileViewModel.requestFingerprintToken()
-                        when (result) {
-                            is AppResult.Success -> {
-                                val cipherTextWrapper =
-                                    profileViewModel.encryptedServerTokenWrapper(
-                                        it,
-                                        result.data.accessToken,
-                                    )
-                                if (cipherTextWrapper != null) {
-                                    showToast("Add fingerprint successfully")
-                                    profileViewModel.saveCipherTextWrapper(cipherTextWrapper)
-                                    profileViewModel.saveIsFingerPrintEnable(true)
-                                }
+                        if (result is AppResult.Success<TokenData>) {
+                            val cipherTextWrapper =
+                                profileViewModel.encryptedServerTokenWrapper(
+                                    it,
+                                    result.data.accessToken,
+                                )
+                            if (cipherTextWrapper != null) {
+                                showToast("Add fingerprint successfully")
+                                profileViewModel.saveCipherTextWrapper(cipherTextWrapper)
+                                profileViewModel.saveIsFingerPrintEnable(true)
                             }
-                            is AppResult.Error -> {
-                                binding.swEnableFingerPrint.isChecked = false
-                                if (result.code == NetworkStatusCode.HTTP_CODE_UNAUTHORIZED) {
-                                    forceLogout()
-                                }
+                        } else if (result is AppResult.Error) {
+                            binding.swEnableFingerPrint.isChecked = false
+                            if (result.code == NetworkStatusCode.HTTP_CODE_UNAUTHORIZED) {
+                                forceLogout()
                             }
-                            is AppResult.Loading -> { }
                         }
                     }
                 }, {
                     binding.swEnableFingerPrint.isChecked = false
                 })
             val promptInfo = BiometricPromptUtils.createPromptInfo(
-                requireActivity() as AppCompatActivity,
+                getString(CoreR.string.prompt_info_title),
+                getString(CoreR.string.prompt_info_description),
+                getString(CoreR.string.cancel_button_text)
             )
             val cipher = profileViewModel.generateCypher()
             biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(cipher))

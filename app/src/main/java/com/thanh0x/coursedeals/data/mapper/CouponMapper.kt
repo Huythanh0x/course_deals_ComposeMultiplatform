@@ -2,7 +2,7 @@ package com.thanh0x.coursedeals.data.mapper
 
 import com.thanh0x.coursedeals.data.model.Coupon as CouponEntity
 import com.thanh0x.coursedeals.data.model.CouponDto
-import com.thanh0x.coursedeals.domain.model.Coupon as CouponDomain
+import com.thanh0x.coursedeals.domain.coupons.Coupon as CouponDomain
 
 fun CouponDto.toDomain(): CouponDomain {
     return CouponDomain(

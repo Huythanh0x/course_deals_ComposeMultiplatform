@@ -8,7 +8,7 @@ import androidx.room.Query
 import androidx.room.RawQuery
 import androidx.sqlite.db.SupportSQLiteQuery
 import com.thanh0x.coursedeals.data.model.Coupon
-import com.thanh0x.coursedeals.util.Constant
+import com.thanh0x.coursedeals.core.common.Constant
 
 @Dao
 interface CouponDao {

@@ -9,10 +9,11 @@ import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
 import com.google.android.material.chip.Chip
+import com.thanh0x.coursedeals.core.ui.R as CoreR
 import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.DialogReportBinding
-import com.thanh0x.coursedeals.ui.base.BaseBottomSheetDialog
-import com.thanh0x.coursedeals.ui.customview.SelectableChipView
+import com.thanh0x.coursedeals.core.ui.BaseBottomSheetDialog
+import com.thanh0x.coursedeals.core.ui.SelectableChipView
 
 class ReportBottomSheetDialog() : BaseBottomSheetDialog() {
 
@@ -20,10 +21,10 @@ class ReportBottomSheetDialog() : BaseBottomSheetDialog() {
     private val binding get() = _binding!!
 
     private val reasons = listOf(
-        R.string.report_reason_not_free,
-        R.string.report_reason_no_data,
-        R.string.report_reason_expired,
-        R.string.report_reason_other,
+        CoreR.string.report_reason_not_free,
+        CoreR.string.report_reason_no_data,
+        CoreR.string.report_reason_expired,
+        CoreR.string.report_reason_other,
     )
 
     private var selectedReason: String? = null
@@ -65,7 +66,7 @@ class ReportBottomSheetDialog() : BaseBottomSheetDialog() {
             val reasonStr = getString(reasonResId)
             val chipView = SelectableChipView(requireContext()).apply {
                 setText(reasonStr)
-                setChipHeight(resources.getDimensionPixelSize(R.dimen.spacing_48))
+                setChipHeight(resources.getDimensionPixelSize(CoreR.dimen.spacing_48))
                 setFullWidth(true)
 
                 setOnChipClickListener {
@@ -73,7 +74,7 @@ class ReportBottomSheetDialog() : BaseBottomSheetDialog() {
                     selectedReason = reasonStr
                     isChecked = true
 
-                    binding.tilOtherReason.isVisible = reasonResId == R.string.report_reason_other
+                    binding.tilOtherReason.isVisible = reasonResId == CoreR.string.report_reason_other
                     if (binding.tilOtherReason.isVisible) {
                         binding.tietOtherReason.requestFocus()
                     }
@@ -104,7 +105,7 @@ class ReportBottomSheetDialog() : BaseBottomSheetDialog() {
         }
 
         if (binding.tilOtherReason.isVisible && otherDetails.isNullOrEmpty()) {
-            binding.tilOtherReason.error = getString(R.string.report_other_hint)
+            binding.tilOtherReason.error = getString(CoreR.string.report_other_hint)
             return
         }
 

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
+
+    <com.google.android.material.chip.Chip
+        android:id="@+id/innerChip"
+        style="@style/Widget.Material3.Chip.Assist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_8"
+        android:checkable="true"
+        android:clickable="true"
+        android:minWidth="@dimen/spacing_48"
+        android:textColor="@color/cat_chip_text_selector"
+        app:chipBackgroundColor="@color/cat_chip_bg_selector"
+        app:chipStrokeColor="@color/cat_chip_stroke_selector"
+        app:chipStrokeWidth="@dimen/spacing_1"
+        app:ensureMinTouchTargetSize="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_height="32dp"
+        tools:text="Development" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/innerCheckBadge"
+        android:layout_width="@dimen/spacing_14"
+        android:layout_height="@dimen/spacing_14"
+        android:visibility="gone"
+        app:cardBackgroundColor="?attr/colorSurface"
+        app:cardCornerRadius="@dimen/spacing_7"
+        app:cardElevation="@dimen/elevation_medium"
+        app:layout_constraintBottom_toTopOf="@+id/innerChip"
+        app:layout_constraintEnd_toEndOf="@+id/innerChip"
+        app:layout_constraintStart_toEndOf="@+id/innerChip"
+        app:layout_constraintTop_toTopOf="@+id/innerChip"
+        app:strokeColor="?attr/colorPrimary"
+        app:strokeWidth="@dimen/spacing_1"
+        tools:visibility="visible">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/spacing_2"
+            android:src="@drawable/ic_check"
+            app:tint="?attr/colorPrimary" />
+    </com.google.android.material.card.MaterialCardView>
+
+</merge>

@@ -1,8 +1,8 @@
 package com.thanh0x.coursedeals.data.source.remote
 
 import com.thanh0x.coursedeals.data.mapper.toDomain
-import com.thanh0x.coursedeals.domain.model.AppResult
-import com.thanh0x.coursedeals.domain.model.Coupon
+import com.thanh0x.coursedeals.core.common.AppResult
+import com.thanh0x.coursedeals.domain.coupons.Coupon
 import com.thanh0x.coursedeals.domain.source.RemoteCouponDataSource
 import timber.log.Timber
 
