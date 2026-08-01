@@ -1,6 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="rating_bar" parent="Theme.AppCompat">
-        <item name="colorControlNormal">@color/grey</item>
-        <item name="colorControlActivated">@color/golden</item>
+    <style name="Theme.CourseDeals" parent="Base.Theme.CourseDeals">
+        <!-- Dark theme overrides if any -->
     </style>
 </resources>

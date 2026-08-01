@@ -31,4 +31,19 @@
     <color name="white">#FFFFFFFF</color>
     <color name="grey">@color/m3_outline</color>
     <color name="golden">@color/rating_amber</color>
+
+    <color name="primaryBackgroundColor">@color/m3_surface_container_low</color>
+    <color name="primaryTextColor">@color/m3_on_surface</color>
+    <color name="secondaryTextColor">@color/m3_on_surface_variant</color>
+    <color name="courseTitle">@color/m3_primary</color>
+    <color name="headingTitle">@color/m3_primary</color>
+    <color name="courseCategory">@color/m3_on_primary_container</color>
+    <color name="buttonBackgroundColor">@color/m3_primary</color>
+    <color name="textButtonColor">@color/m3_on_primary</color>
+    <color name="iconTintColor">@color/m3_primary</color>
+    <color name="placeHolderColor">@color/m3_outline_variant</color>
+    <color name="timeLeftBackgroundColor">@color/m3_error_container</color>
+    <color name="timeLeftTextColor">@color/m3_on_error_container</color>
+    <color name="chipTextColor">@color/m3_on_primary_container</color>
+    <color name="dividerColor">@color/m3_outline_variant</color>
 </resources>

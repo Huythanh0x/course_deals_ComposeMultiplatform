@@ -10,6 +10,7 @@ android {
 
 dependencies {
     api project(':core:common')
+    api project(':domain:coupons')
     api libs.androidx.core.ktx
     api libs.androidx.appcompat
     api libs.material

@@ -4,31 +4,31 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-enum class CourseCategory(val dbValue: String, val displayResId: Int) : Parcelable {
-    DEVELOPMENT("Development", 0),
-    DESIGN("Design", 0),
-    BUSINESS("Business", 0),
-    IT_AND_SOFTWARE("IT & Software", 0),
-    MARKETING("Marketing", 0),
-    PERSONAL_DEVELOPMENT("Personal Development", 0),
-    PHOTOGRAPHY("Photography", 0),
-    MUSIC("Music", 0),
-    HEALTH_AND_FITNESS("Health & Fitness", 0),
-    FINANCE("Finance", 0),
+enum class CourseCategory(val dbValue: String) : Parcelable {
+    DEVELOPMENT("Development"),
+    DESIGN("Design"),
+    BUSINESS("Business"),
+    IT_AND_SOFTWARE("IT & Software"),
+    MARKETING("Marketing"),
+    PERSONAL_DEVELOPMENT("Personal Development"),
+    PHOTOGRAPHY("Photography"),
+    MUSIC("Music"),
+    HEALTH_AND_FITNESS("Health & Fitness"),
+    FINANCE("Finance"),
 }
 
 @Parcelize
-enum class CourseLanguage(val displayResId: Int) : Parcelable {
-    ALL(0),
-    ENGLISH(0),
-    OTHERS(0),
+enum class CourseLanguage : Parcelable {
+    ALL,
+    ENGLISH,
+    OTHERS,
 }
 
 @Parcelize
-enum class SortOption(val displayResId: Int) : Parcelable {
-    NEWEST(0),
-    RATING(0),
-    STUDENTS(0),
-    REVIEWS(0),
-    EXPIRING_SOON(0),
+enum class SortOption : Parcelable {
+    NEWEST,
+    RATING,
+    STUDENTS,
+    REVIEWS,
+    EXPIRING_SOON,
 }

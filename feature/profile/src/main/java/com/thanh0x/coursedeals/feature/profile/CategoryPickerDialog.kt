@@ -12,6 +12,7 @@ import com.thanh0x.coursedeals.feature.profile.databinding.DialogCategoryPickerB
 import com.thanh0x.coursedeals.domain.coupons.CourseCategory
 import com.thanh0x.coursedeals.core.ui.BaseBottomSheetDialog
 import com.thanh0x.coursedeals.core.ui.SelectableChipView
+import com.thanh0x.coursedeals.core.ui.util.categoryResId
 
 class CategoryPickerDialog() : BaseBottomSheetDialog() {
 
@@ -35,7 +36,7 @@ class CategoryPickerDialog() : BaseBottomSheetDialog() {
         selectedItems.addAll(initialSelected)
 
         CourseCategory.entries.forEach { category ->
-            val categoryStr = getString(category.displayResId)
+            val categoryStr = getString(category.categoryResId)
             val chipView = SelectableChipView(requireContext()).apply {
                 setText(categoryStr)
                 setChipHeight(resources.getDimensionPixelSize(CoreR.dimen.spacing_32))

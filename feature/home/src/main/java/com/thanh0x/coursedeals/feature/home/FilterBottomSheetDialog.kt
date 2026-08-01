@@ -15,6 +15,9 @@ import com.thanh0x.coursedeals.domain.coupons.FilterData
 import com.thanh0x.coursedeals.domain.coupons.SortOption
 import com.thanh0x.coursedeals.core.ui.BaseBottomSheetDialog
 import com.thanh0x.coursedeals.core.ui.SelectableChipView
+import com.thanh0x.coursedeals.core.ui.util.categoryResId
+import com.thanh0x.coursedeals.core.ui.util.languageResId
+import com.thanh0x.coursedeals.core.ui.util.sortResId
 
 class FilterBottomSheetDialog() : BaseBottomSheetDialog() {
 
@@ -114,7 +117,7 @@ class FilterBottomSheetDialog() : BaseBottomSheetDialog() {
     private fun setupCategoryGroup() {
         CourseCategory.entries.forEach { category ->
             val chipView = SelectableChipView(requireContext()).apply {
-                setText(getString(category.displayResId))
+                setText(getString(category.categoryResId))
                 setChipHeight(resources.getDimensionPixelSize(CoreR.dimen.spacing_32))
 
                 // Wrap content for horizontal ChipGroup flow
@@ -139,7 +142,7 @@ class FilterBottomSheetDialog() : BaseBottomSheetDialog() {
     private fun setupLanguageGroup() {
         CourseLanguage.entries.forEach { language ->
             val chipView = SelectableChipView(requireContext()).apply {
-                setText(getString(language.displayResId))
+                setText(getString(language.languageResId))
                 setChipHeight(resources.getDimensionPixelSize(CoreR.dimen.spacing_32))
 
                 layoutParams = ViewGroup.LayoutParams(
@@ -161,7 +164,7 @@ class FilterBottomSheetDialog() : BaseBottomSheetDialog() {
     private fun setupSortGroup() {
         SortOption.entries.forEach { option ->
             val chipView = SelectableChipView(requireContext()).apply {
-                setText(getString(option.displayResId))
+                setText(getString(option.sortResId))
                 setChipHeight(resources.getDimensionPixelSize(CoreR.dimen.spacing_32))
 
                 layoutParams = ViewGroup.LayoutParams(
@@ -198,15 +201,19 @@ class FilterBottomSheetDialog() : BaseBottomSheetDialog() {
         clearGroupSelection(binding.cgSort)
 
         // Select defaults
-        updateChipSelection(binding.cgLanguages, CourseLanguage.ALL.displayResId)
-        updateChipSelection(binding.cgSort, SortOption.NEWEST.displayResId)
+        updateChipSelection(binding.cgLanguages, CourseLanguage.ALL)
+        updateChipSelection(binding.cgSort, SortOption.NEWEST)
 
         binding.sliderRating.value = ratingToSlider(0.0)
         updateRatingLabel(0.0)
     }
 
-    private fun updateChipSelection(group: ViewGroup, displayResId: Int) {
-        val text = getString(displayResId)
+    private fun updateChipSelection(group: ViewGroup, option: Any) {
+        val text = when (option) {
+            is CourseLanguage -> getString(option.languageResId)
+            is SortOption -> getString(option.sortResId)
+            else -> ""
+        }
         for (i in 0 until group.childCount) {
             val chipView = group.getChildAt(i) as? SelectableChipView
             if (chipView?.getText() == text) {
