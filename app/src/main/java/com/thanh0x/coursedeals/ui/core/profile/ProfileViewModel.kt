@@ -6,13 +6,13 @@ import androidx.lifecycle.viewModelScope
 import com.thanh0x.coursedeals.domain.logic.fingerprint.CiphertextWrapper
 import com.thanh0x.coursedeals.domain.model.AppResult
 import com.thanh0x.coursedeals.domain.model.TokenData
+import com.thanh0x.coursedeals.domain.repository.UserProfileRepository
 import com.thanh0x.coursedeals.domain.usecase.authentication.fingerprint.CryptographyManagerUseCase
 import com.thanh0x.coursedeals.domain.usecase.authentication.fingerprint.RequestFingerprintTokenUseCase
 import com.thanh0x.coursedeals.domain.usecase.authentication.fingerprint.SettingFingerprintUseCase
 import com.thanh0x.coursedeals.domain.usecase.authentication.jwt.CheckIfTokenExpiredUseCase
 import com.thanh0x.coursedeals.domain.usecase.authentication.jwt.ClearLocalTokenUseCase
 import com.thanh0x.coursedeals.domain.usecase.authentication.jwt.SaveJwtTokenUseCase
-import com.thanh0x.coursedeals.domain.usecase.userprofile.SettingUserProfileUseCase
 import com.thanh0x.coursedeals.ui.base.UiEvent
 import com.thanh0x.coursedeals.util.NetworkStatusCode
 import com.thanh0x.coursedeals.util.NetworkUtil
@@ -30,14 +30,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val settingUserProfileUseCase: SettingUserProfileUseCase,
+    private val userProfileRepository: UserProfileRepository,
     val saveJwtTokenUseCase: SaveJwtTokenUseCase,
     private val cryptographyManagerUseCase: CryptographyManagerUseCase,
     private val settingFingerprintUseCase: SettingFingerprintUseCase,
     private val requestFingerprintTokenUseCase: RequestFingerprintTokenUseCase,
     private val clearLocalTokenUseCase: ClearLocalTokenUseCase,
     private val checkIfTokenExpiredUseCase: CheckIfTokenExpiredUseCase,
-    private val networkUtil: NetworkUtil
+    private val networkUtil: NetworkUtil,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState())
@@ -47,22 +47,52 @@ class ProfileViewModel @Inject constructor(
     val uiEvent = _uiEvent.asSharedFlow()
 
     init {
-        initSwitchState()
+        initSettings()
         checkIfTokenExpired()
+        syncPreferences()
     }
 
-    private fun initSwitchState() {
+    private fun initSettings() {
         viewModelScope.launch(Dispatchers.IO) {
-            val darkMode = settingUserProfileUseCase.loadDarkModeUseCase() ?: false
-            val fingerprint = settingUserProfileUseCase.loadFingerprintUseCase() ?: false
-            _uiState.update { it.copy(isDarkModeEnabled = darkMode, isFingerprintEnabled = fingerprint) }
+            val darkMode = userProfileRepository.getEnableDarkMode() ?: false
+            val fingerprint = userProfileRepository.getEnableFingerPrint() ?: false
+            val categories = userProfileRepository.getFavoriteCategories().toList()
+            val keywords = userProfileRepository.getFavoriteKeywords().toList()
+            val notifications = userProfileRepository.getNotificationsEnabled()
+
+            _uiState.update {
+                it.copy(
+                    isDarkModeEnabled = darkMode,
+                    isFingerprintEnabled = fingerprint,
+                    favCategories = categories,
+                    favKeywords = keywords,
+                    isNotificationsEnabled = notifications,
+                )
+            }
+        }
+    }
+
+    private fun syncPreferences() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update { it.copy(isSyncing = true) }
+            val result = userProfileRepository.syncPreferences()
+            if (result is AppResult.Success) {
+                val prefs = result.data
+                _uiState.update {
+                    it.copy(
+                        favCategories = prefs.categories,
+                        favKeywords = prefs.keywords,
+                        isNotificationsEnabled = prefs.notificationsEnabled,
+                    )
+                }
+            }
+            _uiState.update { it.copy(isSyncing = false) }
         }
     }
 
     fun checkIfTokenExpired() {
         viewModelScope.launch(Dispatchers.IO) {
-            val result = checkIfTokenExpiredUseCase()
-            when (result) {
+            when (val result = checkIfTokenExpiredUseCase()) {
                 is AppResult.Success -> _uiState.update { it.copy(isTokenExpired = false) }
                 is AppResult.Error -> {
                     if (result.code == NetworkStatusCode.HTTP_CODE_UNAUTHORIZED) {
@@ -79,14 +109,50 @@ class ProfileViewModel @Inject constructor(
     fun saveIsDarkModeEnable(isDarkModeEnable: Boolean) {
         _uiState.update { it.copy(isDarkModeEnabled = isDarkModeEnable) }
         viewModelScope.launch(Dispatchers.IO) {
-            settingUserProfileUseCase.saveDarkModeUseCase(isDarkModeEnable)
+            userProfileRepository.saveEnableDarkMode(isDarkModeEnable)
         }
     }
 
     fun saveIsFingerPrintEnable(isFingerprintEnable: Boolean) {
         _uiState.update { it.copy(isFingerprintEnabled = isFingerprintEnable) }
         viewModelScope.launch(Dispatchers.IO) {
-            settingUserProfileUseCase.saveFingerPrintUseCase(isFingerprintEnable)
+            userProfileRepository.saveEnableFingerPrint(isFingerprintEnable)
+        }
+    }
+
+    fun updateFavoriteCategories(categories: List<String>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update { it.copy(favCategories = categories) }
+            userProfileRepository.saveFavoriteCategories(categories.toSet())
+        }
+    }
+
+    fun addFavoriteKeyword(keyword: String) {
+        val current = _uiState.value.favKeywords.toMutableSet()
+        if (current.add(keyword)) {
+            val newList = current.toList()
+            _uiState.update { it.copy(favKeywords = newList) }
+            viewModelScope.launch(Dispatchers.IO) {
+                userProfileRepository.saveFavoriteKeywords(newList.toSet())
+            }
+        }
+    }
+
+    fun removeFavoriteKeyword(keyword: String) {
+        val current = _uiState.value.favKeywords.toMutableSet()
+        if (current.remove(keyword)) {
+            val newList = current.toList()
+            _uiState.update { it.copy(favKeywords = newList) }
+            viewModelScope.launch(Dispatchers.IO) {
+                userProfileRepository.saveFavoriteKeywords(newList.toSet())
+            }
+        }
+    }
+
+    fun updateNotificationsEnabled(enabled: Boolean) {
+        _uiState.update { it.copy(isNotificationsEnabled = enabled) }
+        viewModelScope.launch(Dispatchers.IO) {
+            userProfileRepository.saveNotificationsEnabled(enabled)
         }
     }
 
@@ -103,7 +169,7 @@ class ProfileViewModel @Inject constructor(
 
     fun encryptedServerTokenWrapper(
         authResult: BiometricPrompt.AuthenticationResult,
-        fingerprintToken: String
+        fingerprintToken: String,
     ): CiphertextWrapper? {
         authResult.cryptoObject?.cipher?.apply {
             return cryptographyManagerUseCase.encryptData(fingerprintToken, this)

@@ -10,6 +10,7 @@ import com.thanh0x.coursedeals.data.source.datastore.LocalUserProfileDataSourceI
 import com.thanh0x.coursedeals.data.source.local.LocalCouponDataSourceImpl
 import com.thanh0x.coursedeals.data.source.remote.RemoteAuthenticationDataSourceImpl
 import com.thanh0x.coursedeals.data.source.remote.RemoteCouponDataSourceImpl
+import com.thanh0x.coursedeals.data.source.remote.RemoteUserProfileDataSourceImpl
 import com.thanh0x.coursedeals.domain.repository.CouponRepository
 import com.thanh0x.coursedeals.domain.repository.SearchRepository
 import com.thanh0x.coursedeals.domain.repository.UserAuthenticationRepository
@@ -20,6 +21,7 @@ import com.thanh0x.coursedeals.domain.source.LocalSettingsDataSource
 import com.thanh0x.coursedeals.domain.source.LocalUserProfileDataSource
 import com.thanh0x.coursedeals.domain.source.RemoteAuthenticationDataSource
 import com.thanh0x.coursedeals.domain.source.RemoteCouponDataSource
+import com.thanh0x.coursedeals.domain.source.RemoteUserProfileDataSource
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -70,6 +72,12 @@ abstract class RepositoryModule {
     abstract fun bindLocalUserProfileDataSource(
         impl: LocalUserProfileDataSourceImpl
     ): LocalUserProfileDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindRemoteUserProfileDataSource(
+        impl: RemoteUserProfileDataSourceImpl
+    ): RemoteUserProfileDataSource
 
     @Binds
     @Singleton

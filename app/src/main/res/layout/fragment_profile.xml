@@ -26,6 +26,15 @@
             android:focusableInTouchMode="true"
             android:paddingBottom="@dimen/spacing_32">
 
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:id="@+id/lpSync"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                android:visibility="gone"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="visible" />
+
             <!-- Header -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cvAvatar"

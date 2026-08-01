@@ -13,6 +13,9 @@ object Constant {
     const val PREFERENCES_REFRESH_TOKEN = "refresh_token"
     const val PREFERENCES_FINGERPRINT_TOKEN = "fingerprint_token"
     const val PREFERENCES_SHOW_LOCAL_FETCH_TIME = "show_local_fetch_time"
+    const val PREFERENCES_FAV_CATEGORIES = "fav_categories"
+    const val PREFERENCES_FAV_KEYWORDS = "fav_keywords"
+    const val PREFERENCES_NOTIFICATIONS_ENABLED = "notifications_enabled"
     const val NETWORK_AUTHORIZATION_HEADER = "Authorization"
     const val NETWORK_BEARER_PREFIX = "Bearer"
     const val ITEMS_PER_PAGE = 10

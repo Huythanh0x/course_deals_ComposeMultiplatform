@@ -4,7 +4,9 @@ import com.thanh0x.coursedeals.data.source.datastore.LocalAuthenticationDataSour
 import com.thanh0x.coursedeals.data.source.remote.CouponService
 import com.thanh0x.coursedeals.data.source.remote.RemoteAuthenticationDataSourceImpl
 import com.thanh0x.coursedeals.data.source.remote.RemoteCouponDataSourceImpl
+import com.thanh0x.coursedeals.data.source.remote.RemoteUserProfileDataSourceImpl
 import com.thanh0x.coursedeals.data.source.remote.UserAuthenticationService
+import com.thanh0x.coursedeals.data.source.remote.UserProfileService
 import com.thanh0x.coursedeals.util.Constant
 import com.thanh0x.coursedeals.util.NetworkStatusCode
 import dagger.Module
@@ -68,6 +70,12 @@ object NetworkModule {
 
     @Singleton
     @Provides
+    fun provideRemoteUserProfileDataSource(
+        userProfileService: UserProfileService
+    ) = RemoteUserProfileDataSourceImpl(userProfileService)
+
+    @Singleton
+    @Provides
     fun provideRemoteAuthenticationDataSource(
         userAuthenticationService: UserAuthenticationService
     ) = RemoteAuthenticationDataSourceImpl(userAuthenticationService)
@@ -76,6 +84,11 @@ object NetworkModule {
     @Provides
     fun provideAuthenticationService(retrofit: Retrofit): UserAuthenticationService =
         retrofit.create(UserAuthenticationService::class.java)
+
+    @Singleton
+    @Provides
+    fun provideUserProfileService(retrofit: Retrofit): UserProfileService =
+        retrofit.create(UserProfileService::class.java)
 
     @Singleton
     @Provides

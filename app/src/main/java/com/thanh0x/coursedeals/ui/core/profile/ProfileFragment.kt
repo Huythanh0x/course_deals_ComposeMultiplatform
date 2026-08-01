@@ -37,10 +37,10 @@ class ProfileFragment : BaseFragment() {
     private val binding get() = _binding!!
     private val profileViewModel: ProfileViewModel by viewModels()
 
-    private val selectedCategories = mutableListOf<String>()
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         return binding.root
@@ -51,7 +51,6 @@ class ProfileFragment : BaseFragment() {
         setupInteractions()
         setupObservers()
         setupFragmentResultListeners()
-        profileViewModel.checkIfTokenExpired()
     }
 
     private fun setupFragmentResultListeners() {
@@ -61,9 +60,7 @@ class ProfileFragment : BaseFragment() {
         ) { _, bundle ->
             val selected = bundle.getStringArrayList(CategoryPickerDialog.EXTRA_SELECTED_CATEGORIES)
             selected?.let {
-                selectedCategories.clear()
-                selectedCategories.addAll(it)
-                updateCategoryChips()
+                profileViewModel.updateFavoriteCategories(it)
             }
         }
     }
@@ -98,7 +95,7 @@ class ProfileFragment : BaseFragment() {
                 Timber.e(e, "Failed to send email: No activity found")
                 showAlertDialog(
                     getString(R.string.email_failed_to_send),
-                    getString(R.string.email_cannot_find_client_app)
+                    getString(R.string.email_cannot_find_client_app),
                 )
             }
         }
@@ -116,33 +113,35 @@ class ProfileFragment : BaseFragment() {
             }
         }
         binding.swEnableDarkMode.setOnCheckedChangeListener { _, isChecked ->
-            profileViewModel.checkIfTokenExpired()
             profileViewModel.saveIsDarkModeEnable(isChecked)
         }
 
         binding.swEnableFingerPrint.setOnCheckedChangeListener { _, isChecked ->
-            profileViewModel.checkIfTokenExpired()
             if (isChecked) {
                 if (!profileViewModel.isNetworkAvailable()) {
                     showAlertDialog(
                         getString(R.string.no_internet_title),
-                        getString(R.string.no_internet_message)
+                        getString(R.string.no_internet_message),
                     )
                     binding.swEnableFingerPrint.isChecked = false
                 } else {
                     promptFingerPrintSignUp()
                 }
             } else {
-                profileViewModel.saveIsFingerPrintEnable(false)
+                profileViewModel.saveIsFingerPrintEnable(isFingerprintEnable = false)
             }
         }
 
         binding.swEnableNotifications.setOnCheckedChangeListener { _, isChecked ->
-            binding.llNotificationSubSettings.isVisible = isChecked
+            profileViewModel.updateNotificationsEnabled(isChecked)
+        }
+
+        binding.swNotifCat.setOnCheckedChangeListener { _, _ ->
+            // Sub-settings logic can be added here
         }
 
         binding.btnAddCat.setOnClickListener {
-            val dialog = CategoryPickerDialog.newInstance(selectedCategories)
+            val dialog = CategoryPickerDialog.newInstance(profileViewModel.uiState.value.favCategories)
             dialog.show(childFragmentManager, CategoryPickerDialog.TAG)
         }
 
@@ -175,62 +174,6 @@ class ProfileFragment : BaseFragment() {
         }
     }
 
-    private fun updateCategoryChips() {
-        val childCount = binding.cgFavCats.childCount
-        for (i in childCount - 1 downTo 0) {
-            val view = binding.cgFavCats.getChildAt(i)
-            if (view.id != R.id.btnAddCat) {
-                binding.cgFavCats.removeView(view)
-            }
-        }
-
-        selectedCategories.forEach { cat ->
-            val chip = com.google.android.material.chip.Chip(
-                requireContext(),
-                null,
-                com.google.android.material.R.style.Widget_Material3_Chip_Assist
-            ).apply {
-                this.text = cat
-                isCloseIconVisible = true
-                setCloseIconResource(R.drawable.ic_close)
-                closeIconSize = 18f * resources.displayMetrics.density
-                chipIconTint = android.content.res.ColorStateList.valueOf(
-                    com.google.android.material.color.MaterialColors.getColor(
-                        this,
-                        com.google.android.material.R.attr.colorOnSurfaceVariant
-                    )
-                )
-                closeIconTint = chipIconTint
-                setOnCloseIconClickListener {
-                    selectedCategories.remove(cat)
-                    binding.cgFavCats.removeView(this)
-                }
-            }
-            binding.cgFavCats.addView(chip, 0)
-        }
-    }
-
-    private fun submitKeyword() {
-        val kw = binding.tietKeyword.text.toString().trim()
-        if (kw.isNotEmpty()) {
-            addKeywordChip(kw)
-            binding.tietKeyword.text?.clear()
-        }
-        clearFocusAndHideKeyboard()
-    }
-
-    private fun clearFocusAndHideKeyboard() {
-        binding.tietKeyword.clearFocus()
-        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(binding.tietKeyword.windowToken, 0)
-        binding.clProfileRoot.requestFocus()
-
-        if (binding.tietKeyword.text.isNullOrEmpty()) {
-            binding.tilKeyword.isVisible = false
-            binding.btnAddKw.isVisible = true
-        }
-    }
-
     private fun setupObservers() {
         collectFlow(profileViewModel.uiState) { state ->
             handleUiState(state)
@@ -255,6 +198,95 @@ class ProfileFragment : BaseFragment() {
         if (binding.swEnableFingerPrint.isChecked != state.isFingerprintEnabled) {
             binding.swEnableFingerPrint.isChecked = state.isFingerprintEnabled
         }
+
+        if (binding.swEnableNotifications.isChecked != state.isNotificationsEnabled) {
+            binding.swEnableNotifications.isChecked = state.isNotificationsEnabled
+        }
+        binding.llNotificationSubSettings.isVisible = state.isNotificationsEnabled
+        binding.lpSync.isVisible = state.isSyncing
+
+        updateCategoryChips(state.favCategories)
+        updateKeywordChips(state.favKeywords)
+    }
+
+    private fun updateCategoryChips(categories: List<String>) {
+        val childCount = binding.cgFavCats.childCount
+        for (i in (childCount - 1) downTo 0) {
+            val view = binding.cgFavCats.getChildAt(i)
+            if (view.id != R.id.btnAddCat) {
+                binding.cgFavCats.removeView(view)
+            }
+        }
+
+        categories.forEach { cat ->
+            val chip = createSelectableChip(cat) {
+                val current = profileViewModel.uiState.value.favCategories.toMutableList()
+                current.remove(cat)
+                profileViewModel.updateFavoriteCategories(current)
+            }
+            binding.cgFavCats.addView(chip, 0)
+        }
+    }
+
+    private fun updateKeywordChips(keywords: List<String>) {
+        val childCount = binding.cgFavKws.childCount
+        for (i in (childCount - 1) downTo 0) {
+            val view = binding.cgFavKws.getChildAt(i)
+            if (view.id != R.id.btnAddKw) {
+                binding.cgFavKws.removeView(view)
+            }
+        }
+
+        keywords.forEach { kw ->
+            val chip = createSelectableChip(kw) {
+                profileViewModel.removeFavoriteKeyword(kw)
+            }
+            binding.cgFavKws.addView(chip, 0)
+        }
+    }
+
+    private fun createSelectableChip(text: String, onClose: () -> Unit): com.google.android.material.chip.Chip {
+        return com.google.android.material.chip.Chip(
+            requireContext(),
+            null,
+            com.google.android.material.R.style.Widget_Material3_Chip_Assist,
+        ).apply {
+            this.text = text
+            isCloseIconVisible = true
+            setCloseIconResource(R.drawable.ic_close)
+            closeIconSize = 18f * resources.displayMetrics.density
+            chipIconTint = android.content.res.ColorStateList.valueOf(
+                com.google.android.material.color.MaterialColors.getColor(
+                    this,
+                    com.google.android.material.R.attr.colorOnSurfaceVariant,
+                ),
+            )
+            closeIconTint = chipIconTint
+            setOnCloseIconClickListener {
+                onClose()
+            }
+        }
+    }
+
+    private fun submitKeyword() {
+        val kw = binding.tietKeyword.text.toString().trim()
+        if (kw.isNotEmpty()) {
+            profileViewModel.addFavoriteKeyword(kw)
+            binding.tietKeyword.text?.clear()
+        }
+        clearFocusAndHideKeyboard()
+    }
+
+    private fun clearFocusAndHideKeyboard() {
+        binding.tietKeyword.clearFocus()
+        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(binding.tietKeyword.windowToken, 0)
+        binding.clProfileRoot.requestFocus()
+
+        if (binding.tietKeyword.text.isNullOrEmpty()) {
+            binding.tilKeyword.isVisible = false
+            binding.btnAddKw.isVisible = true
+        }
     }
 
     override fun handleUiEvent(event: UiEvent) {
@@ -275,30 +307,6 @@ class ProfileFragment : BaseFragment() {
         showToast("Email copied to clipboard")
     }
 
-    private fun addKeywordChip(text: String) {
-        val chip = com.google.android.material.chip.Chip(
-            requireContext(),
-            null,
-            com.google.android.material.R.style.Widget_Material3_Chip_Assist
-        ).apply {
-            this.text = text
-            isCloseIconVisible = true
-            setCloseIconResource(R.drawable.ic_close)
-            closeIconSize = 18f * resources.displayMetrics.density
-            chipIconTint = android.content.res.ColorStateList.valueOf(
-                com.google.android.material.color.MaterialColors.getColor(
-                    this,
-                    com.google.android.material.R.attr.colorOnSurfaceVariant
-                )
-            )
-            closeIconTint = chipIconTint
-            setOnCloseIconClickListener {
-                binding.cgFavKws.removeView(this)
-            }
-        }
-        binding.cgFavKws.addView(chip, 0)
-    }
-
     private fun promptFingerPrintSignUp() {
         val canAuthenticate = BiometricManager.from(requireContext()).canAuthenticate()
         if (canAuthenticate == BiometricManager.BIOMETRIC_SUCCESS) {
@@ -311,7 +319,7 @@ class ProfileFragment : BaseFragment() {
                                 val cipherTextWrapper =
                                     profileViewModel.encryptedServerTokenWrapper(
                                         it,
-                                        result.data.accessToken
+                                        result.data.accessToken,
                                     )
                                 if (cipherTextWrapper != null) {
                                     showToast("Add fingerprint successfully")
@@ -332,7 +340,7 @@ class ProfileFragment : BaseFragment() {
                     binding.swEnableFingerPrint.isChecked = false
                 })
             val promptInfo = BiometricPromptUtils.createPromptInfo(
-                requireActivity() as AppCompatActivity
+                requireActivity() as AppCompatActivity,
             )
             val cipher = profileViewModel.generateCypher()
             biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(cipher))
