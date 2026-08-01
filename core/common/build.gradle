@@ -1,0 +1,7 @@
+plugins {
+    id 'coursedeals.kotlin.library'
+}
+
+dependencies {
+    // Basic Kotlin deps if needed
+}

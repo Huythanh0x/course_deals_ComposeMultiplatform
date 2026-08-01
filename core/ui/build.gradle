@@ -1,0 +1,13 @@
+plugins {
+    id 'coursedeals.android.library'
+}
+
+android {
+    namespace 'com.thanh0x.coursedeals.core.ui'
+}
+
+dependencies {
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.appcompat
+    implementation libs.material
+}

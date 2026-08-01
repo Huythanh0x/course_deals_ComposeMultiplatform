@@ -1,0 +1,13 @@
+plugins {
+    id 'coursedeals.android.library'
+}
+
+android {
+    namespace 'com.thanh0x.coursedeals.core.network'
+}
+
+dependencies {
+    implementation project(':core:common')
+    implementation libs.retrofit
+    implementation libs.retrofit.converter.gson
+}
