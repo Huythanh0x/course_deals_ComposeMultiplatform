@@ -1,0 +1,22 @@
+plugins {
+    id 'coursedeals.android.library'
+    id 'com.google.devtools.ksp'
+    id 'dagger.hilt.android.plugin'
+}
+
+android {
+    namespace 'com.thanh0x.coursedeals.feature.course'
+}
+
+dependencies {
+    implementation project(':core:ui')
+    implementation project(':core:common')
+    implementation project(':domain:coupons')
+
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.appcompat
+    implementation libs.material
+    implementation libs.androidx.lifecycle.runtime.ktx
+    implementation libs.androidx.lifecycle.viewmodel.ktx
+    implementation libs.androidx.fragment.ktx
+}

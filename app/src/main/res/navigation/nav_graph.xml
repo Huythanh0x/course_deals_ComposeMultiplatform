@@ -7,17 +7,17 @@
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.thanh0x.coursedeals.ui.core.home.HomeFragment"
+        android:name="com.thanh0x.coursedeals.feature.home.HomeFragment"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" />
     <fragment
         android:id="@+id/courseFragment"
-        android:name="com.thanh0x.coursedeals.ui.core.course.CourseFragment"
+        android:name="com.thanh0x.coursedeals.feature.course.CourseFragment"
         android:label="fragment_course"
         tools:layout="@layout/fragment_course" />
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.thanh0x.coursedeals.ui.core.profile.ProfileFragment"
+        android:name="com.thanh0x.coursedeals.feature.profile.ProfileFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" />
 </navigation>

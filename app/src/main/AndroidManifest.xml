@@ -23,10 +23,10 @@
             android:windowSoftInputMode="adjustPan"
             android:screenOrientation="fullSensor"/>
         <activity
-            android:name=".ui.enroll.CouponEnrollActivity"
+            android:name="com.thanh0x.coursedeals.feature.enroll.CouponEnrollActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.splash.SplashActivity"
+            android:name="com.thanh0x.coursedeals.feature.splash.SplashActivity"
             android:exported="true"
             android:launchMode="singleInstance"
             android:noHistory="true">
@@ -36,11 +36,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.login.LoginActivity"
+            android:name="com.thanh0x.coursedeals.feature.auth.LoginActivity"
             android:exported="true"
             android:screenOrientation="fullSensor" />
         <activity
-            android:name=".ui.detail.CouponDetailActivity"
+            android:name="com.thanh0x.coursedeals.feature.detail.CouponDetailActivity"
             android:exported="true" />
     </application>
 

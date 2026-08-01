@@ -1,0 +1,20 @@
+plugins {
+    id 'coursedeals.android.library'
+    id 'com.google.devtools.ksp'
+    id 'dagger.hilt.android.plugin'
+}
+
+android {
+    namespace 'com.thanh0x.coursedeals.feature.splash'
+}
+
+dependencies {
+    implementation project(':core:ui')
+    implementation project(':core:common')
+    implementation project(':domain:user')
+
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.appcompat
+    implementation libs.material
+    implementation libs.androidx.lifecycle.runtime.ktx
+}
