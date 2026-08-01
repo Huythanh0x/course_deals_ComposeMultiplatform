@@ -5,17 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
-import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
-import com.google.android.material.chip.Chip
 import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.DialogFilterBinding
-import com.thanh0x.coursedeals.databinding.ItemCategoryPickerBinding
 import com.thanh0x.coursedeals.domain.model.CourseCategory
 import com.thanh0x.coursedeals.domain.model.CourseLanguage
 import com.thanh0x.coursedeals.domain.model.FilterData
 import com.thanh0x.coursedeals.domain.model.SortOption
 import com.thanh0x.coursedeals.ui.base.BaseBottomSheetDialog
+import com.thanh0x.coursedeals.ui.customview.SelectableChipView
 
 class FilterBottomSheetDialog : BaseBottomSheetDialog() {
 
@@ -114,73 +112,77 @@ class FilterBottomSheetDialog : BaseBottomSheetDialog() {
 
     private fun setupCategoryGroup() {
         CourseCategory.entries.forEach { category ->
-            val itemBinding = ItemCategoryPickerBinding.inflate(layoutInflater, binding.cgCategories, false)
-            itemBinding.chip.text = getString(category.displayResId)
+            val chipView = SelectableChipView(requireContext()).apply {
+                setText(getString(category.displayResId))
+                setChipHeight(resources.getDimensionPixelSize(R.dimen.spacing_32))
 
-            val isSelected = selectedCategories.contains(category)
-            itemBinding.cvCheck.isVisible = isSelected
-            itemBinding.chip.isChecked = isSelected
+                // Wrap content for horizontal ChipGroup flow
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                )
 
-            itemBinding.chip.setOnClickListener {
-                if (selectedCategories.contains(category)) {
-                    selectedCategories.remove(category)
-                    itemBinding.cvCheck.isVisible = false
-                    itemBinding.chip.isChecked = false
-                } else {
-                    selectedCategories.add(category)
-                    itemBinding.cvCheck.isVisible = true
-                    itemBinding.chip.isChecked = true
+                isChecked = selectedCategories.contains(category)
+                setOnChipClickListener { checked ->
+                    if (checked) {
+                        selectedCategories.add(category)
+                    } else {
+                        selectedCategories.remove(category)
+                    }
                 }
             }
-            binding.cgCategories.addView(itemBinding.root)
+            binding.cgCategories.addView(chipView)
         }
     }
 
     private fun setupLanguageGroup() {
         CourseLanguage.entries.forEach { language ->
-            val itemBinding = ItemCategoryPickerBinding.inflate(layoutInflater, binding.cgLanguages, false)
-            itemBinding.chip.text = getString(language.displayResId)
+            val chipView = SelectableChipView(requireContext()).apply {
+                setText(getString(language.displayResId))
+                setChipHeight(resources.getDimensionPixelSize(R.dimen.spacing_32))
 
-            val isSelected = selectedLanguage == language
-            itemBinding.cvCheck.isVisible = isSelected
-            itemBinding.chip.isChecked = isSelected
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                )
 
-            itemBinding.chip.setOnClickListener {
-                clearGroupSelection(binding.cgLanguages)
-                selectedLanguage = language
-                itemBinding.cvCheck.isVisible = true
-                itemBinding.chip.isChecked = true
+                isChecked = selectedLanguage == language
+                setOnChipClickListener {
+                    clearGroupSelection(binding.cgLanguages)
+                    selectedLanguage = language
+                    isChecked = true
+                }
             }
-            binding.cgLanguages.addView(itemBinding.root)
+            binding.cgLanguages.addView(chipView)
         }
     }
 
     private fun setupSortGroup() {
         SortOption.entries.forEach { option ->
-            val itemBinding = ItemCategoryPickerBinding.inflate(layoutInflater, binding.cgSort, false)
-            itemBinding.chip.text = getString(option.displayResId)
+            val chipView = SelectableChipView(requireContext()).apply {
+                setText(getString(option.displayResId))
+                setChipHeight(resources.getDimensionPixelSize(R.dimen.spacing_32))
 
-            val isSelected = selectedSort == option
-            itemBinding.cvCheck.isVisible = isSelected
-            itemBinding.chip.isChecked = isSelected
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                )
 
-            itemBinding.chip.setOnClickListener {
-                clearGroupSelection(binding.cgSort)
-                selectedSort = option
-                itemBinding.cvCheck.isVisible = true
-                itemBinding.chip.isChecked = true
+                isChecked = selectedSort == option
+                setOnChipClickListener {
+                    clearGroupSelection(binding.cgSort)
+                    selectedSort = option
+                    isChecked = true
+                }
             }
-            binding.cgSort.addView(itemBinding.root)
+            binding.cgSort.addView(chipView)
         }
     }
 
     private fun clearGroupSelection(group: ViewGroup) {
         for (i in 0 until group.childCount) {
-            val container = group.getChildAt(i) as ViewGroup
-            val chip = container.findViewById<Chip>(R.id.chip)
-            val check = container.findViewById<View>(R.id.cvCheck)
-            chip.isChecked = false
-            check.isVisible = false
+            val chipView = group.getChildAt(i) as? SelectableChipView
+            chipView?.isChecked = false
         }
     }
 
@@ -205,12 +207,9 @@ class FilterBottomSheetDialog : BaseBottomSheetDialog() {
     private fun updateChipSelection(group: ViewGroup, displayResId: Int) {
         val text = getString(displayResId)
         for (i in 0 until group.childCount) {
-            val container = group.getChildAt(i) as ViewGroup
-            val chip = container.findViewById<Chip>(R.id.chip)
-            val check = container.findViewById<View>(R.id.cvCheck)
-            if (chip.text == text) {
-                chip.isChecked = true
-                check.isVisible = true
+            val chipView = group.getChildAt(i) as? SelectableChipView
+            if (chipView?.getText() == text) {
+                chipView.isChecked = true
             }
         }
     }

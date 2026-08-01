@@ -8,11 +8,10 @@ import android.view.inputmethod.EditorInfo
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
-import com.google.android.material.chip.Chip
 import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.DialogReportBinding
-import com.thanh0x.coursedeals.databinding.ItemReportReasonBinding
 import com.thanh0x.coursedeals.ui.base.BaseBottomSheetDialog
+import com.thanh0x.coursedeals.ui.customview.SelectableChipView
 
 class ReportBottomSheetDialog : BaseBottomSheetDialog() {
 
@@ -63,31 +62,30 @@ class ReportBottomSheetDialog : BaseBottomSheetDialog() {
     private fun setupReasonGroup() {
         reasons.forEach { reasonResId ->
             val reasonStr = getString(reasonResId)
-            val itemBinding = ItemReportReasonBinding.inflate(layoutInflater, binding.cgReasons, false)
-            itemBinding.chip.text = reasonStr
+            val chipView = SelectableChipView(requireContext()).apply {
+                setText(reasonStr)
+                setChipHeight(resources.getDimensionPixelSize(R.dimen.spacing_48))
+                setFullWidth(true)
 
-            itemBinding.chip.setOnClickListener {
-                clearGroupSelection()
-                selectedReason = reasonStr
-                itemBinding.cvCheck.isVisible = true
-                itemBinding.chip.isChecked = true
+                setOnChipClickListener {
+                    clearGroupSelection()
+                    selectedReason = reasonStr
+                    isChecked = true
 
-                binding.tilOtherReason.isVisible = reasonResId == R.string.report_reason_other
-                if (binding.tilOtherReason.isVisible) {
-                    binding.tietOtherReason.requestFocus()
+                    binding.tilOtherReason.isVisible = reasonResId == R.string.report_reason_other
+                    if (binding.tilOtherReason.isVisible) {
+                        binding.tietOtherReason.requestFocus()
+                    }
                 }
             }
-            binding.cgReasons.addView(itemBinding.root)
+            binding.llReasons.addView(chipView)
         }
     }
 
     private fun clearGroupSelection() {
-        for (i in 0 until binding.cgReasons.childCount) {
-            val container = binding.cgReasons.getChildAt(i) as ViewGroup
-            val chip = container.findViewById<Chip>(R.id.chip)
-            val check = container.findViewById<View>(R.id.cvCheck)
-            chip.isChecked = false
-            check.isVisible = false
+        for (i in 0 until binding.llReasons.childCount) {
+            val chipView = binding.llReasons.getChildAt(i) as? SelectableChipView
+            chipView?.isChecked = false
         }
     }
 

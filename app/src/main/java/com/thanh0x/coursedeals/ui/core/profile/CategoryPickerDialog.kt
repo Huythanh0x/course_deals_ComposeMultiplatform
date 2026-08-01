@@ -5,12 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
-import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
+import com.thanh0x.coursedeals.R
 import com.thanh0x.coursedeals.databinding.DialogCategoryPickerBinding
-import com.thanh0x.coursedeals.databinding.ItemCategoryPickerBinding
 import com.thanh0x.coursedeals.domain.model.CourseCategory
 import com.thanh0x.coursedeals.ui.base.BaseBottomSheetDialog
+import com.thanh0x.coursedeals.ui.customview.SelectableChipView
 
 class CategoryPickerDialog : BaseBottomSheetDialog() {
 
@@ -35,25 +35,26 @@ class CategoryPickerDialog : BaseBottomSheetDialog() {
 
         CourseCategory.entries.forEach { category ->
             val categoryStr = getString(category.displayResId)
-            val itemBinding = ItemCategoryPickerBinding.inflate(layoutInflater, binding.cgCategories, false)
-            itemBinding.chip.text = categoryStr
+            val chipView = SelectableChipView(requireContext()).apply {
+                setText(categoryStr)
+                setChipHeight(resources.getDimensionPixelSize(R.dimen.spacing_32))
 
-            val isSelected = selectedItems.contains(categoryStr)
-            itemBinding.cvCheck.isVisible = isSelected
-            itemBinding.chip.isChecked = isSelected
+                // Wrap content for horizontal ChipGroup flow
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                )
 
-            itemBinding.chip.setOnClickListener {
-                if (selectedItems.contains(categoryStr)) {
-                    selectedItems.remove(categoryStr)
-                    itemBinding.cvCheck.isVisible = false
-                    itemBinding.chip.isChecked = false
-                } else {
-                    selectedItems.add(categoryStr)
-                    itemBinding.cvCheck.isVisible = true
-                    itemBinding.chip.isChecked = true
+                isChecked = selectedItems.contains(categoryStr)
+                setOnChipClickListener { checked ->
+                    if (checked) {
+                        selectedItems.add(categoryStr)
+                    } else {
+                        selectedItems.remove(categoryStr)
+                    }
                 }
             }
-            binding.cgCategories.addView(itemBinding.root)
+            binding.cgCategories.addView(chipView)
         }
 
         binding.btnDone.setOnClickListener {
