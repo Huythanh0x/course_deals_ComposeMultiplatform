@@ -1,0 +1,464 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clProfileRoot"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/m3_surface_container_low"
+        android:clickable="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/lpSync"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible" />
+
+        <!-- Left Column: Profile Info -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clLeftColumn"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/nsvProfile"
+            app:layout_constraintHorizontal_weight="0.8"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lpSync">
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cvAvatar"
+                android:layout_width="@dimen/spacing_64"
+                android:layout_height="@dimen/spacing_64"
+                app:cardBackgroundColor="@color/m3_primary_container"
+                app:cardCornerRadius="@dimen/spacing_32"
+                app:cardElevation="0dp"
+                app:layout_constraintBottom_toTopOf="@+id/tvDisplayName"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed"
+                app:strokeWidth="0dp">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/ivAvatar"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="@dimen/spacing_16"
+                    android:src="@drawable/ic_nav_profile"
+                    app:tint="@color/m3_on_primary_container" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tvDisplayName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_16"
+                android:text="User Name"
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                android:textColor="?attr/colorOnSurface"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/llEmailContainer"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cvAvatar" />
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/llEmailContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_4"
+                android:padding="@dimen/spacing_4"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvDisplayName">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tvEmail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="user@example.com"
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                    android:textColor="?attr/colorOnSurfaceVariant" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/btnCopyEmail"
+                    android:layout_width="@dimen/spacing_18"
+                    android:layout_height="@dimen/spacing_18"
+                    android:layout_marginStart="@dimen/spacing_4"
+                    android:src="@drawable/ic_content_copy"
+                    app:tint="?attr/colorOnSurfaceVariant" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Right Column: Settings (Scrollable) -->
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nsvProfile"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fillViewport="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_weight="1.2"
+            app:layout_constraintStart_toEndOf="@+id/clLeftColumn"
+            app:layout_constraintTop_toBottomOf="@+id/lpSync">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/spacing_32">
+
+                <!-- Favorite Categories -->
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tvFavCatsTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/spacing_16"
+                    android:layout_marginTop="@dimen/spacing_16"
+                    android:text="@string/fav_cats_title"
+                    android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/cgFavCats"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/spacing_16"
+                    android:layout_marginTop="@dimen/spacing_8"
+                    android:clipToPadding="false"
+                    android:paddingVertical="@dimen/spacing_8"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvFavCatsTitle">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/btnAddCat"
+                        style="@style/Widget.Material3.Chip.Assist"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:chipBackgroundColor="@android:color/transparent"
+                        app:chipEndPadding="@dimen/spacing_10"
+                        app:chipIcon="@drawable/ic_add"
+                        app:chipIconSize="@dimen/icon_size_medium"
+                        app:chipIconTint="?attr/colorOnSurfaceVariant"
+                        app:chipIconVisible="true"
+                        app:chipStartPadding="@dimen/spacing_10"
+                        app:chipStrokeWidth="@dimen/spacing_1" />
+
+                </com.google.android.material.chip.ChipGroup>
+
+                <!-- Favorite Keywords -->
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tvFavKwsTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/spacing_16"
+                    android:layout_marginTop="@dimen/spacing_24"
+                    android:text="@string/fav_kws_title"
+                    android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/cgFavCats" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilKeyword"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/spacing_16"
+                    android:layout_marginTop="@dimen/spacing_8"
+                    android:visibility="gone"
+                    app:endIconDrawable="@drawable/ic_add"
+                    app:endIconMode="custom"
+                    app:endIconTint="?attr/colorOnSurfaceVariant"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvFavKwsTitle"
+                    tools:visibility="visible">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/tietKeyword"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/kw_hint"
+                        android:imeOptions="actionDone"
+                        android:singleLine="true"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/cgFavKws"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/spacing_16"
+                    android:layout_marginTop="@dimen/spacing_8"
+                    android:clipToPadding="false"
+                    android:paddingVertical="@dimen/spacing_8"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tilKeyword">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/btnAddKw"
+                        style="@style/Widget.Material3.Chip.Assist"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/kw_add_trigger"
+                        app:chipBackgroundColor="@android:color/transparent"
+                        app:chipEndPadding="@dimen/spacing_8"
+                        app:chipIcon="@drawable/ic_add"
+                        app:chipIconSize="@dimen/icon_size_medium"
+                        app:chipIconTint="?attr/colorOnSurfaceVariant"
+                        app:chipIconVisible="true"
+                        app:chipStartPadding="@dimen/spacing_8"
+                        app:chipStrokeWidth="@dimen/spacing_1" />
+
+                </com.google.android.material.chip.ChipGroup>
+
+                <!-- Settings -->
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tvSettingsTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/spacing_16"
+                    android:layout_marginTop="@dimen/spacing_32"
+                    android:text="@string/settings_title"
+                    android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/cgFavKws" />
+
+                <!-- Dark Mode Row -->
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/clDarkModeRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/spacing_56"
+                    android:layout_marginTop="@dimen/spacing_8"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:paddingHorizontal="@dimen/spacing_16"
+                    app:layout_constraintTop_toBottomOf="@+id/tvSettingsTitle">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/ivDarkMode"
+                        android:layout_width="@dimen/icon_size_large"
+                        android:layout_height="@dimen/icon_size_large"
+                        android:src="@drawable/ic_moon"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:tint="?attr/colorOnSurfaceVariant" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_16"
+                        android:text="@string/enable_dark_mode_switch_text"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+                        android:textColor="?attr/colorOnSurface"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/swEnableDarkMode"
+                        app:layout_constraintStart_toEndOf="@+id/ivDarkMode"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/swEnableDarkMode"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <!-- Biometric Row -->
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/clBiometricRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/spacing_56"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:paddingHorizontal="@dimen/spacing_16"
+                    app:layout_constraintTop_toBottomOf="@+id/clDarkModeRow">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/ivBiometric"
+                        android:layout_width="@dimen/icon_size_large"
+                        android:layout_height="@dimen/icon_size_large"
+                        android:src="@drawable/ic_fingerprint"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:tint="?attr/colorOnSurfaceVariant" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_16"
+                        android:text="@string/enable_finger_print_switch_text"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+                        android:textColor="?attr/colorOnSurface"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/swEnableFingerPrint"
+                        app:layout_constraintStart_toEndOf="@+id/ivBiometric"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/swEnableFingerPrint"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <!-- Notifications Row -->
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/clNotificationsRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/spacing_56"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:paddingHorizontal="@dimen/spacing_16"
+                    app:layout_constraintTop_toBottomOf="@+id/clBiometricRow">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/ivNotifications"
+                        android:layout_width="@dimen/icon_size_large"
+                        android:layout_height="@dimen/icon_size_large"
+                        android:src="@drawable/ic_notification"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:tint="?attr/colorOnSurfaceVariant" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_16"
+                        android:text="@string/notif_master"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+                        android:textColor="?attr/colorOnSurface"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/swEnableNotifications"
+                        app:layout_constraintStart_toEndOf="@+id/ivNotifications"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/swEnableNotifications"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <!-- Sub-settings -->
+                <LinearLayout
+                    android:id="@+id/llNotificationSubSettings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    app:layout_constraintTop_toBottomOf="@+id/clNotificationsRow"
+                    tools:visibility="visible">
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/swNotifCat"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/spacing_48"
+                        android:layout_marginStart="@dimen/spacing_40"
+                        android:paddingHorizontal="@dimen/spacing_16"
+                        android:text="@string/notif_cat"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleSmall" />
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/swNotifKw"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/spacing_48"
+                        android:layout_marginStart="@dimen/spacing_40"
+                        android:paddingHorizontal="@dimen/spacing_16"
+                        android:text="@string/notif_kw"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleSmall" />
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/swNotifHot"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/spacing_48"
+                        android:layout_marginStart="@dimen/spacing_40"
+                        android:paddingHorizontal="@dimen/spacing_16"
+                        android:text="@string/notif_hot"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleSmall" />
+                </LinearLayout>
+
+                <!-- Logout -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnLogout"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/spacing_16"
+                    android:layout_marginTop="@dimen/spacing_48"
+                    android:text="@string/logout_button_text"
+                    android:textColor="@color/m3_on_error_container"
+                    app:cornerRadius="@dimen/corner_radius_large"
+                    app:layout_constraintTop_toBottomOf="@+id/llNotificationSubSettings"
+                    app:strokeColor="@color/m3_on_error_container"
+                    app:strokeWidth="@dimen/spacing_2" />
+
+                <!-- Footer -->
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvDevEmail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_32"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:paddingHorizontal="@dimen/spacing_8"
+                    android:paddingVertical="@dimen/spacing_4"
+                    android:text="@string/dev_email"
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                    android:textColor="@color/m3_primary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/btnLogout" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvDevWebsite"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_4"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:paddingHorizontal="@dimen/spacing_8"
+                    android:paddingVertical="@dimen/spacing_4"
+                    android:text="@string/dev_website"
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                    android:textColor="@color/m3_primary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvDevEmail" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
