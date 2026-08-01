@@ -10,16 +10,20 @@ data class PreferenceDto(
     val keywords: List<String>,
     @SerializedName("notificationsEnabled")
     val notificationsEnabled: Boolean,
+    @SerializedName("updatedAt")
+    val updatedAt: Long,
 )
 
 fun PreferenceDto.toDomain() = UserPreferences(
     categories = categories,
     keywords = keywords,
-    notificationsEnabled = notificationsEnabled
+    notificationsEnabled = notificationsEnabled,
+    updatedAt = updatedAt,
 )
 
 fun UserPreferences.toDto() = PreferenceDto(
     categories = categories,
     keywords = keywords,
-    notificationsEnabled = notificationsEnabled
+    notificationsEnabled = notificationsEnabled,
+    updatedAt = updatedAt,
 )

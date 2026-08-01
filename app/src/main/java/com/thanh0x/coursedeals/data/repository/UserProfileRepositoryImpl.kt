@@ -23,13 +23,26 @@ class UserProfileRepositoryImpl @Inject constructor(
 
     override suspend fun syncPreferences(): AppResult<UserPreferences> {
         val remoteResult = remoteUserProfileDataSource.getPreferences()
+        val localUpdatedAt = localUserProfileDataSource.getPreferencesUpdatedAt()
+
         if (remoteResult is AppResult.Success) {
-            val prefs = remoteResult.data
-            localUserProfileDataSource.saveFavoriteCategories(prefs.categories.toSet())
-            localUserProfileDataSource.saveFavoriteKeywords(prefs.keywords.toSet())
-            localUserProfileDataSource.saveNotificationsEnabled(prefs.notificationsEnabled)
+            val remotePrefs = remoteResult.data
+            if (remotePrefs.updatedAt >= localUpdatedAt) {
+                // Remote is newer or equal, update local
+                updateLocalStore(remotePrefs)
+            } else {
+                // Local is newer, push to remote
+                return pushPreferencesToRemote()
+            }
         }
         return remoteResult
+    }
+
+    private suspend fun updateLocalStore(prefs: UserPreferences) {
+        localUserProfileDataSource.saveFavoriteCategories(prefs.categories.toSet())
+        localUserProfileDataSource.saveFavoriteKeywords(prefs.keywords.toSet())
+        localUserProfileDataSource.saveNotificationsEnabled(prefs.notificationsEnabled)
+        localUserProfileDataSource.savePreferencesUpdatedAt(prefs.updatedAt)
     }
 
     override suspend fun getFavoriteCategories(): Set<String> {
@@ -37,6 +50,7 @@ class UserProfileRepositoryImpl @Inject constructor(
     }
 
     override suspend fun saveFavoriteCategories(categories: Set<String>): AppResult<UserPreferences> {
+        updateLocalTimestamp()
         localUserProfileDataSource.saveFavoriteCategories(categories)
         return pushPreferencesToRemote()
     }
@@ -46,6 +60,7 @@ class UserProfileRepositoryImpl @Inject constructor(
     }
 
     override suspend fun saveFavoriteKeywords(keywords: Set<String>): AppResult<UserPreferences> {
+        updateLocalTimestamp()
         localUserProfileDataSource.saveFavoriteKeywords(keywords)
         return pushPreferencesToRemote()
     }
@@ -55,8 +70,13 @@ class UserProfileRepositoryImpl @Inject constructor(
     }
 
     override suspend fun saveNotificationsEnabled(enabled: Boolean): AppResult<UserPreferences> {
+        updateLocalTimestamp()
         localUserProfileDataSource.saveNotificationsEnabled(enabled)
         return pushPreferencesToRemote()
+    }
+
+    private suspend fun updateLocalTimestamp() {
+        localUserProfileDataSource.savePreferencesUpdatedAt(System.currentTimeMillis())
     }
 
     private suspend fun pushPreferencesToRemote(): AppResult<UserPreferences> {
@@ -64,6 +84,7 @@ class UserProfileRepositoryImpl @Inject constructor(
             categories = localUserProfileDataSource.getFavoriteCategories().toList(),
             keywords = localUserProfileDataSource.getFavoriteKeywords().toList(),
             notificationsEnabled = localUserProfileDataSource.getNotificationsEnabled(),
+            updatedAt = localUserProfileDataSource.getPreferencesUpdatedAt(),
         )
         return remoteUserProfileDataSource.updatePreferences(currentPrefs)
     }

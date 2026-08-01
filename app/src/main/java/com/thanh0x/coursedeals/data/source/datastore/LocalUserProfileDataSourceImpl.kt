@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import com.thanh0x.coursedeals.domain.source.LocalUserProfileDataSource
 import com.thanh0x.coursedeals.util.Constant
@@ -19,6 +20,7 @@ class LocalUserProfileDataSourceImpl @Inject constructor(private val datastore: 
         val favCategories = stringSetPreferencesKey(Constant.PREFERENCES_FAV_CATEGORIES)
         val favKeywords = stringSetPreferencesKey(Constant.PREFERENCES_FAV_KEYWORDS)
         val notificationsEnabled = booleanPreferencesKey(Constant.PREFERENCES_NOTIFICATIONS_ENABLED)
+        val updatedAt = longPreferencesKey(Constant.PREFERENCES_UPDATED_AT)
     }
 
     override suspend fun saveEnableDarkMode(isDarkModeEnable: Boolean) {
@@ -74,6 +76,18 @@ class LocalUserProfileDataSourceImpl @Inject constructor(private val datastore: 
     override suspend fun saveNotificationsEnabled(enabled: Boolean) {
         datastore.edit { preferences ->
             preferences[PreferenceKey.notificationsEnabled] = enabled
+        }
+    }
+
+    override suspend fun getPreferencesUpdatedAt(): Long {
+        return datastore.data.map { preferences ->
+            preferences[PreferenceKey.updatedAt] ?: 0L
+        }.first()
+    }
+
+    override suspend fun savePreferencesUpdatedAt(timestamp: Long) {
+        datastore.edit { preferences ->
+            preferences[PreferenceKey.updatedAt] = timestamp
         }
     }
 }

@@ -15,4 +15,7 @@ interface LocalUserProfileDataSource {
 
     suspend fun getNotificationsEnabled(): Boolean
     suspend fun saveNotificationsEnabled(enabled: Boolean)
+
+    suspend fun getPreferencesUpdatedAt(): Long
+    suspend fun savePreferencesUpdatedAt(timestamp: Long)
 }
