@@ -1,0 +1,39 @@
+plugins {
+    id 'coursedeals.android.library'
+    id 'com.google.devtools.ksp'
+    id 'dagger.hilt.android.plugin'
+    id 'kotlin-parcelize'
+}
+
+android {
+    namespace 'com.thanh0x.coursedeals.data.coupons'
+
+    flavorDimensions += "environment"
+    productFlavors {
+        local { dimension "environment" }
+        prod { dimension "environment" }
+    }
+}
+
+dependencies {
+    implementation project(':core:common')
+    implementation project(':core:network')
+    implementation project(':domain:coupons')
+    implementation project(':domain:user')
+
+    // Room
+    implementation libs.androidx.room.runtime
+    ksp libs.androidx.room.compiler
+    implementation libs.androidx.room.ktx
+    implementation libs.androidx.room.paging
+
+    // Retrofit
+    implementation libs.retrofit
+    implementation libs.retrofit.converter.gson
+
+    // Paging
+    implementation libs.androidx.paging.runtime
+
+    // Logging
+    implementation libs.timber
+}

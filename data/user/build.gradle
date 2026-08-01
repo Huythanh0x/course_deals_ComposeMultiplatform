@@ -1,0 +1,31 @@
+plugins {
+    id 'coursedeals.android.library'
+    id 'com.google.devtools.ksp'
+    id 'dagger.hilt.android.plugin'
+}
+
+android {
+    namespace 'com.thanh0x.coursedeals.data.user'
+
+    flavorDimensions += "environment"
+    productFlavors {
+        local { dimension "environment" }
+        prod { dimension "environment" }
+    }
+}
+
+dependencies {
+    implementation project(':core:common')
+    implementation project(':core:network')
+    implementation project(':domain:user')
+
+    // Datastore
+    implementation libs.androidx.datastore.preferences
+
+    // Retrofit
+    implementation libs.retrofit
+    implementation libs.retrofit.converter.gson
+
+    // Logging
+    implementation libs.timber
+}

@@ -2,12 +2,71 @@ plugins {
     id 'coursedeals.android.library'
 }
 
+static def getLocalIP() {
+    try {
+        def en = NetworkInterface.getNetworkInterfaces()
+        def candidate = null
+        while (en.hasMoreElements()) {
+            def interFace = en.nextElement()
+            if (!interFace.isUp() || interFace.isLoopback() || interFace.isVirtual()) continue
+
+            def enumIpAddress = interFace.getInetAddresses()
+            while (enumIpAddress.hasMoreElements()) {
+                def inetAddress = enumIpAddress.nextElement()
+                if (inetAddress instanceof Inet4Address) {
+                    String name = interFace.getName().toLowerCase()
+                    // Prioritize common physical interface names (en, eth, wlan)
+                    if (name.startsWith("en") || name.startsWith("eth") || name.startsWith("wlan")) {
+                        return inetAddress.getHostAddress()
+                    }
+                    candidate = inetAddress.getHostAddress()
+                }
+            }
+        }
+        if (candidate != null) return candidate
+    } catch (Exception ex) {
+        ex.printStackTrace()
+    }
+    return "10.0.2.2" // Default emulator host IP
+}
+
+def getLocalApiUrl() {
+    Properties properties = new Properties()
+    def localPropertiesFile = project.rootProject.file('local.properties')
+    if (localPropertiesFile.exists()) {
+        properties.load(localPropertiesFile.newDataInputStream())
+    }
+    def overrideIp = properties.getProperty("local.api.ip")
+    if (overrideIp != null && !overrideIp.isEmpty()) {
+        return "http://${overrideIp}:8080"
+    }
+    return "http://${getLocalIP()}:8080"
+}
+
 android {
     namespace 'com.thanh0x.coursedeals.core.network'
+
+    flavorDimensions += "environment"
+    productFlavors {
+        local {
+            dimension "environment"
+            buildConfigField "String", "BASE_URL_API", "\"${getLocalApiUrl()}\""
+        }
+        prod {
+            dimension "environment"
+            buildConfigField "String", "BASE_URL_API", "\"https://coupons-api.thanh0x.com\""
+        }
+    }
 }
 
 dependencies {
     implementation project(':core:common')
+    implementation project(':domain:user')
     implementation libs.retrofit
     implementation libs.retrofit.converter.gson
+    implementation libs.timber
+
+    // Hilt
+    implementation libs.hilt.android
+    ksp libs.hilt.android.compiler
 }
