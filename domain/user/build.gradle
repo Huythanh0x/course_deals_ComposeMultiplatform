@@ -1,0 +1,12 @@
+plugins {
+    id 'coursedeals.android.library'
+    id 'kotlin-parcelize'
+}
+
+android {
+    namespace 'com.thanh0x.coursedeals.domain.user'
+}
+
+dependencies {
+    implementation project(':core:common')
+}
