@@ -43,3 +43,8 @@ xxxxxx
 - Retrofit
 - Hilt
 - MotionLayout
+
+# Contributing / project management
+
+See [`docs/project-management.md`](docs/project-management.md) for branching, commit,
+PR, versioning, and CI conventions.
