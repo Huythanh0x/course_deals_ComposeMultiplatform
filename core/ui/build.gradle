@@ -6,6 +6,9 @@ plugins {
 
 android {
     namespace 'com.thanh0x.coursedeals.core.ui'
+    lint {
+        baseline = file("lint-baseline.xml")
+    }
 }
 
 dependencies {

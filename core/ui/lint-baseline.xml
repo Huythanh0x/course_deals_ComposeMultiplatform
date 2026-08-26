@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="6" by="lint 9.3.0" type="baseline" client="gradle" dependencies="false" name="AGP (9.3.0)" variant="all" version="9.3.0">
+
+    <issue
+        id="MissingPermission"
+        message="Missing permissions required by ConnectivityManager.getActiveNetwork: android.permission.ACCESS_NETWORK_STATE"
+        errorLine1="            connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)"
+        errorLine2="                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/thanh0x/coursedeals/core/ui/util/NetworkUtil.kt"
+            line="12"
+            column="56"/>
+    </issue>
+
+    <issue
+        id="MissingPermission"
+        message="Missing permissions required by ConnectivityManager.getNetworkCapabilities: android.permission.ACCESS_NETWORK_STATE"
+        errorLine1="            connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/thanh0x/coursedeals/core/ui/util/NetworkUtil.kt"
+            line="12"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="Limit vector icons sizes to 200×200 to keep icon drawing fast; see https://developer.android.com/studio/write/vector-asset-studio#when for more"
+        errorLine1="    android:width=&quot;512dp&quot;"
+        errorLine2="                   ~~~~~">
+        <location
+            file="src/main/res/drawable/ic_logo_mark.xml"
+            line="3"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;student&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;few_student&quot;>%d student&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="22"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;students&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;lots_of_student&quot;>%d students&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="23"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;minute&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;few_minute_left&quot;>%d minute&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="30"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;minutes&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;lots_of_minutes_left&quot;>%d minutes&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="31"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;hours&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;lots_of_hours_left&quot;>%d hours&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="32"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;days&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;lots_of_days_left&quot;>%d days&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="33"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;minutes&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;lots_of_minutes_ago&quot;>%d minutes ago&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="36"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;hours&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;lots_of_hours_ago&quot;>%d hours ago&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="37"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;days&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;lots_of_days_ago&quot;>%d days ago&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="38"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;review&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;few_review&quot;>%d review&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="59"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;reviews&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;lots_of_review&quot;>%d reviews&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="60"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;deals&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;stat_deals&quot;>%1$d deals&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="76"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;deals&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;stat_matching_deals&quot;>Matching %1$d/%2$d deals&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="77"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="Overdraw"
+        message="Possible overdraw: Root element paints background `?attr/selectableItemBackground` with a theme that also paints a background (inferred theme is `@android:style/Theme.Holo`)"
+        errorLine1="    android:background=&quot;?attr/selectableItemBackground&quot;"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/item_search_suggestion.xml"
+            line="6"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/error_loading_image.png` in densityless folder">
+        <location
+            file="src/main/res/drawable/error_loading_image.png"/>
+    </issue>
+
+    <issue
+        id="KeyboardInaccessibleWidget"
+        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;"
+        errorLine1="        android:clickable=&quot;true&quot;"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/layout_selectable_chip.xml"
+            line="14"
+            column="9"/>
+    </issue>
+
+</issues>
