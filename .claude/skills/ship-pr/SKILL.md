@@ -25,7 +25,10 @@ rubber stamp:
 2. Confirm which issue this closes — every PR must link one via `Closes #N`
    (`docs/pull-requests.md`).
 3. Open the PR filled from `.github/PULL_REQUEST_TEMPLATE.md` — fill in **all** of it,
-   including "How this was tested" with what was actually run (not "should work"):
+   including "How this was tested" with what was actually run (not "should work"). If
+   this ticket has a workspace at `.claude/tickets/<issue-number>-<slug>/NOTES.md` (from
+   `run-tests`/`capture-evidence`), pull the real pass/fail numbers and evidence
+   paths/screenshots from its Test evidence section rather than re-deriving them:
    ```bash
    gh pr create -R Huythanh0x/course_deals_ComposeMultiplatform \
      --title "<type>(<scope>): <description>" \

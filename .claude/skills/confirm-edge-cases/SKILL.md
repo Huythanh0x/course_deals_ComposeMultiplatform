@@ -1,0 +1,31 @@
+---
+name: confirm-edge-cases
+description: Identify ambiguities and edge cases in a ticket's requirements and code scan, and confirm them with the user before any code is written. Use after scan-related-code, standalone or as part of ticket-flow.
+---
+
+# Confirm edge cases
+
+1. Read the workspace's Requirements and Code scan sections together.
+2. Identify genuine ambiguities — missing acceptance criteria, unstated behavior for an
+   edge case the existing code already has to handle elsewhere, a real choice between
+   two valid approaches. Don't manufacture questions about things a reasonable default
+   clearly covers.
+3. For each one found, decide:
+   - **Low-risk, obvious default exists** → don't ask; record it directly in Decisions
+     with the "why" (e.g. "assumed empty list renders the existing `EmptyState`
+     composable-equivalent, matching how `HomeFragment` already handles it").
+   - **Real consequences, or genuinely unclear** → ask via `AskUserQuestion`. Batch
+     related questions into one call rather than several round-trips.
+4. Append every question asked (and its answer) to Clarifications as it happens — not
+   reconstructed afterward from memory:
+   ```markdown
+   - Q: Should a coupon with an expired date still show in search results?
+     A: No, filter them out server-side query, not client-side — matches existing
+        `CourseFilterEnums` behavior.
+   ```
+5. Append one line to Progress log: `<date> confirmed N edge cases, M asked / K defaulted`.
+
+## Output
+
+Report the resolved list (question → answer/default) — `implement-change` should not
+need to re-derive any of these.

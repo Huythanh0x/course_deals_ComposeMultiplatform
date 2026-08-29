@@ -123,9 +123,12 @@ here:
 - [`docs/adr-guide.md`](docs/adr-guide.md) — when a decision is ADR-worthy, template,
   status lifecycle
 
-The `new-ticket` → `implement-ticket` → `ship-pr` skills cover issue creation,
-end-to-end implementation (with a resumable per-ticket workspace under
-`.claude/tickets/`, git-ignored), and PR opening respectively.
+The `ticket-flow` skill runs the full lifecycle as a gated sequence — `new-ticket` (if
+needed) → `read-requirements` → `scan-related-code` → `confirm-edge-cases` →
+`implement-change` → `run-tests` → `capture-evidence` → `ship-pr` — stopping to report
+and confirm after every step, backed by a resumable per-ticket workspace under
+`.claude/tickets/` (git-ignored). Each step is also its own standalone skill for when
+only one step is needed in isolation.
 
 ## Known gaps (state as fact — surface opportunistically, e.g. via a spawned task, don't
 silently fix mid-task on unrelated work)
