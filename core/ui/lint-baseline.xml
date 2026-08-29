@@ -2,28 +2,6 @@
 <issues format="6" by="lint 9.3.0" type="baseline" client="gradle" dependencies="false" name="AGP (9.3.0)" variant="all" version="9.3.0">
 
     <issue
-        id="MissingPermission"
-        message="Missing permissions required by ConnectivityManager.getActiveNetwork: android.permission.ACCESS_NETWORK_STATE"
-        errorLine1="            connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)"
-        errorLine2="                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/thanh0x/coursedeals/core/ui/util/NetworkUtil.kt"
-            line="12"
-            column="56"/>
-    </issue>
-
-    <issue
-        id="MissingPermission"
-        message="Missing permissions required by ConnectivityManager.getNetworkCapabilities: android.permission.ACCESS_NETWORK_STATE"
-        errorLine1="            connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/thanh0x/coursedeals/core/ui/util/NetworkUtil.kt"
-            line="12"
-            column="13"/>
-    </issue>
-
-    <issue
         id="VectorRaster"
         message="Limit vector icons sizes to 200×200 to keep icon drawing fast; see https://developer.android.com/studio/write/vector-asset-studio#when for more"
         errorLine1="    android:width=&quot;512dp&quot;"
