@@ -17,3 +17,6 @@ local.properties
 .idea/
 .artifacts/
 tree.dir
+
+# Per-ticket working memory from the implement-ticket skill — local scratch, not project docs
+.claude/tickets/
