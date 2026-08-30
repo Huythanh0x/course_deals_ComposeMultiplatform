@@ -1,7 +1,7 @@
 # Project Management Standard
 
 This repo's slice of a shared personal-project standard that also covers
-`udemy_coupon_server_java_spring` (Spring Boot API/crawler + Next.js frontend). Each repo
+`course_deals_backend` (Spring Boot API/crawler + Next.js frontend). Each repo
 carries its own tailored copy of this doc set — this one is scoped to what's actually true
 here (native Android, Gradle, Kotlin).
 
@@ -9,7 +9,7 @@ here (native Android, Gradle, Kotlin).
 
 | Layer | Tool | Contains |
 |---|---|---|
-| Planning | GitHub Projects (board) | Issues, status, priority — the single source of truth for "what's next", shared across this repo and `udemy_coupon_server_java_spring` |
+| Planning | GitHub Projects (board) | Issues, status, priority — the single source of truth for "what's next", shared across this repo and `course_deals_backend` |
 | Docs | `/docs` folder in this repo | Architecture, design decisions, setup guides — versioned, diffable |
 | Design decisions | `/docs/adr/` | One file per real decision — see [`adr-guide.md`](adr-guide.md) |
 
@@ -88,6 +88,6 @@ This doc set describes the target process. Implementation status as of 2026-08-2
 - [x] CI workflow in place (`.github/workflows/ci.yml`)
 - [x] Labels created on GitHub — run [`scripts/gh-setup-labels.sh`](../scripts/gh-setup-labels.sh)
 - [x] Branch protection on `main` — run [`scripts/gh-setup-branch-protection.sh`](../scripts/gh-setup-branch-protection.sh)
-- [x] Shared GitHub Projects board (this repo + `udemy_coupon_server_java_spring`) — see [`scripts/gh-setup-project-board.sh`](../scripts/gh-setup-project-board.sh)
-- [ ] Same doc set forked/tailored into `udemy_coupon_server_java_spring` (out of scope here — needs local access to that repo)
+- [x] Shared GitHub Projects board (this repo + `course_deals_backend`) — see [`scripts/gh-setup-project-board.sh`](../scripts/gh-setup-project-board.sh)
+- [x] Same doc set forked/tailored into `course_deals_backend`
 - [ ] Crawler fix (Udemy API change) — tracked in the server repo, unrelated to this setup
