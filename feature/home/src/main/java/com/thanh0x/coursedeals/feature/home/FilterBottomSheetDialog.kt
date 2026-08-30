@@ -227,6 +227,11 @@ class FilterBottomSheetDialog() : BaseBottomSheetDialog() {
         _binding = null
     }
 
+    override fun onStart() {
+        super.onStart()
+        expandToFullHeight()
+    }
+
     companion object {
         const val TAG = "FilterBottomSheetDialog"
         const val REQUEST_KEY = "FilterRequestKey"
