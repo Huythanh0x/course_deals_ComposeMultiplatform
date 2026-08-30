@@ -37,6 +37,7 @@ class ProfileFragment : BaseFragment() {
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
     private val profileViewModel: ProfileViewModel by viewModels()
+    private var appliedDarkMode: Boolean? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -193,6 +194,9 @@ class ProfileFragment : BaseFragment() {
 
         if (binding.swEnableDarkMode.isChecked != state.isDarkModeEnabled) {
             binding.swEnableDarkMode.isChecked = state.isDarkModeEnabled
+        }
+        if (appliedDarkMode != state.isDarkModeEnabled) {
+            appliedDarkMode = state.isDarkModeEnabled
             applyDarkModeToTheApp(state.isDarkModeEnabled)
         }
 
