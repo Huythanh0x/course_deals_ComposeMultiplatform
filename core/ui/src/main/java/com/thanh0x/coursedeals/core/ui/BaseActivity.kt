@@ -1,11 +1,17 @@
 package com.thanh0x.coursedeals.core.ui
 
+import android.content.res.ColorStateList
 import android.os.Bundle
+import android.util.TypedValue
+import android.view.LayoutInflater
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.thanh0x.coursedeals.core.ui.customview.LoadingDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -13,6 +19,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlin.math.max
 import kotlin.time.Duration.Companion.milliseconds
+import timber.log.Timber
 
 abstract class BaseActivity : AppCompatActivity() {
 
@@ -67,11 +74,39 @@ abstract class BaseActivity : AppCompatActivity() {
         cause: String? = null,
         onDismiss: (() -> Unit)? = null
     ) {
+        if (isFinishing || isDestroyed) return
         val finalMessage = if (cause != null) "$message\n\nCause: $cause" else message
-        android.app.AlertDialog.Builder(this)
-            .setTitle(title)
+        val headerView = LayoutInflater.from(this).inflate(R.layout.layout_dialog_header, null)
+        val tvTitle = headerView.findViewById<TextView>(R.id.tvDialogTitle)
+        val ivLogo = headerView.findViewById<ImageView>(R.id.ivDialogLogo)
+
+        tvTitle.text = title
+
+        // Use red tint for error-related titles
+        val isError = title.contains("Error", ignoreCase = true) ||
+            title.contains("Failed", ignoreCase = true) ||
+            title.contains("No Internet", ignoreCase = true)
+
+        if (isError) {
+            Timber.tag(this.javaClass.simpleName)
+                .e("showAlertDialog: title=$title, message=$message, cause=$cause")
+            val typedValue = TypedValue()
+            val attrId = resources.getIdentifier("colorError", "attr", packageName)
+            if (attrId != 0) {
+                theme.resolveAttribute(attrId, typedValue, true)
+                ivLogo.imageTintList = ColorStateList.valueOf(typedValue.data)
+            }
+        }
+
+        MaterialAlertDialogBuilder(
+            this,
+            com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered
+        ).setCustomTitle(headerView)
             .setMessage(finalMessage)
-            .setPositiveButton(android.R.string.ok) { _, _ -> onDismiss?.invoke() }
+            .setPositiveButton(R.string.ok_text_button) { dialog, _ ->
+                dialog.dismiss()
+                onDismiss?.invoke()
+            }
             .show()
     }
 }
