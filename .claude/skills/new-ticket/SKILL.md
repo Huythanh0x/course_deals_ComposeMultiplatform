@@ -37,28 +37,9 @@ flow this repo's own docs prescribe.
        --project "Course Deals" \
        --body "<body>"
      ```
-   - **Sub-issue** — link it under its parent, and deliberately **omit `--project`**
-     (adding a sub-issue to the board separately from its parent defeats the point of
-     grouping — only the parent should represent the work there):
-     ```bash
-     gh issue create -R Huythanh0x/course_deals_ComposeMultiplatform \
-       --title "<title>" \
-       --label "type: <x>" --label "priority: <x>" --label "area: <x>" --label "size: <x>" \
-       --parent <parent-issue-number> \
-       --body "<body>"
-     ```
-     GitHub auto-cascades a new sub-issue onto the project board anyway if its parent is
-     already a board item, regardless of the `--project` flag. Check for this and remove
-     it if it happened:
-     ```bash
-     NUM="$(gh project list --owner Huythanh0x --format json -q '.projects[] | select(.title=="Course Deals") | .number')"
-     ITEM_ID="$(gh api graphql -f query='
-       query($num: Int!) { user(login: "Huythanh0x") { projectV2(number: $num) { items(first: 100) {
-         nodes { id content { ... on Issue { number repository { name } } } } } } } }' \
-       -F num="$NUM" \
-       -q ".data.user.projectV2.items.nodes[] | select(.content.repository.name == \"course_deals_ComposeMultiplatform\" and .content.number == <new-issue-number>) | .id")"
-     [ -n "$ITEM_ID" ] && gh project item-delete "$NUM" --owner Huythanh0x --id "$ITEM_ID"
-     ```
+   - **Sub-issue** — hand off to the `create-sub-issues` skill for the actual creation
+     (`--parent`, deliberately no `--project`) and the board auto-cascade cleanup it
+     documents — don't duplicate those mechanics here.
 6. **Create the branch** off the latest `main`, per `docs/branching.md`'s naming
    convention `<type>/<issue-number>-<short-slug>`:
    ```bash
@@ -77,5 +58,7 @@ flow this repo's own docs prescribe.
 - `gh issue create --project`/`--parent` requires the `project` scope on the
   authenticated `gh` token (`gh auth refresh -s project` if missing).
 - Sub-issues are intentionally excluded from the board — only their parent represents
-  the work there. This mirrors the manual cleanup done when the board was first
-  backfilled (see `docs/project-board.md`).
+  the work there. See `create-sub-issues` for the full mechanics, including attaching
+  an issue that already existed before its parent did.
+- If 2+ of the issues being filed here are independent enough to implement in parallel,
+  consider `dispatch-ticket-worktree` once their branches exist.
