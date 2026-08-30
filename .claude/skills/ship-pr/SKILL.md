@@ -21,14 +21,30 @@ rubber stamp:
 
 ## Steps
 
-1. Push the branch: `git push -u origin <branch>` (first push) or `git push` (updates).
-2. Confirm which issue this closes — every PR must link one via `Closes #N`
+1. **Attach screenshot evidence, if any exists.** `capture-evidence` copies the
+   screenshots actually worth keeping into the repo-tracked
+   `docs/evidence/<issue-number>/*.png` (not the gitignored ticket workspace — that
+   copy is deliberately outside `.claude/tickets/` so it can be committed). If that
+   directory exists and has files for this issue:
+   ```bash
+   git add docs/evidence/<issue-number>/
+   git commit -m "docs(evidence): add screenshots for #<issue-number>"
+   ```
+   `gh` has no scriptable way to upload an image asset into a PR body the way GitHub's
+   own drag-and-drop editor does — committing the files to the branch and referencing
+   them with relative markdown image paths is the reliable, fully-CLI alternative, and
+   it's what actually renders in the PR body. If `capture-evidence` reported no device
+   automation was available for this ticket, skip this step — don't invent screenshots.
+2. Push the branch: `git push -u origin <branch>` (first push) or `git push` (updates).
+3. Confirm which issue this closes — every PR must link one via `Closes #N`
    (`docs/pull-requests.md`).
-3. Open the PR filled from `.github/PULL_REQUEST_TEMPLATE.md` — fill in **all** of it,
+4. Open the PR filled from `.github/PULL_REQUEST_TEMPLATE.md` — fill in **all** of it,
    including "How this was tested" with what was actually run (not "should work"). If
    this ticket has a workspace at `.claude/tickets/<issue-number>-<slug>/NOTES.md` (from
-   `run-tests`/`capture-evidence`), pull the real pass/fail numbers and evidence
-   paths/screenshots from its Test evidence section rather than re-deriving them:
+   `run-tests`/`capture-evidence`), pull the real pass/fail numbers from its Test
+   evidence section rather than re-deriving them. For the Screenshots section, embed
+   the images committed in step 1 with relative markdown paths (not a prose description
+   of what they show) whenever that step added any:
    ```bash
    gh pr create -R Huythanh0x/course_deals_ComposeMultiplatform \
      --title "<type>(<scope>): <description>" \
@@ -46,7 +62,8 @@ rubber stamp:
    - [ ] ...
 
    ## Screenshots (if UI-facing)
-
+   ![before](docs/evidence/<issue-number>/before.png)
+   ![after](docs/evidence/<issue-number>/after.png)
 
    ## Checklist
    - [ ] Self-reviewed the diff top to bottom
@@ -56,15 +73,22 @@ rubber stamp:
    EOF
    )"
    ```
-4. Report the PR URL back to the user.
+5. **Mirror the linked issue's labels onto the PR** — this repo's label taxonomy
+   (`type`/`priority`/`area`/`size`, see `docs/project-management.md`) is otherwise only
+   ever applied to issues, so a PR with no labels can't be filtered/skimmed on its own in
+   the PR list. Pull the labels straight from the issue rather than re-deciding them:
+   ```bash
+   labels=$(gh issue view <N> -R Huythanh0x/course_deals_ComposeMultiplatform --json labels -q '.labels[].name')
+   args=()
+   while IFS= read -r l; do args+=(--add-label "$l"); done <<< "$labels"
+   gh pr edit <PR-number> -R Huythanh0x/course_deals_ComposeMultiplatform "${args[@]}"
+   ```
+6. Report the PR URL back to the user.
 
 ## After CI runs
 
 - Check status with `gh pr checks <N> -R Huythanh0x/course_deals_ComposeMultiplatform`.
 - If CI fails, diagnose from the actual failure logs (`gh run view <run-id> --log-failed`)
   before proposing a fix — don't guess.
-- Default landing strategy is **squash-merge** (`docs/pull-requests.md`) — the squash
-  commit message should be rewritten to a single clean Conventional Commits line at
-  merge time, not GitHub's default concatenation of every branch commit.
-- After merge, the branch is expected to auto-delete (repo setting) and the linked
-  issue to auto-close — confirm both rather than assuming.
+- Once CI is green and the user wants it landed, use the standalone `merge-pr` skill —
+  merging is deliberately not auto-chained here (see that skill for why).

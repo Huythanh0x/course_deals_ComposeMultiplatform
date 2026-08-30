@@ -93,6 +93,19 @@ For every step in the sequence:
 
 The final step, `ship-pr`, gates the same way: report the opened PR URL in the same
 table format, then ask if anything else is needed before considering the ticket done.
+**`merge-pr` is deliberately not part of this sequence** — landing to `main` needs its
+own explicit go-ahead once CI is actually green, not an automatic "Continue" after
+opening the PR. Point the user at it once CI passes if they want it merged now.
+
+## Related standalone skills, not part of the gated sequence
+
+- `create-sub-issues` — if `new-ticket` (step 1) determines this is a child of an
+  existing parent issue rather than a fresh top-level one.
+- `dispatch-ticket-worktree` — if the user actually wants 2+ independent tickets
+  implemented at the same time, this replaces steps 2-6 with a background agent per
+  ticket in its own worktree; `capture-evidence` and `ship-pr` still happen here,
+  sequentially, once each agent reports back (see that skill for why).
+- `merge-pr` — see above.
 
 ## Resuming an interrupted flow
 
