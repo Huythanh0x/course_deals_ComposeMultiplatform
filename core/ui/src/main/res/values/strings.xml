@@ -31,6 +31,7 @@
     <string name="lots_of_minutes_left">%d minutes</string>
     <string name="lots_of_hours_left">%d hours</string>
     <string name="lots_of_days_left">%d days</string>
+    <string name="lots_of_months_left">%d months</string>
     <string name="unknown_time_left">unknown</string>
     <string name="few_minute_ago">just now</string>
     <string name="lots_of_minutes_ago">%d minutes ago</string>
