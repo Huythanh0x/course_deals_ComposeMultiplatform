@@ -12,22 +12,67 @@ description: Capture e2e/manual verification evidence and screenshots for a tick
    for real — actually run this, don't just describe what a screenshot would show. Save
    every raw capture under the ticket workspace directory first (gitignored working
    memory, cheap to take several).
-3. **Promote the screenshots that are actually worth keeping** into a repo-tracked
-   location `ship-pr` can commit and embed in the PR body:
+3. **Upload the screenshots actually worth keeping to hosted storage and record the
+   URLs.** This repo does not commit screenshot binaries into git history — pick the
+   1-3 that actually demonstrate the fix (e.g. a before/after pair, or a single
+   after-shot for a new feature), not every intermediate capture taken while
+   navigating to the right screen, and upload each to the user's Cloudflare R2 Worker.
+
+   Check the precondition before attempting anything:
    ```bash
-   mkdir -p docs/evidence/<issue-number>
-   cp .claude/tickets/<issue-number>-<slug>/evidence/<name>.png docs/evidence/<issue-number>/
+   if [ -z "$R2_IMAGE_UPLOAD_USER" ] || [ -z "$R2_IMAGE_UPLOAD_TOKEN" ]; then
+     echo "R2_IMAGE_UPLOAD_USER / R2_IMAGE_UPLOAD_TOKEN are not set." >&2
+     echo "Set both in your shell profile (e.g. ~/.zshrc), open a new shell, and re-run this step." >&2
+     exit 1
+   fi
    ```
-   Pick the 1-3 screenshots that actually demonstrate the fix (e.g. a before/after pair,
-   or a single after-shot for a new feature) — don't promote every intermediate capture
-   taken while navigating to the right screen.
-4. **If not available**: say so explicitly in the workspace's Test evidence → E2E /
-   manual verification section — don't claim verification that didn't happen. Ask the
-   user to run the app themselves (`./gradlew installLocalDebug` + manual check) and
-   either confirm it works or share a screenshot.
-5. For a non-UI change, state plainly that screenshot evidence doesn't apply rather
+   Don't ask the user for the secret value in chat — direct them to set it themselves.
+   **Never** add `-v`/`-vvv` to the curl call below, never wrap it in `set -x`, and
+   never print `$R2_IMAGE_UPLOAD_USER`, `$R2_IMAGE_UPLOAD_TOKEN`, or the resolved `-u`
+   value anywhere — not in terminal output, not in `NOTES.md`, not in the PR body. The
+   response body itself is safe to print (it's the Worker's reply, not the request's
+   credentials).
+
+   For each screenshot:
+   ```bash
+   response="$(curl -sS -X PUT "https://r2-image-worker.huythanh0x.workers.dev/upload" \
+     -u "$R2_IMAGE_UPLOAD_USER:$R2_IMAGE_UPLOAD_TOKEN" \
+     -F "image=@.claude/tickets/<issue-number>-<slug>/evidence/<name>.png")"
+
+   url=""
+   if command -v jq >/dev/null 2>&1; then
+     url="$(printf '%s' "$response" | jq -r '.url // .imageUrl // .data.url // empty' 2>/dev/null)"
+   fi
+   if [ -z "$url" ]; then
+     trimmed="$(printf '%s' "$response" | tr -d '[:space:]')"
+     case "$trimmed" in http*) url="$trimmed" ;; esac
+   fi
+   if [ -z "$url" ]; then
+     echo "Could not extract a hosted URL from the R2 worker response. Raw response:" >&2
+     printf '%s\n' "$response" >&2
+     exit 1
+   fi
+   ```
+   The worker's success response shape hasn't been confirmed yet — this tries
+   `.url`/`.imageUrl`/`.data.url` JSON fields first, falls back to the trimmed raw body
+   if it looks like a URL (starts with `http`), and fails loudly with the raw response
+   shown if neither works, rather than embedding garbage into a PR body. Update the
+   `jq` field name here once a real response has been seen, instead of guessing again
+   next time.
+4. Append each resulting URL into the workspace's Screenshots section as a ready
+   markdown image line:
+   ```markdown
+   ### Screenshots
+   ![before](<hosted-url-1>)
+   ![after](<hosted-url-2>)
+   ```
+5. **If device automation isn't available**: say so explicitly in the workspace's Test
+   evidence → E2E / manual verification section — don't claim verification that didn't
+   happen. Ask the user to run the app themselves (`./gradlew installLocalDebug` +
+   manual check) and either confirm it works or share a screenshot.
+6. For a non-UI change, state plainly that screenshot evidence doesn't apply rather
    than leaving the section ambiguously blank.
-6. Append one line to Progress log: `<date> captured evidence — <what, or "asked user">`.
+7. Append one line to Progress log: `<date> captured evidence — <what, or "asked user">`.
 
 ## Known device quirks (this AVD, re-verify if behavior seems to have changed)
 
@@ -51,7 +96,7 @@ description: Capture e2e/manual verification evidence and screenshots for a tick
 
 ## Output
 
-Report what evidence exists (file paths, both the workspace originals and the promoted
-`docs/evidence/<issue-number>/` copies) or the honest "not available, asked user" note —
+Report what evidence exists (workspace screenshot paths and the hosted URLs recorded in
+`NOTES.md`'s Screenshots section) or the honest "not available, asked user" note —
 `ship-pr` uses this to fill in the PR's "How this was tested" and "Screenshots" sections
 for real.

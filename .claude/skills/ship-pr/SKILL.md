@@ -21,20 +21,14 @@ rubber stamp:
 
 ## Steps
 
-1. **Attach screenshot evidence, if any exists.** `capture-evidence` copies the
-   screenshots actually worth keeping into the repo-tracked
-   `docs/evidence/<issue-number>/*.png` (not the gitignored ticket workspace — that
-   copy is deliberately outside `.claude/tickets/` so it can be committed). If that
-   directory exists and has files for this issue:
-   ```bash
-   git add docs/evidence/<issue-number>/
-   git commit -m "docs(evidence): add screenshots for #<issue-number>"
-   ```
-   `gh` has no scriptable way to upload an image asset into a PR body the way GitHub's
-   own drag-and-drop editor does — committing the files to the branch and referencing
-   them with relative markdown image paths is the reliable, fully-CLI alternative, and
-   it's what actually renders in the PR body. If `capture-evidence` reported no device
-   automation was available for this ticket, skip this step — don't invent screenshots.
+1. **Pull screenshot URLs from the workspace, if any exist.** `capture-evidence`
+   already uploaded the kept screenshots to hosted storage (the user's Cloudflare R2
+   Worker) and recorded the resulting URLs as markdown image lines in
+   `.claude/tickets/<issue-number>-<slug>/NOTES.md`'s Test evidence → Screenshots
+   section. Read that section verbatim — don't re-upload, don't re-derive URLs, and
+   don't commit any screenshot files to the branch (screenshot binaries are
+   intentionally kept out of this repo's git history). If that section is empty or
+   absent, leave the PR's Screenshots section as `N/A` — don't invent one.
 2. Push the branch: `git push -u origin <branch>` (first push) or `git push` (updates).
 3. Confirm which issue this closes — every PR must link one via `Closes #N`
    (`docs/pull-requests.md`).
@@ -43,8 +37,8 @@ rubber stamp:
    this ticket has a workspace at `.claude/tickets/<issue-number>-<slug>/NOTES.md` (from
    `run-tests`/`capture-evidence`), pull the real pass/fail numbers from its Test
    evidence section rather than re-deriving them. For the Screenshots section, embed
-   the images committed in step 1 with relative markdown paths (not a prose description
-   of what they show) whenever that step added any:
+   the hosted URLs read in step 1 (not a prose description of what they show) whenever
+   that step found any:
    ```bash
    gh pr create -R Huythanh0x/course_deals_ComposeMultiplatform \
      --title "<type>(<scope>): <description>" \
@@ -62,8 +56,8 @@ rubber stamp:
    - [ ] ...
 
    ## Screenshots (if UI-facing)
-   ![before](docs/evidence/<issue-number>/before.png)
-   ![after](docs/evidence/<issue-number>/after.png)
+   ![before](<hosted-url-1>)
+   ![after](<hosted-url-2>)
 
    ## Checklist
    - [ ] Self-reviewed the diff top to bottom
