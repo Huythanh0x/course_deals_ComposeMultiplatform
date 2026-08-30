@@ -35,7 +35,8 @@ description: Capture e2e/manual verification evidence and screenshots for a tick
 
    For each screenshot:
    ```bash
-   response="$(curl -sS -X PUT "https://r2-image-worker.huythanh0x.workers.dev/upload" \
+   worker_base="https://r2-image-worker.huythanh0x.workers.dev"
+   response="$(curl -sS -X PUT "${worker_base}/upload" \
      -u "$R2_IMAGE_UPLOAD_USER:$R2_IMAGE_UPLOAD_TOKEN" \
      -F "image=@.claude/tickets/<issue-number>-<slug>/evidence/<name>.png")"
 
@@ -45,20 +46,33 @@ description: Capture e2e/manual verification evidence and screenshots for a tick
    fi
    if [ -z "$url" ]; then
      trimmed="$(printf '%s' "$response" | tr -d '[:space:]')"
-     case "$trimmed" in http*) url="$trimmed" ;; esac
+     case "$trimmed" in
+       http*) url="$trimmed" ;;
+       "") ;; # empty response — fall through to the failure check below
+       *) url="${worker_base}/${trimmed}" ;;  # confirmed: PUT /upload returns a bare stored filename, e.g. "2e87f527...366d3.png"
+     esac
    fi
    if [ -z "$url" ]; then
      echo "Could not extract a hosted URL from the R2 worker response. Raw response:" >&2
      printf '%s\n' "$response" >&2
      exit 1
    fi
+
+   status="$(curl -sS -o /dev/null -w '%{http_code}' "$url")"
+   if [ "$status" != "200" ]; then
+     echo "Uploaded but the resulting URL didn't return 200 (got $status): $url" >&2
+     exit 1
+   fi
    ```
-   The worker's success response shape hasn't been confirmed yet — this tries
-   `.url`/`.imageUrl`/`.data.url` JSON fields first, falls back to the trimmed raw body
-   if it looks like a URL (starts with `http`), and fails loudly with the raw response
-   shown if neither works, rather than embedding garbage into a PR body. Update the
-   `jq` field name here once a real response has been seen, instead of guessing again
-   next time.
+   Confirmed against the real worker (2026-08-31, during #26's evidence capture): a
+   successful `PUT /upload` returns the bare stored filename as plain text (e.g.
+   `2e87f5278aef787753a2b58a570760c810a69c0b47091be703ff9ab9264366d3.png`) — not JSON,
+   not a full URL. The JSON-field and `http*`-prefix checks are kept as a defensive
+   first pass in case the worker's response ever changes shape, but the real path today
+   is the bare-filename fallback, which builds the public URL by prefixing
+   `$worker_base`. Always verify the constructed URL actually resolves (the `curl -w
+   '%{http_code}'` check above) before trusting it — don't embed an unverified URL in a
+   PR body.
 4. Append each resulting URL into the workspace's Screenshots section as a ready
    markdown image line:
    ```markdown
