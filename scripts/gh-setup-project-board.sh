@@ -11,7 +11,7 @@
 # creating a duplicate, and re-linking an already-linked repo is a no-op.
 #
 # This only adds THIS repo as a source. Run the matching "gh project link" step again
-# from a checkout of udemy_coupon_server_java_spring (or just re-run this script with
+# from a checkout of course_deals_backend (or just re-run this script with
 # that repo's owner/name) to add the second source, per docs/project-board.md.
 set -euo pipefail
 
@@ -49,9 +49,9 @@ cat <<EOF
 Next (manual, one-time, in the Projects UI — not scriptable via gh today):
   1. Add the "Status" single-select field with options: Backlog, Ready, In Progress, In Review, Done
      (see docs/project-board.md for column meanings).
-  2. Link udemy_coupon_server_java_spring as a second source (run from that repo's checkout,
+  2. Link course_deals_backend as a second source (run from that repo's checkout,
      or from anywhere with):
-       gh project link ${PROJECT_NUMBER} --owner ${OWNER} --repo udemy_coupon_server_java_spring
+       gh project link ${PROJECT_NUMBER} --owner ${OWNER} --repo course_deals_backend
   3. Turn on workflow automations (Settings > Workflows on the project):
        - "Item added to project" -> Status: Backlog
        - "Pull request opened" -> Status: In Review
