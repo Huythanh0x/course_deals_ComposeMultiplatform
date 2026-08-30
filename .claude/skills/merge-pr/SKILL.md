@@ -12,16 +12,34 @@ when the user actually wants a specific PR merged now.
 
 ## Steps
 
-1. **Check CI is actually green**, don't assume:
+1. **Check the PR is actually mergeable and CI is green**, don't assume:
    ```bash
+   gh pr view <N> -R Huythanh0x/course_deals_ComposeMultiplatform --json mergeable,mergeStateStatus
    gh pr checks <N> -R Huythanh0x/course_deals_ComposeMultiplatform
    ```
-   If anything is failing or still running, stop here. For a failure, diagnose from the
-   real logs before proposing a fix:
+   If `mergeStateStatus` is `BEHIND` (branch has fallen behind `main`, no actual content
+   conflict), bring it up to date with a **merge, not a rebase**, so no force-push is
+   ever needed:
+   ```bash
+   git fetch origin
+   git merge origin/main
+   git push
+   ```
+   (Only reach for `git rebase` here if you deliberately want to clean up the branch's
+   own commit history first — a different goal than just resolving `BEHIND`. See
+   `docs/pull-requests.md`'s "Updating a branch against `main` mid-work" for why merge
+   is the default: this repo squash-merges everything anyway, so the transient merge
+   commit costs nothing and a rebase's mandatory force-push buys nothing in return.)
+   If `mergeable` is `CONFLICTING`, that's a real content conflict — resolve it
+   deliberately (see the Notes below on merge order) rather than force-pushing over it.
+
+   If anything is failing or still running, stop here. For a CI failure, diagnose from
+   the real logs before proposing a fix:
    ```bash
    gh run view <run-id> --log-failed -R Huythanh0x/course_deals_ComposeMultiplatform
    ```
-   Don't merge on red or pending CI.
+   Don't merge on red or pending CI. If you had to update the branch above, CI reruns
+   on the new commit — wait for that run, not the pre-update one.
 
 2. **Read the PR** (`gh pr view <N> -R Huythanh0x/course_deals_ComposeMultiplatform`) and
    its commits to compose a clean squash commit message. GitHub's default squash message
