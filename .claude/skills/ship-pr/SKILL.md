@@ -56,7 +56,17 @@ rubber stamp:
    EOF
    )"
    ```
-4. Report the PR URL back to the user.
+4. **Mirror the linked issue's labels onto the PR** — this repo's label taxonomy
+   (`type`/`priority`/`area`/`size`, see `docs/project-management.md`) is otherwise only
+   ever applied to issues, so a PR with no labels can't be filtered/skimmed on its own in
+   the PR list. Pull the labels straight from the issue rather than re-deciding them:
+   ```bash
+   labels=$(gh issue view <N> -R Huythanh0x/course_deals_ComposeMultiplatform --json labels -q '.labels[].name')
+   args=()
+   while IFS= read -r l; do args+=(--add-label "$l"); done <<< "$labels"
+   gh pr edit <PR-number> -R Huythanh0x/course_deals_ComposeMultiplatform "${args[@]}"
+   ```
+5. Report the PR URL back to the user.
 
 ## After CI runs
 
