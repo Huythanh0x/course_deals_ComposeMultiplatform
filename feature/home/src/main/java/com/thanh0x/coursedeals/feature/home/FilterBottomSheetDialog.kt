@@ -189,7 +189,7 @@ class FilterBottomSheetDialog() : BaseBottomSheetDialog() {
     private fun clearGroupSelection(group: ViewGroup) {
         for (i in 0 until group.childCount) {
             val chipView = group.getChildAt(i) as? SelectableChipView
-            chipView?.isChecked = false
+            chipView?.setCheckedSilently(false)
         }
     }
 
@@ -220,7 +220,7 @@ class FilterBottomSheetDialog() : BaseBottomSheetDialog() {
         for (i in 0 until group.childCount) {
             val chipView = group.getChildAt(i) as? SelectableChipView
             if (chipView?.getText() == text) {
-                chipView.isChecked = true
+                chipView.setCheckedSilently(true)
             }
         }
     }
