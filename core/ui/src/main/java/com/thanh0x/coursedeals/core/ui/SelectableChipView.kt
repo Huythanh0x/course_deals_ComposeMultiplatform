@@ -12,6 +12,7 @@ class SelectableChipView @JvmOverloads constructor(
 ) : Chip(context, attrs, defStyleAttr) {
 
     private var onChipClickListener: ((Boolean) -> Unit)? = null
+    private var suppressChipClickListener = false
 
     init {
         isClickable = true
@@ -26,12 +27,26 @@ class SelectableChipView @JvmOverloads constructor(
         setTextColor(AppCompatResources.getColorStateList(context, R.color.cat_chip_text_selector))
 
         setOnCheckedChangeListener { _, isChecked ->
-            onChipClickListener?.invoke(isChecked)
+            if (!suppressChipClickListener) {
+                onChipClickListener?.invoke(isChecked)
+            }
         }
     }
 
     fun setOnChipClickListener(listener: (Boolean) -> Unit) {
         onChipClickListener = listener
+    }
+
+    /**
+     * Sets [isChecked] without notifying the click listener — for callers driving
+     * selection state programmatically (e.g. clearing sibling chips in a single-select
+     * group). A real user tap always goes through Chip's own touch handling, never
+     * through this method, so it's unaffected.
+     */
+    fun setCheckedSilently(checked: Boolean) {
+        suppressChipClickListener = true
+        isChecked = checked
+        suppressChipClickListener = false
     }
 
     fun setText(text: String) {
