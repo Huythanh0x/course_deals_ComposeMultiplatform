@@ -87,7 +87,7 @@ class ReportBottomSheetDialog() : BaseBottomSheetDialog() {
     private fun clearGroupSelection() {
         for (i in 0 until binding.llReasons.childCount) {
             val chipView = binding.llReasons.getChildAt(i) as? SelectableChipView
-            chipView?.isChecked = false
+            chipView?.setCheckedSilently(false)
         }
     }
 
