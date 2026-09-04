@@ -45,7 +45,25 @@ Three options GitHub offers, and when each one actually makes sense:
 |---|---|---|
 | **Squash and merge** | Collapses all commits on the branch into one commit on `main` | **Default. Use this for essentially every PR.** |
 | Merge commit | Keeps every branch commit, plus a merge commit tying them together | Rare — only if individual commit history on a long-lived branch genuinely matters (uncommon solo) |
-| Rebase and merge | Replays branch commits onto `main` individually, no merge commit | Fine as a *personal habit* for updating your branch against `main` mid-work; avoid as the actual PR-landing strategy |
+| Rebase and merge | Replays branch commits onto `main` individually, no merge commit | Avoid as the actual PR-landing strategy — squash instead |
+
+### Updating a branch against `main` mid-work
+
+This is a separate question from the landing strategy above — it's about keeping an
+**open, unmerged** branch current while `main` moves ahead under it (e.g. a PR sitting
+in review while other work merges). Default to `git merge origin/main`, not
+`git rebase origin/main`:
+
+- A merge needs a normal `git push` — no `--force`/`--force-with-lease` ever required.
+- A rebase rewrites the branch's commits, which means the remote copy has to be
+  force-pushed to match — safe enough with `--force-with-lease` on a solo,
+  unmerged branch, but it's friction and risk this repo's squash-merge default makes
+  entirely unnecessary: the merge commit a `git merge` leaves behind disappears anyway
+  once the PR is squash-merged, so there's no actual history cost to avoiding rebase
+  here.
+- Reach for a local rebase only when you deliberately want to clean up or reorder the
+  branch's *own* commits before opening the PR — a different goal than "just catch up
+  to `main`."
 
 ### Why squash by default
 

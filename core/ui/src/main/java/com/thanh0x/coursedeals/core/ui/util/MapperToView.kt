@@ -12,6 +12,7 @@ class MapperToView(val context: Context) {
         val minutesInHour = Constant.MINUTES_IN_HOUR
         val minutesInDay = Constant.MINUTES_IN_HOUR * Constant.HOURS_IN_DAY
         val minutesInMonth = minutesInDay * Constant.DAYS_IN_MONTH
+        val minutesInTwoMonths = minutesInMonth * 2
 
         return when (durationInMinutes) {
             -1L -> context.getString(R.string.unknown_time_left)
@@ -30,12 +31,15 @@ class MapperToView(val context: Context) {
                 durationInMinutes / minutesInHour,
             )
 
-            in (minutesInDay + 1)..minutesInMonth -> context.getString(
+            in (minutesInDay + 1)..minutesInTwoMonths -> context.getString(
                 R.string.lots_of_days_left,
                 durationInMinutes / minutesInDay,
             )
 
-            else -> context.getString(R.string.unknown_time_left)
+            else -> context.getString(
+                R.string.lots_of_months_left,
+                durationInMinutes / minutesInMonth,
+            )
         }
     }
 

@@ -2,6 +2,7 @@ package com.thanh0x.coursedeals.core.ui
 
 import android.content.Context
 import android.util.AttributeSet
+import androidx.appcompat.content.res.AppCompatResources
 import com.google.android.material.chip.Chip
 
 class SelectableChipView @JvmOverloads constructor(
@@ -15,6 +16,15 @@ class SelectableChipView @JvmOverloads constructor(
     init {
         isClickable = true
         isCheckable = true
+
+        // Selected vs. unselected chips must be visually distinguishable: plain
+        // background/no border when unselected, a distinct fill + visible border when
+        // selected. These color selectors already key off android:state_checked.
+        chipBackgroundColor = AppCompatResources.getColorStateList(context, R.color.cat_chip_bg_selector)
+        chipStrokeColor = AppCompatResources.getColorStateList(context, R.color.cat_chip_stroke_selector)
+        chipStrokeWidth = resources.getDimension(R.dimen.spacing_1)
+        setTextColor(AppCompatResources.getColorStateList(context, R.color.cat_chip_text_selector))
+
         setOnCheckedChangeListener { _, isChecked ->
             onChipClickListener?.invoke(isChecked)
         }
