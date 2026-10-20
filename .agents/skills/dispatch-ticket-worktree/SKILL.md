@@ -28,24 +28,23 @@ child issue) before dispatching — this skill implements against an existing
 1. **Create the worktree**, one per ticket, off that ticket's own branch:
    ```bash
    ID=$(openssl rand -hex 8)
-   git worktree add ".claude/worktrees/agent-$ID" <type>/<issue-number>-<slug>
+   git worktree add ".agents/worktrees/agent-$ID" <type>/<issue-number>-<slug>
    ```
-2. **Compose a fully self-contained agent prompt** — the agent has no memory of this
-   conversation and, per the Agent tool's own guidance, cannot see prior turns, so the
-   prompt must carry everything it needs:
+2. **Compose a fully self-contained agent prompt** — the subagent has no memory of this
+   conversation, so the prompt must carry everything it needs:
    - The exact worktree path, with an explicit instruction to run every command with
      that directory as cwd and never touch the main checkout or a sibling worktree.
-   - A pointer to read `CLAUDE.md` in full first (module map, build/lint task naming,
+   - A pointer to read `AGENTS.md` in full first (module map, build/lint task naming,
      conventions, known gaps).
    - The issue's title, labels, and **verbatim** body (don't paraphrase — the agent
      can't re-fetch context it's missing).
-   - The ticket workspace template (`.claude/tickets/<issue-number>-<slug>/NOTES.md`,
+   - The ticket workspace template (`.agents/tickets/<issue-number>-<slug>/NOTES.md`,
      same structure `ticket-flow` uses) inlined directly in the prompt — a background
      agent may not have the project skills registry available the way this session
      does, so don't assume it can invoke `read-requirements`/`scan-related-code`/etc.
      by name; give it the procedure inline instead.
    - **Two hard boundaries, stated explicitly and unambiguously:**
-     1. *No interactive `AskUserQuestion`* — it's running unattended in the background.
+     1. *No interactive `ask_question`* — it's running unattended in the background.
         For any edge case, it must pick the most reasonable default consistent with
         existing code, record it in the workspace's Decisions section with its
         reasoning, and flag it in the final report for the user to override later.
@@ -56,17 +55,13 @@ child issue) before dispatching — this skill implements against an existing
         report back — capture-evidence and ship-pr happen afterward, driven by this
         session, one ticket at a time against the shared emulator.
    - What real build/lint/test commands to run (module-scoped, flavor-qualified where
-     relevant per `CLAUDE.md`), and the instruction to actually fix and re-run on a
+     relevant per `AGENTS.md`), and the instruction to actually fix and re-run on a
      real failure rather than reporting red as acceptable.
    - What the final report should contain: root cause / approach taken, files changed
      with one-line reasons, real build/test output, Decisions-section assumptions
      worth the user's override, and the commit hash with a clean `git status`.
-3. **Launch one `Agent` call per ticket**, `subagent_type: general-purpose` (needs full
-   tool access), in the **same message** when dispatching more than one so they run
-   concurrently — the Agent tool description warns that firing them across separate
-   messages loses the parallelism. Leave `isolation` unset — the worktree was already
-   created manually in step 1; the Agent tool's own `isolation: "worktree"` would create
-   a second, redundant one on a throwaway branch.
+3. **Launch the subagent or background task per ticket** with full tool access, pointing
+   specifically to the created worktree directory.
 4. **After each agent reports back** (you'll get a task notification per agent, not a
    synchronous reply): read its report, then drive `capture-evidence` and `ship-pr`
    yourself, sequentially across tickets, against the one shared emulator. It's fine —

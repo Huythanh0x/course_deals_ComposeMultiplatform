@@ -14,7 +14,7 @@ description: Identify ambiguities and edge cases in a ticket's requirements and 
    - **Low-risk, obvious default exists** → don't ask; record it directly in Decisions
      with the "why" (e.g. "assumed empty list renders the existing `EmptyState`
      composable-equivalent, matching how `HomeFragment` already handles it").
-   - **Real consequences, or genuinely unclear** → ask via `AskUserQuestion`. Batch
+   - **Real consequences, or genuinely unclear** → ask via `ask_question`. Batch
      related questions into one call rather than several round-trips.
 4. Append every question asked (and its answer) to Clarifications as it happens — not
    reconstructed afterward from memory:

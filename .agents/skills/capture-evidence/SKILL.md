@@ -8,7 +8,7 @@ description: Capture e2e/manual verification evidence and screenshots for a tick
 1. Check whether device automation is actually available: `which adb` and
    `adb devices` for a connected/booted emulator.
 2. **If available**: install the debug build, launch the relevant screen, capture
-   `adb exec-out screencap -p > .claude/tickets/<issue-number>-<slug>/evidence/<name>.png`
+   `adb exec-out screencap -p > .agents/tickets/<issue-number>-<slug>/evidence/<name>.png`
    for real — actually run this, don't just describe what a screenshot would show. Save
    every raw capture under the ticket workspace directory first (gitignored working
    memory, cheap to take several).
@@ -38,7 +38,7 @@ description: Capture e2e/manual verification evidence and screenshots for a tick
    worker_base="https://r2-image-worker.huythanh0x.workers.dev"
    response="$(curl -sS -X PUT "${worker_base}/upload" \
      -u "$R2_IMAGE_UPLOAD_USER:$R2_IMAGE_UPLOAD_TOKEN" \
-     -F "image=@.claude/tickets/<issue-number>-<slug>/evidence/<name>.png")"
+     -F "image=@.agents/tickets/<issue-number>-<slug>/evidence/<name>.png")"
 
    url=""
    if command -v jq >/dev/null 2>&1; then
@@ -100,10 +100,9 @@ description: Capture e2e/manual verification evidence and screenshots for a tick
   apply on the first attempt even though the setting reads back correctly immediately
   after being set (`dumpsys window | grep mCurrentRotation` still shows the old value).
   Re-run both `settings put` commands once more before concluding rotation is stuck.
-- Screenshot coordinates from the `Read` tool are in the *displayed* (possibly
-  downscaled) image size, not the device's real pixel size — the image result states
-  the scale factor (e.g. "displayed at 900x2000, multiply by 1.20"); always convert
-  before calling `adb shell input tap`.
+- Screenshot coordinates when inspecting image files may reflect the *displayed*
+  (possibly downscaled) image size, not the device's real pixel size — check the
+  actual image dimensions and convert before calling `adb shell input tap`.
 - Reset whatever you forced (`accelerometer_rotation 1` for auto-rotate,
   `cmd uimode night no` or whatever the prior state was) once verification is done —
   don't leave the emulator in a forced state for the next ticket's testing.

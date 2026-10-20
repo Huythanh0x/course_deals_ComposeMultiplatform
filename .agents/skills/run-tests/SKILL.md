@@ -7,7 +7,7 @@ description: Run unit tests, detekt, and lint for a ticket's changed modules and
 
 1. Identify affected modules from the workspace's Code scan section (or from
    `git diff --stat` if resuming without a fresh scan).
-2. Run, per `CLAUDE.md`'s Build & verify commands (task names are flavor-qualified —
+2. Run, per `AGENTS.md`'s Build & verify commands (task names are flavor-qualified —
    `:app:lintLocalDebug`, not `:app:lintDebug`):
    - `./gradlew test<Variant>UnitTest` for each affected module
    - `./gradlew detekt` (or `:app:detekt` — see Known gaps, it's only wired into `app`
