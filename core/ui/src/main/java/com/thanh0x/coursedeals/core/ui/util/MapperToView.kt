@@ -8,34 +8,43 @@ import com.thanh0x.coursedeals.core.common.TimeLeft
 
 class MapperToView(val context: Context) {
     fun mapTimeLeft(expiredDate: Long?): String {
-        val durationInMinutes = TimeLeft.getDurationFromNow(expiredDate)
         val minutesInHour = Constant.MINUTES_IN_HOUR
         val minutesInDay = Constant.MINUTES_IN_HOUR * Constant.HOURS_IN_DAY
         val minutesInMonth = minutesInDay * Constant.DAYS_IN_MONTH
+        val minutesInTwoMonths = minutesInMonth * 2
 
-        return when (durationInMinutes) {
-            -1L -> context.getString(R.string.unknown_time_left)
-            in 0..1 -> context.getString(
-                R.string.few_minute_left,
-                durationInMinutes,
-            )
+        return when (val expiry = TimeLeft.getExpiryDuration(expiredDate)) {
+            is TimeLeft.ExpiryDuration.Unknown -> context.getString(R.string.unknown_time_left)
+            is TimeLeft.ExpiryDuration.Expired -> context.getString(R.string.expired_time_left)
+            is TimeLeft.ExpiryDuration.Active -> {
+                val durationInMinutes = expiry.minutesLeft
+                when (durationInMinutes) {
+                    1L -> context.getString(
+                        R.string.few_minute_left,
+                        1,
+                    )
 
-            in 2..minutesInHour -> context.getString(
-                R.string.lots_of_minutes_left,
-                durationInMinutes,
-            )
+                    in 2..minutesInHour -> context.getString(
+                        R.string.lots_of_minutes_left,
+                        durationInMinutes,
+                    )
 
-            in (minutesInHour + 1)..minutesInDay -> context.getString(
-                R.string.lots_of_hours_left,
-                durationInMinutes / minutesInHour,
-            )
+                    in (minutesInHour + 1)..minutesInDay -> context.getString(
+                        R.string.lots_of_hours_left,
+                        durationInMinutes / minutesInHour,
+                    )
 
-            in (minutesInDay + 1)..minutesInMonth -> context.getString(
-                R.string.lots_of_days_left,
-                durationInMinutes / minutesInDay,
-            )
+                    in (minutesInDay + 1)..minutesInTwoMonths -> context.getString(
+                        R.string.lots_of_days_left,
+                        durationInMinutes / minutesInDay,
+                    )
 
-            else -> context.getString(R.string.unknown_time_left)
+                    else -> context.getString(
+                        R.string.lots_of_months_left,
+                        durationInMinutes / minutesInMonth,
+                    )
+                }
+            }
         }
     }
 
