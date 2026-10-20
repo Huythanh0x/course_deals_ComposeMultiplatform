@@ -124,6 +124,11 @@ class ReportBottomSheetDialog() : BaseBottomSheetDialog() {
         _binding = null
     }
 
+    override fun onStart() {
+        super.onStart()
+        expandToFullHeight()
+    }
+
     companion object {
         const val TAG = "ReportBottomSheetDialog"
         const val REQUEST_KEY = "ReportRequestKey"
