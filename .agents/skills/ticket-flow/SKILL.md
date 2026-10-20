@@ -24,7 +24,7 @@ makes the whole thing resumable.
 
 ## Ticket workspace (the state)
 
-One file per ticket: `.claude/tickets/<issue-number>-<slug>/NOTES.md` (git-ignored —
+One file per ticket: `.agents/tickets/<issue-number>-<slug>/NOTES.md` (git-ignored —
 working memory, not project documentation). **Always read it first if it already
 exists** and resume from the last completed step rather than restarting. Create it from
 this template if it doesn't exist:
@@ -82,10 +82,10 @@ For every step in the sequence:
    **Next:** <next step name> — <one line on what it will do>
    ```
 
-3. Then use `AskUserQuestion` with exactly these options (plus the automatic "Other"
-   for free text):
+3. Then use `ask_question` with exactly these options (plus the automatic write-in
+   option for free text):
    - **Continue to `<next step>`** — proceed
-   - **Rework this step** — the "Other" free-text answer carries the detailed
+   - **Rework this step** — the write-in free-text answer carries the detailed
      instruction for what to redo; go back into the current step's procedure with that
      instruction applied, produce a fresh report for the *same* step, and ask again.
      Do not silently advance past a rework request.

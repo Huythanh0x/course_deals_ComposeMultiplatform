@@ -1,6 +1,6 @@
 ---
 name: testing-strategy
-description: Analyze this repo's current testing setup and recommend a concrete testing stack, following CLAUDE.md's fakes-first philosophy. Use when the user asks to set up tests, add test coverage, choose testing libraries, or asks what testing approach this project should use.
+description: Analyze this repo's current testing setup and recommend a concrete testing stack, following AGENTS.md's fakes-first philosophy. Use when the user asks to set up tests, add test coverage, choose testing libraries, or asks what testing approach this project should use.
 ---
 
 # Testing strategy
@@ -9,7 +9,7 @@ This repo currently has **zero real test coverage** (only Android Studio's unmod
 boilerplate `ExampleUnitTest`/`ExampleInstrumentedTest` in `app`) and no mocking/Flow-
 testing libraries in the catalog. Adapted from Google's own official Android
 testing-setup guidance and the NowInAndroid reference app's testing philosophy — both
-independently converge on the same approach. See `CLAUDE.md`'s Testing section for the
+independently converge on the same approach. See `AGENTS.md`'s Testing section for the
 one-paragraph summary; this skill is the workflow for actually acting on it.
 
 ## Step 1 — re-confirm the current state (don't assume it's still accurate)
@@ -18,9 +18,9 @@ one-paragraph summary; this skill is the workflow for actually acting on it.
 - UI toolkit: XML views + Data Binding + Fragments (confirmed, no Compose)
 - Existing test libs: `junit`, `androidx-junit`, `androidx-espresso-core`,
   `androidx-room-testing` — check `gradle/libs.versions.toml` again, this may have
-  changed since CLAUDE.md was last updated
+  changed since AGENTS.md was last updated
 - State pattern: `MutableStateFlow`/`asStateFlow()` + `UiState` in every ViewModel (see
-  CLAUDE.md's State management section) — this is what needs testing
+  AGENTS.md's State management section) — this is what needs testing
 
 ## Step 2 — recommend, don't silently install
 

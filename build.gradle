@@ -14,7 +14,9 @@ tasks.register('installGitHooks', Copy) {
     if (hooksSource.exists()) {
         from hooksSource
         into new File(rootProject.rootDir, '.git/hooks')
-        fileMode = 0755
+        filePermissions {
+            unix(0755)
+        }
         doLast {
             println "Git hooks installed successfully from .git-hooks/"
         }

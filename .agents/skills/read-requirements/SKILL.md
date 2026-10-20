@@ -5,7 +5,7 @@ description: Read a GitHub issue's requirements and labels and record them verba
 
 # Read requirements
 
-1. Locate `.claude/tickets/<issue-number>-<slug>/NOTES.md`. If it doesn't exist yet,
+1. Locate `.agents/tickets/<issue-number>-<slug>/NOTES.md`. If it doesn't exist yet,
    create it from the template in the `ticket-flow` skill.
 2. `gh issue view <N> -R Huythanh0x/course_deals_ComposeMultiplatform` — copy the
    **verbatim** body and labels into the workspace's Requirements section. Don't

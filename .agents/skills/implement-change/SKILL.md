@@ -1,6 +1,6 @@
 ---
 name: implement-change
-description: Implement the code change for a ticket, following this repo's CLAUDE.md conventions, once requirements/code-scan/clarifications are already settled. Use after confirm-edge-cases, standalone or as part of ticket-flow.
+description: Implement the code change for a ticket, following this repo's AGENTS.md conventions, once requirements/code-scan/clarifications are already settled. Use after confirm-edge-cases, standalone or as part of ticket-flow.
 ---
 
 # Implement change
@@ -11,11 +11,11 @@ description: Implement the code change for a ticket, following this repo's CLAUD
 2. If the branch for this issue doesn't exist yet, create it per `docs/branching.md`
    (or use the `new-ticket` skill if starting completely fresh). If resuming, check
    `git status`/`git log` before assuming a clean start.
-3. For anything touching more than 2-3 files or with a real architectural choice, use
-   `EnterPlanMode` before writing code, even inside this flow — a checkpoint on
-   *approach* is different from this skill's own step-level gate, and still worth it
-   for a non-trivial change.
-4. Implement, following `CLAUDE.md`'s conventions:
+3. For anything touching more than 2-3 files or with a real architectural choice, formulate
+   an explicit plan (or recommend `/plan`) before writing code, even inside this flow — a
+   checkpoint on *approach* is different from this skill's own step-level gate, and still
+   worth it for a non-trivial change.
+4. Implement, following `AGENTS.md`'s conventions:
    - Convention plugins for any new module (`new-module` skill)
    - `MutableStateFlow`/`asStateFlow()` + `UiState` for any ViewModel state
    - Intent/exported-component care if touching manifest components

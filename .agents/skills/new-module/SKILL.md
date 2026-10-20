@@ -7,7 +7,7 @@ description: Scaffold a new Gradle module (feature/domain/data/core) using this 
 
 Scaffolds a new module using one of the two existing convention plugins — never
 hand-roll `android {}`/`kotlin {}` blocks in a new module's `build.gradle`. See
-`CLAUDE.md`'s module map for which plugin every existing module uses, and
+`AGENTS.md`'s module map for which plugin every existing module uses, and
 `build-logic/convention/src/main/kotlin/com/thanh0x/coursedeals/convention/` for the
 plugin source.
 
@@ -16,7 +16,7 @@ plugin source.
 - **`coursedeals.android.library`** — for anything with Android dependencies (Context,
   Fragment, Room, DataStore, Parcelable, etc.) or that ships resources/manifest. This is
   what every existing module except `core:common` uses, including `domain:*` and
-  `data:*` today (see CLAUDE.md's KMP section — this is a known, accepted state, not a
+  `data:*` today (see AGENTS.md's KMP section — this is a known, accepted state, not a
   mistake to "fix" while adding a new module).
 - **`coursedeals.kotlin.library`** — only for a module that's genuinely pure
   Kotlin/JVM with zero Android imports, matching `core:common`.

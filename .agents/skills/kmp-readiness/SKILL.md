@@ -13,7 +13,7 @@ shared module), never `feature:*` or `app`.
 
 ## What to grep for
 
-In the target module/file, look for these Android-only signals (see `CLAUDE.md`'s KMP
+In the target module/file, look for these Android-only signals (see `AGENTS.md`'s KMP
 section for the current known state — as of now, all four of `domain:coupons`,
 `domain:user`, `data:coupons`, `data:user` have hits):
 
@@ -38,5 +38,5 @@ section for the current known state — as of now, all four of `domain:coupons`,
    architectural work that should go through the `adr` skill first if it hasn't already
    been decided, then its own tracked issue(s).
 4. Don't propose speculative `expect`/`actual` scaffolding for code that isn't actually
-   being migrated right now — per `CLAUDE.md`, premature abstraction ahead of the real
+   being migrated right now — per `AGENTS.md`, premature abstraction ahead of the real
    KMP work is exactly what to avoid.

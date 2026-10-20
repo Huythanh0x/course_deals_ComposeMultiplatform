@@ -34,8 +34,8 @@ choice).
    ```
 4. Status starts as `Proposed` unless the user says the decision is already final (then
    `Accepted`, matching how `0001` was recorded).
-5. If this ADR touches something covered elsewhere in `CLAUDE.md` (e.g. the testing
-   stack, or KMP migration status), flag that `CLAUDE.md` may need a matching update —
+5. If this ADR touches something covered elsewhere in `AGENTS.md` (e.g. the testing
+   stack, or KMP migration status), flag that `AGENTS.md` may need a matching update —
    don't update it silently without asking, since it's read every session.
 
 ## Notes

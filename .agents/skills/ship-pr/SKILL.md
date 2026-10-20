@@ -24,7 +24,7 @@ rubber stamp:
 1. **Pull screenshot URLs from the workspace, if any exist.** `capture-evidence`
    already uploaded the kept screenshots to hosted storage (the user's Cloudflare R2
    Worker) and recorded the resulting URLs as markdown image lines in
-   `.claude/tickets/<issue-number>-<slug>/NOTES.md`'s Test evidence → Screenshots
+   `.agents/tickets/<issue-number>-<slug>/NOTES.md`'s Test evidence → Screenshots
    section. Read that section verbatim — don't re-upload, don't re-derive URLs, and
    don't commit any screenshot files to the branch (screenshot binaries are
    intentionally kept out of this repo's git history). If that section is empty or
@@ -34,7 +34,7 @@ rubber stamp:
    (`docs/pull-requests.md`).
 4. Open the PR filled from `.github/PULL_REQUEST_TEMPLATE.md` — fill in **all** of it,
    including "How this was tested" with what was actually run (not "should work"). If
-   this ticket has a workspace at `.claude/tickets/<issue-number>-<slug>/NOTES.md` (from
+   this ticket has a workspace at `.agents/tickets/<issue-number>-<slug>/NOTES.md` (from
    `run-tests`/`capture-evidence`), pull the real pass/fail numbers from its Test
    evidence section rather than re-deriving them. For the Screenshots section, embed
    the hosted URLs read in step 1 (not a prose description of what they show) whenever
