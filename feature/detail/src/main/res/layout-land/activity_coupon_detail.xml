@@ -19,9 +19,9 @@
             app:navigationIconTint="?attr/colorOnSurface"
             app:title="" />
 
-        <!-- Landscape: two-pane split. Not a MotionLayout (no swipe-to-collapse card here,
-             both panes scroll independently instead), but keeps the same id/visibility usage
-             (`binding.mlCouponDetail.visibility = ...`) as the portrait MotionLayout. -->
+        <!-- Landscape: two-pane split. Left pane is dedicated solely to the hero preview image,
+             fitting the area between toolbar and action bar without overlapping the footer.
+             Right pane is independently scrollable and houses all course metadata, chips, and description. -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/mlCouponDetail"
             android:layout_width="match_parent"
@@ -31,36 +31,42 @@
             app:layout_constraintTop_toBottomOf="@id/toolbar"
             tools:context="com.thanh0x.coursedeals.feature.detail.CouponDetailActivity">
 
-            <!-- Left pane: thumbnail + course data (rating, students, reviews, badges) -->
-            <androidx.core.widget.NestedScrollView
-                android:id="@+id/nsvCourseInfo"
+            <!-- Left pane: Only the image (fit screen above footer, no overlap) -->
+            <com.thanh0x.coursedeals.core.ui.ZoomableImageView
+                android:id="@+id/ivPreview"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:scaleType="centerCrop"
+                android:src="@color/m3_primary_container"
                 app:layout_constraintBottom_toTopOf="@id/clActionContainer"
                 app:layout_constraintEnd_toStartOf="@id/nsvCourseDetail"
                 app:layout_constraintHorizontal_weight="1"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- Right pane: All course details (badge, category, title, author, rating, chips, heading, description) -->
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/nsvCourseDetail"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toTopOf="@id/clActionContainer"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_weight="1"
+                app:layout_constraintStart_toEndOf="@id/ivPreview"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="@dimen/spacing_16">
 
-                    <com.thanh0x.coursedeals.core.ui.ZoomableImageView
-                        android:id="@+id/ivPreview"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:src="@color/m3_primary_container"
-                        app:layout_constraintDimensionRatio="1.78"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
+                    <!-- Expiry badge -->
                     <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cvTimeLeft"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/spacing_8"
-                        android:layout_marginEnd="@dimen/spacing_8"
+                        android:layout_marginTop="@dimen/spacing_12"
+                        android:layout_marginEnd="@dimen/spacing_16"
                         app:cardBackgroundColor="@color/m3_error_container"
                         app:cardCornerRadius="@dimen/corner_radius_small"
                         app:cardElevation="@dimen/elevation_medium"
@@ -79,6 +85,23 @@
                             android:textStyle="bold" />
                     </com.google.android.material.card.MaterialCardView>
 
+                    <!-- Category -->
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/tvCourseCategory"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_16"
+                        android:layout_marginEnd="@dimen/spacing_8"
+                        android:textColor="@color/m3_primary"
+                        android:textSize="@dimen/text_size_title_small"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="@+id/cvTimeLeft"
+                        app:layout_constraintEnd_toStartOf="@+id/cvTimeLeft"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/cvTimeLeft"
+                        tools:text="Social Media Marketing" />
+
+                    <!-- Course Title -->
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvCourseTitle"
                         android:layout_width="0dp"
@@ -90,45 +113,36 @@
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/ivPreview"
+                        app:layout_constraintTop_toBottomOf="@+id/cvTimeLeft"
                         tools:text="Facebook Ads Lead Generation Marketing for business" />
 
+                    <!-- Author -->
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvCourseAuthor"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/spacing_16"
+                        android:layout_marginTop="@dimen/spacing_4"
                         android:lines="1"
                         android:textColor="@color/m3_on_surface_variant"
                         android:textSize="@dimen/text_size_title_small"
-                        app:layout_constraintEnd_toEndOf="@+id/tvCourseTitle"
-                        app:layout_constraintHorizontal_bias="0.0"
-                        app:layout_constraintStart_toStartOf="@+id/tvCourseTitle"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/tvCourseTitle"
                         tools:text="Yasir Ahmed, M.B.A" />
 
-                    <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/tvCourseCategory"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/spacing_4"
-                        android:textColor="@color/m3_primary"
-                        android:textSize="@dimen/text_size_title_small"
-                        android:textStyle="bold"
-                        app:layout_constraintEnd_toEndOf="@+id/tvCourseAuthor"
-                        app:layout_constraintStart_toStartOf="@+id/tvCourseAuthor"
-                        app:layout_constraintTop_toBottomOf="@+id/tvCourseAuthor"
-                        tools:text="Social Media Marketing" />
-
+                    <!-- Rating and Students/Reviews Row -->
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/tvRatingValue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/spacing_2"
+                        android:layout_marginStart="@dimen/spacing_16"
+                        android:layout_marginTop="@dimen/spacing_4"
                         android:textColor="@color/golden"
                         android:textSize="@dimen/text_size_title_small"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="@+id/rbCouponDetail"
-                        app:layout_constraintStart_toStartOf="@+id/tvCourseCategory"
+                        app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/rbCouponDetail"
                         tools:text="4.2" />
 
@@ -138,18 +152,17 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/spacing_4"
-                        android:layout_marginTop="@dimen/spacing_4"
-                        android:layout_marginBottom="@dimen/spacing_4"
+                        android:layout_marginTop="@dimen/spacing_8"
                         android:numStars="5"
                         android:theme="@style/rating_bar"
                         app:layout_constraintStart_toEndOf="@+id/tvRatingValue"
-                        app:layout_constraintTop_toBottomOf="@+id/tvCourseCategory" />
+                        app:layout_constraintTop_toBottomOf="@+id/tvCourseAuthor" />
 
                     <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/ivStudents"
                         android:layout_width="@dimen/spacing_16"
                         android:layout_height="@dimen/spacing_16"
-                        android:layout_marginStart="@dimen/spacing_4"
+                        android:layout_marginStart="@dimen/spacing_8"
                         android:src="@drawable/ic_students"
                         app:layout_constraintBottom_toBottomOf="@+id/rbCouponDetail"
                         app:layout_constraintStart_toEndOf="@+id/rbCouponDetail"
@@ -191,14 +204,14 @@
                         app:layout_constraintStart_toEndOf="@+id/ivReviews"
                         app:layout_constraintTop_toTopOf="@+id/ivReviews" />
 
+                    <!-- Cards / Badges Row -->
                     <HorizontalScrollView
+                        android:id="@+id/hsvBadges"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/spacing_4"
-                        android:layout_marginBottom="@dimen/spacing_8"
+                        android:layout_marginTop="@dimen/spacing_8"
                         android:clipToPadding="false"
                         android:paddingHorizontal="@dimen/spacing_16"
-                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/rbCouponDetail">
 
@@ -359,78 +372,69 @@
                         </androidx.appcompat.widget.LinearLayoutCompat>
                     </HorizontalScrollView>
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </androidx.core.widget.NestedScrollView>
-
-            <!-- Right pane: heading + description, independently scrollable -->
-            <androidx.core.widget.NestedScrollView
-                android:id="@+id/nsvCourseDetail"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toTopOf="@id/clActionContainer"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_weight="1"
-                app:layout_constraintStart_toEndOf="@id/nsvCourseInfo"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
+                    <!-- Heading -->
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvCourseHeading"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="@dimen/spacing_10"
-                        android:layout_marginTop="@dimen/spacing_12"
+                        android:layout_marginHorizontal="@dimen/spacing_16"
+                        android:layout_marginTop="@dimen/spacing_16"
                         android:text="@string/header_heading"
                         android:textColor="@color/headingTitle"
                         android:textSize="@dimen/text_size_title_medium"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toBottomOf="@+id/hsvBadges" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvCourseHeadingTitle"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/spacing_16"
                         android:layout_marginTop="@dimen/spacing_4"
                         android:textColor="@color/primaryTextColor"
                         android:textSize="@dimen/text_size_body_large"
                         android:textStyle="bold"
-                        app:layout_constraintEnd_toEndOf="@+id/tvCourseHeading"
-                        app:layout_constraintStart_toStartOf="@+id/tvCourseHeading"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/tvCourseHeading" />
 
+                    <!-- Description -->
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvDescription"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/spacing_12"
+                        android:layout_marginHorizontal="@dimen/spacing_16"
+                        android:layout_marginTop="@dimen/spacing_16"
                         android:text="@string/header_description"
                         android:textColor="@color/headingTitle"
                         android:textSize="@dimen/text_size_title_medium"
                         android:textStyle="bold"
-                        app:layout_constraintEnd_toEndOf="@+id/tvCourseHeadingTitle"
-                        app:layout_constraintStart_toStartOf="@+id/tvCourseHeading"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/tvCourseHeadingTitle" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvCourseDescription"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/spacing_16"
+                        android:layout_marginTop="@dimen/spacing_4"
                         android:layout_marginBottom="@dimen/spacing_16"
                         android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                         android:textColor="?attr/colorOnSurface"
                         android:textSize="@dimen/text_size_body_large"
-                        app:layout_constraintEnd_toEndOf="@id/tvDescription"
-                        app:layout_constraintStart_toStartOf="@+id/tvDescription"
-                        app:layout_constraintTop_toBottomOf="@id/tvDescription" />
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvDescription" />
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.core.widget.NestedScrollView>
 
+            <!-- Bottom Actions Bar (Footer) -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/clActionContainer"
                 android:layout_width="0dp"
@@ -476,6 +480,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
