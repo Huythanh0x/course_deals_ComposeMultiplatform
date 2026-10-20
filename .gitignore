@@ -18,5 +18,8 @@ local.properties
 .artifacts/
 tree.dir
 
-# Per-ticket working memory from the implement-ticket skill — local scratch, not project docs
+# Per-ticket working memory and worktrees — local scratch, not project docs
+.agents/tickets/
+.agents/worktrees/
 .claude/tickets/
+.claude/worktrees/
