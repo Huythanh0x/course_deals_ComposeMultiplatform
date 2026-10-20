@@ -51,4 +51,7 @@ class UserAuthenticationRepositoryImpl @Inject constructor(
     override suspend fun requestFingerprintToken() = remoteAuthenticationDataSource.requestFingerprintToken()
 
     override suspend fun requestAccessToken() = remoteAuthenticationDataSource.requestAccessToken()
+
+    override suspend fun socialLogin(provider: String, idToken: String): AppResult<TokenData> =
+        remoteAuthenticationDataSource.socialLogin(provider, idToken)
 }

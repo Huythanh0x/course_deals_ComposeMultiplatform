@@ -38,19 +38,11 @@ object CoreNetworkModule {
                 val response = chain.proceed(request)
                 if (response.code == NetworkStatusCode.HTTP_CODE_UNAUTHORIZED) {
                     try {
-                        localAuthenticationDataSource.saveLocalToken(token ?: "")
-                        val retryRequest = request.newBuilder()
-                            .addHeader(
-                                Constant.NETWORK_AUTHORIZATION_HEADER,
-                                "${Constant.NETWORK_BEARER_PREFIX} $token"
-                            )
-                            .build()
-                        chain.proceed(retryRequest)
+                        localAuthenticationDataSource.clearLocalToken()
                     } catch (@Suppress("TooGenericExceptionCaught") exception: Exception) {
-                        Timber.e(exception, "AuthInterceptor: Failed to refresh token")
-                        localAuthenticationDataSource.saveLocalToken("")
-                        response
+                        Timber.e(exception, "AuthInterceptor: Failed to clear expired token")
                     }
+                    response
                 } else {
                     response
                 }

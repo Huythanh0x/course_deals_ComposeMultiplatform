@@ -17,4 +17,5 @@ interface UserAuthenticationRepository {
     suspend fun clearLocalRefreshToken()
     suspend fun requestFingerprintToken(): AppResult<TokenData>
     suspend fun requestAccessToken(): AppResult<TokenData>
+    suspend fun socialLogin(provider: String, idToken: String): AppResult<TokenData>
 }
