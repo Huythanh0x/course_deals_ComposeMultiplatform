@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import com.thanh0x.coursedeals.domain.user.source.LocalUserProfileDataSource
 import com.thanh0x.coursedeals.core.common.Constant
@@ -21,6 +22,9 @@ class LocalUserProfileDataSourceImpl @Inject constructor(private val datastore: 
         val favKeywords = stringSetPreferencesKey(Constant.PREFERENCES_FAV_KEYWORDS)
         val notificationsEnabled = booleanPreferencesKey(Constant.PREFERENCES_NOTIFICATIONS_ENABLED)
         val updatedAt = longPreferencesKey(Constant.PREFERENCES_UPDATED_AT)
+        val userName = stringPreferencesKey(Constant.PREFERENCES_USER_NAME)
+        val userEmail = stringPreferencesKey(Constant.PREFERENCES_USER_EMAIL)
+        val userAvatar = stringPreferencesKey(Constant.PREFERENCES_USER_AVATAR)
     }
 
     override suspend fun saveEnableDarkMode(isDarkModeEnable: Boolean) {
@@ -88,6 +92,54 @@ class LocalUserProfileDataSourceImpl @Inject constructor(private val datastore: 
     override suspend fun savePreferencesUpdatedAt(timestamp: Long) {
         datastore.edit { preferences ->
             preferences[PreferenceKey.updatedAt] = timestamp
+        }
+    }
+
+    override suspend fun getUserName(): String? {
+        return datastore.data.map { preferences ->
+            preferences[PreferenceKey.userName]
+        }.first()
+    }
+
+    override suspend fun saveUserName(name: String?) {
+        datastore.edit { preferences ->
+            if (name != null) {
+                preferences[PreferenceKey.userName] = name
+            } else {
+                preferences.remove(PreferenceKey.userName)
+            }
+        }
+    }
+
+    override suspend fun getUserEmail(): String? {
+        return datastore.data.map { preferences ->
+            preferences[PreferenceKey.userEmail]
+        }.first()
+    }
+
+    override suspend fun saveUserEmail(email: String?) {
+        datastore.edit { preferences ->
+            if (email != null) {
+                preferences[PreferenceKey.userEmail] = email
+            } else {
+                preferences.remove(PreferenceKey.userEmail)
+            }
+        }
+    }
+
+    override suspend fun getUserAvatar(): String? {
+        return datastore.data.map { preferences ->
+            preferences[PreferenceKey.userAvatar]
+        }.first()
+    }
+
+    override suspend fun saveUserAvatar(avatarUrl: String?) {
+        datastore.edit { preferences ->
+            if (avatarUrl != null) {
+                preferences[PreferenceKey.userAvatar] = avatarUrl
+            } else {
+                preferences.remove(PreferenceKey.userAvatar)
+            }
         }
     }
 }

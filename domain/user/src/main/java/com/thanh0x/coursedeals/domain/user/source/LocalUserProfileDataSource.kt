@@ -18,4 +18,13 @@ interface LocalUserProfileDataSource {
 
     suspend fun getPreferencesUpdatedAt(): Long
     suspend fun savePreferencesUpdatedAt(timestamp: Long)
+
+    suspend fun getUserName(): String?
+    suspend fun saveUserName(name: String?)
+
+    suspend fun getUserEmail(): String?
+    suspend fun saveUserEmail(email: String?)
+
+    suspend fun getUserAvatar(): String?
+    suspend fun saveUserAvatar(avatarUrl: String?)
 }

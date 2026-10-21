@@ -11,14 +11,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.squareup.picasso.Callback
+import com.squareup.picasso.Picasso
 import com.thanh0x.coursedeals.core.ui.R as CoreR
 import com.thanh0x.coursedeals.feature.profile.R
 import com.thanh0x.coursedeals.feature.profile.databinding.FragmentProfileBinding
@@ -192,6 +196,14 @@ class ProfileFragment : BaseFragment() {
             return
         }
 
+        if (state.displayName.isNotEmpty()) {
+            binding.tvDisplayName.text = state.displayName
+        }
+        if (state.email.isNotEmpty()) {
+            binding.tvEmail.text = state.email
+        }
+        bindAvatar(state.avatarUrl)
+
         if (binding.swEnableDarkMode.isChecked != state.isDarkModeEnabled) {
             binding.swEnableDarkMode.isChecked = state.isDarkModeEnabled
         }
@@ -208,10 +220,41 @@ class ProfileFragment : BaseFragment() {
             binding.swEnableNotifications.isChecked = state.isNotificationsEnabled
         }
         binding.llNotificationSubSettings.isVisible = state.isNotificationsEnabled
-        binding.lpSync.isVisible = state.isSyncing
+        binding.lpSync.isVisible = state.isSyncing || state.isLoading
 
         updateCategoryChips(state.favCategories)
         updateKeywordChips(state.favKeywords)
+    }
+
+    private fun bindAvatar(avatarUrl: String?) {
+        if (!avatarUrl.isNullOrEmpty()) {
+            Picasso.get()
+                .load(avatarUrl)
+                .into(binding.ivAvatar, object : Callback {
+                    override fun onSuccess() {
+                        binding.ivAvatar.scaleType = ImageView.ScaleType.CENTER_CROP
+                        binding.ivAvatar.setPadding(0, 0, 0, 0)
+                        binding.ivAvatar.imageTintList = null
+                    }
+
+                    override fun onError(e: Exception?) {
+                        resetAvatarPlaceholder()
+                    }
+                })
+        } else {
+            resetAvatarPlaceholder()
+        }
+    }
+
+    private fun resetAvatarPlaceholder() {
+        val padding = resources.getDimensionPixelSize(CoreR.dimen.spacing_16)
+        binding.ivAvatar.scaleType = ImageView.ScaleType.FIT_CENTER
+        binding.ivAvatar.setPadding(padding, padding, padding, padding)
+        binding.ivAvatar.setImageResource(CoreR.drawable.ic_nav_profile)
+        binding.ivAvatar.imageTintList = ContextCompat.getColorStateList(
+            requireContext(),
+            CoreR.color.m3_on_primary_container,
+        )
     }
 
     private fun updateCategoryChips(categories: List<String>) {

@@ -28,4 +28,6 @@ dependencies {
 
     // Logging
     implementation libs.timber
+
+    testImplementation libs.junit
 }
