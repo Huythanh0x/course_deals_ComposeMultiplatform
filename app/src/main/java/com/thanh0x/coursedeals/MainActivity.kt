@@ -21,6 +21,9 @@ class MainActivity : BaseActivity() {
         (binding.bottomNavigationView as? NavigationBarView)?.let {
             NavigationUI.setupWithNavController(it, navController)
         }
+        navController.addOnDestinationChangedListener { _, _, _ ->
+            hideLoading(immediate = true)
+        }
     }
 
     override fun onNavigateUp(): Boolean {

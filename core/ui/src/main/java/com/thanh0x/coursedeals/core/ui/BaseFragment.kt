@@ -33,8 +33,8 @@ abstract class BaseFragment : Fragment() {
         (requireActivity() as? BaseActivity)?.showLoading(message)
     }
 
-    fun hideLoading() {
-        (requireActivity() as? BaseActivity)?.hideLoading()
+    fun hideLoading(immediate: Boolean = false) {
+        (requireActivity() as? BaseActivity)?.hideLoading(immediate)
     }
 
     fun hideKeyboard() {
