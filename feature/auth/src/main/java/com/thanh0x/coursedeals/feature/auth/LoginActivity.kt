@@ -96,10 +96,14 @@ class LoginActivity : BaseActivity() {
 
         val serverClientId = getString(CoreR.string.google_web_client_id)
         if (serverClientId.startsWith("YOUR_GOOGLE_WEB_CLIENT_ID")) {
-            showAlertDialog(
-                getString(CoreR.string.login_error_title),
-                "Google Web Client ID is not configured yet. For local development or testing without OAuth credentials, tap 'Dev / Demo Mode'."
-            )
+            androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Google Sign-In (Dev Mode)")
+                .setMessage("Google Web Client ID is not configured yet. Sign in with a Mock Google Developer account for local testing?")
+                .setPositiveButton("Sign In") { _, _ ->
+                    loginViewModel.googleLogin("mock-google-token")
+                }
+                .setNegativeButton(getString(CoreR.string.cancel_button_text), null)
+                .show()
             return
         }
 
