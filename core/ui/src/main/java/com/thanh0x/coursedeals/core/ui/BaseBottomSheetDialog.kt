@@ -11,6 +11,7 @@ abstract class BaseBottomSheetDialog : BottomSheetDialogFragment() {
     override fun onStart() {
         super.onStart()
         dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        expandToFullHeight()
     }
 
     fun setFullWidth() {
@@ -21,19 +22,14 @@ abstract class BaseBottomSheetDialog : BottomSheetDialogFragment() {
     }
 
     /**
-     * Expands the sheet to fill the full available height as soon as it's shown, in both
-     * portrait and landscape. Call this from `onStart()` in subclasses that need a
-     * full-height sheet (rather than Material's default partial "peek" presentation).
+     * Expands the sheet to its full content height while anchoring it firmly to the bottom
+     * of the screen in both portrait and landscape.
      *
-     * Material's [BottomSheetBehavior] normally sizes the expanded state to the sheet's
-     * *content* height ([BottomSheetBehavior.isFitToContents] = true), capped at the
-     * available parent height. That's fine in portrait, where the parent is usually taller
-     * than the content, but in landscape the parent height shrinks enough that content-fit
-     * sizing (or a height computed once as a fraction of `resources.displayMetrics`) can
-     * leave the sheet short of the screen edge instead of filling it. Setting
-     * `isFitToContents = false` makes the behavior measure and lay out the sheet against
-     * the actual available parent height at layout time instead of its content size, so
-     * this is correct for either orientation without any hardcoded pixel/fraction math.
+     * In Material Components, [BottomSheetBehavior.isFitToContents] = true anchors the sheet
+     * to the bottom of the parent layout (`parentHeight - childHeight`), ensuring that the
+     * sheet is always anchored at the bottom edge rather than floating in mid-air. Setting
+     * [BottomSheetBehavior.state] = STATE_EXPANDED and [BottomSheetBehavior.skipCollapsed] = true
+     * ensures the entire content is shown immediately without getting stuck in a partial peek state.
      */
     protected fun expandToFullHeight() {
         val bottomSheet = (dialog as? BottomSheetDialog)
@@ -42,7 +38,7 @@ abstract class BaseBottomSheetDialog : BottomSheetDialogFragment() {
 
         BottomSheetBehavior.from(bottomSheet).apply {
             skipCollapsed = true
-            isFitToContents = false
+            isFitToContents = true
             state = BottomSheetBehavior.STATE_EXPANDED
         }
     }
