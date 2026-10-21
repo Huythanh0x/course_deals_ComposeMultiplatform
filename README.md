@@ -24,12 +24,10 @@ fetched from a server and displayed in a list.
 - Version android Sdk [24, 33]
 - Java version: 17
 
-### Test account
-
-```
-x@x.com
-xxxxxx
-```
+### Authentication
+- **Google Sign-In**: Uses Android Credential Manager to sign in with Google and exchange an ID token with the backend.
+- **Biometric Unlock**: Use enrolled device biometrics to unlock the app.
+- **Dev / Demo Mode**: Tap "Dev / Demo Mode" on the login screen for instant testing without live Google OAuth keys.
 
 ### Libs and techs
 

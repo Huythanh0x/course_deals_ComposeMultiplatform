@@ -21,5 +21,8 @@ dependencies {
     implementation libs.androidx.lifecycle.viewmodel.ktx
     implementation libs.androidx.activity.ktx
     implementation libs.androidx.biometric
+    implementation libs.androidx.credentials
+    implementation libs.androidx.credentials.play.services.auth
+    implementation libs.googleid
     implementation libs.timber
 }

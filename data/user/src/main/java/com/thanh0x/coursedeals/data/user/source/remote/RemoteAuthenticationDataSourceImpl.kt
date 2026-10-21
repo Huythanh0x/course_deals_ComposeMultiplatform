@@ -89,4 +89,25 @@ class RemoteAuthenticationDataSourceImpl @Inject constructor(private val userAut
             AppResult.Error(e.localizedMessage ?: "Unknown Error")
         }
     }
+
+    @Suppress("TooGenericExceptionCaught")
+    override suspend fun socialLogin(provider: String, idToken: String): AppResult<TokenData> {
+        return try {
+            val response = userAuthenticationService.socialLogin(
+                com.thanh0x.coursedeals.data.user.model.SocialLoginRequest(
+                    idToken = idToken,
+                    provider = provider
+                )
+            )
+            val body = response.body()
+            if (response.isSuccessful && body != null) {
+                AppResult.Success(body.toDomain())
+            } else {
+                AppResult.Error(response.message(), response.code())
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "Error during social login")
+            AppResult.Error(e.localizedMessage ?: "Unknown Error")
+        }
+    }
 }

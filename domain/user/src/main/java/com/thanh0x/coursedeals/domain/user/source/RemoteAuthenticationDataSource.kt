@@ -10,4 +10,5 @@ interface RemoteAuthenticationDataSource {
     suspend fun checkIfTokenExpired(): AppResult<Unit>
     suspend fun requestFingerprintToken(): AppResult<TokenData>
     suspend fun requestAccessToken(): AppResult<TokenData>
+    suspend fun socialLogin(provider: String, idToken: String): AppResult<TokenData>
 }
