@@ -227,14 +227,16 @@ class ProfileFragment : BaseFragment() {
     }
 
     private fun bindAvatar(avatarUrl: String?) {
+        val currentBinding = _binding ?: return
         if (!avatarUrl.isNullOrEmpty()) {
             Picasso.get()
                 .load(avatarUrl)
-                .into(binding.ivAvatar, object : Callback {
+                .into(currentBinding.ivAvatar, object : Callback {
                     override fun onSuccess() {
-                        binding.ivAvatar.scaleType = ImageView.ScaleType.CENTER_CROP
-                        binding.ivAvatar.setPadding(0, 0, 0, 0)
-                        binding.ivAvatar.imageTintList = null
+                        val activeBinding = _binding ?: return
+                        activeBinding.ivAvatar.scaleType = ImageView.ScaleType.CENTER_CROP
+                        activeBinding.ivAvatar.setPadding(0, 0, 0, 0)
+                        activeBinding.ivAvatar.imageTintList = null
                     }
 
                     override fun onError(e: Exception?) {
@@ -247,12 +249,14 @@ class ProfileFragment : BaseFragment() {
     }
 
     private fun resetAvatarPlaceholder() {
-        val padding = resources.getDimensionPixelSize(CoreR.dimen.spacing_16)
-        binding.ivAvatar.scaleType = ImageView.ScaleType.FIT_CENTER
-        binding.ivAvatar.setPadding(padding, padding, padding, padding)
-        binding.ivAvatar.setImageResource(CoreR.drawable.ic_nav_profile)
-        binding.ivAvatar.imageTintList = ContextCompat.getColorStateList(
-            requireContext(),
+        val currentBinding = _binding ?: return
+        val currentContext = context ?: return
+        val padding = currentContext.resources.getDimensionPixelSize(CoreR.dimen.spacing_16)
+        currentBinding.ivAvatar.scaleType = ImageView.ScaleType.FIT_CENTER
+        currentBinding.ivAvatar.setPadding(padding, padding, padding, padding)
+        currentBinding.ivAvatar.setImageResource(CoreR.drawable.ic_nav_profile)
+        currentBinding.ivAvatar.imageTintList = ContextCompat.getColorStateList(
+            currentContext,
             CoreR.color.m3_on_primary_container,
         )
     }
@@ -374,14 +378,14 @@ class ProfileFragment : BaseFragment() {
                                 profileViewModel.saveIsFingerPrintEnable(true)
                             }
                         } else if (result is AppResult.Error) {
-                            binding.swEnableFingerPrint.isChecked = false
+                            _binding?.swEnableFingerPrint?.isChecked = false
                             if (result.code == NetworkStatusCode.HTTP_CODE_UNAUTHORIZED) {
                                 forceLogout()
                             }
                         }
                     }
                 }, {
-                    binding.swEnableFingerPrint.isChecked = false
+                    _binding?.swEnableFingerPrint?.isChecked = false
                 })
             val promptInfo = BiometricPromptUtils.createPromptInfo(
                 getString(CoreR.string.prompt_info_title),
@@ -407,6 +411,9 @@ class ProfileFragment : BaseFragment() {
     }
 
     override fun onDestroyView() {
+        _binding?.let {
+            Picasso.get().cancelRequest(it.ivAvatar)
+        }
         super.onDestroyView()
         _binding = null
     }
