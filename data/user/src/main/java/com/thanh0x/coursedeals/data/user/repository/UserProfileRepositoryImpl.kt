@@ -2,6 +2,7 @@ package com.thanh0x.coursedeals.data.user.repository
 
 import com.thanh0x.coursedeals.core.common.AppResult
 import com.thanh0x.coursedeals.domain.user.UserPreferences
+import com.thanh0x.coursedeals.domain.user.UserProfile
 import com.thanh0x.coursedeals.domain.user.UserProfileRepository
 import com.thanh0x.coursedeals.domain.user.source.LocalUserProfileDataSource
 import com.thanh0x.coursedeals.domain.user.source.RemoteUserProfileDataSource
@@ -87,5 +88,53 @@ class UserProfileRepositoryImpl @Inject constructor(
             updatedAt = localUserProfileDataSource.getPreferencesUpdatedAt(),
         )
         return remoteUserProfileDataSource.updatePreferences(currentPrefs)
+    }
+
+    override suspend fun getCachedUserProfile(): UserProfile {
+        return com.thanh0x.coursedeals.domain.user.UserProfile(
+            email = localUserProfileDataSource.getUserEmail(),
+            fullName = localUserProfileDataSource.getUserName(),
+            avatarUrl = localUserProfileDataSource.getUserAvatar(),
+            preferences = UserPreferences(
+                categories = localUserProfileDataSource.getFavoriteCategories().toList(),
+                keywords = localUserProfileDataSource.getFavoriteKeywords().toList(),
+                notificationsEnabled = localUserProfileDataSource.getNotificationsEnabled(),
+                updatedAt = localUserProfileDataSource.getPreferencesUpdatedAt(),
+            ),
+        )
+    }
+
+    override suspend fun getUserProfile(): AppResult<UserProfile> {
+        val remoteResult = remoteUserProfileDataSource.getUserProfile()
+        if (remoteResult is AppResult.Success) {
+            val profile = remoteResult.data
+            cacheUserProfile(profile)
+            return remoteResult
+        }
+        val cached = getCachedUserProfile()
+        return if (cached.email != null || cached.fullName != null) {
+            AppResult.Success(cached)
+        } else {
+            remoteResult
+        }
+    }
+
+    override suspend fun updateUserProfile(
+        fullName: String?,
+        avatarUrl: String?,
+        fcmToken: String?,
+    ): AppResult<UserProfile> {
+        val result = remoteUserProfileDataSource.updateUserProfile(fullName, avatarUrl, fcmToken)
+        if (result is AppResult.Success) {
+            cacheUserProfile(result.data)
+        }
+        return result
+    }
+
+    private suspend fun cacheUserProfile(profile: UserProfile) {
+        profile.fullName?.let { localUserProfileDataSource.saveUserName(it) }
+        profile.email?.let { localUserProfileDataSource.saveUserEmail(it) }
+        profile.avatarUrl?.let { localUserProfileDataSource.saveUserAvatar(it) }
+        profile.preferences?.let { updateLocalStore(it) }
     }
 }

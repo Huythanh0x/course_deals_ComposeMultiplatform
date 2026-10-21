@@ -18,4 +18,12 @@ interface UserProfileRepository {
 
     suspend fun getNotificationsEnabled(): Boolean
     suspend fun saveNotificationsEnabled(enabled: Boolean): AppResult<UserPreferences>
+
+    suspend fun getUserProfile(): AppResult<UserProfile>
+    suspend fun updateUserProfile(
+        fullName: String? = null,
+        avatarUrl: String? = null,
+        fcmToken: String? = null,
+    ): AppResult<UserProfile>
+    suspend fun getCachedUserProfile(): UserProfile
 }
