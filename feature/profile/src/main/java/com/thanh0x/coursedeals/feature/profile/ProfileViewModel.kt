@@ -7,12 +7,13 @@ import com.thanh0x.coursedeals.domain.user.CiphertextWrapper
 import com.thanh0x.coursedeals.core.common.AppResult
 import com.thanh0x.coursedeals.domain.user.TokenData
 import com.thanh0x.coursedeals.domain.user.UserProfileRepository
-import com.thanh0x.coursedeals.domain.user.usecase.CryptographyManagerUseCase
-import com.thanh0x.coursedeals.domain.user.usecase.RequestFingerprintTokenUseCase
-import com.thanh0x.coursedeals.domain.user.usecase.SettingFingerprintUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.CheckIfTokenExpiredUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.ClearLocalTokenUseCase
+import com.thanh0x.coursedeals.domain.user.usecase.CryptographyManagerUseCase
+import com.thanh0x.coursedeals.domain.user.usecase.GetUserProfileUseCase
+import com.thanh0x.coursedeals.domain.user.usecase.RequestFingerprintTokenUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.SaveJwtTokenUseCase
+import com.thanh0x.coursedeals.domain.user.usecase.SettingFingerprintUseCase
 import com.thanh0x.coursedeals.core.ui.UiEvent
 import com.thanh0x.coursedeals.core.common.NetworkStatusCode
 import com.thanh0x.coursedeals.core.ui.util.NetworkUtil
@@ -31,6 +32,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val userProfileRepository: UserProfileRepository,
+    private val getUserProfileUseCase: GetUserProfileUseCase,
     val saveJwtTokenUseCase: SaveJwtTokenUseCase,
     private val cryptographyManagerUseCase: CryptographyManagerUseCase,
     private val settingFingerprintUseCase: SettingFingerprintUseCase,
@@ -49,11 +51,13 @@ class ProfileViewModel @Inject constructor(
     init {
         initSettings()
         checkIfTokenExpired()
+        fetchUserProfile()
         syncPreferences()
     }
 
     private fun initSettings() {
         viewModelScope.launch(Dispatchers.IO) {
+            val cachedProfile = userProfileRepository.getCachedUserProfile()
             val darkMode = userProfileRepository.getEnableDarkMode() ?: false
             val fingerprint = userProfileRepository.getEnableFingerPrint() ?: false
             val categories = userProfileRepository.getFavoriteCategories().toList()
@@ -62,12 +66,49 @@ class ProfileViewModel @Inject constructor(
 
             _uiState.update {
                 it.copy(
+                    displayName = cachedProfile.fullName ?: it.displayName,
+                    email = cachedProfile.email ?: it.email,
+                    avatarUrl = cachedProfile.avatarUrl ?: it.avatarUrl,
                     isDarkModeEnabled = darkMode,
                     isFingerprintEnabled = fingerprint,
                     favCategories = categories,
                     favKeywords = keywords,
                     isNotificationsEnabled = notifications,
                 )
+            }
+        }
+    }
+
+    fun fetchUserProfile() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update { it.copy(isLoading = true) }
+            when (val result = getUserProfileUseCase()) {
+                is AppResult.Success -> {
+                    val profile = result.data
+                    _uiState.update { state ->
+                        state.copy(
+                            displayName = profile.fullName ?: state.displayName,
+                            email = profile.email ?: state.email,
+                            avatarUrl = profile.avatarUrl ?: state.avatarUrl,
+                            favCategories = profile.preferences?.categories ?: state.favCategories,
+                            favKeywords = profile.preferences?.keywords ?: state.favKeywords,
+                            isNotificationsEnabled = profile.preferences?.notificationsEnabled ?: state.isNotificationsEnabled,
+                            isLoading = false,
+                            errorMessage = null,
+                        )
+                    }
+                }
+                is AppResult.Error -> {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = result.message,
+                        )
+                    }
+                }
+                is AppResult.Loading -> {
+                    _uiState.update { it.copy(isLoading = true) }
+                }
             }
         }
     }

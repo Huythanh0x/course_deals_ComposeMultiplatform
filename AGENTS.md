@@ -123,12 +123,16 @@ here:
 - [`docs/adr-guide.md`](docs/adr-guide.md) — when a decision is ADR-worthy, template,
   status lifecycle
 
-The `ticket-flow` skill runs the full lifecycle as a gated sequence — `new-ticket` (if
-needed) → `read-requirements` → `scan-related-code` → `confirm-edge-cases` →
-`implement-change` → `run-tests` → `capture-evidence` → `ship-pr` — stopping to report
+The `ticket-flow` skill runs the full lifecycle as a gated sequence — `new-ticket` (if needed) → `read-requirements` → `scan-related-code` → `confirm-edge-cases` → `implement-change` → `run-tests` → `capture-evidence` → `ship-pr` — stopping to report
 and confirm after every step, backed by a resumable per-ticket workspace under
 `.agents/tickets/` (git-ignored). Each step is also its own standalone skill for when
 only one step is needed in isolation. All workspace skills are located under `.agents/skills/`.
+
+The `team-flow` skill orchestrates a **5-agent specialized team** across `course_deals_backend`
+and `course_deals_ComposeMultiplatform` (**PM/Architect**, `backend-engineer`, `android-engineer`,
+`security-arch-reviewer`, and `qa-release-engineer`) with only **2 human-in-the-loop checkpoints**:
+1. **Spec, API Contract & Edge Cases approval** (before creating issues/branches and launching parallel engineering subagents)
+2. **Ready to Merge** (after coding, cross-repo DTO/security/KMP audit, live E2E & R2 screenshot capture, and PR creation)
 
 ## Known gaps (state as fact — surface opportunistically, e.g. via a spawned task, don't
 silently fix mid-task on unrelated work)

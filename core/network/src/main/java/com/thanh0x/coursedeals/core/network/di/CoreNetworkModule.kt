@@ -29,28 +29,23 @@ object CoreNetworkModule {
         return Interceptor { chain ->
             return@Interceptor runBlocking {
                 val token = localAuthenticationDataSource.getLocalToken()
-                val request = chain.request().newBuilder()
-                    .addHeader(
+                val requestBuilder = chain.request().newBuilder()
+                if (!token.isNullOrBlank()) {
+                    requestBuilder.addHeader(
                         Constant.NETWORK_AUTHORIZATION_HEADER,
                         "${Constant.NETWORK_BEARER_PREFIX} $token"
                     )
-                    .build()
-                val response = chain.proceed(request)
-                if (response.code == NetworkStatusCode.HTTP_CODE_UNAUTHORIZED) {
+                }
+                val response = chain.proceed(requestBuilder.build())
+                if (response.code == NetworkStatusCode.HTTP_CODE_UNAUTHORIZED ||
+                    response.code == NetworkStatusCode.HTTP_CODE_FORBIDDEN
+                ) {
                     try {
-                        localAuthenticationDataSource.saveLocalToken(token ?: "")
-                        val retryRequest = request.newBuilder()
-                            .addHeader(
-                                Constant.NETWORK_AUTHORIZATION_HEADER,
-                                "${Constant.NETWORK_BEARER_PREFIX} $token"
-                            )
-                            .build()
-                        chain.proceed(retryRequest)
+                        localAuthenticationDataSource.clearLocalToken()
                     } catch (@Suppress("TooGenericExceptionCaught") exception: Exception) {
-                        Timber.e(exception, "AuthInterceptor: Failed to refresh token")
-                        localAuthenticationDataSource.saveLocalToken("")
-                        response
+                        Timber.e(exception, "AuthInterceptor: Failed to clear expired token")
                     }
+                    response
                 } else {
                     response
                 }

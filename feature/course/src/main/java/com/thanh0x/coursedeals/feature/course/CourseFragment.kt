@@ -47,11 +47,17 @@ class CourseFragment : BaseFragment() {
             binding.wvMyCourses.webViewClient = getCustomWebViewClient()
             binding.wvMyCourses.loadUrl(Constant.MY_COURSE_URL)
         } else {
+            hideLoading(immediate = true)
             showNotInternetDialog()
         }
     }
 
     override fun onDestroyView() {
+        hideLoading(immediate = true)
+        _binding?.wvMyCourses?.apply {
+            stopLoading()
+            webViewClient = android.webkit.WebViewClient()
+        }
         super.onDestroyView()
         _binding = null
     }
@@ -72,11 +78,24 @@ class CourseFragment : BaseFragment() {
     private fun getCustomWebViewClient(): WebViewClient {
         return object : WebViewClient() {
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-                if (_binding != null) {
-                    hideLoading()
-                    binding.wvMyCourses.visibility = View.VISIBLE
-                }
+                hideLoading()
+                _binding?.wvMyCourses?.visibility = View.VISIBLE
                 super.onPageStarted(view, url, favicon)
+            }
+
+            override fun onPageFinished(view: WebView?, url: String?) {
+                hideLoading()
+                _binding?.wvMyCourses?.visibility = View.VISIBLE
+                super.onPageFinished(view, url)
+            }
+
+            override fun onReceivedError(
+                view: WebView?,
+                request: android.webkit.WebResourceRequest?,
+                error: android.webkit.WebResourceError?
+            ) {
+                hideLoading()
+                super.onReceivedError(view, request, error)
             }
         }
     }

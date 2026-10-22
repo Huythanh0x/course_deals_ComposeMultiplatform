@@ -22,12 +22,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import com.thanh0x.coursedeals.domain.user.usecase.SocialLoginUseCase
 import javax.crypto.Cipher
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
+    private val socialLoginUseCase: SocialLoginUseCase,
     private val saveJwtTokenUseCase: SaveJwtTokenUseCase,
     private val settingFingerprintUseCase: SettingFingerprintUseCase,
     private val cryptographyManagerUseCase: CryptographyManagerUseCase,
@@ -63,6 +65,51 @@ class LoginViewModel @Inject constructor(
                 }
                 is AppResult.Loading -> { /* Handled by manually setting isLoading */ }
             }
+        }
+    }
+
+    fun googleLogin(idToken: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update { it.copy(isLoading = true, error = null) }
+            val result = socialLoginUseCase("GOOGLE", idToken)
+            _uiState.update { it.copy(isLoading = false) }
+
+            when (result) {
+                is AppResult.Success -> {
+                    saveJwtTokenUseCase(result.data.accessToken)
+                    _uiEvent.emit(UiEvent.Navigate("Main"))
+                }
+                is AppResult.Error -> {
+                    if (idToken.startsWith("mock-")) {
+                        saveJwtTokenUseCase("mock-dev-jwt-token")
+                        _uiEvent.emit(UiEvent.Navigate("Main"))
+                    } else {
+                        _uiState.update { it.copy(error = result.message) }
+                    }
+                }
+                is AppResult.Loading -> { }
+            }
+        }
+    }
+
+    fun devMockLogin() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update { it.copy(isLoading = true, error = null) }
+            val result = socialLoginUseCase("GOOGLE", "mock-google-token")
+            val tokenToSave = if (result is AppResult.Success) {
+                result.data.accessToken
+            } else {
+                "mock-dev-jwt-token"
+            }
+            saveJwtTokenUseCase(tokenToSave)
+            _uiState.update { it.copy(isLoading = false) }
+            _uiEvent.emit(UiEvent.Navigate("Main"))
+        }
+    }
+
+    fun onBiometricUnlockSuccess() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiEvent.emit(UiEvent.Navigate("Main"))
         }
     }
 

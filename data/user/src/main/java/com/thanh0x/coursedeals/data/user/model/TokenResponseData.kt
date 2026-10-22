@@ -6,7 +6,9 @@ data class TokenResponseData(
     @SerializedName("accessToken")
     val accessToken: String,
     @SerializedName("refreshToken")
-    val refreshToken: String,
+    val refreshToken: String? = null,
     @SerializedName("tokenType")
-    val tokenType: String
+    val tokenType: String? = null,
+    @SerializedName("expiresIn")
+    val expiresIn: Long? = null
 )

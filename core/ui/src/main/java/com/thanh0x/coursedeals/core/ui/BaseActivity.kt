@@ -51,15 +51,20 @@ abstract class BaseActivity : AppCompatActivity() {
         }
     }
 
-    fun hideLoading() {
+    fun hideLoading(immediate: Boolean = false) {
         if (isFinishing || isDestroyed) return
+        if (immediate) {
+            loadingDialog?.dismissAllowingStateLoss()
+            loadingDialog = null
+            return
+        }
         lifecycleScope.launch {
             val elapsedTime = System.currentTimeMillis() - loadingStartTime
             val remainingTime = max(500L - elapsedTime, 0L)
             if (remainingTime > 0) {
                 delay(remainingTime.milliseconds)
             }
-            loadingDialog?.dismiss()
+            loadingDialog?.dismissAllowingStateLoss()
             loadingDialog = null
         }
     }

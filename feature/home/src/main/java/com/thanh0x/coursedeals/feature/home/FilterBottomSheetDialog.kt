@@ -4,11 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.thanh0x.coursedeals.core.ui.R as CoreR
 import com.thanh0x.coursedeals.feature.home.R
 import com.thanh0x.coursedeals.feature.home.databinding.DialogFilterBinding
@@ -232,24 +229,7 @@ class FilterBottomSheetDialog() : BaseBottomSheetDialog() {
 
     override fun onStart() {
         super.onStart()
-        setupBottomSheetBehavior()
-    }
-
-    private fun setupBottomSheetBehavior() {
-        (dialog as? BottomSheetDialog)?.let { bottomSheetDialog ->
-            val bottomSheet = bottomSheetDialog.findViewById<FrameLayout>(
-                com.google.android.material.R.id.design_bottom_sheet,
-            )
-            bottomSheet?.let {
-                val behavior = BottomSheetBehavior.from(it)
-                behavior.state = BottomSheetBehavior.STATE_EXPANDED
-                behavior.skipCollapsed = true
-
-                val layoutParams = it.layoutParams
-                layoutParams.height = (resources.displayMetrics.heightPixels * HEIGHT_MULTIPLIER).toInt()
-                it.layoutParams = layoutParams
-            }
-        }
+        expandToFullHeight()
     }
 
     companion object {
@@ -261,7 +241,6 @@ class FilterBottomSheetDialog() : BaseBottomSheetDialog() {
         private const val MIN_QUALIFIED_RATING = 4.0
         private const val RATING_STEP_FACTOR = 10.0
         private const val MAX_SLIDER_VALUE = 11.0f
-        private const val HEIGHT_MULTIPLIER = 0.9
 
         fun newInstance(filter: FilterData): FilterBottomSheetDialog {
             return FilterBottomSheetDialog().apply {

@@ -15,6 +15,9 @@ object Constant {
     const val PREFERENCES_FAV_KEYWORDS = "fav_keywords"
     const val PREFERENCES_NOTIFICATIONS_ENABLED = "notifications_enabled"
     const val PREFERENCES_UPDATED_AT = "preferences_updated_at"
+    const val PREFERENCES_USER_NAME = "user_name"
+    const val PREFERENCES_USER_EMAIL = "user_email"
+    const val PREFERENCES_USER_AVATAR = "user_avatar"
 
     const val NETWORK_AUTHORIZATION_HEADER = "Authorization"
     const val NETWORK_BEARER_PREFIX = "Bearer"
