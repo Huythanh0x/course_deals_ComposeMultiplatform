@@ -2,9 +2,12 @@ package com.thanh0x.coursedeals.domain.user
 
 import com.thanh0x.coursedeals.core.common.AppResult
 
+@Suppress("TooManyFunctions")
 interface UserAuthenticationRepository {
     suspend fun login(credentials: AuthCredentials): AppResult<TokenData>
-    suspend fun register(credentials: AuthCredentials): AppResult<Unit>
+    suspend fun register(email: String, password: String, fullName: String? = null): AppResult<String>
+    suspend fun verifyOtp(email: String, otp: String): AppResult<TokenData>
+    suspend fun refreshToken(refreshToken: String): AppResult<TokenData>
     suspend fun getLocalToken(): String?
     suspend fun saveLocalToken(token: String)
     suspend fun clearLocalToken()

@@ -8,5 +8,6 @@ class ClearLocalTokenUseCase @Inject constructor(
 ) {
     suspend operator fun invoke() {
         repository.clearLocalToken()
+        repository.clearLocalRefreshToken()
     }
 }

@@ -8,6 +8,7 @@ import com.thanh0x.coursedeals.domain.user.source.LocalAuthenticationDataSource
 import com.thanh0x.coursedeals.domain.user.source.RemoteAuthenticationDataSource
 import javax.inject.Inject
 
+@Suppress("TooManyFunctions")
 class UserAuthenticationRepositoryImpl @Inject constructor(
     private val localAuthenticationDataSource: LocalAuthenticationDataSource,
     private val remoteAuthenticationDataSource: RemoteAuthenticationDataSource
@@ -15,8 +16,17 @@ class UserAuthenticationRepositoryImpl @Inject constructor(
     override suspend fun login(credentials: AuthCredentials): AppResult<TokenData> =
         remoteAuthenticationDataSource.login(credentials)
 
-    override suspend fun register(credentials: AuthCredentials): AppResult<Unit> =
-        remoteAuthenticationDataSource.register(credentials)
+    override suspend fun register(
+        email: String,
+        password: String,
+        fullName: String?
+    ): AppResult<String> = remoteAuthenticationDataSource.register(email, password, fullName)
+
+    override suspend fun verifyOtp(email: String, otp: String): AppResult<TokenData> =
+        remoteAuthenticationDataSource.verifyOtp(email, otp)
+
+    override suspend fun refreshToken(refreshToken: String): AppResult<TokenData> =
+        remoteAuthenticationDataSource.refreshToken(refreshToken)
 
     override suspend fun getLocalToken(): String? =
         localAuthenticationDataSource.getLocalToken()
