@@ -16,11 +16,15 @@ import com.thanh0x.coursedeals.core.ui.util.MapperToView
 import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class CouponDetailActivity : BaseActivity() {
     lateinit var binding: ActivityCouponDetailBinding
     private val couponDetailViewModel: CouponDetailViewModel by viewModels()
+
+    @Inject
+    lateinit var networkUtil: com.thanh0x.coursedeals.core.ui.util.NetworkUtil
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +37,7 @@ class CouponDetailActivity : BaseActivity() {
         if (courseId != null) {
             setupObservers(courseId)
             setupBannerRefresh(courseId)
-            couponDetailViewModel.checkIfInternetAvailable()
+            couponDetailViewModel.fetchCouponDetail(courseId)
         } else {
             showFetchingErrorDialog("Not getting courseID")
         }
@@ -52,11 +56,6 @@ class CouponDetailActivity : BaseActivity() {
     }
 
     private fun handleUiState(state: CouponDetailUiState, courseId: Int) {
-        if (!state.isInternetAvailable && state.coupon == null) {
-            showNoInternetDialog()
-            return
-        }
-
         if (state.isLoading) {
             showLoading(getString(CoreR.string.dialog_loading_text))
         } else {
@@ -64,7 +63,13 @@ class CouponDetailActivity : BaseActivity() {
         }
 
         state.error?.let {
-            showFetchingErrorDialog(state.error)
+            if (state.coupon == null) {
+                if (!networkUtil.isInternetAvailable()) {
+                    showNoInternetDialog()
+                } else {
+                    showFetchingErrorDialog(state.error)
+                }
+            }
         }
 
         if (state.isFromCache && state.cachedAt != null) {
@@ -84,10 +89,6 @@ class CouponDetailActivity : BaseActivity() {
             binding.mlCouponDetail.visibility = View.VISIBLE
             bindingCouponDataToView(it)
             setOnclickButtons(it)
-        } ?: run {
-            if ((!state.isLoading) && (state.error == null)) {
-                couponDetailViewModel.fetchCouponDetail(courseId)
-            }
         }
     }
 
