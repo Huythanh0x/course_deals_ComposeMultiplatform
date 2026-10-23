@@ -109,6 +109,12 @@ class CouponRepositoryImpl @Inject constructor(
     override suspend fun fetchCouponDetail(courseId: Int) =
         remoteCouponDataSource.fetchCouponDetail(courseId)
 
+    override suspend fun reportCourse(
+        courseId: Long,
+        reason: String,
+        details: String?,
+    ): AppResult<Unit> = remoteCouponDataSource.reportCourse(courseId, reason, details)
+
     companion object {
         private const val SYNC_INTERVAL_MINUTES = 15
         private const val SECONDS_IN_MINUTE = 60

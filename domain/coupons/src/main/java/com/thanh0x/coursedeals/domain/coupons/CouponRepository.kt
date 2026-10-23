@@ -17,4 +17,5 @@ interface CouponRepository {
     fun getShowLocalFetchTime(): Flow<Boolean>
     suspend fun saveShowLocalFetchTime(show: Boolean)
     suspend fun fetchCouponDetail(courseId: Int): AppResult<Coupon>
+    suspend fun reportCourse(courseId: Long, reason: String, details: String?): AppResult<Unit>
 }

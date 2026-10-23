@@ -4,7 +4,8 @@ import com.thanh0x.coursedeals.domain.coupons.Coupon
 
 data class CouponDetailUiState(
     val isLoading: Boolean = false,
+    val isReporting: Boolean = false,
     val coupon: Coupon? = null,
     val error: String? = null,
-    val isInternetAvailable: Boolean = true
+    val isInternetAvailable: Boolean = true,
 )

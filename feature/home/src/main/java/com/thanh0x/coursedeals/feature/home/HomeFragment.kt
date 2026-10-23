@@ -23,6 +23,7 @@ import com.thanh0x.coursedeals.domain.coupons.SearchSuggestion
 import com.thanh0x.coursedeals.domain.coupons.SortOption
 import com.thanh0x.coursedeals.domain.coupons.SuggestionType
 import com.thanh0x.coursedeals.core.ui.BaseFragment
+import com.thanh0x.coursedeals.core.ui.DialogType
 import com.thanh0x.coursedeals.core.common.BundleKey
 import com.thanh0x.coursedeals.core.ui.util.MapperToView
 import dagger.hilt.android.AndroidEntryPoint
@@ -75,8 +76,9 @@ class HomeFragment : BaseFragment() {
             val url = bundle.getString(SubmitDealBottomSheet.EXTRA_COUPON_URL)
             url?.let {
                 showAlertDialog(
-                    getString(CoreR.string.submit_deal_title),
-                    getString(CoreR.string.submit_success_msg),
+                    title = getString(CoreR.string.submit_deal_title),
+                    message = getString(CoreR.string.submit_success_msg),
+                    type = DialogType.INFO,
                 )
             }
         }
@@ -273,8 +275,9 @@ class HomeFragment : BaseFragment() {
                 // If local database already has cached items, silently allow offline browsing without a disruptive alert dialog
                 if (couponCoursePagingAdapter.itemCount == 0) {
                     showAlertDialog(
-                        getString(CoreR.string.fetch_error_title),
-                        it.error.localizedMessage ?: getString(CoreR.string.error_fetching_null_coupon),
+                        title = getString(CoreR.string.fetch_error_title),
+                        message = it.error.localizedMessage ?: getString(CoreR.string.error_fetching_null_coupon),
+                        type = DialogType.ERROR,
                     )
                 }
             }

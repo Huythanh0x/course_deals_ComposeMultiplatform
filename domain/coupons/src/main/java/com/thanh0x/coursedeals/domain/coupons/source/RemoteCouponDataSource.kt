@@ -9,4 +9,6 @@ interface RemoteCouponDataSource {
     suspend fun requestDeleteACoupon(couponUrl: String): AppResult<Unit>
 
     suspend fun fetchCouponDetail(courseId: Int): AppResult<Coupon>
+
+    suspend fun reportCourse(courseId: Long, reason: String, details: String?): AppResult<Unit>
 }

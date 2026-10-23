@@ -23,7 +23,11 @@ abstract class BaseFragment : Fragment() {
     open fun handleUiEvent(event: UiEvent) {
         when (event) {
             is UiEvent.ShowToast -> (requireActivity() as? BaseActivity)?.showToast(event.message)
-            is UiEvent.ShowAlertDialog -> (requireActivity() as? BaseActivity)?.showAlertDialog(event.title, event.message)
+            is UiEvent.ShowAlertDialog -> (requireActivity() as? BaseActivity)?.showAlertDialog(
+                title = event.title,
+                message = event.message,
+                type = event.type,
+            )
             is UiEvent.HideKeyboard -> hideKeyboard()
             else -> {}
         }
@@ -45,9 +49,22 @@ abstract class BaseFragment : Fragment() {
     fun showAlertDialog(
         title: String,
         message: String,
+        type: DialogType = DialogType.INFO,
         cause: String? = null,
-        onDismiss: (() -> Unit)? = null
+        positiveButtonText: String? = null,
+        negativeButtonText: String? = null,
+        onNegativeClick: (() -> Unit)? = null,
+        onDismiss: (() -> Unit)? = null,
     ) {
-        (requireActivity() as? BaseActivity)?.showAlertDialog(title, message, cause, onDismiss)
+        (requireActivity() as? BaseActivity)?.showAlertDialog(
+            title = title,
+            message = message,
+            type = type,
+            cause = cause,
+            positiveButtonText = positiveButtonText,
+            negativeButtonText = negativeButtonText,
+            onNegativeClick = onNegativeClick,
+            onDismiss = onDismiss,
+        )
     }
 }
