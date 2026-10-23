@@ -134,6 +134,11 @@ and `course_deals_ComposeMultiplatform` (**PM/Architect**, `backend-engineer`, `
 1. **Spec, API Contract & Edge Cases approval** (before creating issues/branches and launching parallel engineering subagents)
 2. **Ready to Merge** (after coding, cross-repo DTO/security/KMP audit, live E2E & R2 screenshot capture, and PR creation)
 
+The `sprint-flow` skill manages the **1-week solo developer sprint rhythm** (Monday–Saturday build & test, Sunday stop & plan) integrated with GitHub Projects:
+- [`docs/SPRINT_GUIDE.md`](docs/SPRINT_GUIDE.md) — 1-week sprint lifecycle, iteration conventions, and mobile DoD
+- `sprint-flow plan` — Sunday backlog grooming, point budgeting (15–20 pts), and iteration setup
+- `sprint-flow retro` — Sunday velocity and completed points inspection
+
 ## Known gaps (state as fact — surface opportunistically, e.g. via a spawned task, don't
 silently fix mid-task on unrelated work)
 
