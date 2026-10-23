@@ -33,6 +33,7 @@ import com.thanh0x.coursedeals.core.ui.BiometricPromptUtils
 import com.thanh0x.coursedeals.core.common.AppResult
 import com.thanh0x.coursedeals.domain.user.TokenData
 import com.thanh0x.coursedeals.core.ui.BaseFragment
+import com.thanh0x.coursedeals.core.ui.DialogType
 import com.thanh0x.coursedeals.core.ui.UiEvent
 import com.thanh0x.coursedeals.core.common.NetworkStatusCode
 import dagger.hilt.android.AndroidEntryPoint
@@ -111,8 +112,9 @@ class ProfileFragment : BaseFragment() {
             } catch (e: android.content.ActivityNotFoundException) {
                 Timber.e(e, "Failed to send email: No activity found")
                 showAlertDialog(
-                    getString(CoreR.string.email_failed_to_send),
-                    getString(CoreR.string.email_cannot_find_client_app),
+                    title = getString(CoreR.string.email_failed_to_send),
+                    message = getString(CoreR.string.email_cannot_find_client_app),
+                    type = DialogType.ERROR,
                 )
             }
         }
@@ -144,8 +146,9 @@ class ProfileFragment : BaseFragment() {
             if (isChecked) {
                 if (!profileViewModel.isNetworkAvailable()) {
                     showAlertDialog(
-                        getString(CoreR.string.no_internet_title),
-                        getString(CoreR.string.no_internet_message),
+                        title = getString(CoreR.string.no_internet_title),
+                        message = getString(CoreR.string.no_internet_message),
+                        type = DialogType.WARNING,
                     )
                     binding.swEnableFingerPrint.isChecked = false
                 } else {

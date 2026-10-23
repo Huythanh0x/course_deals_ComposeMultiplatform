@@ -22,9 +22,12 @@
 
     <color name="m3_error_container">#93000A</color>
     <color name="m3_on_error_container">#FFDAD6</color>
+    <color name="m3_error">#FFB4AB</color>
 
     <!-- Semantic & Component Colors -->
     <color name="rating_amber">#E8A33D</color>
+    <color name="warning_yellow">#E8A33D</color>
+    <color name="warning_yellow_dark">#FFB951</color>
 
     <!-- Legacy / Compatibility Colors (mapped to M3) -->
     <color name="black">#FF000000</color>
