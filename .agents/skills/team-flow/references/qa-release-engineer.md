@@ -29,7 +29,8 @@ If `/Users/thanh0x/StudioProjects/course_deals_backend` has changes:
 
 ### B. Gated Android Emulator & Cloudflare R2 Screenshot Upload (`course_deals_ComposeMultiplatform`)
 If `/Users/thanh0x/StudioProjects/course_deals_ComposeMultiplatform` has changes:
-1. **Gate Check**: Android live E2E testing against the backend triggers when the Backend task is done in local and ready to integrate API (server running and verified on `http://localhost:8080` / `10.0.2.2:8080`).
+1. **Gate Check**: Android live E2E testing against the backend triggers when the Backend task is ready to integrate API (server running and verified on `http://localhost:8081` / `10.0.2.2:8081` via `local-be-server`).
+   - Run `local-be-server ensure-healthy` to ensure port 8081 (`mobile-local` profile with isolated DB & Redis 1) is UP.
 2. Read `/Users/thanh0x/StudioProjects/course_deals_ComposeMultiplatform/.agents/skills/capture-evidence/SKILL.md` in full:
    - Check `adb devices` for a booted emulator (`emulator-5554`).
    - If UI-facing and emulator is available: install debug build (`./gradlew installLocalDebug`), navigate to the target screen, capture screenshots via `adb exec-out screencap -p > .agents/tickets/<issue-number>-<slug>/evidence/<name>.png`.
