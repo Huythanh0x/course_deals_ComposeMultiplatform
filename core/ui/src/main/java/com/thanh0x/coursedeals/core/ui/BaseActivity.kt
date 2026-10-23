@@ -92,6 +92,10 @@ abstract class BaseActivity : AppCompatActivity() {
             title.contains("Failed", ignoreCase = true) ||
             title.contains("No Internet", ignoreCase = true)
 
+        val isWarning = title.contains("Required", ignoreCase = true) ||
+            title.contains("Warning", ignoreCase = true) ||
+            title.contains("Notice", ignoreCase = true)
+
         if (isError) {
             Timber.tag(this.javaClass.simpleName)
                 .e("showAlertDialog: title=$title, message=$message, cause=$cause")
@@ -101,17 +105,25 @@ abstract class BaseActivity : AppCompatActivity() {
                 theme.resolveAttribute(attrId, typedValue, true)
                 ivLogo.imageTintList = ColorStateList.valueOf(typedValue.data)
             }
+        } else if (isWarning) {
+            val warningColor = androidx.core.content.ContextCompat.getColor(this, R.color.warning_yellow)
+            ivLogo.imageTintList = ColorStateList.valueOf(warningColor)
         }
 
-        MaterialAlertDialogBuilder(
+        val dialog = MaterialAlertDialogBuilder(
             this,
             com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered
         ).setCustomTitle(headerView)
             .setMessage(finalMessage)
-            .setPositiveButton(R.string.ok_text_button) { dialog, _ ->
-                dialog.dismiss()
+            .setPositiveButton(R.string.ok_text_button) { d, _ ->
+                d.dismiss()
                 onDismiss?.invoke()
             }
             .show()
+
+        if (isWarning) {
+            val warningColor = androidx.core.content.ContextCompat.getColor(this, R.color.warning_yellow_dark)
+            dialog.getButton(android.content.DialogInterface.BUTTON_POSITIVE)?.setTextColor(warningColor)
+        }
     }
 }

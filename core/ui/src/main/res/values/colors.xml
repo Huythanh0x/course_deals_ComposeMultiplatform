@@ -25,6 +25,8 @@
 
     <!-- Semantic & Component Colors -->
     <color name="rating_amber">#E8A33D</color>
+    <color name="warning_yellow">#E8A33D</color>
+    <color name="warning_yellow_dark">#B07210</color>
 
     <!-- Legacy / Compatibility Colors (mapped to M3) -->
     <color name="black">#FF000000</color>
