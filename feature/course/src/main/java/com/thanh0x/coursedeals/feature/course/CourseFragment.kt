@@ -102,9 +102,8 @@ class CourseFragment : BaseFragment() {
 
     private fun showNotInternetDialog() {
         showAlertDialog(
-            getString(R.string.no_internet_title),
-            getString(R.string.no_internet_message),
-            getString(R.string.no_internet_message)
+            getString(R.string.course_internet_required_title),
+            getString(R.string.course_internet_required_message)
         ) {
             courseViewModel.checkIfInternetAvailable()
         }

@@ -146,6 +146,8 @@
     <string name="email_failed_to_send">Failed to send Email</string>
     <string name="email_cannot_find_client_app">Cannot find a suitable app for this request</string>
     <string name="email_send_title">Sending from Course Deals app</string>
+    <string name="course_internet_required_title">Internet Connection Required</string>
+    <string name="course_internet_required_message">The Courses tab requires an active internet connection to load your online courses.</string>
     <string name="continue_as_guest">Access as Guest</string>
     <string name="guest_user_title">Guest User</string>
     <string name="guest_user_subtitle">Sign in to save preferences &amp; sync across devices</string>
