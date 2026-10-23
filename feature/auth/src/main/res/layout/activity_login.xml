@@ -90,25 +90,13 @@
             style="@style/Widget.Material3.Button.TonalButton"
             android:layout_width="match_parent"
             android:layout_height="@dimen/spacing_58"
-            android:layout_marginBottom="@dimen/spacing_8"
+            android:layout_marginBottom="@dimen/spacing_24"
             android:enabled="false"
             android:text="@string/auth_btn_fingerprint"
             app:cornerRadius="@dimen/spacing_29"
             app:icon="@drawable/ic_fingerprint"
             app:iconGravity="textStart"
             app:iconPadding="@dimen/spacing_12"
-            app:layout_constraintBottom_toTopOf="@+id/btnDevBypass"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnDevBypass"
-            style="@style/Widget.Material3.Button.TextButton"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/spacing_48"
-            android:layout_marginBottom="@dimen/spacing_24"
-            android:text="@string/auth_btn_dev_bypass"
-            android:textColor="?attr/colorSecondary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

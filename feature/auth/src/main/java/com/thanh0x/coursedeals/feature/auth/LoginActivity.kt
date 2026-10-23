@@ -44,10 +44,6 @@ class LoginActivity : BaseActivity() {
         binding.btnFingerprint.setOnClickListener {
             authenticateWithFingerprint()
         }
-
-        binding.btnDevBypass.setOnClickListener {
-            loginViewModel.devMockLogin()
-        }
     }
 
     private fun setupObservers() {
