@@ -80,30 +80,10 @@ class LoginViewModel @Inject constructor(
                     _uiEvent.emit(UiEvent.Navigate("Main"))
                 }
                 is AppResult.Error -> {
-                    if (idToken.startsWith("mock-")) {
-                        saveJwtTokenUseCase("mock-dev-jwt-token")
-                        _uiEvent.emit(UiEvent.Navigate("Main"))
-                    } else {
-                        _uiState.update { it.copy(error = result.message) }
-                    }
+                    _uiState.update { it.copy(error = result.message) }
                 }
                 is AppResult.Loading -> { }
             }
-        }
-    }
-
-    fun devMockLogin() {
-        viewModelScope.launch(Dispatchers.IO) {
-            _uiState.update { it.copy(isLoading = true, error = null) }
-            val result = socialLoginUseCase("GOOGLE", "mock-google-token")
-            val tokenToSave = if (result is AppResult.Success) {
-                result.data.accessToken
-            } else {
-                "mock-dev-jwt-token"
-            }
-            saveJwtTokenUseCase(tokenToSave)
-            _uiState.update { it.copy(isLoading = false) }
-            _uiEvent.emit(UiEvent.Navigate("Main"))
         }
     }
 
