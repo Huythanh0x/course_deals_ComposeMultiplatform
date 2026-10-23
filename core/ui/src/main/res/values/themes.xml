@@ -24,6 +24,7 @@
 
         <item name="colorErrorContainer">@color/m3_error_container</item>
         <item name="colorOnErrorContainer">@color/m3_on_error_container</item>
+        <item name="colorError">@color/m3_error</item>
 
         <!-- Component Styles -->
         <item name="bottomNavigationStyle">@style/Widget.CourseDeal.BottomNavigationView</item>
@@ -73,5 +74,18 @@
     <style name="rating_bar" parent="Theme.AppCompat">
         <item name="colorControlNormal">@color/grey</item>
         <item name="colorControlActivated">@color/golden</item>
+    </style>
+
+    <style name="ThemeOverlay.CourseDeal.MaterialAlertDialog.Centered" parent="ThemeOverlay.Material3.MaterialAlertDialog.Centered">
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.CourseDeal.DialogButton.Positive</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Widget.CourseDeal.DialogButton.Negative</item>
+    </style>
+
+    <style name="Widget.CourseDeal.DialogButton.Positive" parent="Widget.Material3.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/m3_primary</item>
+    </style>
+
+    <style name="Widget.CourseDeal.DialogButton.Negative" parent="Widget.Material3.Button.TextButton.Dialog">
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
     </style>
 </resources>

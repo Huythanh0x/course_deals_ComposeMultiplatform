@@ -142,21 +142,26 @@ class CouponDetailActivity : BaseActivity() {
     private fun showFetchingErrorDialog(cause: String) {
         Timber.e("showFetchingErrorDialog: $cause")
         showAlertDialog(
-            getString(CoreR.string.coupon_detail_error_title),
-            getString(CoreR.string.error_fetching_null_coupon),
-            cause,
-        ) {
-            finish()
-        }
+            title = getString(CoreR.string.coupon_detail_error_title),
+            message = getString(CoreR.string.error_fetching_null_coupon),
+            type = com.thanh0x.coursedeals.core.ui.DialogType.ERROR,
+            cause = cause,
+            onDismiss = {
+                finish()
+            },
+        )
     }
 
     private fun showNoInternetDialog() {
         showAlertDialog(
-            getString(CoreR.string.no_internet_title),
-            getString(CoreR.string.no_internet_message),
-        ) {
-            couponDetailViewModel.checkIfInternetAvailable()
-        }
+            title = getString(CoreR.string.no_internet_title),
+            message = getString(CoreR.string.no_internet_message),
+            type = com.thanh0x.coursedeals.core.ui.DialogType.WARNING,
+            positiveButtonText = getString(CoreR.string.retry_button_text),
+            onDismiss = {
+                couponDetailViewModel.checkIfInternetAvailable()
+            },
+        )
     }
 
     private fun showReportDialog() {
