@@ -15,7 +15,7 @@ fun TokenResponseData.toDomain(): TokenData {
 
 fun AuthCredentials.toDto(): PostAuthenticationData {
     return PostAuthenticationData(
-        username = username,
+        email = username,
         password = password
     )
 }

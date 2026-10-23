@@ -3,6 +3,7 @@ package com.thanh0x.coursedeals.feature.auth
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
+import androidx.core.view.isVisible
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
@@ -37,6 +38,14 @@ class LoginActivity : BaseActivity() {
     }
 
     private fun setupListeners() {
+        binding.btnEmailSubmit.setOnClickListener {
+            onEmailSubmitClicked()
+        }
+
+        binding.btnToggleAuthMode.setOnClickListener {
+            loginViewModel.toggleAuthMode()
+        }
+
         binding.btnGoogle.setOnClickListener {
             signInWithGoogle()
         }
@@ -47,6 +56,26 @@ class LoginActivity : BaseActivity() {
 
         binding.btnDevBypass.setOnClickListener {
             loginViewModel.devMockLogin()
+        }
+    }
+
+    private fun onEmailSubmitClicked() {
+        when (loginViewModel.uiState.value.authMode) {
+            AuthMode.LOGIN -> {
+                val email = binding.etEmail.text?.toString().orEmpty()
+                val password = binding.etPassword.text?.toString().orEmpty()
+                loginViewModel.login(email, password)
+            }
+            AuthMode.REGISTER -> {
+                val email = binding.etEmail.text?.toString().orEmpty()
+                val password = binding.etPassword.text?.toString().orEmpty()
+                val fullName = binding.etFullName.text?.toString().orEmpty()
+                loginViewModel.register(email, password, fullName)
+            }
+            AuthMode.VERIFY_OTP -> {
+                val otp = binding.etOtp.text?.toString().orEmpty()
+                loginViewModel.verifyOtp(otp)
+            }
         }
     }
 
@@ -69,6 +98,37 @@ class LoginActivity : BaseActivity() {
 
         state.error?.let {
             showAlertDialog(getString(CoreR.string.login_error_title), it)
+            loginViewModel.clearError()
+        }
+
+        binding.tvInfoMessage.isVisible = !state.infoMessage.isNullOrBlank()
+        binding.tvInfoMessage.text = state.infoMessage.orEmpty()
+
+        when (state.authMode) {
+            AuthMode.LOGIN -> {
+                binding.tilFullName.isVisible = false
+                binding.tilEmail.isVisible = true
+                binding.tilPassword.isVisible = true
+                binding.tilOtp.isVisible = false
+                binding.btnEmailSubmit.text = getString(CoreR.string.auth_btn_sign_in)
+                binding.btnToggleAuthMode.text = getString(CoreR.string.auth_toggle_to_register)
+            }
+            AuthMode.REGISTER -> {
+                binding.tilFullName.isVisible = true
+                binding.tilEmail.isVisible = true
+                binding.tilPassword.isVisible = true
+                binding.tilOtp.isVisible = false
+                binding.btnEmailSubmit.text = getString(CoreR.string.auth_btn_create_account)
+                binding.btnToggleAuthMode.text = getString(CoreR.string.auth_toggle_to_login)
+            }
+            AuthMode.VERIFY_OTP -> {
+                binding.tilFullName.isVisible = false
+                binding.tilEmail.isVisible = false
+                binding.tilPassword.isVisible = false
+                binding.tilOtp.isVisible = true
+                binding.btnEmailSubmit.text = getString(CoreR.string.auth_btn_verify_otp)
+                binding.btnToggleAuthMode.text = getString(CoreR.string.auth_toggle_back_to_login)
+            }
         }
 
         binding.btnFingerprint.isEnabled = state.isFingerprintEnabled
