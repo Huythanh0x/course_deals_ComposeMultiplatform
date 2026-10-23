@@ -17,6 +17,8 @@ interface LocalCouponDataSource {
 
     suspend fun getCouponById(courseId: Int): Coupon?
 
+    suspend fun clearExpiredCachedAt(expirationThreshold: Long): Int
+
     suspend fun insertCoupon(coupon: Coupon)
 
     suspend fun insertCoupons(coupons: List<Coupon>)

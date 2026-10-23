@@ -52,7 +52,7 @@ class CouponDetailActivity : BaseActivity() {
     }
 
     private fun handleUiState(state: CouponDetailUiState, courseId: Int) {
-        if (!state.isInternetAvailable) {
+        if (!state.isInternetAvailable && state.coupon == null) {
             showNoInternetDialog()
             return
         }

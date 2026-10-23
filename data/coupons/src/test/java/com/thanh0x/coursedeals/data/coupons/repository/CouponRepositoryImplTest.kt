@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -50,7 +51,7 @@ class CouponRepositoryImplTest {
     }
 
     @Test
-    fun fetchCouponDetail_whenRemoteSucceeds_cachesAndReturnsCouponWithCachedAt() = runBlocking {
+    fun fetchCouponDetail_whenRemoteSucceeds_cachesAndReturnsCouponWithoutCachedAt() = runBlocking {
         val remoteCoupon = Coupon(
             courseId = 101,
             author = "Author Test",
@@ -83,14 +84,56 @@ class CouponRepositoryImplTest {
         val data = (result as AppResult.Success).data
         assertEquals(101, data.courseId)
         assertEquals("Kotlin Mastery", data.title)
-        assertNotNull(data.cachedAt)
-        assertTrue(data.cachedAt!! in beforeCall..afterCall)
+        assertNull(data.cachedAt)
 
         // Verify it was stored in local Room cache with cachedAt
         val cachedInDb = fakeLocalCouponDataSource.getCouponById(101)
         assertNotNull(cachedInDb)
         assertEquals(101, cachedInDb?.courseId)
-        assertEquals(data.cachedAt, cachedInDb?.cachedAt)
+        assertNotNull(cachedInDb?.cachedAt)
+        assertTrue(cachedInDb!!.cachedAt!! in beforeCall..afterCall)
+    }
+
+    @Test
+    fun fetchCouponDetail_whenRemoteSucceeds_cleansUpExpiredCache() = runBlocking {
+        val now = System.currentTimeMillis()
+        val expiredEntity = CouponEntity(
+            courseId = 102,
+            title = "Expired Course",
+            cachedAt = now - (25 * 60 * 60 * 1000L),
+        )
+        fakeLocalCouponDataSource.insertCoupon(expiredEntity)
+
+        val remoteCoupon = Coupon(
+            courseId = 101,
+            title = "Fresh Course",
+            author = "Author",
+            category = "Dev",
+            contentLength = 60,
+            couponCode = "CODE",
+            couponUrl = "https://example.com",
+            description = "Desc",
+            expiredTime = null,
+            heading = null,
+            language = "English",
+            level = "All",
+            previewImage = null,
+            previewVideo = null,
+            rating = 4.5,
+            reviews = 10,
+            students = 100,
+            subCategory = null,
+            usesRemaining = null,
+            isNew = null,
+        )
+        fakeRemoteCouponDataSource.detailResult = AppResult.Success(remoteCoupon)
+
+        val result = repository.fetchCouponDetail(101)
+        assertTrue(result is AppResult.Success)
+
+        // Expired cache should have cachedAt set to null by clearExpiredCachedAt
+        val checkExpired = fakeLocalCouponDataSource.getCouponById(102)
+        assertNull(checkExpired?.cachedAt)
     }
 
     @Test
@@ -185,6 +228,18 @@ class CouponRepositoryImplTest {
         override suspend fun getSearchSuggestions(query: String): List<String> = emptyList()
 
         override suspend fun getCouponById(courseId: Int): CouponEntity? = storage[courseId]
+
+        override suspend fun clearExpiredCachedAt(expirationThreshold: Long): Int {
+            var updatedCount = 0
+            storage.forEach { (id, coupon) ->
+                val cachedAt = coupon.cachedAt
+                if (cachedAt != null && cachedAt < expirationThreshold) {
+                    storage[id] = coupon.copy(cachedAt = null)
+                    updatedCount++
+                }
+            }
+            return updatedCount
+        }
 
         override suspend fun insertCoupon(coupon: CouponEntity) {
             storage[coupon.courseId] = coupon

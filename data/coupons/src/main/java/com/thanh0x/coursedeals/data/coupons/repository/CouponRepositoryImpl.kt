@@ -116,9 +116,10 @@ class CouponRepositoryImpl @Inject constructor(
         }
 
         if (remoteResult is AppResult.Success) {
-            val couponWithCachedAt = remoteResult.data.copy(cachedAt = currentTime)
-            localCouponDataSource.insertCoupon(couponWithCachedAt.toEntity())
-            return AppResult.Success(couponWithCachedAt)
+            val entityToCache = remoteResult.data.toEntity().copy(cachedAt = currentTime)
+            localCouponDataSource.insertCoupon(entityToCache)
+            localCouponDataSource.clearExpiredCachedAt(currentTime - CACHE_EXPIRATION_MS)
+            return AppResult.Success(remoteResult.data)
         }
 
         // Fallback to 24h local Room cache
