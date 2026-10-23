@@ -155,4 +155,6 @@
     <string name="guest_profile_auth_gate_title">Sign in to Access Settings</string>
     <string name="guest_profile_auth_gate_message">Sign in to customize settings, set up notifications, and save your deal preferences.</string>
     <string name="guest_biometric_unavailable">Sign in to enable fingerprint authentication</string>
+    <string name="cache_banner_text">Viewing cached details from %1$s</string>
+    <string name="cache_banner_refresh">Refresh</string>
 </resources>
