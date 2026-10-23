@@ -3,6 +3,8 @@ package com.thanh0x.coursedeals.feature.detail
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.format.DateUtils
+import android.view.View
 import androidx.activity.viewModels
 import com.thanh0x.coursedeals.core.ui.R as CoreR
 import com.thanh0x.coursedeals.feature.detail.R
@@ -30,6 +32,7 @@ class CouponDetailActivity : BaseActivity() {
         val courseId = intent.extras?.getInt(BundleKey.TO_DETAIL_ACTIVITY)
         if (courseId != null) {
             setupObservers(courseId)
+            setupBannerRefresh(courseId)
             couponDetailViewModel.checkIfInternetAvailable()
         } else {
             showFetchingErrorDialog("Not getting courseID")
@@ -39,6 +42,12 @@ class CouponDetailActivity : BaseActivity() {
     private fun setupObservers(courseId: Int) {
         collectFlow(couponDetailViewModel.uiState) { state ->
             handleUiState(state, courseId)
+        }
+    }
+
+    private fun setupBannerRefresh(courseId: Int) {
+        binding.btnBannerRefresh.setOnClickListener {
+            couponDetailViewModel.fetchCouponDetail(courseId, forceRefresh = true)
         }
     }
 
@@ -58,8 +67,21 @@ class CouponDetailActivity : BaseActivity() {
             showFetchingErrorDialog(state.error)
         }
 
+        if (state.isFromCache && state.cachedAt != null) {
+            val relativeTime = DateUtils.getRelativeTimeSpanString(
+                state.cachedAt,
+                System.currentTimeMillis(),
+                DateUtils.MINUTE_IN_MILLIS,
+                DateUtils.FORMAT_ABBREV_RELATIVE,
+            )
+            binding.tvBannerText.text = getString(CoreR.string.cache_banner_text, relativeTime)
+            binding.bannerOfflineCache.visibility = View.VISIBLE
+        } else {
+            binding.bannerOfflineCache.visibility = View.GONE
+        }
+
         state.coupon?.let {
-            binding.mlCouponDetail.visibility = android.view.View.VISIBLE
+            binding.mlCouponDetail.visibility = View.VISIBLE
             bindingCouponDataToView(it)
             setOnclickButtons(it)
         } ?: run {

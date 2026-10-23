@@ -106,8 +106,32 @@ class CouponRepositoryImpl @Inject constructor(
         localSettingsDataSource.saveShowLocalFetchTime(show)
     }
 
-    override suspend fun fetchCouponDetail(courseId: Int) =
-        remoteCouponDataSource.fetchCouponDetail(courseId)
+    override suspend fun fetchCouponDetail(courseId: Int): AppResult<Coupon> {
+        val currentTime = System.currentTimeMillis()
+        val remoteResult = try {
+            remoteCouponDataSource.fetchCouponDetail(courseId)
+        } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+            Timber.e(e, "fetchCouponDetail: Remote fetch exception")
+            AppResult.Error(e.message ?: "Failed to fetch coupon details")
+        }
+
+        if (remoteResult is AppResult.Success) {
+            val couponWithCachedAt = remoteResult.data.copy(cachedAt = currentTime)
+            localCouponDataSource.insertCoupon(couponWithCachedAt.toEntity())
+            return AppResult.Success(couponWithCachedAt)
+        }
+
+        // Fallback to 24h local Room cache
+        val cachedEntity = localCouponDataSource.getCouponById(courseId)
+        if (cachedEntity != null) {
+            val cachedAt = cachedEntity.cachedAt
+            if (cachedAt != null && (currentTime - cachedAt <= CACHE_EXPIRATION_MS)) {
+                return AppResult.Success(cachedEntity.toDomain())
+            }
+        }
+
+        return remoteResult
+    }
 
     companion object {
         private const val SYNC_INTERVAL_MINUTES = 15
@@ -115,5 +139,6 @@ class CouponRepositoryImpl @Inject constructor(
         private const val MILLIS_IN_SECOND = 1000
         private const val SYNC_THRESHOLD_MS =
             SYNC_INTERVAL_MINUTES * SECONDS_IN_MINUTE * MILLIS_IN_SECOND.toLong()
+        const val CACHE_EXPIRATION_MS = 24 * 60 * 60 * 1000L // 24 hours
     }
 }

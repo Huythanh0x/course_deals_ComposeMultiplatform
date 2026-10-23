@@ -82,6 +82,7 @@ fun CouponEntity.toDomain(): CouponDomain {
         isNew = isNew,
         createdAt = createdAt,
         updatedAt = updatedAt,
+        cachedAt = cachedAt,
     )
 }
 
@@ -109,5 +110,6 @@ fun CouponDomain.toEntity(): CouponEntity {
         isNew = isNew,
         createdAt = createdAt,
         updatedAt = updatedAt,
+        cachedAt = cachedAt,
     )
 }
