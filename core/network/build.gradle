@@ -38,9 +38,9 @@ def getLocalApiUrl() {
     }
     def overrideIp = properties.getProperty("local.api.ip")
     if (overrideIp != null && !overrideIp.isEmpty()) {
-        return "http://${overrideIp}:8080"
+        return "http://${overrideIp}:8081"
     }
-    return "http://${getLocalIP()}:8080"
+    return "http://${getLocalIP()}:8081"
 }
 
 android {
