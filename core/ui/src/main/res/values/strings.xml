@@ -146,4 +146,11 @@
     <string name="email_failed_to_send">Failed to send Email</string>
     <string name="email_cannot_find_client_app">Cannot find a suitable app for this request</string>
     <string name="email_send_title">Sending from Course Deals app</string>
+    <string name="continue_as_guest">Access as Guest</string>
+    <string name="guest_user_title">Guest User</string>
+    <string name="guest_user_subtitle">Sign in to save preferences &amp; sync across devices</string>
+    <string name="sign_in_cta">Sign In</string>
+    <string name="guest_profile_auth_gate_title">Sign in to Access Settings</string>
+    <string name="guest_profile_auth_gate_message">Sign in to customize settings, set up notifications, and save your deal preferences.</string>
+    <string name="guest_biometric_unavailable">Sign in to enable fingerprint authentication</string>
 </resources>

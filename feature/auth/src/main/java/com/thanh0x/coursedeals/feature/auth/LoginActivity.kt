@@ -44,6 +44,10 @@ class LoginActivity : BaseActivity() {
         binding.btnFingerprint.setOnClickListener {
             authenticateWithFingerprint()
         }
+
+        binding.btnAccessAsGuest.setOnClickListener {
+            navigateToMainScreen()
+        }
     }
 
     private fun setupObservers() {
