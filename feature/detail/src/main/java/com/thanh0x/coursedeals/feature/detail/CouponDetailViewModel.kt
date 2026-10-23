@@ -6,11 +6,14 @@ import com.thanh0x.coursedeals.core.common.AppResult
 import com.thanh0x.coursedeals.domain.coupons.Coupon
 import com.thanh0x.coursedeals.domain.coupons.CouponRepository
 import com.thanh0x.coursedeals.domain.coupons.usecase.FetchCouponDetailUseCase
+import com.thanh0x.coursedeals.domain.coupons.usecase.ReportCourseUseCase
 import com.thanh0x.coursedeals.core.ui.UiEvent
 import com.thanh0x.coursedeals.core.ui.util.NetworkUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -19,14 +22,18 @@ import javax.inject.Inject
 @HiltViewModel
 class CouponDetailViewModel @Inject constructor(
     private val fetchCouponDetailUseCase: FetchCouponDetailUseCase,
-    private val networkUtil: NetworkUtil
+    private val reportCourseUseCase: ReportCourseUseCase,
+    private val networkUtil: NetworkUtil,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CouponDetailUiState())
     val uiState = _uiState.asStateFlow()
 
+    private val _uiEvent = MutableSharedFlow<UiEvent>()
+    val uiEvent = _uiEvent.asSharedFlow()
+
     fun fetchCouponDetail(courseId: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             val result = fetchCouponDetailUseCase(courseId)
             _uiState.update { it.copy(isLoading = false) }
@@ -37,6 +44,24 @@ class CouponDetailViewModel @Inject constructor(
                 }
                 is AppResult.Error -> {
                     _uiState.update { it.copy(error = result.message) }
+                }
+                is AppResult.Loading -> { }
+            }
+        }
+    }
+
+    fun reportCourse(courseId: Long, reason: String, details: String?) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isReporting = true) }
+            val result = reportCourseUseCase(courseId, reason, details)
+            _uiState.update { it.copy(isReporting = false) }
+
+            when (result) {
+                is AppResult.Success -> {
+                    _uiEvent.emit(UiEvent.ShowToast("ReportSubmittedSuccess"))
+                }
+                is AppResult.Error -> {
+                    _uiEvent.emit(UiEvent.ShowToast(result.message))
                 }
                 is AppResult.Loading -> { }
             }

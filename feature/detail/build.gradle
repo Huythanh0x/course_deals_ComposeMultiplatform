@@ -23,4 +23,8 @@ dependencies {
     implementation libs.androidx.fragment.ktx
     implementation libs.picasso
     implementation libs.timber
+
+    testImplementation libs.junit
+    testImplementation libs.kotlinx.coroutines.core
+    testImplementation libs.androidx.paging.runtime
 }

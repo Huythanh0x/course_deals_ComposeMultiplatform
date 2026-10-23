@@ -1,6 +1,7 @@
 package com.thanh0x.coursedeals.data.coupons.source.remote
 
 import com.thanh0x.coursedeals.data.coupons.mapper.toDomain
+import com.thanh0x.coursedeals.data.coupons.model.CourseReportRequest
 import com.thanh0x.coursedeals.core.common.AppResult
 import com.thanh0x.coursedeals.domain.coupons.Coupon
 import com.thanh0x.coursedeals.domain.coupons.source.RemoteCouponDataSource
@@ -52,6 +53,28 @@ class RemoteCouponDataSourceImpl @Inject constructor(private val couponService: 
             }
         } catch (e: Exception) {
             Timber.e(e, "Error fetching coupon detail: $courseId")
+            AppResult.Error(e.localizedMessage ?: "Unknown Error")
+        }
+    }
+
+    @Suppress("TooGenericExceptionCaught")
+    override suspend fun reportCourse(
+        courseId: Long,
+        reason: String,
+        details: String?,
+    ): AppResult<Unit> {
+        return try {
+            val response = couponService.reportCourse(
+                courseId = courseId,
+                request = CourseReportRequest(reason = reason, details = details),
+            )
+            if (response.isSuccessful) {
+                AppResult.Success(Unit)
+            } else {
+                AppResult.Error(response.message(), response.code())
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "Error reporting course: $courseId")
             AppResult.Error(e.localizedMessage ?: "Unknown Error")
         }
     }

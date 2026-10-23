@@ -9,6 +9,8 @@ import com.thanh0x.coursedeals.feature.detail.R
 import com.thanh0x.coursedeals.feature.detail.databinding.ActivityCouponDetailBinding
 import com.thanh0x.coursedeals.domain.coupons.Coupon
 import com.thanh0x.coursedeals.core.ui.BaseActivity
+import com.thanh0x.coursedeals.core.ui.DialogType
+import com.thanh0x.coursedeals.core.ui.UiEvent
 import com.thanh0x.coursedeals.core.common.BundleKey
 import com.thanh0x.coursedeals.core.ui.util.MapperToView
 import com.squareup.picasso.Picasso
@@ -25,11 +27,11 @@ class CouponDetailActivity : BaseActivity() {
         binding = ActivityCouponDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setupToolbar()
-        setupFragmentResultListeners()
 
         val courseId = intent.extras?.getInt(BundleKey.TO_DETAIL_ACTIVITY)
         if (courseId != null) {
             setupObservers(courseId)
+            setupFragmentResultListeners(courseId)
             couponDetailViewModel.checkIfInternetAvailable()
         } else {
             showFetchingErrorDialog("Not getting courseID")
@@ -39,6 +41,30 @@ class CouponDetailActivity : BaseActivity() {
     private fun setupObservers(courseId: Int) {
         collectFlow(couponDetailViewModel.uiState) { state ->
             handleUiState(state, courseId)
+        }
+        collectFlow(couponDetailViewModel.uiEvent) { event ->
+            handleUiEvent(event)
+        }
+    }
+
+    override fun handleUiEvent(event: UiEvent) {
+        when (event) {
+            is UiEvent.ShowToast -> {
+                if (event.message == "ReportSubmittedSuccess") {
+                    showAlertDialog(
+                        title = getString(CoreR.string.action_report_title),
+                        message = getString(CoreR.string.report_submit_success),
+                        type = DialogType.INFO,
+                    )
+                } else {
+                    showAlertDialog(
+                        title = getString(CoreR.string.action_report_title),
+                        message = event.message.ifBlank { getString(CoreR.string.report_submit_error) },
+                        type = DialogType.ERROR,
+                    )
+                }
+            }
+            else -> super.handleUiEvent(event)
         }
     }
 
@@ -50,6 +76,8 @@ class CouponDetailActivity : BaseActivity() {
 
         if (state.isLoading) {
             showLoading(getString(CoreR.string.dialog_loading_text))
+        } else if (state.isReporting) {
+            showLoading(getString(CoreR.string.report_submitting))
         } else {
             hideLoading()
         }
@@ -63,21 +91,26 @@ class CouponDetailActivity : BaseActivity() {
             bindingCouponDataToView(it)
             setOnclickButtons(it)
         } ?: run {
-            if ((!state.isLoading) && (state.error == null)) {
+            if ((!state.isLoading) && (!state.isReporting) && (state.error == null)) {
                 couponDetailViewModel.fetchCouponDetail(courseId)
             }
         }
     }
 
-    private fun setupFragmentResultListeners() {
+    private fun setupFragmentResultListeners(courseId: Int) {
         supportFragmentManager.setFragmentResultListener(
             ReportBottomSheetDialog.REQUEST_KEY,
             this,
-        ) { _, _ ->
-            showAlertDialog(
-                getString(CoreR.string.action_report_title),
-                getString(CoreR.string.report_submit_success),
-            )
+        ) { _, bundle ->
+            val reason = bundle.getString(ReportBottomSheetDialog.EXTRA_REASON)
+            val details = bundle.getString(ReportBottomSheetDialog.EXTRA_OTHER_DETAILS)
+            if (!reason.isNullOrBlank()) {
+                couponDetailViewModel.reportCourse(
+                    courseId = courseId.toLong(),
+                    reason = reason,
+                    details = details,
+                )
+            }
         }
     }
 
@@ -142,21 +175,26 @@ class CouponDetailActivity : BaseActivity() {
     private fun showFetchingErrorDialog(cause: String) {
         Timber.e("showFetchingErrorDialog: $cause")
         showAlertDialog(
-            getString(CoreR.string.coupon_detail_error_title),
-            getString(CoreR.string.error_fetching_null_coupon),
-            cause,
-        ) {
-            finish()
-        }
+            title = getString(CoreR.string.coupon_detail_error_title),
+            message = getString(CoreR.string.error_fetching_null_coupon),
+            type = DialogType.ERROR,
+            cause = cause,
+            onDismiss = {
+                finish()
+            },
+        )
     }
 
     private fun showNoInternetDialog() {
         showAlertDialog(
-            getString(CoreR.string.no_internet_title),
-            getString(CoreR.string.no_internet_message),
-        ) {
-            couponDetailViewModel.checkIfInternetAvailable()
-        }
+            title = getString(CoreR.string.no_internet_title),
+            message = getString(CoreR.string.no_internet_message),
+            type = DialogType.WARNING,
+            positiveButtonText = getString(CoreR.string.retry_button_text),
+            onDismiss = {
+                couponDetailViewModel.checkIfInternetAvailable()
+            },
+        )
     }
 
     private fun showReportDialog() {
