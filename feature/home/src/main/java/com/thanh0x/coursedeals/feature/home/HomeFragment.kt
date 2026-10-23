@@ -178,13 +178,6 @@ class HomeFragment : BaseFragment() {
     }
 
     private fun handleUiState(state: HomeUiState) {
-        if (!state.isInternetAvailable) {
-            showAlertDialog(
-                getString(CoreR.string.fetch_error_title),
-                getString(CoreR.string.no_internet_message),
-            )
-        }
-
         // Sync local currentFilter and search view with state (for Reset logic)
         currentFilter = state.filter
         if (binding.svCouponCourse.query.toString() != state.query) {
@@ -277,10 +270,13 @@ class HomeFragment : BaseFragment() {
                 ?: (loadState.refresh as? LoadState.Error)
 
             errorState?.let {
-                showAlertDialog(
-                    getString(CoreR.string.fetch_error_title),
-                    it.error.localizedMessage ?: getString(CoreR.string.error_fetching_null_coupon),
-                )
+                // If local database already has cached items, silently allow offline browsing without a disruptive alert dialog
+                if (couponCoursePagingAdapter.itemCount == 0) {
+                    showAlertDialog(
+                        getString(CoreR.string.fetch_error_title),
+                        it.error.localizedMessage ?: getString(CoreR.string.error_fetching_null_coupon),
+                    )
+                }
             }
         }
     }

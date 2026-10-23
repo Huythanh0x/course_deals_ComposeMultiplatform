@@ -12,5 +12,6 @@ data class ProfileUiState(
     val favKeywords: List<String> = emptyList(),
     val isNotificationsEnabled: Boolean = true,
     val isSyncing: Boolean = false,
+    val isGuestMode: Boolean = false,
     val errorMessage: String? = null,
 )
