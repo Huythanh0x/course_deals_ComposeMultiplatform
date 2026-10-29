@@ -46,6 +46,31 @@ abstract class BaseFragment : Fragment() {
         imm.hideSoftInputFromWindow(view?.windowToken, 0)
     }
 
+    fun showFragmentDialog(
+        title: String,
+        message: String,
+        type: DialogType = DialogType.INFO,
+        positiveButtonText: String? = null,
+        negativeButtonText: String? = null,
+        onNegativeClick: (() -> Unit)? = null,
+        onPositiveClick: (() -> Unit)? = null,
+    ): AppDialogFragment {
+        val dialog = AppDialogFragment.newInstance(
+            title = title,
+            message = message,
+            type = type,
+            positiveButtonText = positiveButtonText,
+            negativeButtonText = negativeButtonText,
+        ).apply {
+            setListeners(
+                onPositiveClick = onPositiveClick,
+                onNegativeClick = onNegativeClick,
+            )
+        }
+        dialog.show(childFragmentManager, "FragmentDialog")
+        return dialog
+    }
+
     fun showAlertDialog(
         title: String,
         message: String,

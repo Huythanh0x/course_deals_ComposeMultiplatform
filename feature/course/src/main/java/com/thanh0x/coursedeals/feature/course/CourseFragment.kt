@@ -11,7 +11,7 @@ import android.webkit.WebViewClient
 import androidx.fragment.app.viewModels
 import com.thanh0x.coursedeals.core.ui.R
 import com.thanh0x.coursedeals.core.ui.DialogType
-import com.thanh0x.coursedeals.core.ui.FragmentDialogOverlay
+import com.thanh0x.coursedeals.core.ui.AppDialogFragment
 import com.thanh0x.coursedeals.feature.course.databinding.FragmentCourseBinding
 import com.thanh0x.coursedeals.core.ui.BaseFragment
 import com.thanh0x.coursedeals.core.common.Constant
@@ -22,7 +22,7 @@ class CourseFragment : BaseFragment() {
     private var _binding: FragmentCourseBinding? = null
     val binding get() = _binding!!
     private val courseViewModel: CourseViewModel by viewModels()
-    private var dialogOverlay: FragmentDialogOverlay? = null
+    private var activeFragmentDialog: AppDialogFragment? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -33,7 +33,6 @@ class CourseFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        dialogOverlay = FragmentDialogOverlay(binding.dialogOverlay)
         showLoading()
         setupObservers()
         courseViewModel.checkIfInternetAvailable()
@@ -62,7 +61,8 @@ class CourseFragment : BaseFragment() {
             stopLoading()
             webViewClient = android.webkit.WebViewClient()
         }
-        dialogOverlay = null
+        activeFragmentDialog?.dismissAllowingStateLoss()
+        activeFragmentDialog = null
         super.onDestroyView()
         _binding = null
     }
@@ -106,20 +106,12 @@ class CourseFragment : BaseFragment() {
     }
 
     private fun showNotInternetDialog() {
-        dialogOverlay?.show(
+        activeFragmentDialog = showFragmentDialog(
             type = DialogType.WARNING,
             title = getString(R.string.course_internet_required_title),
             message = getString(R.string.course_internet_required_message),
             positiveButtonText = getString(R.string.retry_button_text),
             onPositiveClick = {
-                courseViewModel.checkIfInternetAvailable()
-            },
-        ) ?: showAlertDialog(
-            title = getString(R.string.course_internet_required_title),
-            message = getString(R.string.course_internet_required_message),
-            type = DialogType.WARNING,
-            positiveButtonText = getString(R.string.retry_button_text),
-            onDismiss = {
                 courseViewModel.checkIfInternetAvailable()
             },
         )
