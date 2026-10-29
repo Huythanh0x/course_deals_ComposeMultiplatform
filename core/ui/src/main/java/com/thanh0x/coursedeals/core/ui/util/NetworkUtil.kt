@@ -4,10 +4,12 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 
-class NetworkUtil(val context: Context) {
-    fun isInternetAvailable(): Boolean {
+open class NetworkUtil(open val context: Context? = null) {
+    open fun isInternetAvailable(): Boolean {
+        val appContext = context ?: return false
         val connectivityManager =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            appContext.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+                ?: return false
         val capabilities =
             connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
         return isInternetCapabilityAvailable(capabilities)

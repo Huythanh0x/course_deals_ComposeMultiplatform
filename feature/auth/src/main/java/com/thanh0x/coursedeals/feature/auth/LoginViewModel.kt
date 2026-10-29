@@ -119,11 +119,11 @@ class LoginViewModel @Inject constructor(
             return
         }
         if (password.length < MIN_PASSWORD_LENGTH) {
-            _uiState.update { it.copy(error = "Password must be at least 6 characters") }
+            _uiState.update { it.copy(error = "Password must be at least $MIN_PASSWORD_LENGTH characters") }
             return
         }
         viewModelScope.launch(Dispatchers.IO) {
-            _uiState.update { it.copy(isLoading = true, error = null, infoMessage = null) }
+            _uiState.update { it.copy(isLoading = true, error = null) }
             val result = registerUseCase(trimmedEmail, password, trimmedFullName)
             _uiState.update { it.copy(isLoading = false) }
 
@@ -133,8 +133,7 @@ class LoginViewModel @Inject constructor(
                         it.copy(
                             authMode = AuthMode.VERIFY_OTP,
                             pendingEmail = trimmedEmail,
-                            infoMessage = "OTP sent to $trimmedEmail (use 000000)",
-                            error = null
+                            infoMessage = "Registration successful! Enter OTP (use 000000) to activate your account."
                         )
                     }
                 }
@@ -151,8 +150,12 @@ class LoginViewModel @Inject constructor(
     fun verifyOtp(otp: String) {
         val trimmedOtp = otp.trim()
         val email = _uiState.value.pendingEmail
-        if (trimmedOtp.length != OTP_LENGTH || !trimmedOtp.all { it.isDigit() }) {
-            _uiState.update { it.copy(error = "Please enter a valid 6-digit OTP (use 000000)") }
+        if (email.isBlank()) {
+            _uiState.update { it.copy(error = "Email context missing, please sign in again") }
+            return
+        }
+        if (trimmedOtp.length != OTP_LENGTH) {
+            _uiState.update { it.copy(error = "OTP must be exactly $OTP_LENGTH digits") }
             return
         }
         viewModelScope.launch(Dispatchers.IO) {
@@ -196,20 +199,6 @@ class LoginViewModel @Inject constructor(
                 }
                 is AppResult.Loading -> { }
             }
-        }
-    }
-
-    fun devMockLogin() {
-        viewModelScope.launch(Dispatchers.IO) {
-            _uiState.update { it.copy(isLoading = true, error = null) }
-            val result = socialLoginUseCase("GOOGLE", "mock-google-token")
-            if (result is AppResult.Success) {
-                saveTokens(result.data)
-            } else {
-                saveJwtTokenUseCase("mock-dev-jwt-token")
-            }
-            _uiState.update { it.copy(isLoading = false) }
-            _uiEvent.emit(UiEvent.Navigate("Main"))
         }
     }
 

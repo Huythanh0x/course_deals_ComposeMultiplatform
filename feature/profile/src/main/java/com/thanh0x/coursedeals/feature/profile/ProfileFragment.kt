@@ -4,7 +4,10 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.graphics.RenderEffect
+import android.graphics.Shader
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -30,6 +33,7 @@ import com.thanh0x.coursedeals.core.ui.BiometricPromptUtils
 import com.thanh0x.coursedeals.core.common.AppResult
 import com.thanh0x.coursedeals.domain.user.TokenData
 import com.thanh0x.coursedeals.core.ui.BaseFragment
+import com.thanh0x.coursedeals.core.ui.DialogType
 import com.thanh0x.coursedeals.core.ui.UiEvent
 import com.thanh0x.coursedeals.core.common.NetworkStatusCode
 import dagger.hilt.android.AndroidEntryPoint
@@ -80,8 +84,16 @@ class ProfileFragment : BaseFragment() {
             clearFocusAndHideKeyboard()
         }
 
+        binding.btnSignIn.setOnClickListener {
+            navigateToLogin()
+        }
+
         binding.llEmailContainer.setOnClickListener {
-            copyToClipboard(binding.tvEmail.text.toString())
+            if (profileViewModel.uiState.value.isGuestMode) {
+                navigateToLogin()
+            } else {
+                copyToClipboard(binding.tvEmail.text.toString())
+            }
         }
 
         binding.btnLogout.setOnClickListener {
@@ -100,8 +112,9 @@ class ProfileFragment : BaseFragment() {
             } catch (e: android.content.ActivityNotFoundException) {
                 Timber.e(e, "Failed to send email: No activity found")
                 showAlertDialog(
-                    getString(CoreR.string.email_failed_to_send),
-                    getString(CoreR.string.email_cannot_find_client_app),
+                    title = getString(CoreR.string.email_failed_to_send),
+                    message = getString(CoreR.string.email_cannot_find_client_app),
+                    type = DialogType.ERROR,
                 )
             }
         }
@@ -123,11 +136,19 @@ class ProfileFragment : BaseFragment() {
         }
 
         binding.swEnableFingerPrint.setOnCheckedChangeListener { _, isChecked ->
+            if (profileViewModel.uiState.value.isGuestMode) {
+                if (isChecked) {
+                    binding.swEnableFingerPrint.isChecked = false
+                    showToast(getString(CoreR.string.guest_biometric_unavailable))
+                }
+                return@setOnCheckedChangeListener
+            }
             if (isChecked) {
                 if (!profileViewModel.isNetworkAvailable()) {
                     showAlertDialog(
-                        getString(CoreR.string.no_internet_title),
-                        getString(CoreR.string.no_internet_message),
+                        title = getString(CoreR.string.no_internet_title),
+                        message = getString(CoreR.string.no_internet_message),
+                        type = DialogType.WARNING,
                     )
                     binding.swEnableFingerPrint.isChecked = false
                 } else {
@@ -191,18 +212,52 @@ class ProfileFragment : BaseFragment() {
     }
 
     private fun handleUiState(state: ProfileUiState) {
-        if (state.isTokenExpired) {
+        if (!state.isGuestMode && state.isTokenExpired) {
             forceLogout()
             return
         }
 
-        if (state.displayName.isNotEmpty()) {
-            binding.tvDisplayName.text = state.displayName
+        if (state.isGuestMode) {
+            binding.tvDisplayName.text = getString(CoreR.string.guest_user_title)
+            binding.tvEmail.text = getString(CoreR.string.guest_user_subtitle)
+            binding.btnCopyEmail.isVisible = false
+            resetAvatarPlaceholder()
+            binding.btnLogout.isVisible = false
+            binding.swEnableFingerPrint.isEnabled = false
+            binding.swEnableFingerPrint.isChecked = false
+
+            // Show auth gate overlay and apply blur effect on profile content
+            binding.flGuestOverlay.isVisible = true
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                binding.nsvProfile.setRenderEffect(
+                    RenderEffect.createBlurEffect(20f, 20f, Shader.TileMode.CLAMP)
+                )
+            } else {
+                binding.nsvProfile.alpha = 0.3f
+            }
+        } else {
+            // Authenticated user state: remove blur and hide auth gate overlay
+            binding.flGuestOverlay.isVisible = false
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                binding.nsvProfile.setRenderEffect(null)
+            } else {
+                binding.nsvProfile.alpha = 1.0f
+            }
+
+            binding.btnCopyEmail.isVisible = true
+            if (state.displayName.isNotEmpty()) {
+                binding.tvDisplayName.text = state.displayName
+            }
+            if (state.email.isNotEmpty()) {
+                binding.tvEmail.text = state.email
+            }
+            bindAvatar(state.avatarUrl)
+            binding.btnLogout.isVisible = true
+            binding.swEnableFingerPrint.isEnabled = true
+            if (binding.swEnableFingerPrint.isChecked != state.isFingerprintEnabled) {
+                binding.swEnableFingerPrint.isChecked = state.isFingerprintEnabled
+            }
         }
-        if (state.email.isNotEmpty()) {
-            binding.tvEmail.text = state.email
-        }
-        bindAvatar(state.avatarUrl)
 
         if (binding.swEnableDarkMode.isChecked != state.isDarkModeEnabled) {
             binding.swEnableDarkMode.isChecked = state.isDarkModeEnabled
@@ -210,10 +265,6 @@ class ProfileFragment : BaseFragment() {
         if (appliedDarkMode != state.isDarkModeEnabled) {
             appliedDarkMode = state.isDarkModeEnabled
             applyDarkModeToTheApp(state.isDarkModeEnabled)
-        }
-
-        if (binding.swEnableFingerPrint.isChecked != state.isFingerprintEnabled) {
-            binding.swEnableFingerPrint.isChecked = state.isFingerprintEnabled
         }
 
         if (binding.swEnableNotifications.isChecked != state.isNotificationsEnabled) {
@@ -422,6 +473,15 @@ class ProfileFragment : BaseFragment() {
         profileViewModel.clearLocalToken()
         val intent = Intent().apply {
             setClassName(requireContext().packageName, "com.thanh0x.coursedeals.feature.auth.LoginActivity")
+        }
+        startActivity(intent)
+        requireActivity().finish()
+    }
+
+    private fun navigateToLogin() {
+        val intent = Intent().apply {
+            setClassName(requireContext().packageName, "com.thanh0x.coursedeals.feature.auth.LoginActivity")
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
         startActivity(intent)
         requireActivity().finish()

@@ -39,6 +39,15 @@ interface CouponDao {
     @Query("SELECT title FROM ${Constant.COUPON_TABLE_NAME} WHERE LOWER(title) LIKE '%' || :query || '%' LIMIT 10")
     suspend fun getSearchSuggestions(query: String): List<String>
 
+    @Query("SELECT * FROM ${Constant.COUPON_TABLE_NAME} WHERE course_id = :courseId LIMIT 1")
+    suspend fun getCouponById(courseId: Int): Coupon?
+
+    @Query(
+        "UPDATE ${Constant.COUPON_TABLE_NAME} SET cached_at = NULL " +
+            "WHERE cached_at IS NOT NULL AND cached_at < :expirationThreshold",
+    )
+    suspend fun clearExpiredCachedAt(expirationThreshold: Long): Int
+
     @Query("DELETE FROM ${Constant.COUPON_TABLE_NAME}")
     suspend fun clearAllCoupons(): Int
 }

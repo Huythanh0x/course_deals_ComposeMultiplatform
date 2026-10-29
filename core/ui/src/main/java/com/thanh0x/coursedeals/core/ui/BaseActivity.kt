@@ -2,12 +2,12 @@ package com.thanh0x.coursedeals.core.ui
 
 import android.content.res.ColorStateList
 import android.os.Bundle
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -37,7 +37,11 @@ abstract class BaseActivity : AppCompatActivity() {
     open fun handleUiEvent(event: UiEvent) {
         when (event) {
             is UiEvent.ShowToast -> showToast(event.message)
-            is UiEvent.ShowAlertDialog -> showAlertDialog(event.title, event.message)
+            is UiEvent.ShowAlertDialog -> showAlertDialog(
+                title = event.title,
+                message = event.message,
+                type = event.type,
+            )
             else -> {}
         }
     }
@@ -76,8 +80,12 @@ abstract class BaseActivity : AppCompatActivity() {
     fun showAlertDialog(
         title: String,
         message: String,
+        type: DialogType = DialogType.INFO,
         cause: String? = null,
-        onDismiss: (() -> Unit)? = null
+        positiveButtonText: String? = null,
+        negativeButtonText: String? = null,
+        onNegativeClick: (() -> Unit)? = null,
+        onDismiss: (() -> Unit)? = null,
     ) {
         if (isFinishing || isDestroyed) return
         val finalMessage = if (cause != null) "$message\n\nCause: $cause" else message
@@ -86,32 +94,36 @@ abstract class BaseActivity : AppCompatActivity() {
         val ivLogo = headerView.findViewById<ImageView>(R.id.ivDialogLogo)
 
         tvTitle.text = title
+        ivLogo.setImageResource(type.iconRes)
+        val iconColor = ContextCompat.getColor(this, type.iconTintRes)
+        ivLogo.imageTintList = ColorStateList.valueOf(iconColor)
 
-        // Use red tint for error-related titles
-        val isError = title.contains("Error", ignoreCase = true) ||
-            title.contains("Failed", ignoreCase = true) ||
-            title.contains("No Internet", ignoreCase = true)
-
-        if (isError) {
+        if (type == DialogType.ERROR) {
             Timber.tag(this.javaClass.simpleName)
                 .e("showAlertDialog: title=$title, message=$message, cause=$cause")
-            val typedValue = TypedValue()
-            val attrId = resources.getIdentifier("colorError", "attr", packageName)
-            if (attrId != 0) {
-                theme.resolveAttribute(attrId, typedValue, true)
-                ivLogo.imageTintList = ColorStateList.valueOf(typedValue.data)
+        }
+
+        val positiveText = positiveButtonText ?: getString(R.string.ok_text_button)
+        val builder = MaterialAlertDialogBuilder(
+            this,
+            R.style.ThemeOverlay_CourseDeal_MaterialAlertDialog_Centered,
+        ).setCustomTitle(headerView)
+            .setMessage(finalMessage)
+            .setPositiveButton(positiveText) { d, _ ->
+                d.dismiss()
+                onDismiss?.invoke()
+            }
+
+        if (negativeButtonText != null) {
+            builder.setNegativeButton(negativeButtonText) { d, _ ->
+                d.dismiss()
+                onNegativeClick?.invoke()
             }
         }
 
-        MaterialAlertDialogBuilder(
-            this,
-            com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered
-        ).setCustomTitle(headerView)
-            .setMessage(finalMessage)
-            .setPositiveButton(R.string.ok_text_button) { dialog, _ ->
-                dialog.dismiss()
-                onDismiss?.invoke()
-            }
-            .show()
+        val dialog = builder.show()
+
+        val positiveColor = ContextCompat.getColor(this, type.positiveButtonColorRes)
+        dialog.getButton(android.content.DialogInterface.BUTTON_POSITIVE)?.setTextColor(positiveColor)
     }
 }

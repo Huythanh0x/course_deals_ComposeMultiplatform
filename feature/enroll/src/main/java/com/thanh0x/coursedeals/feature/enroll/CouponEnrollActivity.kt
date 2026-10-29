@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.thanh0x.coursedeals.core.ui.R
+import com.thanh0x.coursedeals.core.ui.DialogType
 import com.thanh0x.coursedeals.feature.enroll.databinding.ActivityCouponEnrollBinding
 import com.thanh0x.coursedeals.core.ui.BaseActivity
 import com.thanh0x.coursedeals.core.common.BundleKey
@@ -25,8 +26,9 @@ class CouponEnrollActivity : BaseActivity() {
             binding.wvEnroll.loadUrl(couponUrl)
         } else {
             showAlertDialog(
-                getString(R.string.coupon_detail_error_title),
-                getString(R.string.error_fetching_null_coupon)
+                title = getString(R.string.coupon_detail_error_title),
+                message = getString(R.string.error_fetching_null_coupon),
+                type = DialogType.ERROR,
             ) {
                 finish()
             }

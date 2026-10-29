@@ -14,6 +14,7 @@ import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.thanh0x.coursedeals.core.ui.BaseActivity
 import com.thanh0x.coursedeals.core.ui.BiometricPromptUtils
+import com.thanh0x.coursedeals.core.ui.DialogType
 import com.thanh0x.coursedeals.core.ui.R as CoreR
 import com.thanh0x.coursedeals.core.ui.UiEvent
 import com.thanh0x.coursedeals.feature.auth.databinding.ActivityLoginBinding
@@ -54,8 +55,8 @@ class LoginActivity : BaseActivity() {
             authenticateWithFingerprint()
         }
 
-        binding.btnDevBypass.setOnClickListener {
-            loginViewModel.devMockLogin()
+        binding.btnAccessAsGuest.setOnClickListener {
+            navigateToMainScreen()
         }
     }
 
@@ -97,7 +98,11 @@ class LoginActivity : BaseActivity() {
         }
 
         state.error?.let {
-            showAlertDialog(getString(CoreR.string.login_error_title), it)
+            showAlertDialog(
+                title = getString(CoreR.string.login_error_title),
+                message = it,
+                type = DialogType.ERROR,
+            )
             loginViewModel.clearError()
         }
 
@@ -148,22 +153,25 @@ class LoginActivity : BaseActivity() {
     private fun signInWithGoogle() {
         if (!loginViewModel.isInternetAvailable()) {
             showAlertDialog(
-                resources.getString(CoreR.string.no_internet_title),
-                resources.getString(CoreR.string.no_internet_message)
+                title = resources.getString(CoreR.string.no_internet_title),
+                message = resources.getString(CoreR.string.no_internet_message),
+                type = DialogType.WARNING,
             )
             return
         }
 
         val serverClientId = getString(CoreR.string.google_web_client_id)
         if (serverClientId.startsWith("YOUR_GOOGLE_WEB_CLIENT_ID")) {
-            androidx.appcompat.app.AlertDialog.Builder(this)
-                .setTitle("Google Sign-In (Dev Mode)")
-                .setMessage("Google Web Client ID is not configured yet. Sign in with a Mock Google Developer account for local testing?")
-                .setPositiveButton("Sign In") { _, _ ->
+            showAlertDialog(
+                title = getString(CoreR.string.login_dev_mode_title),
+                message = getString(CoreR.string.login_dev_mode_message),
+                type = DialogType.CONFIRMATION,
+                positiveButtonText = getString(CoreR.string.login_dev_mode_positive),
+                negativeButtonText = getString(CoreR.string.cancel_button_text),
+                onDismiss = {
                     loginViewModel.googleLogin("mock-google-token")
-                }
-                .setNegativeButton(getString(CoreR.string.cancel_button_text), null)
-                .show()
+                },
+            )
             return
         }
 
@@ -191,8 +199,9 @@ class LoginActivity : BaseActivity() {
                     loginViewModel.googleLogin(googleIdTokenCredential.idToken)
                 } else {
                     showAlertDialog(
-                        getString(CoreR.string.login_error_title),
-                        "Unexpected credential received from Google."
+                        title = getString(CoreR.string.login_error_title),
+                        message = getString(CoreR.string.login_error_unexpected_credential),
+                        type = DialogType.ERROR,
                     )
                 }
             } catch (e: GetCredentialCancellationException) {
@@ -200,8 +209,9 @@ class LoginActivity : BaseActivity() {
             } catch (e: GetCredentialException) {
                 Timber.e(e, "Google Sign-In failed")
                 showAlertDialog(
-                    getString(CoreR.string.login_error_title),
-                    e.localizedMessage ?: "Failed to sign in with Google."
+                    title = getString(CoreR.string.login_error_title),
+                    message = e.localizedMessage ?: getString(CoreR.string.login_error_google_failed),
+                    type = DialogType.ERROR,
                 )
             }
         }

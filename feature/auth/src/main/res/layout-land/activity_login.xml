@@ -13,27 +13,29 @@
         android:background="?attr/colorSurface"
         android:fitsSystemWindows="true"
         android:paddingHorizontal="@dimen/spacing_32"
+        android:paddingVertical="@dimen/spacing_16"
         tools:context="com.thanh0x.coursedeals.feature.auth.LoginActivity">
 
-        <!-- Left Container: Branding -->
+        <!-- Left Half: Branding & Logo -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clBranding"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/nsvActions"
-            app:layout_constraintHorizontal_weight="1.0"
+            app:layout_constraintEnd_toStartOf="@+id/svActions"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ivLogo"
-                android:layout_width="@dimen/spacing_80"
-                android:layout_height="@dimen/spacing_80"
+                android:layout_width="@dimen/spacing_64"
+                android:layout_height="@dimen/spacing_64"
                 android:src="@drawable/ic_logo_mark"
+                app:layout_constraintBottom_toTopOf="@+id/tvHeadline"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/tvHeadline"
@@ -44,22 +46,21 @@
                 android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
                 android:textColor="?attr/colorOnSurface"
                 android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/ivLogo" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!-- Right Container: Scrollable Actions -->
+        <!-- Right Half: Email Form & Social Actions (Scrollable) -->
         <androidx.core.widget.NestedScrollView
-            android:id="@+id/nsvActions"
+            android:id="@+id/svActions"
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginEnd="@dimen/spacing_20"
+            android:layout_height="match_parent"
             android:fillViewport="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_weight="1.2"
             app:layout_constraintStart_toEndOf="@+id/clBranding"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -98,7 +99,6 @@
                         android:id="@+id/etFullName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:imeOptions="actionNext"
                         android:inputType="textPersonName"
                         android:maxLines="1" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -118,7 +118,6 @@
                         android:id="@+id/etEmail"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:imeOptions="actionNext"
                         android:inputType="textEmailAddress"
                         android:maxLines="1" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -139,7 +138,6 @@
                         android:id="@+id/etPassword"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:imeOptions="actionDone"
                         android:inputType="textPassword"
                         android:maxLines="1" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -150,10 +148,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/spacing_8"
+                    app:helperText="@string/auth_otp_helper"
                     android:hint="@string/auth_otp_hint"
                     android:visibility="gone"
-                    app:helperText="@string/auth_otp_helper"
-                    app:helperTextEnabled="true"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tilPassword">
@@ -162,7 +159,6 @@
                         android:id="@+id/etOtp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:imeOptions="actionDone"
                         android:inputType="number"
                         android:maxLength="6"
                         android:maxLines="1" />
@@ -171,10 +167,10 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnEmailSubmit"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/spacing_56"
+                    android:layout_height="@dimen/spacing_58"
                     android:layout_marginTop="@dimen/spacing_12"
                     android:text="@string/auth_btn_sign_in"
-                    app:cornerRadius="@dimen/spacing_28"
+                    app:cornerRadius="@dimen/spacing_29"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tilOtp" />
@@ -250,12 +246,12 @@
                     app:layout_constraintTop_toBottomOf="@+id/btnApple" />
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnDevBypass"
+                    android:id="@+id/btnAccessAsGuest"
                     style="@style/Widget.Material3.Button.TextButton"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/spacing_48"
-                    android:text="@string/auth_btn_dev_bypass"
-                    android:textColor="?attr/colorSecondary"
+                    android:text="@string/continue_as_guest"
+                    android:textColor="?attr/colorPrimary"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

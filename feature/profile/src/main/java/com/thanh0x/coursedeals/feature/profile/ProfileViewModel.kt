@@ -10,6 +10,7 @@ import com.thanh0x.coursedeals.domain.user.UserProfileRepository
 import com.thanh0x.coursedeals.domain.user.usecase.CheckIfTokenExpiredUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.ClearLocalTokenUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.CryptographyManagerUseCase
+import com.thanh0x.coursedeals.domain.user.usecase.GetLocalTokenUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.GetUserProfileUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.RequestFingerprintTokenUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.SaveJwtTokenUseCase
@@ -39,6 +40,7 @@ class ProfileViewModel @Inject constructor(
     private val requestFingerprintTokenUseCase: RequestFingerprintTokenUseCase,
     private val clearLocalTokenUseCase: ClearLocalTokenUseCase,
     private val checkIfTokenExpiredUseCase: CheckIfTokenExpiredUseCase,
+    private val getLocalTokenUseCase: GetLocalTokenUseCase,
     private val networkUtil: NetworkUtil,
 ) : ViewModel() {
 
@@ -50,13 +52,12 @@ class ProfileViewModel @Inject constructor(
 
     init {
         initSettings()
-        checkIfTokenExpired()
-        fetchUserProfile()
-        syncPreferences()
     }
 
     private fun initSettings() {
         viewModelScope.launch(Dispatchers.IO) {
+            val token = getLocalTokenUseCase()
+            val isGuest = token.isNullOrBlank()
             val cachedProfile = userProfileRepository.getCachedUserProfile()
             val darkMode = userProfileRepository.getEnableDarkMode() ?: false
             val fingerprint = userProfileRepository.getEnableFingerPrint() ?: false
@@ -66,20 +67,27 @@ class ProfileViewModel @Inject constructor(
 
             _uiState.update {
                 it.copy(
-                    displayName = cachedProfile.fullName ?: it.displayName,
-                    email = cachedProfile.email ?: it.email,
-                    avatarUrl = cachedProfile.avatarUrl ?: it.avatarUrl,
+                    isGuestMode = isGuest,
+                    displayName = if (isGuest) "" else (cachedProfile.fullName ?: it.displayName),
+                    email = if (isGuest) "" else (cachedProfile.email ?: it.email),
+                    avatarUrl = if (isGuest) null else (cachedProfile.avatarUrl ?: it.avatarUrl),
                     isDarkModeEnabled = darkMode,
-                    isFingerprintEnabled = fingerprint,
+                    isFingerprintEnabled = if (isGuest) false else fingerprint,
                     favCategories = categories,
                     favKeywords = keywords,
                     isNotificationsEnabled = notifications,
                 )
             }
+            if (!isGuest) {
+                checkIfTokenExpired()
+                fetchUserProfile()
+                syncPreferences()
+            }
         }
     }
 
     fun fetchUserProfile() {
+        if (_uiState.value.isGuestMode) return
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.update { it.copy(isLoading = true) }
             when (val result = getUserProfileUseCase()) {
@@ -114,6 +122,7 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun syncPreferences() {
+        if (_uiState.value.isGuestMode) return
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.update { it.copy(isSyncing = true) }
             val result = userProfileRepository.syncPreferences()
@@ -132,6 +141,7 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun checkIfTokenExpired() {
+        if (_uiState.value.isGuestMode) return
         viewModelScope.launch(Dispatchers.IO) {
             when (val result = checkIfTokenExpiredUseCase()) {
                 is AppResult.Success -> _uiState.update { it.copy(isTokenExpired = false) }

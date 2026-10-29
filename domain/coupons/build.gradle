@@ -12,4 +12,6 @@ dependencies {
     implementation project(':domain:user')
     implementation libs.androidx.paging.runtime
     implementation libs.hilt.android
+
+    testImplementation libs.junit
 }

@@ -76,4 +76,7 @@ data class Coupon(
 
     @ColumnInfo(name = "updated_at")
     val updatedAt: Long? = null,
+
+    @ColumnInfo(name = "cached_at")
+    val cachedAt: Long? = null,
 ) : Parcelable

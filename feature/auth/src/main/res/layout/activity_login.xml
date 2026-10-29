@@ -95,7 +95,6 @@
                         android:id="@+id/etFullName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:imeOptions="actionNext"
                         android:inputType="textPersonName"
                         android:maxLines="1" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -115,7 +114,6 @@
                         android:id="@+id/etEmail"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:imeOptions="actionNext"
                         android:inputType="textEmailAddress"
                         android:maxLines="1" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -136,7 +134,6 @@
                         android:id="@+id/etPassword"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:imeOptions="actionDone"
                         android:inputType="textPassword"
                         android:maxLines="1" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -147,10 +144,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/spacing_8"
+                    app:helperText="@string/auth_otp_helper"
                     android:hint="@string/auth_otp_hint"
                     android:visibility="gone"
-                    app:helperText="@string/auth_otp_helper"
-                    app:helperTextEnabled="true"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tilPassword">
@@ -159,7 +155,6 @@
                         android:id="@+id/etOtp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:imeOptions="actionDone"
                         android:inputType="number"
                         android:maxLength="6"
                         android:maxLines="1" />
@@ -168,10 +163,10 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnEmailSubmit"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/spacing_56"
-                    android:layout_marginTop="@dimen/spacing_16"
+                    android:layout_height="@dimen/spacing_58"
+                    android:layout_marginTop="@dimen/spacing_12"
                     android:text="@string/auth_btn_sign_in"
-                    app:cornerRadius="@dimen/spacing_28"
+                    app:cornerRadius="@dimen/spacing_29"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tilOtp" />
@@ -250,13 +245,13 @@
                     app:layout_constraintTop_toBottomOf="@+id/btnApple" />
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnDevBypass"
+                    android:id="@+id/btnAccessAsGuest"
                     style="@style/Widget.Material3.Button.TextButton"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/spacing_48"
                     android:layout_marginTop="@dimen/spacing_4"
-                    android:text="@string/auth_btn_dev_bypass"
-                    android:textColor="?attr/colorSecondary"
+                    android:text="@string/continue_as_guest"
+                    android:textColor="?attr/colorPrimary"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
