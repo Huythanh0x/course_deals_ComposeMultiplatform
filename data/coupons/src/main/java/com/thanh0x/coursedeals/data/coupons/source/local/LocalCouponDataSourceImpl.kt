@@ -45,6 +45,12 @@ class LocalCouponDataSourceImpl @Inject constructor(private val couponDao: Coupo
     override suspend fun getSearchSuggestions(query: String): List<String> =
         couponDao.getSearchSuggestions(query.lowercase())
 
+    override suspend fun getCouponById(courseId: Int): Coupon? =
+        couponDao.getCouponById(courseId)
+
+    override suspend fun clearExpiredCachedAt(expirationThreshold: Long): Int =
+        couponDao.clearExpiredCachedAt(expirationThreshold)
+
     private fun buildConditions(query: String?, filter: FilterData): Pair<String, List<Any>> {
         val conditions = mutableListOf<String>()
         val args = mutableListOf<Any>()

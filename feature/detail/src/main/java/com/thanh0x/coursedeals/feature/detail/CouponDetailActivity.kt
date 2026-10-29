@@ -3,6 +3,8 @@ package com.thanh0x.coursedeals.feature.detail
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.format.DateUtils
+import android.view.View
 import androidx.activity.viewModels
 import com.thanh0x.coursedeals.core.ui.R as CoreR
 import com.thanh0x.coursedeals.feature.detail.R
@@ -14,11 +16,15 @@ import com.thanh0x.coursedeals.core.ui.util.MapperToView
 import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class CouponDetailActivity : BaseActivity() {
     lateinit var binding: ActivityCouponDetailBinding
     private val couponDetailViewModel: CouponDetailViewModel by viewModels()
+
+    @Inject
+    lateinit var networkUtil: com.thanh0x.coursedeals.core.ui.util.NetworkUtil
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +36,8 @@ class CouponDetailActivity : BaseActivity() {
         val courseId = intent.extras?.getInt(BundleKey.TO_DETAIL_ACTIVITY)
         if (courseId != null) {
             setupObservers(courseId)
-            couponDetailViewModel.checkIfInternetAvailable()
+            setupBannerRefresh(courseId)
+            couponDetailViewModel.fetchCouponDetail(courseId)
         } else {
             showFetchingErrorDialog("Not getting courseID")
         }
@@ -42,12 +49,13 @@ class CouponDetailActivity : BaseActivity() {
         }
     }
 
-    private fun handleUiState(state: CouponDetailUiState, courseId: Int) {
-        if (!state.isInternetAvailable) {
-            showNoInternetDialog()
-            return
+    private fun setupBannerRefresh(courseId: Int) {
+        binding.btnBannerRefresh.setOnClickListener {
+            couponDetailViewModel.fetchCouponDetail(courseId, forceRefresh = true)
         }
+    }
 
+    private fun handleUiState(state: CouponDetailUiState, courseId: Int) {
         if (state.isLoading) {
             showLoading(getString(CoreR.string.dialog_loading_text))
         } else {
@@ -55,17 +63,32 @@ class CouponDetailActivity : BaseActivity() {
         }
 
         state.error?.let {
-            showFetchingErrorDialog(state.error)
+            if (state.coupon == null) {
+                if (!networkUtil.isInternetAvailable()) {
+                    showNoInternetDialog()
+                } else {
+                    showFetchingErrorDialog(state.error)
+                }
+            }
+        }
+
+        if (state.isFromCache && state.cachedAt != null) {
+            val relativeTime = DateUtils.getRelativeTimeSpanString(
+                state.cachedAt,
+                System.currentTimeMillis(),
+                DateUtils.MINUTE_IN_MILLIS,
+                DateUtils.FORMAT_ABBREV_RELATIVE,
+            )
+            binding.tvBannerText.text = getString(CoreR.string.cache_banner_text, relativeTime)
+            binding.bannerOfflineCache.visibility = View.VISIBLE
+        } else {
+            binding.bannerOfflineCache.visibility = View.GONE
         }
 
         state.coupon?.let {
-            binding.mlCouponDetail.visibility = android.view.View.VISIBLE
+            binding.mlCouponDetail.visibility = View.VISIBLE
             bindingCouponDataToView(it)
             setOnclickButtons(it)
-        } ?: run {
-            if ((!state.isLoading) && (state.error == null)) {
-                couponDetailViewModel.fetchCouponDetail(courseId)
-            }
         }
     }
 

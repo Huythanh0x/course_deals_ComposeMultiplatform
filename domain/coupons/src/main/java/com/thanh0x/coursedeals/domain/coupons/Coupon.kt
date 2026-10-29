@@ -23,4 +23,5 @@ data class Coupon(
     val isNew: Boolean?,
     val createdAt: Long? = null,
     val updatedAt: Long? = null,
+    val cachedAt: Long? = null,
 )

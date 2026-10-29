@@ -4,9 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.thanh0x.coursedeals.core.common.AppResult
 import com.thanh0x.coursedeals.domain.coupons.Coupon
-import com.thanh0x.coursedeals.domain.coupons.CouponRepository
 import com.thanh0x.coursedeals.domain.coupons.usecase.FetchCouponDetailUseCase
-import com.thanh0x.coursedeals.core.ui.UiEvent
 import com.thanh0x.coursedeals.core.ui.util.NetworkUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -25,15 +23,24 @@ class CouponDetailViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(CouponDetailUiState())
     val uiState = _uiState.asStateFlow()
 
-    fun fetchCouponDetail(courseId: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
+    fun fetchCouponDetail(courseId: Int, forceRefresh: Boolean = false) {
+        viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             val result = fetchCouponDetailUseCase(courseId)
             _uiState.update { it.copy(isLoading = false) }
 
             when (result) {
                 is AppResult.Success -> {
-                    _uiState.update { it.copy(coupon = result.data) }
+                    val coupon = result.data
+                    val cachedAt = coupon.cachedAt
+                    _uiState.update {
+                        it.copy(
+                            coupon = coupon,
+                            isFromCache = cachedAt != null,
+                            cachedAt = cachedAt,
+                            error = null,
+                        )
+                    }
                 }
                 is AppResult.Error -> {
                     _uiState.update { it.copy(error = result.message) }

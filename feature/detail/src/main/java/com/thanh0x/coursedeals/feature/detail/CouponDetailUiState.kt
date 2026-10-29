@@ -6,5 +6,7 @@ data class CouponDetailUiState(
     val isLoading: Boolean = false,
     val coupon: Coupon? = null,
     val error: String? = null,
-    val isInternetAvailable: Boolean = true
+    val isInternetAvailable: Boolean = true,
+    val isFromCache: Boolean = false,
+    val cachedAt: Long? = null,
 )
