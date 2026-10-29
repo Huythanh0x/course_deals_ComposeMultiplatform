@@ -10,6 +10,8 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.fragment.app.viewModels
 import com.thanh0x.coursedeals.core.ui.R
+import com.thanh0x.coursedeals.core.ui.DialogType
+import com.thanh0x.coursedeals.core.ui.AppDialogFragment
 import com.thanh0x.coursedeals.feature.course.databinding.FragmentCourseBinding
 import com.thanh0x.coursedeals.core.ui.BaseFragment
 import com.thanh0x.coursedeals.core.common.Constant
@@ -20,6 +22,7 @@ class CourseFragment : BaseFragment() {
     private var _binding: FragmentCourseBinding? = null
     val binding get() = _binding!!
     private val courseViewModel: CourseViewModel by viewModels()
+    private var activeFragmentDialog: AppDialogFragment? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -58,6 +61,8 @@ class CourseFragment : BaseFragment() {
             stopLoading()
             webViewClient = android.webkit.WebViewClient()
         }
+        activeFragmentDialog?.dismissAllowingStateLoss()
+        activeFragmentDialog = null
         super.onDestroyView()
         _binding = null
     }
@@ -101,11 +106,14 @@ class CourseFragment : BaseFragment() {
     }
 
     private fun showNotInternetDialog() {
-        showAlertDialog(
-            getString(R.string.course_internet_required_title),
-            getString(R.string.course_internet_required_message)
-        ) {
-            courseViewModel.checkIfInternetAvailable()
-        }
+        activeFragmentDialog = showFragmentDialog(
+            type = DialogType.WARNING,
+            title = getString(R.string.course_internet_required_title),
+            message = getString(R.string.course_internet_required_message),
+            positiveButtonText = getString(R.string.retry_button_text),
+            onPositiveClick = {
+                courseViewModel.checkIfInternetAvailable()
+            },
+        )
     }
 }
