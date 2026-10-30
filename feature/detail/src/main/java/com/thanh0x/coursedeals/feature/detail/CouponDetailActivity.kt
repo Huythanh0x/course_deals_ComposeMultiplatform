@@ -3,24 +3,19 @@ package com.thanh0x.coursedeals.feature.detail
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.text.format.DateUtils
-import android.view.View
 import androidx.activity.viewModels
-import com.thanh0x.coursedeals.core.ui.R as CoreR
-import com.thanh0x.coursedeals.feature.detail.R
-import com.thanh0x.coursedeals.feature.detail.databinding.ActivityCouponDetailBinding
-import com.thanh0x.coursedeals.domain.coupons.Coupon
-import com.thanh0x.coursedeals.core.ui.BaseActivity
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.thanh0x.coursedeals.core.common.BundleKey
-import com.thanh0x.coursedeals.core.ui.util.MapperToView
-import com.squareup.picasso.Picasso
+import com.thanh0x.coursedeals.core.ui.BaseActivity
+import com.thanh0x.coursedeals.core.ui.R as CoreR
+import com.thanh0x.coursedeals.core.ui.theme.CourseDealsTheme
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class CouponDetailActivity : BaseActivity() {
-    lateinit var binding: ActivityCouponDetailBinding
     private val couponDetailViewModel: CouponDetailViewModel by viewModels()
 
     @Inject
@@ -28,40 +23,43 @@ class CouponDetailActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityCouponDetailBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        setupToolbar()
-        setupFragmentResultListeners()
-
         val courseId = intent.extras?.getInt(BundleKey.TO_DETAIL_ACTIVITY)
+        val composeView = ComposeView(this).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                CourseDealsTheme {
+                    CouponDetailRoute(
+                        viewModel = couponDetailViewModel,
+                        onBackClick = { finish() },
+                        onEnrollClick = { couponUrl -> navigateToEnroll(couponUrl) },
+                        onShareClick = { title, url -> shareLink(this@CouponDetailActivity, title, url) },
+                        onReportSubmitted = { _, _ ->
+                            showAlertDialog(
+                                getString(CoreR.string.action_report_title),
+                                getString(CoreR.string.report_submit_success),
+                            )
+                        },
+                    )
+                }
+            }
+        }
+        setContentView(composeView)
+
         if (courseId != null) {
-            setupObservers(courseId)
-            setupBannerRefresh(courseId)
+            setupObservers()
             couponDetailViewModel.fetchCouponDetail(courseId)
         } else {
             showFetchingErrorDialog("Not getting courseID")
         }
     }
 
-    private fun setupObservers(courseId: Int) {
+    private fun setupObservers() {
         collectFlow(couponDetailViewModel.uiState) { state ->
-            handleUiState(state, courseId)
+            handleStateErrors(state)
         }
     }
 
-    private fun setupBannerRefresh(courseId: Int) {
-        binding.btnBannerRefresh.setOnClickListener {
-            couponDetailViewModel.fetchCouponDetail(courseId, forceRefresh = true)
-        }
-    }
-
-    private fun handleUiState(state: CouponDetailUiState, courseId: Int) {
-        if (state.isLoading) {
-            showLoading(getString(CoreR.string.dialog_loading_text))
-        } else {
-            hideLoading()
-        }
-
+    private fun handleStateErrors(state: CouponDetailUiState) {
         state.error?.let {
             if (state.coupon == null) {
                 if (!networkUtil.isInternetAvailable()) {
@@ -71,95 +69,14 @@ class CouponDetailActivity : BaseActivity() {
                 }
             }
         }
-
-        if (state.isFromCache && state.cachedAt != null) {
-            val relativeTime = DateUtils.getRelativeTimeSpanString(
-                state.cachedAt,
-                System.currentTimeMillis(),
-                DateUtils.MINUTE_IN_MILLIS,
-                DateUtils.FORMAT_ABBREV_RELATIVE,
-            )
-            binding.tvBannerText.text = getString(CoreR.string.cache_banner_text, relativeTime)
-            binding.bannerOfflineCache.visibility = View.VISIBLE
-        } else {
-            binding.bannerOfflineCache.visibility = View.GONE
-        }
-
-        state.coupon?.let {
-            binding.mlCouponDetail.visibility = View.VISIBLE
-            bindingCouponDataToView(it)
-            setOnclickButtons(it)
-        }
     }
 
-    private fun setupFragmentResultListeners() {
-        supportFragmentManager.setFragmentResultListener(
-            ReportBottomSheetDialog.REQUEST_KEY,
-            this,
-        ) { _, _ ->
-            showAlertDialog(
-                getString(CoreR.string.action_report_title),
-                getString(CoreR.string.report_submit_success),
-            )
+    private fun navigateToEnroll(couponUrl: String?) {
+        val enrollIntent = Intent().apply {
+            setClassName(this@CouponDetailActivity.packageName, "com.thanh0x.coursedeals.feature.enroll.CouponEnrollActivity")
+            putExtra(BundleKey.TO_ENROLL_ACTIVITY, couponUrl)
         }
-    }
-
-    private fun setupToolbar() {
-        binding.toolbar.setNavigationOnClickListener {
-            finish()
-        }
-        binding.toolbar.setOnMenuItemClickListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.action_report -> {
-                    showReportDialog()
-                    true
-                }
-                else -> false
-            }
-        }
-    }
-
-    private fun bindingCouponDataToView(coupon: Coupon) {
-        Timber.d("COUPON DETAIL BINDING: $coupon")
-        MapperToView(this).let { mapper ->
-            binding.tvRatingValue.text = mapper.mapRatingValue(coupon.rating)
-            binding.rbCouponDetail.rating = mapper.mapRating(coupon.rating)
-            binding.tvTimeLeft.text = mapper.mapTimeLeft(coupon.expiredTime)
-
-            val durationText = mapper.mapContentLength(coupon.contentLength)
-            Timber.d("COUPON DURATION TEXT: $durationText")
-            binding.tvContentLength.text = durationText
-
-            binding.tvCouponLeft.text = (coupon.usesRemaining ?: 0).toString()
-            binding.tvCourseLevel.text = coupon.level ?: ""
-            binding.tvLanguage.text = coupon.language ?: ""
-            binding.tvCourseDescription.text = mapper.mapHTMLContent(coupon.description)
-            binding.tvCourseHeadingTitle.text = coupon.heading ?: ""
-            binding.tvNumberOfStudent.text = mapper.mapNumberOfStudent(coupon.students)
-            binding.tvNumberOfReview.text = mapper.mapNumberOfReview(coupon.reviews)
-            binding.tvCourseTitle.text = coupon.title ?: ""
-            binding.tvCourseAuthor.text = coupon.author ?: ""
-            binding.tvCourseCategory.text = coupon.category ?: ""
-            Picasso.get()
-                .load(coupon.previewImage)
-                .error(CoreR.drawable.error_loading_image)
-                .placeholder(CoreR.drawable.progress_animation)
-                .into(binding.ivPreview)
-        }
-    }
-
-    private fun setOnclickButtons(coupon: Coupon) {
-        binding.btnEnroll.setOnClickListener {
-            val enrollIntent = Intent().apply {
-                setClassName(this@CouponDetailActivity.packageName, "com.thanh0x.coursedeals.feature.enroll.CouponEnrollActivity")
-                putExtra(BundleKey.TO_ENROLL_ACTIVITY, coupon.couponUrl)
-            }
-            startActivity(enrollIntent)
-        }
-
-        binding.btnShare.setOnClickListener {
-            shareLink(this, coupon.title ?: "", coupon.couponUrl ?: "")
-        }
+        startActivity(enrollIntent)
     }
 
     private fun showFetchingErrorDialog(cause: String) {
@@ -169,9 +86,7 @@ class CouponDetailActivity : BaseActivity() {
             message = getString(CoreR.string.error_fetching_null_coupon),
             type = com.thanh0x.coursedeals.core.ui.DialogType.ERROR,
             cause = cause,
-            onDismiss = {
-                finish()
-            },
+            onDismiss = { finish() },
         )
     }
 
@@ -185,11 +100,6 @@ class CouponDetailActivity : BaseActivity() {
                 couponDetailViewModel.checkIfInternetAvailable()
             },
         )
-    }
-
-    private fun showReportDialog() {
-        val dialog = ReportBottomSheetDialog()
-        dialog.show(supportFragmentManager, ReportBottomSheetDialog.TAG)
     }
 
     private fun shareLink(context: Context, title: String, url: String) {
