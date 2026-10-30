@@ -142,4 +142,12 @@ class LocalUserProfileDataSourceImpl @Inject constructor(private val datastore: 
             }
         }
     }
+
+    override suspend fun clearUserProfile() {
+        datastore.edit { preferences ->
+            preferences.remove(PreferenceKey.userName)
+            preferences.remove(PreferenceKey.userEmail)
+            preferences.remove(PreferenceKey.userAvatar)
+        }
+    }
 }

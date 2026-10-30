@@ -26,4 +26,5 @@ interface UserProfileRepository {
         fcmToken: String? = null,
     ): AppResult<UserProfile>
     suspend fun getCachedUserProfile(): UserProfile
+    suspend fun clearCachedUserProfile()
 }

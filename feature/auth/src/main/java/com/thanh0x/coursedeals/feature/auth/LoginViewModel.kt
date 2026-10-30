@@ -7,6 +7,7 @@ import com.thanh0x.coursedeals.core.common.AppResult
 import com.thanh0x.coursedeals.core.ui.UiEvent
 import com.thanh0x.coursedeals.core.ui.util.NetworkUtil
 import com.thanh0x.coursedeals.domain.user.TokenData
+import com.thanh0x.coursedeals.domain.user.usecase.ClearCachedUserProfileUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.ClearLocalTokenUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.CryptographyManagerUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.LoginUseCase
@@ -42,6 +43,7 @@ class LoginViewModel @Inject constructor(
     private val settingFingerprintUseCase: SettingFingerprintUseCase,
     private val cryptographyManagerUseCase: CryptographyManagerUseCase,
     private val clearLocalTokenUseCase: ClearLocalTokenUseCase,
+    private val clearCachedUserProfileUseCase: ClearCachedUserProfileUseCase,
     private val requestAccessTokenUseCase: RequestAccessTokenUseCase,
     private val settingUserProfileUseCase: SettingUserProfileUseCase,
     private val networkUtil: NetworkUtil
@@ -251,6 +253,7 @@ class LoginViewModel @Inject constructor(
     }
 
     private suspend fun saveTokens(tokenData: TokenData) {
+        clearCachedUserProfileUseCase()
         saveJwtTokenUseCase(tokenData.accessToken)
         tokenData.refreshToken?.takeIf { it.isNotBlank() }?.let { refreshToken ->
             saveRefreshTokenUseCase(refreshToken)

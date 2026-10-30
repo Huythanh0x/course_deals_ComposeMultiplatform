@@ -27,4 +27,6 @@ interface LocalUserProfileDataSource {
 
     suspend fun getUserAvatar(): String?
     suspend fun saveUserAvatar(avatarUrl: String?)
+
+    suspend fun clearUserProfile()
 }

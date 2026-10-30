@@ -87,6 +87,19 @@ class UserProfileRepositoryImplTest {
         assertEquals("https://example.com/new_avatar.png", fakeLocalDataSource.getUserAvatar())
     }
 
+    @Test
+    fun clearCachedUserProfile_clearsLocalDataSourceUserProfile() = runBlocking {
+        fakeLocalDataSource.saveUserName("Cached Name")
+        fakeLocalDataSource.saveUserEmail("cached@test.com")
+        fakeLocalDataSource.saveUserAvatar("https://example.com/avatar.png")
+
+        repository.clearCachedUserProfile()
+
+        org.junit.Assert.assertNull(fakeLocalDataSource.getUserName())
+        org.junit.Assert.assertNull(fakeLocalDataSource.getUserEmail())
+        org.junit.Assert.assertNull(fakeLocalDataSource.getUserAvatar())
+    }
+
     private class FakeLocalUserProfileDataSource : LocalUserProfileDataSource {
         private var darkMode: Boolean? = null
         private var fingerprint: Boolean? = null
@@ -116,6 +129,11 @@ class UserProfileRepositoryImplTest {
         override suspend fun saveUserEmail(email: String?) { userEmail = email }
         override suspend fun getUserAvatar() = userAvatar
         override suspend fun saveUserAvatar(avatarUrl: String?) { userAvatar = avatarUrl }
+        override suspend fun clearUserProfile() {
+            userName = null
+            userEmail = null
+            userAvatar = null
+        }
     }
 
     private class FakeRemoteUserProfileDataSource : RemoteUserProfileDataSource {

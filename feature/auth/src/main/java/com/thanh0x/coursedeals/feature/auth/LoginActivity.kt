@@ -9,6 +9,7 @@ import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.credentials.exceptions.GetCredentialException
+import androidx.credentials.exceptions.NoCredentialException
 import androidx.lifecycle.lifecycleScope
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
@@ -98,9 +99,14 @@ class LoginActivity : BaseActivity() {
         }
 
         state.error?.let {
+            val message = if (it.isBlank()) {
+                getString(CoreR.string.login_error_google_failed)
+            } else {
+                it
+            }
             showAlertDialog(
                 title = getString(CoreR.string.login_error_title),
-                message = it,
+                message = message,
                 type = DialogType.ERROR,
             )
             loginViewModel.clearError()
@@ -160,7 +166,7 @@ class LoginActivity : BaseActivity() {
             return
         }
 
-        val serverClientId = getString(CoreR.string.google_web_client_id)
+        val serverClientId = getString(R.string.google_web_client_id)
         if (serverClientId.startsWith("YOUR_GOOGLE_WEB_CLIENT_ID")) {
             showAlertDialog(
                 title = getString(CoreR.string.login_dev_mode_title),
@@ -206,6 +212,18 @@ class LoginActivity : BaseActivity() {
                 }
             } catch (e: GetCredentialCancellationException) {
                 // User cancelled the prompt - no action required
+            } catch (e: NoCredentialException) {
+                Timber.w("No Google credential found on device, offering dev mock login")
+                showAlertDialog(
+                    title = getString(CoreR.string.login_dev_mode_title),
+                    message = "No Google account is configured on this device. Would you like to proceed with Dev Mock Login?",
+                    type = DialogType.CONFIRMATION,
+                    positiveButtonText = getString(CoreR.string.login_dev_mode_positive),
+                    negativeButtonText = getString(CoreR.string.cancel_button_text),
+                    onDismiss = {
+                        loginViewModel.googleLogin("mock-google-token")
+                    },
+                )
             } catch (e: GetCredentialException) {
                 Timber.e(e, "Google Sign-In failed")
                 showAlertDialog(
