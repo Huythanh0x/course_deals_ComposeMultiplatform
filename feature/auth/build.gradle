@@ -2,6 +2,7 @@ plugins {
     id 'coursedeals.android.library'
     id 'com.google.devtools.ksp'
     id 'dagger.hilt.android.plugin'
+    alias(libs.plugins.kotlin.compose)
 }
 
 def getGoogleWebClientId() {
@@ -22,6 +23,7 @@ android {
 
     buildFeatures {
         resValues true
+        compose true
     }
 
     defaultConfig {
@@ -33,6 +35,17 @@ dependencies {
     implementation project(':core:ui')
     implementation project(':core:common')
     implementation project(':domain:user')
+
+    def composeBom = platform(libs.androidx.compose.bom)
+    implementation composeBom
+    implementation libs.androidx.compose.ui
+    implementation libs.androidx.compose.ui.graphics
+    implementation libs.androidx.compose.ui.tooling.preview
+    implementation libs.androidx.compose.material3
+    implementation libs.androidx.compose.material.icons.extended
+    implementation libs.androidx.activity.compose
+    implementation libs.androidx.lifecycle.runtime.compose
+    debugImplementation libs.androidx.compose.ui.tooling
 
     implementation libs.androidx.core.ktx
     implementation libs.androidx.appcompat
@@ -46,4 +59,8 @@ dependencies {
     implementation libs.androidx.credentials.play.services.auth
     implementation libs.googleid
     implementation libs.timber
+
+    testImplementation libs.junit
+    testImplementation libs.kotlinx.coroutines.test
 }
+
