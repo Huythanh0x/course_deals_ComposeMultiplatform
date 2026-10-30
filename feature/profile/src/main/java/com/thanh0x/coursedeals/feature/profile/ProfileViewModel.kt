@@ -209,7 +209,7 @@ class ProfileViewModel @Inject constructor(
 
     fun deleteLocalToken() {
         viewModelScope.launch(Dispatchers.IO) {
-            saveJwtTokenUseCase("")
+            clearLocalTokenUseCase()
             _uiEvent.emit(UiEvent.Navigate("Login"))
         }
     }

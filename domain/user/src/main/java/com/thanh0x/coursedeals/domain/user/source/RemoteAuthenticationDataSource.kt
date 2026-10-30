@@ -5,7 +5,9 @@ import com.thanh0x.coursedeals.domain.user.AuthCredentials
 import com.thanh0x.coursedeals.domain.user.TokenData
 
 interface RemoteAuthenticationDataSource {
-    suspend fun register(credentials: AuthCredentials): AppResult<Unit>
+    suspend fun register(email: String, password: String, fullName: String? = null): AppResult<String>
+    suspend fun verifyOtp(email: String, otp: String): AppResult<TokenData>
+    suspend fun refreshToken(refreshToken: String): AppResult<TokenData>
     suspend fun login(credentials: AuthCredentials): AppResult<TokenData>
     suspend fun checkIfTokenExpired(): AppResult<Unit>
     suspend fun requestFingerprintToken(): AppResult<TokenData>
