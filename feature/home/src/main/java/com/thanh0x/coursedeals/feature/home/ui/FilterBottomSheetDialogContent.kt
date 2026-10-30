@@ -71,18 +71,27 @@ private fun ratingToSlider(rating: Double): Float {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilterBottomSheetDialogContent(
     initialFilter: FilterData,
     onDismissRequest: () -> Unit,
     onApply: (FilterData) -> Unit,
+    modifier: Modifier = Modifier,
     sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
 ) {
-    var selectedCategories by remember { mutableStateOf(initialFilter.categories.toSet()) }
-    var selectedLanguage by remember { mutableStateOf(initialFilter.language) }
-    var selectedSort by remember { mutableStateOf(initialFilter.sortBy) }
-    var sliderValue by remember { mutableFloatStateOf(ratingToSlider(initialFilter.minRating)) }
+    var selectedCategories by remember(initialFilter) {
+        mutableStateOf(initialFilter.categories.toSet())
+    }
+    var sliderValue by remember(initialFilter) {
+        mutableFloatStateOf(ratingToSlider(initialFilter.minRating))
+    }
+    var selectedLanguage by remember(initialFilter) {
+        mutableStateOf(initialFilter.language)
+    }
+    var selectedSort by remember(initialFilter) {
+        mutableStateOf(initialFilter.sortBy)
+    }
 
     val currentRating = sliderToRating(sliderValue)
 
@@ -90,11 +99,14 @@ fun FilterBottomSheetDialogContent(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
         containerColor = MaterialTheme.colorScheme.surface,
+        dragHandle = null,
+        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
+        modifier = modifier,
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 8.dp),
+                .padding(top = 16.dp),
         ) {
             Text(
                 text = stringResource(CoreR.string.filter_title),
@@ -110,196 +122,265 @@ fun FilterBottomSheetDialogContent(
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = 24.dp, vertical = 12.dp),
             ) {
-                // Category Section
-                Text(
-                    text = stringResource(CoreR.string.fav_cats_title),
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    CourseCategory.entries.forEach { category ->
-                        val isSelected = selectedCategories.contains(category)
-                        FilterChip(
-                            selected = isSelected,
-                            onClick = {
-                                selectedCategories = if (isSelected) {
-                                    selectedCategories - category
-                                } else {
-                                    selectedCategories + category
-                                }
-                            },
-                            label = { Text(stringResource(category.categoryResId)) },
-                            colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                                selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                            ),
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                // Rating Section
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = stringResource(CoreR.string.filter_rating),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-
-                    Text(
-                        text = if (currentRating > 0.0) {
-                            stringResource(CoreR.string.filter_rating_format, currentRating)
+                FilterCategorySection(
+                    selectedCategories = selectedCategories,
+                    onToggleCategory = { category, isSelected ->
+                        selectedCategories = if (isSelected) {
+                            selectedCategories - category
                         } else {
-                            stringResource(CoreR.string.filter_rating_any)
-                        },
-                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                        color = RatingAmber,
-                    )
-                }
-
-                Slider(
-                    value = sliderValue,
-                    onValueChange = { sliderValue = it },
-                    valueRange = 0f..11f,
-                    steps = MAX_SLIDER_STEPS,
-                    colors = SliderDefaults.colors(
-                        thumbColor = RatingAmber,
-                        activeTrackColor = RatingAmber,
-                        inactiveTrackColor = MaterialTheme.colorScheme.outlineVariant,
-                    ),
-                    modifier = Modifier.fillMaxWidth(),
+                            selectedCategories + category
+                        }
+                    },
                 )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    Text(
-                        text = stringResource(CoreR.string.filter_rating_any),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                    )
-                    Text(
-                        text = stringResource(CoreR.string.filter_rating_max),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                    )
-                }
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                // Language Section
-                Text(
-                    text = stringResource(CoreR.string.lang_label),
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                FilterRatingSection(
+                    currentRating = currentRating,
+                    sliderValue = sliderValue,
+                    onSliderChange = { sliderValue = it },
                 )
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    CourseLanguage.entries.forEach { language ->
-                        val isSelected = selectedLanguage == language
-                        FilterChip(
-                            selected = isSelected,
-                            onClick = { selectedLanguage = language },
-                            label = { Text(stringResource(language.languageResId)) },
-                            colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                                selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                            ),
-                        )
-                    }
-                }
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                // Sort Section
-                Text(
-                    text = stringResource(CoreR.string.sort_label),
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                FilterLanguageSection(
+                    selectedLanguage = selectedLanguage,
+                    onSelectLanguage = { selectedLanguage = it },
                 )
 
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    SortOption.entries.forEach { sort ->
-                        val isSelected = selectedSort == sort
-                        FilterChip(
-                            selected = isSelected,
-                            onClick = { selectedSort = sort },
-                            label = { Text(stringResource(sort.sortResId)) },
-                            colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                                selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                            ),
-                        )
-                    }
-                }
+                FilterSortSection(
+                    selectedSort = selectedSort,
+                    onSelectSort = { selectedSort = it },
+                )
 
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.surface)
-                    .padding(horizontal = 24.dp, vertical = 16.dp),
-            ) {
-                TextButton(
-                    onClick = {
-                        selectedCategories = emptySet()
-                        selectedLanguage = CourseLanguage.ALL
-                        selectedSort = SortOption.NEWEST
-                        sliderValue = 0f
-                    },
-                    modifier = Modifier.weight(1f),
-                ) {
-                    Text(stringResource(CoreR.string.filter_reset))
-                }
+            FilterActionFooter(
+                onReset = {
+                    selectedCategories = emptySet()
+                    selectedLanguage = CourseLanguage.ALL
+                    selectedSort = SortOption.NEWEST
+                    sliderValue = 0f
+                },
+                onApply = {
+                    onApply(
+                        FilterData(
+                            categories = selectedCategories.toList(),
+                            language = selectedLanguage,
+                            sortBy = selectedSort,
+                            minRating = currentRating,
+                        ),
+                    )
+                    onDismissRequest()
+                },
+            )
+        }
+    }
+}
 
-                Button(
-                    onClick = {
-                        onApply(
-                            FilterData(
-                                categories = selectedCategories.toList(),
-                                language = selectedLanguage,
-                                sortBy = selectedSort,
-                                minRating = currentRating,
-                            ),
-                        )
-                        onDismissRequest()
-                    },
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 16.dp),
-                ) {
-                    Text(stringResource(CoreR.string.filter_apply))
-                }
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun FilterCategorySection(
+    selectedCategories: Set<CourseCategory>,
+    onToggleCategory: (CourseCategory, Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        Text(
+            text = stringResource(CoreR.string.fav_cats_title),
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            CourseCategory.entries.forEach { category ->
+                val isSelected = selectedCategories.contains(category)
+                FilterChip(
+                    selected = isSelected,
+                    onClick = { onToggleCategory(category, isSelected) },
+                    label = { Text(stringResource(category.categoryResId)) },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                        selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    ),
+                )
             }
+        }
+    }
+}
+
+@Composable
+private fun FilterRatingSection(
+    currentRating: Double,
+    sliderValue: Float,
+    onSliderChange: (Float) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = stringResource(CoreR.string.filter_rating),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+
+            Text(
+                text = if (currentRating > 0.0) {
+                    stringResource(CoreR.string.filter_rating_format, currentRating)
+                } else {
+                    stringResource(CoreR.string.filter_rating_any)
+                },
+                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                color = RatingAmber,
+            )
+        }
+
+        Slider(
+            value = sliderValue,
+            onValueChange = onSliderChange,
+            valueRange = 0f..11f,
+            steps = MAX_SLIDER_STEPS,
+            colors = SliderDefaults.colors(
+                thumbColor = RatingAmber,
+                activeTrackColor = RatingAmber,
+                inactiveTrackColor = MaterialTheme.colorScheme.outlineVariant,
+            ),
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Text(
+                text = stringResource(CoreR.string.filter_rating_any),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+            )
+            Text(
+                text = stringResource(CoreR.string.filter_rating_max),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun FilterLanguageSection(
+    selectedLanguage: CourseLanguage,
+    onSelectLanguage: (CourseLanguage) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        Text(
+            text = stringResource(CoreR.string.lang_label),
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            CourseLanguage.entries.forEach { language ->
+                val isSelected = selectedLanguage == language
+                FilterChip(
+                    selected = isSelected,
+                    onClick = { onSelectLanguage(language) },
+                    label = { Text(stringResource(language.languageResId)) },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                        selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    ),
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun FilterSortSection(
+    selectedSort: SortOption,
+    onSelectSort: (SortOption) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        Text(
+            text = stringResource(CoreR.string.sort_label),
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            SortOption.entries.forEach { sort ->
+                val isSelected = selectedSort == sort
+                FilterChip(
+                    selected = isSelected,
+                    onClick = { onSelectSort(sort) },
+                    label = { Text(stringResource(sort.sortResId)) },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                        selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    ),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun FilterActionFooter(
+    onReset: () -> Unit,
+    onApply: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surface)
+            .padding(horizontal = 24.dp, vertical = 16.dp),
+    ) {
+        TextButton(
+            onClick = onReset,
+            modifier = Modifier.weight(1f),
+        ) {
+            Text(stringResource(CoreR.string.filter_reset))
+        }
+
+        Button(
+            onClick = onApply,
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 16.dp),
+        ) {
+            Text(stringResource(CoreR.string.filter_apply))
         }
     }
 }
