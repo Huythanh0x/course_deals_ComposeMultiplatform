@@ -4,46 +4,42 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.graphics.RenderEffect
-import android.graphics.Shader
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
-import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import com.squareup.picasso.Callback
-import com.squareup.picasso.Picasso
-import com.thanh0x.coursedeals.core.ui.R as CoreR
-import com.thanh0x.coursedeals.feature.profile.R
-import com.thanh0x.coursedeals.feature.profile.databinding.FragmentProfileBinding
-import com.thanh0x.coursedeals.core.ui.BiometricPromptUtils
 import com.thanh0x.coursedeals.core.common.AppResult
-import com.thanh0x.coursedeals.domain.user.TokenData
-import com.thanh0x.coursedeals.core.ui.BaseFragment
-import com.thanh0x.coursedeals.core.ui.DialogType
-import com.thanh0x.coursedeals.core.ui.UiEvent
 import com.thanh0x.coursedeals.core.common.NetworkStatusCode
+import com.thanh0x.coursedeals.core.ui.BaseFragment
+import com.thanh0x.coursedeals.core.ui.BiometricPromptUtils
+import com.thanh0x.coursedeals.core.ui.DialogType
+import com.thanh0x.coursedeals.core.ui.R as CoreR
+import com.thanh0x.coursedeals.core.ui.UiEvent
+import com.thanh0x.coursedeals.core.ui.theme.CourseDealsTheme
+import com.thanh0x.coursedeals.domain.user.TokenData
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @AndroidEntryPoint
 class ProfileFragment : BaseFragment() {
-    private var _binding: FragmentProfileBinding? = null
-    private val binding get() = _binding!!
     private val profileViewModel: ProfileViewModel by viewModels()
     private var appliedDarkMode: Boolean? = null
 
@@ -52,153 +48,83 @@ class ProfileFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        _binding = FragmentProfileBinding.inflate(inflater, container, false)
-        return binding.root
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                CourseDealsTheme {
+                    ProfileRoute()
+                }
+            }
+        }
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    private fun ProfileRoute() {
+        val uiState by profileViewModel.uiState.collectAsStateWithLifecycle()
+        var showCategoryPicker by remember { mutableStateOf(false) }
+
+        ProfileScreen(
+            uiState = uiState,
+            onEmailClick = {
+                if (uiState.isGuestMode) {
+                    navigateToLogin()
+                } else if (uiState.email.isNotEmpty()) {
+                    copyToClipboard(uiState.email)
+                }
+            },
+            onAddCategoryClick = {
+                showCategoryPicker = true
+            },
+            onRemoveCategory = { cat ->
+                val current = uiState.favCategories.toMutableList()
+                current.remove(cat)
+                profileViewModel.updateFavoriteCategories(current)
+            },
+            onAddKeyword = { kw ->
+                profileViewModel.addFavoriteKeyword(kw)
+            },
+            onRemoveKeyword = { kw ->
+                profileViewModel.removeFavoriteKeyword(kw)
+            },
+            onDarkModeToggled = { isChecked ->
+                profileViewModel.saveIsDarkModeEnable(isChecked)
+            },
+            onFingerprintToggled = { isChecked ->
+                handleFingerprintToggle(isChecked)
+            },
+            onNotificationsToggled = { isChecked ->
+                profileViewModel.updateNotificationsEnabled(isChecked)
+            },
+            onLogoutClick = {
+                profileViewModel.deleteLocalToken()
+            },
+            onDevEmailClick = {
+                sendDevEmail()
+            },
+            onDevWebsiteClick = {
+                openDevWebsite()
+            },
+            onSignInClick = {
+                navigateToLogin()
+            }
+        )
+
+        if (showCategoryPicker) {
+            CategoryPickerBottomSheet(
+                initialSelected = uiState.favCategories,
+                onDismissRequest = { showCategoryPicker = false },
+                onDone = { selected ->
+                    showCategoryPicker = false
+                    profileViewModel.updateFavoriteCategories(selected)
+                }
+            )
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupInteractions()
         setupObservers()
-        setupFragmentResultListeners()
-    }
-
-    private fun setupFragmentResultListeners() {
-        childFragmentManager.setFragmentResultListener(
-            CategoryPickerDialog.REQUEST_KEY,
-            viewLifecycleOwner,
-        ) { _, bundle ->
-            val selected = bundle.getStringArrayList(CategoryPickerDialog.EXTRA_SELECTED_CATEGORIES)
-            selected?.let {
-                profileViewModel.updateFavoriteCategories(it)
-            }
-        }
-    }
-
-    private fun setupInteractions() {
-        binding.clProfileRoot.setOnClickListener {
-            clearFocusAndHideKeyboard()
-        }
-
-        binding.nsvProfile.setOnClickListener {
-            clearFocusAndHideKeyboard()
-        }
-
-        binding.btnSignIn.setOnClickListener {
-            navigateToLogin()
-        }
-
-        binding.llEmailContainer.setOnClickListener {
-            if (profileViewModel.uiState.value.isGuestMode) {
-                navigateToLogin()
-            } else {
-                copyToClipboard(binding.tvEmail.text.toString())
-            }
-        }
-
-        binding.btnLogout.setOnClickListener {
-            profileViewModel.deleteLocalToken()
-        }
-
-        binding.tvDevEmail.setOnClickListener {
-            val devEmailAddress = getString(CoreR.string.dev_email)
-            val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
-                data = Uri.parse("mailto:$devEmailAddress")
-                putExtra(Intent.EXTRA_SUBJECT, getString(CoreR.string.email_send_title))
-            }
-
-            try {
-                startActivity(emailIntent)
-            } catch (e: android.content.ActivityNotFoundException) {
-                Timber.e(e, "Failed to send email: No activity found")
-                showAlertDialog(
-                    title = getString(CoreR.string.email_failed_to_send),
-                    message = getString(CoreR.string.email_cannot_find_client_app),
-                    type = DialogType.ERROR,
-                )
-            }
-        }
-
-        binding.tvDevWebsite.setOnClickListener {
-            val devWebsiteAddress = getString(CoreR.string.dev_website)
-            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(devWebsiteAddress))
-
-            try {
-                startActivity(browserIntent)
-            } catch (e: android.content.ActivityNotFoundException) {
-                Timber.e(e, "Failed to open website: No browser installed")
-                Toast.makeText(requireContext(), "No web browser installed.", Toast.LENGTH_SHORT)
-                    .show()
-            }
-        }
-        binding.swEnableDarkMode.setOnCheckedChangeListener { _, isChecked ->
-            profileViewModel.saveIsDarkModeEnable(isChecked)
-        }
-
-        binding.swEnableFingerPrint.setOnCheckedChangeListener { _, isChecked ->
-            if (profileViewModel.uiState.value.isGuestMode) {
-                if (isChecked) {
-                    binding.swEnableFingerPrint.isChecked = false
-                    showToast(getString(CoreR.string.guest_biometric_unavailable))
-                }
-                return@setOnCheckedChangeListener
-            }
-            if (isChecked) {
-                if (!profileViewModel.isNetworkAvailable()) {
-                    showAlertDialog(
-                        title = getString(CoreR.string.no_internet_title),
-                        message = getString(CoreR.string.no_internet_message),
-                        type = DialogType.WARNING,
-                    )
-                    binding.swEnableFingerPrint.isChecked = false
-                } else {
-                    promptFingerPrintSignUp()
-                }
-            } else {
-                profileViewModel.saveIsFingerPrintEnable(isFingerprintEnable = false)
-            }
-        }
-
-        binding.swEnableNotifications.setOnCheckedChangeListener { _, isChecked ->
-            profileViewModel.updateNotificationsEnabled(isChecked)
-        }
-
-        binding.swNotifCat.setOnCheckedChangeListener { _, _ ->
-            // Sub-settings logic can be added here
-        }
-
-        binding.btnAddCat.setOnClickListener {
-            val dialog = CategoryPickerDialog.newInstance(profileViewModel.uiState.value.favCategories)
-            dialog.show(childFragmentManager, CategoryPickerDialog.TAG)
-        }
-
-        binding.btnAddKw.setOnClickListener {
-            binding.btnAddKw.isVisible = false
-            binding.tilKeyword.isVisible = true
-            binding.tietKeyword.requestFocus()
-            val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.showSoftInput(binding.tietKeyword, InputMethodManager.SHOW_IMPLICIT)
-        }
-
-        binding.tietKeyword.setOnFocusChangeListener { _, hasFocus ->
-            if (!hasFocus && binding.tietKeyword.text.isNullOrEmpty()) {
-                binding.tilKeyword.isVisible = false
-                binding.btnAddKw.isVisible = true
-            }
-        }
-
-        binding.tietKeyword.setOnEditorActionListener { _, actionId, event ->
-            if (isKeyboardActionDone(actionId, event)) {
-                submitKeyword()
-                true
-            } else {
-                false
-            }
-        }
-
-        binding.tilKeyword.setEndIconOnClickListener {
-            submitKeyword()
-        }
     }
 
     private fun setupObservers() {
@@ -217,178 +143,63 @@ class ProfileFragment : BaseFragment() {
             return
         }
 
-        if (state.isGuestMode) {
-            binding.tvDisplayName.text = getString(CoreR.string.guest_user_title)
-            binding.tvEmail.text = getString(CoreR.string.guest_user_subtitle)
-            binding.btnCopyEmail.isVisible = false
-            resetAvatarPlaceholder()
-            binding.btnLogout.isVisible = false
-            binding.swEnableFingerPrint.isEnabled = false
-            binding.swEnableFingerPrint.isChecked = false
-
-            // Show auth gate overlay and apply blur effect on profile content
-            binding.flGuestOverlay.isVisible = true
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                binding.nsvProfile.setRenderEffect(
-                    RenderEffect.createBlurEffect(20f, 20f, Shader.TileMode.CLAMP)
-                )
-            } else {
-                binding.nsvProfile.alpha = 0.3f
-            }
-        } else {
-            // Authenticated user state: remove blur and hide auth gate overlay
-            binding.flGuestOverlay.isVisible = false
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                binding.nsvProfile.setRenderEffect(null)
-            } else {
-                binding.nsvProfile.alpha = 1.0f
-            }
-
-            binding.btnCopyEmail.isVisible = true
-            if (state.displayName.isNotEmpty()) {
-                binding.tvDisplayName.text = state.displayName
-            }
-            if (state.email.isNotEmpty()) {
-                binding.tvEmail.text = state.email
-            }
-            bindAvatar(state.avatarUrl)
-            binding.btnLogout.isVisible = true
-            binding.swEnableFingerPrint.isEnabled = true
-            if (binding.swEnableFingerPrint.isChecked != state.isFingerprintEnabled) {
-                binding.swEnableFingerPrint.isChecked = state.isFingerprintEnabled
-            }
-        }
-
-        if (binding.swEnableDarkMode.isChecked != state.isDarkModeEnabled) {
-            binding.swEnableDarkMode.isChecked = state.isDarkModeEnabled
-        }
         if (appliedDarkMode != state.isDarkModeEnabled) {
             appliedDarkMode = state.isDarkModeEnabled
             applyDarkModeToTheApp(state.isDarkModeEnabled)
         }
-
-        if (binding.swEnableNotifications.isChecked != state.isNotificationsEnabled) {
-            binding.swEnableNotifications.isChecked = state.isNotificationsEnabled
-        }
-        binding.llNotificationSubSettings.isVisible = state.isNotificationsEnabled
-        binding.lpSync.isVisible = state.isSyncing || state.isLoading
-
-        updateCategoryChips(state.favCategories)
-        updateKeywordChips(state.favKeywords)
     }
 
-    private fun bindAvatar(avatarUrl: String?) {
-        val currentBinding = _binding ?: return
-        if (!avatarUrl.isNullOrEmpty()) {
-            Picasso.get()
-                .load(avatarUrl)
-                .into(currentBinding.ivAvatar, object : Callback {
-                    override fun onSuccess() {
-                        val activeBinding = _binding ?: return
-                        activeBinding.ivAvatar.scaleType = ImageView.ScaleType.CENTER_CROP
-                        activeBinding.ivAvatar.setPadding(0, 0, 0, 0)
-                        activeBinding.ivAvatar.imageTintList = null
-                    }
-
-                    override fun onError(e: Exception?) {
-                        resetAvatarPlaceholder()
-                    }
-                })
+    private fun handleFingerprintToggle(isChecked: Boolean) {
+        if (profileViewModel.uiState.value.isGuestMode) {
+            if (isChecked) {
+                showToast(getString(CoreR.string.guest_biometric_unavailable))
+            }
+            return
+        }
+        if (isChecked) {
+            if (!profileViewModel.isNetworkAvailable()) {
+                showAlertDialog(
+                    title = getString(CoreR.string.no_internet_title),
+                    message = getString(CoreR.string.no_internet_message),
+                    type = DialogType.WARNING,
+                )
+                profileViewModel.saveIsFingerPrintEnable(false)
+            } else {
+                promptFingerPrintSignUp()
+            }
         } else {
-            resetAvatarPlaceholder()
+            profileViewModel.saveIsFingerPrintEnable(isFingerprintEnable = false)
         }
     }
 
-    private fun resetAvatarPlaceholder() {
-        val currentBinding = _binding ?: return
-        val currentContext = context ?: return
-        val padding = currentContext.resources.getDimensionPixelSize(CoreR.dimen.spacing_16)
-        currentBinding.ivAvatar.scaleType = ImageView.ScaleType.FIT_CENTER
-        currentBinding.ivAvatar.setPadding(padding, padding, padding, padding)
-        currentBinding.ivAvatar.setImageResource(CoreR.drawable.ic_nav_profile)
-        currentBinding.ivAvatar.imageTintList = ContextCompat.getColorStateList(
-            currentContext,
-            CoreR.color.m3_on_primary_container,
-        )
-    }
-
-    private fun updateCategoryChips(categories: List<String>) {
-        val childCount = binding.cgFavCats.childCount
-        for (i in (childCount - 1) downTo 0) {
-            val view = binding.cgFavCats.getChildAt(i)
-            if (view.id != R.id.btnAddCat) {
-                binding.cgFavCats.removeView(view)
-            }
+    private fun sendDevEmail() {
+        val devEmailAddress = getString(CoreR.string.dev_email)
+        val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
+            data = Uri.parse("mailto:$devEmailAddress")
+            putExtra(Intent.EXTRA_SUBJECT, getString(CoreR.string.email_send_title))
         }
 
-        categories.forEach { cat ->
-            val chip = createSelectableChip(cat) {
-                val current = profileViewModel.uiState.value.favCategories.toMutableList()
-                current.remove(cat)
-                profileViewModel.updateFavoriteCategories(current)
-            }
-            binding.cgFavCats.addView(chip, 0)
-        }
-    }
-
-    private fun updateKeywordChips(keywords: List<String>) {
-        val childCount = binding.cgFavKws.childCount
-        for (i in (childCount - 1) downTo 0) {
-            val view = binding.cgFavKws.getChildAt(i)
-            if (view.id != R.id.btnAddKw) {
-                binding.cgFavKws.removeView(view)
-            }
-        }
-
-        keywords.forEach { kw ->
-            val chip = createSelectableChip(kw) {
-                profileViewModel.removeFavoriteKeyword(kw)
-            }
-            binding.cgFavKws.addView(chip, 0)
-        }
-    }
-
-    private fun createSelectableChip(text: String, onClose: () -> Unit): com.google.android.material.chip.Chip {
-        return com.google.android.material.chip.Chip(
-            requireContext(),
-            null,
-            com.google.android.material.R.style.Widget_Material3_Chip_Assist,
-        ).apply {
-            this.text = text
-            isCloseIconVisible = true
-            setCloseIconResource(CoreR.drawable.ic_close)
-            closeIconSize = 18f * resources.displayMetrics.density
-            chipIconTint = android.content.res.ColorStateList.valueOf(
-                com.google.android.material.color.MaterialColors.getColor(
-                    this,
-                    com.google.android.material.R.attr.colorOnSurfaceVariant,
-                ),
+        try {
+            startActivity(emailIntent)
+        } catch (e: android.content.ActivityNotFoundException) {
+            Timber.e(e, "Failed to send email: No activity found")
+            showAlertDialog(
+                title = getString(CoreR.string.email_failed_to_send),
+                message = getString(CoreR.string.email_cannot_find_client_app),
+                type = DialogType.ERROR,
             )
-            closeIconTint = chipIconTint
-            setOnCloseIconClickListener {
-                onClose()
-            }
         }
     }
 
-    private fun submitKeyword() {
-        val kw = binding.tietKeyword.text.toString().trim()
-        if (kw.isNotEmpty()) {
-            profileViewModel.addFavoriteKeyword(kw)
-            binding.tietKeyword.text?.clear()
-        }
-        clearFocusAndHideKeyboard()
-    }
+    private fun openDevWebsite() {
+        val devWebsiteAddress = getString(CoreR.string.dev_website)
+        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(devWebsiteAddress))
 
-    private fun clearFocusAndHideKeyboard() {
-        binding.tietKeyword.clearFocus()
-        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(binding.tietKeyword.windowToken, 0)
-        binding.clProfileRoot.requestFocus()
-
-        if (binding.tietKeyword.text.isNullOrEmpty()) {
-            binding.tilKeyword.isVisible = false
-            binding.btnAddKw.isVisible = true
+        try {
+            startActivity(browserIntent)
+        } catch (e: android.content.ActivityNotFoundException) {
+            Timber.e(e, "Failed to open website: No browser installed")
+            Toast.makeText(requireContext(), "No web browser installed.", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -410,6 +221,7 @@ class ProfileFragment : BaseFragment() {
         showToast("Email copied to clipboard")
     }
 
+    @Suppress("DEPRECATION")
     private fun promptFingerPrintSignUp() {
         val canAuthenticate = BiometricManager.from(requireContext()).canAuthenticate()
         if (canAuthenticate == BiometricManager.BIOMETRIC_SUCCESS) {
@@ -429,14 +241,14 @@ class ProfileFragment : BaseFragment() {
                                 profileViewModel.saveIsFingerPrintEnable(true)
                             }
                         } else if (result is AppResult.Error) {
-                            _binding?.swEnableFingerPrint?.isChecked = false
+                            profileViewModel.saveIsFingerPrintEnable(false)
                             if (result.code == NetworkStatusCode.HTTP_CODE_UNAUTHORIZED) {
                                 forceLogout()
                             }
                         }
                     }
                 }, {
-                    _binding?.swEnableFingerPrint?.isChecked = false
+                    profileViewModel.saveIsFingerPrintEnable(false)
                 })
             val promptInfo = BiometricPromptUtils.createPromptInfo(
                 getString(CoreR.string.prompt_info_title),
@@ -446,27 +258,12 @@ class ProfileFragment : BaseFragment() {
             val cipher = profileViewModel.generateCypher()
             biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(cipher))
         } else {
-            binding.swEnableFingerPrint.isChecked = false
+            profileViewModel.saveIsFingerPrintEnable(false)
         }
-    }
-
-    private fun isKeyboardActionDone(actionId: Int, event: android.view.KeyEvent?): Boolean {
-        val isDone = actionId == EditorInfo.IME_ACTION_DONE
-        val isNext = actionId == EditorInfo.IME_ACTION_NEXT
-        val isEnter = event?.keyCode == android.view.KeyEvent.KEYCODE_ENTER
-        return isDone || isNext || isEnter
     }
 
     private fun showToast(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-    }
-
-    override fun onDestroyView() {
-        _binding?.let {
-            Picasso.get().cancelRequest(it.ivAvatar)
-        }
-        super.onDestroyView()
-        _binding = null
     }
 
     private fun forceLogout() {

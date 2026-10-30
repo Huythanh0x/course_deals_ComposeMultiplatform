@@ -19,6 +19,7 @@ import com.thanh0x.coursedeals.core.ui.UiEvent
 import com.thanh0x.coursedeals.core.common.NetworkStatusCode
 import com.thanh0x.coursedeals.core.ui.util.NetworkUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,7 +32,7 @@ import javax.crypto.Cipher
 import javax.inject.Inject
 
 @HiltViewModel
-class ProfileViewModel @Inject constructor(
+class ProfileViewModel(
     private val userProfileRepository: UserProfileRepository,
     private val getUserProfileUseCase: GetUserProfileUseCase,
     val saveJwtTokenUseCase: SaveJwtTokenUseCase,
@@ -42,7 +43,34 @@ class ProfileViewModel @Inject constructor(
     private val checkIfTokenExpiredUseCase: CheckIfTokenExpiredUseCase,
     private val getLocalTokenUseCase: GetLocalTokenUseCase,
     private val networkUtil: NetworkUtil,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : ViewModel() {
+
+    @Inject
+    constructor(
+        userProfileRepository: UserProfileRepository,
+        getUserProfileUseCase: GetUserProfileUseCase,
+        saveJwtTokenUseCase: SaveJwtTokenUseCase,
+        cryptographyManagerUseCase: CryptographyManagerUseCase,
+        settingFingerprintUseCase: SettingFingerprintUseCase,
+        requestFingerprintTokenUseCase: RequestFingerprintTokenUseCase,
+        clearLocalTokenUseCase: ClearLocalTokenUseCase,
+        checkIfTokenExpiredUseCase: CheckIfTokenExpiredUseCase,
+        getLocalTokenUseCase: GetLocalTokenUseCase,
+        networkUtil: NetworkUtil,
+    ) : this(
+        userProfileRepository,
+        getUserProfileUseCase,
+        saveJwtTokenUseCase,
+        cryptographyManagerUseCase,
+        settingFingerprintUseCase,
+        requestFingerprintTokenUseCase,
+        clearLocalTokenUseCase,
+        checkIfTokenExpiredUseCase,
+        getLocalTokenUseCase,
+        networkUtil,
+        Dispatchers.IO,
+    )
 
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState = _uiState.asStateFlow()
@@ -55,7 +83,7 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun initSettings() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(ioDispatcher) {
             val token = getLocalTokenUseCase()
             val isGuest = token.isNullOrBlank()
             val cachedProfile = userProfileRepository.getCachedUserProfile()
@@ -88,7 +116,7 @@ class ProfileViewModel @Inject constructor(
 
     fun fetchUserProfile() {
         if (_uiState.value.isGuestMode) return
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(ioDispatcher) {
             _uiState.update { it.copy(isLoading = true) }
             when (val result = getUserProfileUseCase()) {
                 is AppResult.Success -> {
@@ -123,7 +151,7 @@ class ProfileViewModel @Inject constructor(
 
     private fun syncPreferences() {
         if (_uiState.value.isGuestMode) return
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(ioDispatcher) {
             _uiState.update { it.copy(isSyncing = true) }
             val result = userProfileRepository.syncPreferences()
             if (result is AppResult.Success) {
@@ -142,7 +170,7 @@ class ProfileViewModel @Inject constructor(
 
     fun checkIfTokenExpired() {
         if (_uiState.value.isGuestMode) return
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(ioDispatcher) {
             when (val result = checkIfTokenExpiredUseCase()) {
                 is AppResult.Success -> _uiState.update { it.copy(isTokenExpired = false) }
                 is AppResult.Error -> {
@@ -159,20 +187,20 @@ class ProfileViewModel @Inject constructor(
 
     fun saveIsDarkModeEnable(isDarkModeEnable: Boolean) {
         _uiState.update { it.copy(isDarkModeEnabled = isDarkModeEnable) }
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(ioDispatcher) {
             userProfileRepository.saveEnableDarkMode(isDarkModeEnable)
         }
     }
 
     fun saveIsFingerPrintEnable(isFingerprintEnable: Boolean) {
         _uiState.update { it.copy(isFingerprintEnabled = isFingerprintEnable) }
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(ioDispatcher) {
             userProfileRepository.saveEnableFingerPrint(isFingerprintEnable)
         }
     }
 
     fun updateFavoriteCategories(categories: List<String>) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(ioDispatcher) {
             _uiState.update { it.copy(favCategories = categories) }
             userProfileRepository.saveFavoriteCategories(categories.toSet())
         }
@@ -183,7 +211,7 @@ class ProfileViewModel @Inject constructor(
         if (current.add(keyword)) {
             val newList = current.toList()
             _uiState.update { it.copy(favKeywords = newList) }
-            viewModelScope.launch(Dispatchers.IO) {
+            viewModelScope.launch(ioDispatcher) {
                 userProfileRepository.saveFavoriteKeywords(newList.toSet())
             }
         }
@@ -194,7 +222,7 @@ class ProfileViewModel @Inject constructor(
         if (current.remove(keyword)) {
             val newList = current.toList()
             _uiState.update { it.copy(favKeywords = newList) }
-            viewModelScope.launch(Dispatchers.IO) {
+            viewModelScope.launch(ioDispatcher) {
                 userProfileRepository.saveFavoriteKeywords(newList.toSet())
             }
         }
@@ -202,13 +230,13 @@ class ProfileViewModel @Inject constructor(
 
     fun updateNotificationsEnabled(enabled: Boolean) {
         _uiState.update { it.copy(isNotificationsEnabled = enabled) }
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(ioDispatcher) {
             userProfileRepository.saveNotificationsEnabled(enabled)
         }
     }
 
     fun deleteLocalToken() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(ioDispatcher) {
             clearLocalTokenUseCase()
             userProfileRepository.clearCachedUserProfile()
             _uiEvent.emit(UiEvent.Navigate("Login"))
