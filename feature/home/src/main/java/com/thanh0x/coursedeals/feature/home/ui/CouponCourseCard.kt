@@ -2,6 +2,7 @@ package com.thanh0x.coursedeals.feature.home.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -50,9 +51,6 @@ fun CouponCourseCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
-    val mapper = remember(context) { MapperToView(context) }
-
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -62,178 +60,214 @@ fun CouponCourseCard(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainer,
         ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 1.dp,
-        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            // Preview Image + Time Left badge
+        Column(modifier = Modifier.fillMaxWidth()) {
+            CouponCardImageHeader(
+                previewImage = coupon.previewImage,
+                title = coupon.title ?: "",
+                expiredTime = coupon.expiredTime,
+            )
+
+            CouponCardInfoSection(coupon = coupon)
+        }
+    }
+}
+
+@Composable
+private fun CouponCardImageHeader(
+    previewImage: String?,
+    title: String,
+    expiredTime: Long?,
+    modifier: Modifier = Modifier,
+) {
+    val context = LocalContext.current
+    val mapper = remember(context) { MapperToView(context) }
+    val timeLeftText = mapper.mapTimeLeft(expiredTime)
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .aspectRatio(1.78f)
+            .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+            .background(MaterialTheme.colorScheme.primaryContainer),
+    ) {
+        AsyncImage(
+            model = ImageRequest.Builder(context)
+                .data(previewImage)
+                .crossfade(true)
+                .build(),
+            error = painterResource(CoreR.drawable.error_loading_image),
+            contentDescription = title,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.matchParentSize(),
+        )
+
+        if (timeLeftText.isNotEmpty()) {
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1.78f)
-                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-                    .background(MaterialTheme.colorScheme.primaryContainer),
+                    .align(Alignment.TopEnd)
+                    .padding(top = 4.dp, end = 4.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.errorContainer,
+                        shape = RoundedCornerShape(8.dp),
+                    )
+                    .padding(horizontal = 6.dp, vertical = 2.dp),
             ) {
-                AsyncImage(
-                    model = ImageRequest.Builder(context)
-                        .data(coupon.previewImage)
-                        .crossfade(true)
-                        .build(),
-                    error = painterResource(CoreR.drawable.error_loading_image),
-                    contentDescription = coupon.title,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.matchParentSize(),
-                )
-
-                // Time left badge
-                val timeLeftText = mapper.mapTimeLeft(coupon.expiredTime)
-                if (timeLeftText.isNotEmpty()) {
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(top = 4.dp, end = 4.dp)
-                            .background(
-                                color = MaterialTheme.colorScheme.errorContainer,
-                                shape = RoundedCornerShape(8.dp),
-                            )
-                            .padding(horizontal = 6.dp, vertical = 2.dp),
-                    ) {
-                        Text(
-                            text = timeLeftText,
-                            color = MaterialTheme.colorScheme.onErrorContainer,
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Bold,
-                        )
-                    }
-                }
-            }
-
-            // Course Info Content
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
-            ) {
-                // Title (2 lines max)
                 Text(
-                    text = coupon.title ?: "",
-                    style = MaterialTheme.typography.titleSmall.copy(
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Bold,
-                    ),
-                    color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.fillMaxWidth(),
+                    text = timeLeftText,
+                    color = MaterialTheme.colorScheme.onErrorContainer,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold,
                 )
-
-                Spacer(modifier = Modifier.height(1.dp))
-
-                // Author (1 line max)
-                Text(
-                    text = coupon.author ?: "",
-                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-
-                Spacer(modifier = Modifier.height(2.dp))
-
-                // Category
-                Text(
-                    text = coupon.category ?: "",
-                    style = MaterialTheme.typography.bodySmall.copy(
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold,
-                    ),
-                    color = MaterialTheme.colorScheme.primary,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-
-                Spacer(modifier = Modifier.height(2.dp))
-
-                // Rating (Text + Stars)
-                val ratingValue = coupon.rating ?: 0.0
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = mapper.mapRatingValue(ratingValue),
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = RatingAmber,
-                    )
-
-                    Spacer(modifier = Modifier.width(4.dp))
-
-                    // 5-star mini indicator
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        for (i in 1..5) {
-                            val starTint = if (ratingValue >= i - 0.25) {
-                                RatingAmber
-                            } else {
-                                MaterialTheme.colorScheme.outlineVariant
-                            }
-                            Icon(
-                                imageVector = Icons.Default.Star,
-                                contentDescription = null,
-                                tint = starTint,
-                                modifier = Modifier.size(11.dp),
-                            )
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(2.dp))
-
-                // Students & Reviews count
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(bottom = 6.dp),
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Group,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(12.dp),
-                    )
-
-                    Spacer(modifier = Modifier.width(4.dp))
-
-                    Text(
-                        text = mapper.mapNumberOfStudent(coupon.students),
-                        fontSize = 10.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-
-                    Spacer(modifier = Modifier.width(10.dp))
-
-                    Icon(
-                        imageVector = Icons.Default.ChatBubbleOutline,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(12.dp),
-                    )
-
-                    Spacer(modifier = Modifier.width(4.dp))
-
-                    Text(
-                        text = mapper.mapNumberOfReview(coupon.reviews),
-                        fontSize = 10.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
             }
         }
+    }
+}
+
+@Composable
+private fun CouponCardInfoSection(
+    coupon: Coupon,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+    ) {
+        Text(
+            text = coupon.title ?: "",
+            style = MaterialTheme.typography.titleSmall.copy(
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Bold,
+            ),
+            color = MaterialTheme.colorScheme.onSurface,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        Spacer(modifier = Modifier.height(1.dp))
+
+        Text(
+            text = coupon.author ?: "",
+            style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        Spacer(modifier = Modifier.height(2.dp))
+
+        Text(
+            text = coupon.category ?: "",
+            style = MaterialTheme.typography.bodySmall.copy(
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Bold,
+            ),
+            color = MaterialTheme.colorScheme.primary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        Spacer(modifier = Modifier.height(2.dp))
+
+        CouponCardRatingBar(rating = coupon.rating ?: 0.0)
+
+        Spacer(modifier = Modifier.height(2.dp))
+
+        CouponCardMetricsRow(
+            students = coupon.students ?: 0,
+            reviews = coupon.reviews ?: 0,
+        )
+    }
+}
+
+@Composable
+private fun CouponCardRatingBar(
+    rating: Double,
+    modifier: Modifier = Modifier,
+) {
+    val context = LocalContext.current
+    val mapper = remember(context) { MapperToView(context) }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier,
+    ) {
+        Text(
+            text = mapper.mapRatingValue(rating),
+            fontSize = 11.sp,
+            fontWeight = FontWeight.Bold,
+            color = RatingAmber,
+        )
+
+        Spacer(modifier = Modifier.width(4.dp))
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            for (i in 1..5) {
+                val starTint = if (rating >= i - 0.25) {
+                    RatingAmber
+                } else {
+                    MaterialTheme.colorScheme.outlineVariant
+                }
+                Icon(
+                    imageVector = Icons.Default.Star,
+                    contentDescription = null,
+                    tint = starTint,
+                    modifier = Modifier.size(11.dp),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun CouponCardMetricsRow(
+    students: Int,
+    reviews: Int,
+    modifier: Modifier = Modifier,
+) {
+    val context = LocalContext.current
+    val mapper = remember(context) { MapperToView(context) }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier.padding(bottom = 6.dp),
+    ) {
+        Icon(
+            imageVector = Icons.Default.Group,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(12.dp),
+        )
+
+        Spacer(modifier = Modifier.width(4.dp))
+
+        Text(
+            text = mapper.mapNumberOfStudent(students),
+            fontSize = 10.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+
+        Spacer(modifier = Modifier.width(10.dp))
+
+        Icon(
+            imageVector = Icons.Default.ChatBubbleOutline,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(12.dp),
+        )
+
+        Spacer(modifier = Modifier.width(4.dp))
+
+        Text(
+            text = mapper.mapNumberOfReview(reviews),
+            fontSize = 10.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 
