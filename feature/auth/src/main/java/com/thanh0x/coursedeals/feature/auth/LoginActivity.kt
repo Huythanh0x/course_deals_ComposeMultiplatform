@@ -99,9 +99,14 @@ class LoginActivity : BaseActivity() {
         }
 
         state.error?.let {
+            val message = if (it.isBlank()) {
+                getString(CoreR.string.login_error_google_failed)
+            } else {
+                it
+            }
             showAlertDialog(
                 title = getString(CoreR.string.login_error_title),
-                message = it,
+                message = message,
                 type = DialogType.ERROR,
             )
             loginViewModel.clearError()
