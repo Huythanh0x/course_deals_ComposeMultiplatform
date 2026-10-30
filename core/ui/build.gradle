@@ -2,10 +2,14 @@ plugins {
     id 'coursedeals.android.library'
     id 'com.google.devtools.ksp'
     id 'dagger.hilt.android.plugin'
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
     namespace 'com.thanh0x.coursedeals.core.ui'
+    buildFeatures {
+        compose = true
+    }
     lint {
         baseline = file("lint-baseline.xml")
     }
@@ -18,6 +22,19 @@ dependencies {
     api libs.androidx.appcompat
     api libs.material
     api libs.androidx.fragment.ktx
+
+    api platform(libs.androidx.compose.bom)
+    api libs.androidx.compose.ui
+    api libs.androidx.compose.ui.graphics
+    api libs.androidx.compose.ui.tooling.preview
+    api libs.androidx.compose.material3
+    api libs.androidx.compose.material.icons.extended
+    api libs.androidx.lifecycle.runtime.compose
+    api libs.androidx.paging.compose
+    api libs.coil.compose
+    api libs.coil.network.okhttp
+    debugApi libs.androidx.compose.ui.tooling
+
     implementation libs.androidx.biometric
     implementation libs.picasso
     implementation libs.timber

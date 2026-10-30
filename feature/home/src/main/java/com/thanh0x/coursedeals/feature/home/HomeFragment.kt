@@ -1,377 +1,167 @@
 package com.thanh0x.coursedeals.feature.home
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.Filter
-import android.widget.ImageView
-import android.widget.TextView
-import androidx.appcompat.widget.SearchView
-import androidx.core.view.isVisible
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
-import com.thanh0x.coursedeals.core.ui.R as CoreR
-import com.thanh0x.coursedeals.feature.home.R
-import com.thanh0x.coursedeals.feature.home.databinding.FragmentHomeBinding
-import com.thanh0x.coursedeals.domain.coupons.CourseLanguage
-import com.thanh0x.coursedeals.domain.coupons.FilterData
-import com.thanh0x.coursedeals.domain.coupons.SearchSuggestion
-import com.thanh0x.coursedeals.domain.coupons.SortOption
-import com.thanh0x.coursedeals.domain.coupons.SuggestionType
+import androidx.paging.compose.collectAsLazyPagingItems
+import com.thanh0x.coursedeals.core.common.BundleKey
 import com.thanh0x.coursedeals.core.ui.BaseFragment
 import com.thanh0x.coursedeals.core.ui.DialogType
-import com.thanh0x.coursedeals.core.common.BundleKey
-import com.thanh0x.coursedeals.core.ui.util.MapperToView
+import com.thanh0x.coursedeals.core.ui.R as CoreR
+import com.thanh0x.coursedeals.core.ui.theme.CourseDealsTheme
+import com.thanh0x.coursedeals.domain.coupons.Coupon
+import com.thanh0x.coursedeals.domain.coupons.FilterData
+import com.thanh0x.coursedeals.feature.home.ui.FilterBottomSheetDialogContent
+import com.thanh0x.coursedeals.feature.home.ui.HomeScreen
+import com.thanh0x.coursedeals.feature.home.ui.SubmitDealBottomSheetDialog
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class HomeFragment : BaseFragment() {
-    private var _binding: FragmentHomeBinding? = null
-    private val homeViewModel: HomeViewModel by viewModels()
-    private lateinit var couponCoursePagingAdapter: CouponCoursePagingViewAdapter
-    private lateinit var suggestionsAdapter: NoFilterArrayAdapter
-    private val binding get() = _binding!!
 
-    private var currentFilter = FilterData()
+    private val homeViewModel: HomeViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setupAdapter()
-        setupListeners()
-        setupObservers()
-        setupSearchViewSuggestions()
-        setupFragmentResultListeners()
-        homeViewModel.checkIfInternetAvailable()
-    }
-
-    private fun setupFragmentResultListeners() {
-        childFragmentManager.setFragmentResultListener(
-            FilterBottomSheetDialog.REQUEST_KEY,
-            viewLifecycleOwner,
-        ) { _, bundle ->
-            val filterData = bundle.getParcelable<FilterData>(FilterBottomSheetDialog.EXTRA_FILTER_DATA)
-            filterData?.let {
-                currentFilter = it
-                applyFilters()
-            }
-        }
-
-        childFragmentManager.setFragmentResultListener(
-            SubmitDealBottomSheet.REQUEST_KEY,
-            viewLifecycleOwner,
-        ) { _, bundle ->
-            val url = bundle.getString(SubmitDealBottomSheet.EXTRA_COUPON_URL)
-            url?.let {
-                showAlertDialog(
-                    title = getString(CoreR.string.submit_deal_title),
-                    message = getString(CoreR.string.submit_success_msg),
-                    type = DialogType.INFO,
-                )
-            }
-        }
-    }
-
-    private fun setupSearchViewSuggestions() {
-        val searchAutoComplete = binding.svCouponCourse.findViewById<android.widget.AutoCompleteTextView>(
-            androidx.appcompat.R.id.search_src_text,
-        )
-        suggestionsAdapter = NoFilterArrayAdapter(
-            requireContext(),
-            CoreR.layout.item_search_suggestion,
-            android.R.id.text1,
-            mutableListOf(),
-        )
-        searchAutoComplete.setAdapter(suggestionsAdapter)
-        searchAutoComplete.threshold = 0
-        searchAutoComplete.setDropDownBackgroundResource(CoreR.drawable.bg_search_suggestion_popup)
-        searchAutoComplete.dropDownVerticalOffset = DROPDOWN_VERTICAL_OFFSET
-        searchAutoComplete.setOnItemClickListener { parent, _, position, _ ->
-            val suggestion = parent.getItemAtPosition(position) as SearchSuggestion
-            binding.svCouponCourse.setQuery(suggestion.text, true)
-            clearSearchFocus()
-        }
-
-        // Show history when focused even if empty
-        searchAutoComplete.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus && binding.svCouponCourse.query.isNullOrBlank()) {
-                searchAutoComplete.post {
-                    if (searchAutoComplete.isAttachedToWindow && searchAutoComplete.hasFocus()) {
-                        searchAutoComplete.showDropDown()
-                    }
-                }
-            }
-        }
-    }
-
-    private fun setupAdapter() {
-        couponCoursePagingAdapter = CouponCoursePagingViewAdapter { clickedCoupon ->
-            clearSearchFocus()
-            val detailIntent = Intent().apply {
-                setClassName(requireContext().packageName, "com.thanh0x.coursedeals.feature.detail.CouponDetailActivity")
-                putExtra(BundleKey.TO_DETAIL_ACTIVITY, clickedCoupon.courseId)
-            }
-            startActivity(detailIntent)
-        }
-        binding.rvCouponCourse.adapter = couponCoursePagingAdapter
-    }
-
-    private fun setupListeners() {
-        binding.clHomeRoot.setOnClickListener {
-            clearSearchFocus()
-        }
-        binding.rvCouponCourse.addOnScrollListener(
-            object : androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
-                override fun onScrollStateChanged(
-                    recyclerView: androidx.recyclerview.widget.RecyclerView,
-                    newState: Int,
-                ) {
-                    super.onScrollStateChanged(recyclerView, newState)
-                    if (newState != androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE) {
-                        clearSearchFocus()
-                    }
-                }
-            },
-        )
-        binding.svCouponCourse.setOnQueryTextListener(queryTextChangeListener)
-        binding.btnFilter.setOnClickListener {
-            showFilterDialog()
-        }
-        binding.btnSubmitDeal.setOnClickListener {
-            showSubmitDealDialog()
-        }
-        binding.tvStatUpdated.setOnClickListener {
-            homeViewModel.toggleTimestampDisplay()
-        }
-        binding.srlHome.setOnRefreshListener {
-            homeViewModel.refreshCoupons()
-        }
-        binding.btnClearFilters.setOnClickListener {
-            homeViewModel.resetFilters()
-        }
-        binding.btnResetFilters.setOnClickListener {
-            homeViewModel.resetFilters()
-        }
-    }
-
-    private fun setupObservers() {
-        collectFlow(homeViewModel.uiState) { state ->
-            handleUiState(state)
-        }
-
-        collectFlow(homeViewModel.uiEvent) { event ->
-            handleUiEvent(event)
-        }
-
-        observePagingData()
-        observePagingLoadState()
-    }
-
-    private fun handleUiState(state: HomeUiState) {
-        // Sync local currentFilter and search view with state (for Reset logic)
-        currentFilter = state.filter
-        if (binding.svCouponCourse.query.toString() != state.query) {
-            binding.svCouponCourse.setQuery(state.query, false)
-        }
-
-        val isFiltered = state.query.isNotBlank() ||
-            (state.filter.categories.isNotEmpty()) ||
-            (state.filter.language != CourseLanguage.ALL) ||
-            (state.filter.sortBy != SortOption.NEWEST) ||
-            (state.filter.minRating > 0.0)
-
-        val hasActiveFilters = (state.filter.categories.isNotEmpty()) ||
-            (state.filter.language != CourseLanguage.ALL) ||
-            (state.filter.sortBy != SortOption.NEWEST) ||
-            (state.filter.minRating > 0.0)
-
-        binding.vFilterBadge.isVisible = hasActiveFilters
-
-        val mapper = MapperToView(requireContext())
-
-        binding.tvStatDeals.text = if (isFiltered) {
-            getString(CoreR.string.stat_matching_deals, state.matchingDeals, state.statDeals)
-        } else {
-            getString(CoreR.string.stat_deals, state.statDeals)
-        }
-
-        val timestamp = if (state.showLocalFetchTime) {
-            state.statFetchedTimestamp
-        } else {
-            state.statUpdatedTimestamp
-        }
-
-        val labelResId = if (state.showLocalFetchTime) {
-            CoreR.string.stat_fetched
-        } else {
-            CoreR.string.stat_updated
-        }
-
-        binding.tvStatUpdated.text = getString(
-            labelResId,
-            mapper.mapTimeAgo(timestamp),
-        )
-
-        binding.tvStatUpdated.isVisible = !isFiltered
-        binding.btnClearFilters.isVisible = isFiltered
-        binding.btnSubmitDeal.isVisible = !isFiltered
-
-        binding.srlHome.isRefreshing = state.isSyncing
-        binding.llEmptyState.isVisible = state.isEmptyState
-
-        updateSuggestions(state.suggestions)
-    }
-
-    private fun updateSuggestions(suggestions: List<SearchSuggestion>) {
-        val searchAutoComplete = binding.svCouponCourse.findViewById<android.widget.AutoCompleteTextView>(
-            androidx.appcompat.R.id.search_src_text,
-        )
-
-        suggestionsAdapter.clear()
-        suggestionsAdapter.addAll(suggestions)
-
-        if (searchAutoComplete.hasFocus() && suggestions.isNotEmpty()) {
-            searchAutoComplete.post {
-                if (searchAutoComplete.isAttachedToWindow && searchAutoComplete.hasFocus()) {
-                    searchAutoComplete.showDropDown()
-                }
-            }
-        }
-    }
-
-    private fun observePagingData() {
-        collectFlow(homeViewModel.items) { pagingData ->
-            couponCoursePagingAdapter.submitData(pagingData)
-        }
-    }
-
-    private fun observePagingLoadState() {
-        collectFlow(couponCoursePagingAdapter.loadStateFlow) { loadState ->
-            val isRefreshing = loadState.refresh is LoadState.Loading
-            binding.pbHome.isVisible = isRefreshing && (couponCoursePagingAdapter.itemCount == 0)
-
-            binding.lpiLoadPreviousPage.isVisible = loadState.source.prepend is LoadState.Loading
-            binding.lpiLoadNextPage.isVisible = loadState.source.append is LoadState.Loading
-
-            val errorState = (loadState.source.append as? LoadState.Error)
-                ?: (loadState.source.prepend as? LoadState.Error)
-                ?: (loadState.append as? LoadState.Error)
-                ?: (loadState.prepend as? LoadState.Error)
-                ?: (loadState.refresh as? LoadState.Error)
-
-            errorState?.let {
-                // If local database already has cached items, silently allow offline browsing without a disruptive alert dialog
-                if (couponCoursePagingAdapter.itemCount == 0) {
-                    showAlertDialog(
-                        title = getString(CoreR.string.fetch_error_title),
-                        message = it.error.localizedMessage ?: getString(CoreR.string.error_fetching_null_coupon),
-                        type = DialogType.ERROR,
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                CourseDealsTheme {
+                    HomeRoute(
+                        viewModel = homeViewModel,
+                        onCouponClick = { coupon ->
+                            navigateToDetail(coupon)
+                        },
+                        showAlertDialog = { title, message, type ->
+                            showAlertDialog(
+                                title = title,
+                                message = message,
+                                type = type,
+                            )
+                        },
                     )
                 }
             }
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        collectFlow(homeViewModel.uiEvent) { event ->
+            handleUiEvent(event)
+        }
+        homeViewModel.checkIfInternetAvailable()
     }
 
-    private class NoFilterArrayAdapter(
-        context: Context,
-        resource: Int,
-        textViewResourceId: Int,
-        objects: List<SearchSuggestion>,
-    ) : ArrayAdapter<SearchSuggestion>(context, resource, textViewResourceId, objects) {
-
-        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-            val view = super.getView(position, convertView, parent)
-            val suggestion = getItem(position)
-            val iconView = view.findViewById<ImageView>(CoreR.id.ivSuggestionIcon)
-            val textView = view.findViewById<TextView>(android.R.id.text1)
-
-            suggestion?.let {
-                textView.text = it.text
-                val iconRes = when (it.type) {
-                    SuggestionType.HISTORY -> CoreR.drawable.ic_clock
-                    SuggestionType.KEYWORD -> CoreR.drawable.ic_search
-                }
-                iconView.setImageResource(iconRes)
-            }
-            return view
+    private fun navigateToDetail(coupon: Coupon) {
+        val detailIntent = Intent().apply {
+            setClassName(requireContext().packageName, "com.thanh0x.coursedeals.feature.detail.CouponDetailActivity")
+            putExtra(BundleKey.TO_DETAIL_ACTIVITY, coupon.courseId)
         }
+        startActivity(detailIntent)
+    }
+}
 
-        override fun getFilter(): Filter {
-            return object : Filter() {
-                override fun performFiltering(constraint: CharSequence?): FilterResults {
-                    val results = FilterResults()
-                    val allItems = mutableListOf<SearchSuggestion>()
-                    for (i in 0 until count) {
-                        getItem(i)?.let { allItems.add(it) }
-                    }
-                    results.values = allItems
-                    results.count = allItems.size
-                    return results
-                }
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun HomeRoute(
+    viewModel: HomeViewModel,
+    onCouponClick: (Coupon) -> Unit,
+    showAlertDialog: (String, String, DialogType) -> Unit,
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val pagingItems = viewModel.items.collectAsLazyPagingItems()
 
-                override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-                    notifyDataSetChanged()
-                }
+    var showFilterSheet by remember { mutableStateOf(false) }
+    var showSubmitDealSheet by remember { mutableStateOf(false) }
 
-                override fun convertResultToString(resultValue: Any?): CharSequence {
-                    return (resultValue as? SearchSuggestion)?.text ?: ""
-                }
-            }
+    // Observe error state
+    val loadState = pagingItems.loadState
+    val errorState = (loadState.source.append as? LoadState.Error)
+        ?: (loadState.source.prepend as? LoadState.Error)
+        ?: (loadState.append as? LoadState.Error)
+        ?: (loadState.prepend as? LoadState.Error)
+        ?: (loadState.refresh as? LoadState.Error)
+
+    LaunchedEffect(errorState, pagingItems.itemCount) {
+        if (errorState != null && pagingItems.itemCount == 0) {
+            showAlertDialog(
+                "Fetching Data Error",
+                errorState.error.localizedMessage ?: "Unexpected error, try again !!!",
+                DialogType.ERROR,
+            )
         }
     }
 
-    private val queryTextChangeListener = object : SearchView.OnQueryTextListener {
-        override fun onQueryTextSubmit(query: String?): Boolean {
-            query?.let {
-                homeViewModel.onSearchSubmitted(it)
-                clearSearchFocus()
-            }
-            return true
-        }
+    HomeScreen(
+        uiState = uiState,
+        pagingItems = pagingItems,
+        onQueryChange = { query ->
+            viewModel.updateQuery(query)
+        },
+        onSearchSubmit = { query ->
+            viewModel.onSearchSubmitted(query)
+        },
+        onFilterClick = {
+            showFilterSheet = true
+        },
+        onSubmitDealClick = {
+            showSubmitDealSheet = true
+        },
+        onClearFiltersClick = {
+            viewModel.resetFilters()
+        },
+        onToggleTimestampClick = {
+            viewModel.toggleTimestampDisplay()
+        },
+        onRefresh = {
+            viewModel.refreshCoupons()
+            pagingItems.refresh()
+        },
+        onCouponClick = onCouponClick,
+    )
 
-        override fun onQueryTextChange(newText: String?): Boolean {
-            homeViewModel.updateQuery(newText ?: "")
-            return true
-        }
+    if (showFilterSheet) {
+        FilterBottomSheetDialogContent(
+            initialFilter = uiState.filter,
+            onDismissRequest = {
+                showFilterSheet = false
+            },
+            onApply = { newFilter ->
+                viewModel.updateFilter(newFilter)
+            },
+        )
     }
 
-    private fun showFilterDialog() {
-        val dialog = FilterBottomSheetDialog.newInstance(currentFilter)
-        dialog.show(childFragmentManager, FilterBottomSheetDialog.TAG)
-    }
-
-    private fun showSubmitDealDialog() {
-        val dialog = SubmitDealBottomSheet()
-        dialog.show(childFragmentManager, SubmitDealBottomSheet.TAG)
-    }
-
-    private fun applyFilters() {
-        homeViewModel.updateFilter(currentFilter)
-    }
-
-    private fun clearSearchFocus() {
-        binding.svCouponCourse.clearFocus()
-        hideKeyboard()
-    }
-
-    companion object {
-        private const val DROPDOWN_VERTICAL_OFFSET = 8
+    if (showSubmitDealSheet) {
+        SubmitDealBottomSheetDialog(
+            onDismissRequest = {
+                showSubmitDealSheet = false
+            },
+            onSubmit = { url ->
+                showAlertDialog(
+                    "Submit a Deal",
+                    "Deal submitted successfully! It will be reviewed soon.",
+                    DialogType.INFO,
+                )
+            },
+        )
     }
 }
