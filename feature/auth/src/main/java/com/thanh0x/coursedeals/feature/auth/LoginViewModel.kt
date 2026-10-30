@@ -59,6 +59,10 @@ class LoginViewModel @Inject constructor(
         checkIsAbleLoginByFingerprint()
     }
 
+    fun setAuthMode(mode: AuthMode) {
+        _uiState.update { it.copy(authMode = mode, infoMessage = null, error = null) }
+    }
+
     fun toggleAuthMode() {
         _uiState.update { current ->
             val nextMode = when (current.authMode) {

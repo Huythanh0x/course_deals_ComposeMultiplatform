@@ -35,6 +35,10 @@ class LoginActivity : BaseActivity() {
 
         setupObservers()
 
+        if (intent.getStringExtra("AUTH_MODE") == "VERIFY_OTP") {
+            loginViewModel.setAuthMode(AuthMode.VERIFY_OTP)
+        }
+
         setContent {
             CourseDealsTheme {
                 val uiState by loginViewModel.uiState.collectAsStateWithLifecycle()
