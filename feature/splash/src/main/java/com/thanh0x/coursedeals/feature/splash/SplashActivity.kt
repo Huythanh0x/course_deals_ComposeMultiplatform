@@ -3,13 +3,11 @@ package com.thanh0x.coursedeals.feature.splash
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import androidx.databinding.DataBindingUtil
+import androidx.activity.compose.setContent
 import androidx.lifecycle.lifecycleScope
-import com.thanh0x.coursedeals.core.ui.R as CoreR
-import com.thanh0x.coursedeals.feature.splash.R
-import com.thanh0x.coursedeals.feature.splash.databinding.ActivitySplashBinding
-import com.thanh0x.coursedeals.core.ui.BaseActivity
 import com.thanh0x.coursedeals.core.common.Constant
+import com.thanh0x.coursedeals.core.ui.BaseActivity
+import com.thanh0x.coursedeals.core.ui.theme.CourseDealsTheme
 import com.thanh0x.coursedeals.domain.user.usecase.GetLocalTokenUseCase
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
@@ -21,7 +19,6 @@ import kotlin.time.Duration.Companion.milliseconds
 @AndroidEntryPoint
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : BaseActivity() {
-    lateinit var binding: ActivitySplashBinding
     private val startedTime = System.currentTimeMillis()
 
     @Inject
@@ -29,7 +26,11 @@ class SplashActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_splash)
+        setContent {
+            CourseDealsTheme {
+                SplashScreen()
+            }
+        }
         lifecycleScope.launch {
             val token = getLocalTokenUseCase()
             val waitingTime = max(
