@@ -137,4 +137,8 @@ class UserProfileRepositoryImpl @Inject constructor(
         profile.avatarUrl?.let { localUserProfileDataSource.saveUserAvatar(it) }
         profile.preferences?.let { updateLocalStore(it) }
     }
+
+    override suspend fun clearCachedUserProfile() {
+        localUserProfileDataSource.clearUserProfile()
+    }
 }

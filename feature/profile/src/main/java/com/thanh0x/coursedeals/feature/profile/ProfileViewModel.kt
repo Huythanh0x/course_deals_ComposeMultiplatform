@@ -210,6 +210,7 @@ class ProfileViewModel @Inject constructor(
     fun deleteLocalToken() {
         viewModelScope.launch(Dispatchers.IO) {
             clearLocalTokenUseCase()
+            userProfileRepository.clearCachedUserProfile()
             _uiEvent.emit(UiEvent.Navigate("Login"))
         }
     }
@@ -241,6 +242,7 @@ class ProfileViewModel @Inject constructor(
     fun clearLocalToken() {
         viewModelScope.launch(Dispatchers.IO) {
             clearLocalTokenUseCase()
+            userProfileRepository.clearCachedUserProfile()
         }
     }
 
