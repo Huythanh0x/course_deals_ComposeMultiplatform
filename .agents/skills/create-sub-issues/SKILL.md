@@ -14,6 +14,30 @@ Sub-issues are **intentionally excluded from the "Course Deals" board** — only
 parent issue represents the work there (see `docs/project-board.md`). Every path below
 ends with the same board-cascade check for that reason.
 
+## Sub-Issue Content Requirements
+
+When creating sub-issues under a parent feature/epic (typically split into **Backend** and **Mobile/Android**), each sub-issue body **MUST** specify its own concrete, domain-specific architecture and tech stack details:
+
+### Backend Sub-Issue Architecture Spec
+- **Tech Stack**: Spring Boot (Kotlin), Gradle multi-module (`coupon-domain`, `coupon-api-service`, `coupon-core-service`, etc.), Spring Data JPA, Flyway, JobRunr, Redis, MySQL.
+- **Components & Files**:
+  - Flyway migration script (e.g. `V<N>__create_...sql`).
+  - Entity & Spring Data Repository definitions.
+  - Service layer logic & background jobs (JobRunr, Redis cache invalidation).
+  - REST Controller endpoints, DTOs, and Spring Security configurations (`SecurityConfig.kt`).
+  - Unit/integration test plan (`./gradlew ktlintCheck detekt test`).
+
+### Mobile (Compose Multiplatform / Android) Sub-Issue Architecture Spec
+- **Tech Stack**: Jetpack Compose / Compose Multiplatform, Clean Architecture (presentation, domain, data), Kotlin Coroutines & Flow, Hilt DI, Retrofit/Ktor, Room / EncryptedSharedPreferences.
+- **Components & Files**:
+  - Data layer: DTO models, API service interface, repository implementation, error mapping.
+  - Domain layer: Models, UseCases, repository interface.
+  - Presentation layer: ViewModel (`StateFlow<UiState>`), UI events, Jetpack Compose screens/components.
+  - Navigation & DI: Hilt modules, navigation route wiring.
+  - Test & Evidence plan: unit tests (`testLocalDebugUnitTest`) and screenshot capture (`emulator-5554` + R2 upload).
+
+---
+
 ## Case A: creating brand-new sub-issues
 
 ```bash
@@ -75,6 +99,7 @@ identical regardless of parent/child status.
 
 - `gh issue create --parent` and the Sub-issues REST API both require the `project`
   scope on the authenticated `gh` token (`gh auth refresh -s project` if missing).
+- Project URL: [Course Deals Project #4](https://github.com/users/Huythanh0x/projects/4).
 - Ask the user before deciding an issue should be a sub-issue if it's ambiguous whether
   it's genuinely a child task of an existing parent versus its own top-level unit of
   work — this is a real judgment call, not a mechanical one.
