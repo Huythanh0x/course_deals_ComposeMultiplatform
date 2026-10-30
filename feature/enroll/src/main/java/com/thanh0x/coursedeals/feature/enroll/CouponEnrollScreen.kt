@@ -218,7 +218,10 @@ fun EnrollWebView(
                         request: WebResourceRequest?,
                         error: WebResourceError?,
                     ) {
-                        onPageError()
+                        // Only trigger full error state if the main frame itself failed
+                        if (request?.isForMainFrame == true) {
+                            onPageError()
+                        }
                         super.onReceivedError(view, request, error)
                     }
                 }
