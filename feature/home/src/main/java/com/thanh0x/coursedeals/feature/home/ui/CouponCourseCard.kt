@@ -82,7 +82,6 @@ fun CouponCourseCard(
                         .data(coupon.previewImage)
                         .crossfade(true)
                         .build(),
-                    placeholder = painterResource(CoreR.drawable.progress_animation),
                     error = painterResource(CoreR.drawable.error_loading_image),
                     contentDescription = coupon.title,
                     contentScale = ContentScale.Crop,
