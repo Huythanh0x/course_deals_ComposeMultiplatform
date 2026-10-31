@@ -117,19 +117,9 @@ Once approved at Checkpoint 1:
 
 1. **Create GitHub Issue(s) & Branches** (skip issue creation ONLY if the user provided existing issue number(s)):
    - Follow `new-ticket` and `create-sub-issues` in the target repo(s):
-     - **GitHub Project 4 (Course Deals) Linking**: ALL created parent epics and child sub-issues MUST be linked to GitHub Project [`Course Deals`](https://github.com/users/Huythanh0x/projects/4) (`--project "Course Deals"` or via GraphQL `addProjectV2ItemById`).
+     - **Top-level feature issue**: MUST be added to GitHub Project [`Course Deals`](https://github.com/users/Huythanh0x/projects/4) (`--project "Course Deals"`). The issue body MUST include the **solution architecture plan** (problem & motivation, cross-repo architecture flow, API/DTO contract, and DoD matrix).
        ```bash
-       # When creating top-level issue:
        gh issue create -R Huythanh0x/<repo> --title "..." --label "type: ..." --label "priority: ..." --label "area: ..." --label "size: ..." --project "Course Deals" --body "..."
-       
-       # When linking existing or sub-issues via GraphQL:
-       gh api graphql -f query='
-         mutation($projectId: ID!, $contentId: ID!) {
-           addProjectV2ItemById(input: {projectId: $projectId, contentId: $contentId}) {
-             item { id }
-           }
-         }
-       ' -f projectId="PVT_kwHOBEROFc4BhjJ2" -f contentId="<ISSUE_NODE_ID>"
        ```
      - **Sub-issues (for full-stack parent + child issues)**: Create parent (`--project "Course Deals"`) and both BE (`area: backend`) & App (`area: android`) sub-issues in `Huythanh0x/course_deals_ComposeMultiplatform` (or target repos). Each sub-issue body **MUST** specify its own concrete, domain-specific architecture and tech stack details (e.g. Spring Boot/Flyway/JPA/JobRunr for BE; Jetpack Compose/Clean Architecture/Hilt/Coroutines for App). Link via the Sub-issues REST API, and run the GraphQL board auto-cascade cleanup so sub-issues don't clutter the `"Course Deals"` board.
    - In each target repo, checkout latest `main`, pull, and create the branch `<type>/<issue-number>-<slug>`:
