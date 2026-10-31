@@ -109,7 +109,33 @@ android {
     }
 }
 
+configurations.configureEach {
+    exclude group: 'org.jetbrains.skiko'
+    exclude group: 'org.jetbrains.compose.runtime', module: 'runtime-desktop'
+    exclude group: 'org.jetbrains.compose.runtime', module: 'runtime-saveable-desktop'
+    exclude group: 'org.jetbrains.compose.foundation', module: 'foundation-desktop'
+    exclude group: 'org.jetbrains.compose.foundation', module: 'foundation-layout-desktop'
+    exclude group: 'org.jetbrains.compose.material', module: 'material-desktop'
+    exclude group: 'org.jetbrains.compose.material', module: 'material-icons-core-desktop'
+    exclude group: 'org.jetbrains.compose.material', module: 'material-icons-extended-desktop'
+    exclude group: 'org.jetbrains.compose.material', module: 'material-ripple-desktop'
+    exclude group: 'org.jetbrains.compose.material3', module: 'material3-desktop'
+    exclude group: 'org.jetbrains.compose.animation', module: 'animation-desktop'
+    exclude group: 'org.jetbrains.compose.animation', module: 'animation-core-desktop'
+    exclude group: 'org.jetbrains.compose.ui', module: 'ui-desktop'
+    exclude group: 'org.jetbrains.compose.ui', module: 'ui-geometry-desktop'
+    exclude group: 'org.jetbrains.compose.ui', module: 'ui-graphics-desktop'
+    exclude group: 'org.jetbrains.compose.ui', module: 'ui-text-desktop'
+    exclude group: 'org.jetbrains.compose.ui', module: 'ui-unit-desktop'
+    exclude group: 'org.jetbrains.compose.ui', module: 'ui-util-desktop'
+    exclude group: 'androidx.compose.ui', module: 'ui-tooling-preview'
+    exclude group: 'androidx.compose.ui', module: 'ui-tooling-preview-android'
+    exclude group: 'androidx.paging', module: 'paging-compose'
+    exclude group: 'androidx.paging', module: 'paging-compose-android'
+}
+
 dependencies {
+    implementation project(':shared')
     implementation project(':core:common')
     implementation project(':core:network')
     implementation project(':core:ui')
@@ -131,12 +157,14 @@ dependencies {
     implementation libs.material
     implementation libs.androidx.navigation.fragment.ktx
     implementation libs.androidx.navigation.ui.ktx
+    implementation libs.androidx.credentials
+    implementation libs.androidx.credentials.play.services.auth
+    implementation libs.googleid
 
     def composeBom = platform(libs.androidx.compose.bom)
     implementation composeBom
     implementation libs.androidx.compose.ui
     implementation libs.androidx.compose.ui.graphics
-    implementation libs.androidx.compose.ui.tooling.preview
     implementation libs.androidx.compose.material3
     implementation libs.androidx.compose.material.icons.extended
     implementation libs.androidx.activity.compose
@@ -144,7 +172,6 @@ dependencies {
     implementation libs.androidx.navigation.compose
     implementation libs.koin.android
     implementation libs.koin.androidx.compose
-    implementation libs.androidx.paging.compose
     implementation libs.coil.compose
     implementation libs.coil.network.okhttp
     debugImplementation libs.androidx.compose.ui.tooling

@@ -1,15 +1,23 @@
 plugins {
-    id 'coursedeals.android.library'
+    id 'coursedeals.kmp.library'
     alias(libs.plugins.kotlin.serialization)
 }
 
-android {
-    namespace 'com.thanh0x.coursedeals.domain.user'
-}
-
-dependencies {
-    implementation project(':core:common')
-    implementation libs.kotlinx.serialization.json
-
-    testImplementation libs.junit
+kotlin {
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation project(':core:common')
+                implementation libs.kotlinx.serialization.json
+                implementation libs.kotlinx.coroutines.core
+                implementation libs.koin.core
+            }
+        }
+        commonTest {
+            dependencies {
+                implementation kotlin('test')
+                implementation libs.kotlinx.coroutines.test
+            }
+        }
+    }
 }

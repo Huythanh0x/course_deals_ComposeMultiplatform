@@ -10,6 +10,7 @@
 		A1000001 /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000001 /* iOSApp.swift */; };
 		A1000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000002 /* ContentView.swift */; };
 		A1000003 /* ComposeApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A2000003 /* ComposeApp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A1000004 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A2000005 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -18,6 +19,7 @@
 		A2000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A2000003 /* ComposeApp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ComposeApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A2000004 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A2000005 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +49,7 @@
 				A2000001 /* iOSApp.swift */,
 				A2000002 /* ContentView.swift */,
 				A2000004 /* Info.plist */,
+				A2000005 /* Assets.xcassets */,
 			);
 			path = iosApp;
 			sourceTree = "<group>";
@@ -126,6 +129,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1000004 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -149,7 +153,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd \"$SRCROOT/..\"\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
+			shellScript = "if [ \"$SKIP_KOTLIN_BUILD\" = \"1\" ]; then exit 0; fi\ncd \"$SRCROOT/..\"\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
 		};
 		A7000002 /* Embed Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
