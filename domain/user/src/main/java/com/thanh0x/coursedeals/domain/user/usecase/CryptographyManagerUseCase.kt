@@ -10,7 +10,6 @@ import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
-import javax.inject.Inject
 
 private const val KEY_SIZE = 256
 private const val ANDROID_KEYSTORE = "AndroidKeyStore"
@@ -19,7 +18,7 @@ private const val ENCRYPTION_PADDING = KeyProperties.ENCRYPTION_PADDING_NONE
 private const val ENCRYPTION_ALGORITHM = KeyProperties.KEY_ALGORITHM_AES
 private const val SECRET_KEY_NAME = "biometric_sample_encryption_key"
 
-class CryptographyManagerUseCase @Inject constructor() {
+class CryptographyManagerUseCase constructor() {
     fun getInitializedCipherForEncryption(): Cipher {
         val cipher = getCipher()
         val secretKey = getOrCreateSecretKey(SECRET_KEY_NAME)

@@ -9,11 +9,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class SearchRepositoryImpl @Inject constructor(
+class SearchRepositoryImpl(
     private val localCouponDataSource: LocalCouponDataSource,
     private val couponDatabase: CouponDatabase,
 ) : SearchRepository {

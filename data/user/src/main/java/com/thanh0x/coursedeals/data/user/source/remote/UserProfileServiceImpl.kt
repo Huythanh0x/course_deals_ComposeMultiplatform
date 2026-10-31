@@ -13,9 +13,8 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
-import javax.inject.Inject
 
-class UserProfileServiceImpl @Inject constructor(
+class UserProfileServiceImpl(
     private val httpClient: HttpClient
 ) : UserProfileService {
 

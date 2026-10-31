@@ -19,7 +19,6 @@ import com.thanh0x.coursedeals.domain.user.usecase.SettingFingerprintUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.SettingUserProfileUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.SocialLoginUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.VerifyOtpUseCase
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,11 +28,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.crypto.Cipher
-import javax.inject.Inject
 
 @Suppress("LongParameterList", "TooManyFunctions")
-@HiltViewModel
-class LoginViewModel @Inject constructor(
+class LoginViewModel(
     private val loginUseCase: LoginUseCase,
     private val registerUseCase: RegisterUseCase,
     private val verifyOtpUseCase: VerifyOtpUseCase,

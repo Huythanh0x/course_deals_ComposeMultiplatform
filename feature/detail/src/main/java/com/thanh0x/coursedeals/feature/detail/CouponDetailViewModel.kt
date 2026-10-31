@@ -6,16 +6,13 @@ import com.thanh0x.coursedeals.core.common.AppResult
 import com.thanh0x.coursedeals.domain.coupons.Coupon
 import com.thanh0x.coursedeals.domain.coupons.usecase.FetchCouponDetailUseCase
 import com.thanh0x.coursedeals.core.ui.util.NetworkUtil
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class CouponDetailViewModel @Inject constructor(
+class CouponDetailViewModel(
     private val fetchCouponDetailUseCase: FetchCouponDetailUseCase,
     private val networkUtil: NetworkUtil
 ) : ViewModel() {

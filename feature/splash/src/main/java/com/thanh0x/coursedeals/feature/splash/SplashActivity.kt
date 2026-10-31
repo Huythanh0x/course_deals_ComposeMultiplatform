@@ -9,20 +9,17 @@ import com.thanh0x.coursedeals.core.common.Constant
 import com.thanh0x.coursedeals.core.ui.BaseActivity
 import com.thanh0x.coursedeals.core.ui.theme.CourseDealsTheme
 import com.thanh0x.coursedeals.domain.user.usecase.GetLocalTokenUseCase
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import java.lang.Long.max
-import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 
-@AndroidEntryPoint
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : BaseActivity() {
     private val startedTime = System.currentTimeMillis()
 
-    @Inject
-    lateinit var getLocalTokenUseCase: GetLocalTokenUseCase
+    private val getLocalTokenUseCase: GetLocalTokenUseCase by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -1,8 +1,7 @@
 package com.thanh0x.coursedeals.domain.user.usecase
 
-import javax.inject.Inject
 
-class SettingUserProfileUseCase @Inject constructor(
+class SettingUserProfileUseCase constructor(
     val saveDarkModeUseCase: SaveDarkModeUseCase,
     val saveFingerPrintUseCase: SaveFingerprintUseCase,
     val loadDarkModeUseCase: LoadDarkModeUseCase,

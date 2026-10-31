@@ -1,8 +1,13 @@
 package com.thanh0x.coursedeals.data.coupons.di
 
+import androidx.room.Room
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
+import com.thanh0x.coursedeals.core.common.Constant
 import com.thanh0x.coursedeals.data.coupons.repository.CouponRepositoryImpl
 import com.thanh0x.coursedeals.data.coupons.repository.SearchRepositoryImpl
 import com.thanh0x.coursedeals.data.coupons.source.LocalCouponDataSource
+import com.thanh0x.coursedeals.data.coupons.source.local.CouponDatabase
 import com.thanh0x.coursedeals.data.coupons.source.local.LocalCouponDataSourceImpl
 import com.thanh0x.coursedeals.data.coupons.source.remote.CouponService
 import com.thanh0x.coursedeals.data.coupons.source.remote.CouponServiceImpl
@@ -10,43 +15,44 @@ import com.thanh0x.coursedeals.data.coupons.source.remote.RemoteCouponDataSource
 import com.thanh0x.coursedeals.domain.coupons.CouponRepository
 import com.thanh0x.coursedeals.domain.coupons.SearchRepository
 import com.thanh0x.coursedeals.domain.coupons.source.RemoteCouponDataSource
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
+import org.koin.android.ext.koin.androidContext
+import org.koin.dsl.module
 
-@Module
-@InstallIn(SingletonComponent::class)
-abstract class CouponDataModule {
+val migration6to7 = object : Migration(6, 7) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE ${Constant.COUPON_TABLE_NAME} ADD COLUMN cached_at INTEGER DEFAULT NULL")
+    }
+}
 
-    @Binds
-    @Singleton
-    abstract fun bindCouponRepository(
-        impl: CouponRepositoryImpl
-    ): CouponRepository
+val couponDataModule = module {
+    single<CouponDatabase> {
+        Room.databaseBuilder(androidContext(), CouponDatabase::class.java, Constant.COUPON_DATABASE_NAME)
+            .addMigrations(migration6to7)
+            .fallbackToDestructiveMigration(true)
+            .build()
+    }
+    single { get<CouponDatabase>().couponDao() }
+    single { get<CouponDatabase>().searchHistoryDao() }
 
-    @Binds
-    @Singleton
-    abstract fun bindSearchRepository(
-        impl: SearchRepositoryImpl
-    ): SearchRepository
+    single<CouponService> { CouponServiceImpl(httpClient = get()) }
+    single<LocalCouponDataSource> { LocalCouponDataSourceImpl(couponDao = get()) }
+    single<RemoteCouponDataSource> { RemoteCouponDataSourceImpl(couponService = get()) }
 
-    @Binds
-    @Singleton
-    abstract fun bindLocalCouponDataSource(
-        impl: LocalCouponDataSourceImpl
-    ): LocalCouponDataSource
+    single<SearchRepository> {
+        SearchRepositoryImpl(
+            localCouponDataSource = get(),
+            couponDatabase = get()
+        )
+    }
 
-    @Binds
-    @Singleton
-    abstract fun bindRemoteCouponDataSource(
-        impl: RemoteCouponDataSourceImpl
-    ): RemoteCouponDataSource
-
-    @Binds
-    @Singleton
-    abstract fun bindCouponService(
-        impl: CouponServiceImpl
-    ): CouponService
+    single<CouponRepository> {
+        CouponRepositoryImpl(
+            localCouponDataSource = get(),
+            remoteCouponDataSource = get(),
+            localSettingsDataSource = get(),
+            couponDatabase = get(),
+            couponService = get(),
+            searchRepository = get()
+        )
+    }
 }

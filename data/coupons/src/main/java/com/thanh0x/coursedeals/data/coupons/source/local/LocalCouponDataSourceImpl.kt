@@ -8,9 +8,8 @@ import com.thanh0x.coursedeals.domain.coupons.CourseLanguage
 import com.thanh0x.coursedeals.domain.coupons.FilterData
 import com.thanh0x.coursedeals.domain.coupons.SortOption
 import com.thanh0x.coursedeals.core.common.Constant
-import javax.inject.Inject
 
-class LocalCouponDataSourceImpl @Inject constructor(private val couponDao: CouponDao) :
+class LocalCouponDataSourceImpl(private val couponDao: CouponDao) :
     LocalCouponDataSource {
     override suspend fun getAllCoupons(): List<Coupon> = couponDao.getAllCoupons()
 

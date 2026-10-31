@@ -18,7 +18,6 @@ import com.thanh0x.coursedeals.domain.user.usecase.SettingFingerprintUseCase
 import com.thanh0x.coursedeals.core.ui.UiEvent
 import com.thanh0x.coursedeals.core.common.NetworkStatusCode
 import com.thanh0x.coursedeals.core.ui.util.NetworkUtil
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -29,9 +28,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.crypto.Cipher
-import javax.inject.Inject
 
-@HiltViewModel
 class ProfileViewModel(
     private val userProfileRepository: UserProfileRepository,
     private val getUserProfileUseCase: GetUserProfileUseCase,
@@ -45,32 +42,6 @@ class ProfileViewModel(
     private val networkUtil: NetworkUtil,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : ViewModel() {
-
-    @Inject
-    constructor(
-        userProfileRepository: UserProfileRepository,
-        getUserProfileUseCase: GetUserProfileUseCase,
-        saveJwtTokenUseCase: SaveJwtTokenUseCase,
-        cryptographyManagerUseCase: CryptographyManagerUseCase,
-        settingFingerprintUseCase: SettingFingerprintUseCase,
-        requestFingerprintTokenUseCase: RequestFingerprintTokenUseCase,
-        clearLocalTokenUseCase: ClearLocalTokenUseCase,
-        checkIfTokenExpiredUseCase: CheckIfTokenExpiredUseCase,
-        getLocalTokenUseCase: GetLocalTokenUseCase,
-        networkUtil: NetworkUtil,
-    ) : this(
-        userProfileRepository,
-        getUserProfileUseCase,
-        saveJwtTokenUseCase,
-        cryptographyManagerUseCase,
-        settingFingerprintUseCase,
-        requestFingerprintTokenUseCase,
-        clearLocalTokenUseCase,
-        checkIfTokenExpiredUseCase,
-        getLocalTokenUseCase,
-        networkUtil,
-        Dispatchers.IO,
-    )
 
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState = _uiState.asStateFlow()

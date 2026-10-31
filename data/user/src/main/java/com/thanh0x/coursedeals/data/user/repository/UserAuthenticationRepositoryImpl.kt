@@ -6,10 +6,9 @@ import com.thanh0x.coursedeals.domain.user.TokenData
 import com.thanh0x.coursedeals.domain.user.UserAuthenticationRepository
 import com.thanh0x.coursedeals.domain.user.source.LocalAuthenticationDataSource
 import com.thanh0x.coursedeals.domain.user.source.RemoteAuthenticationDataSource
-import javax.inject.Inject
 
 @Suppress("TooManyFunctions")
-class UserAuthenticationRepositoryImpl @Inject constructor(
+class UserAuthenticationRepositoryImpl(
     private val localAuthenticationDataSource: LocalAuthenticationDataSource,
     private val remoteAuthenticationDataSource: RemoteAuthenticationDataSource
 ) : UserAuthenticationRepository {

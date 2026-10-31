@@ -2,7 +2,6 @@ package com.thanh0x.coursedeals.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -14,6 +13,7 @@ import com.thanh0x.coursedeals.feature.home.HomeViewModel
 import com.thanh0x.coursedeals.feature.home.ui.HomeRoute
 import com.thanh0x.coursedeals.feature.profile.ProfileRoute
 import com.thanh0x.coursedeals.feature.profile.ProfileViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun MainNavHost(
@@ -29,7 +29,7 @@ fun MainNavHost(
         modifier = modifier,
     ) {
         composable(TopLevelDestination.HOME.route) {
-            val homeViewModel: HomeViewModel = hiltViewModel()
+            val homeViewModel: HomeViewModel = koinViewModel()
             HomeRoute(
                 viewModel = homeViewModel,
                 onCouponClick = onCouponClick,
@@ -37,13 +37,13 @@ fun MainNavHost(
             )
         }
         composable(TopLevelDestination.COURSE.route) {
-            val courseViewModel: CourseViewModel = hiltViewModel()
+            val courseViewModel: CourseViewModel = koinViewModel()
             CourseRoute(
                 viewModel = courseViewModel,
             )
         }
         composable(TopLevelDestination.PROFILE.route) {
-            val profileViewModel: ProfileViewModel = hiltViewModel()
+            val profileViewModel: ProfileViewModel = koinViewModel()
             ProfileRoute(
                 viewModel = profileViewModel,
                 onNavigateToLogin = onNavigateToLogin,

@@ -7,9 +7,8 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.thanh0x.coursedeals.domain.user.source.LocalAuthenticationDataSource
 import com.thanh0x.coursedeals.core.common.Constant
 import kotlinx.coroutines.flow.first
-import javax.inject.Inject
 
-class LocalAuthenticationDataSourceImpl @Inject constructor(private val datastore: DataStore<Preferences>) :
+class LocalAuthenticationDataSourceImpl(private val datastore: DataStore<Preferences>) :
     LocalAuthenticationDataSource {
     private object PreferenceKey {
         val userLoginToken = stringPreferencesKey(Constant.PREFERENCES_LOGIN_TOKEN)

@@ -3,7 +3,6 @@ package com.thanh0x.coursedeals.feature.auth
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.runtime.getValue
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
@@ -21,13 +20,12 @@ import com.thanh0x.coursedeals.core.ui.DialogType
 import com.thanh0x.coursedeals.core.ui.R as CoreR
 import com.thanh0x.coursedeals.core.ui.UiEvent
 import com.thanh0x.coursedeals.core.ui.theme.CourseDealsTheme
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
-@AndroidEntryPoint
 class LoginActivity : BaseActivity() {
-    private val loginViewModel: LoginViewModel by viewModels()
+    private val loginViewModel: LoginViewModel by viewModel()
     private val credentialManager by lazy { CredentialManager.create(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {

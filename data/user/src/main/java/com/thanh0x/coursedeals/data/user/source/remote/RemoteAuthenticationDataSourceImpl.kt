@@ -11,9 +11,8 @@ import com.thanh0x.coursedeals.domain.user.AuthCredentials
 import com.thanh0x.coursedeals.domain.user.TokenData
 import com.thanh0x.coursedeals.domain.user.source.RemoteAuthenticationDataSource
 import timber.log.Timber
-import javax.inject.Inject
 
-class RemoteAuthenticationDataSourceImpl @Inject constructor(
+class RemoteAuthenticationDataSourceImpl(
     private val userAuthenticationService: UserAuthenticationService
 ) : RemoteAuthenticationDataSource {
 

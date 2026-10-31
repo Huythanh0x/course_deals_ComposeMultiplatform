@@ -8,9 +8,7 @@ import com.thanh0x.coursedeals.core.ui.BaseActivity
 import com.thanh0x.coursedeals.core.ui.theme.CourseDealsTheme
 import com.thanh0x.coursedeals.domain.coupons.Coupon
 import com.thanh0x.coursedeals.navigation.MainAppScaffold
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -2,9 +2,8 @@ package com.thanh0x.coursedeals.domain.user.usecase
 
 import com.thanh0x.coursedeals.core.common.AppResult
 import com.thanh0x.coursedeals.domain.user.UserAuthenticationRepository
-import javax.inject.Inject
 
-class RegisterUseCase @Inject constructor(
+class RegisterUseCase constructor(
     private val repository: UserAuthenticationRepository
 ) {
     suspend operator fun invoke(

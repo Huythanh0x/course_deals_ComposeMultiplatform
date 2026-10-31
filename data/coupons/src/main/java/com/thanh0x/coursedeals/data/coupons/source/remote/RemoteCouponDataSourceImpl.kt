@@ -5,9 +5,8 @@ import com.thanh0x.coursedeals.core.common.AppResult
 import com.thanh0x.coursedeals.domain.coupons.Coupon
 import com.thanh0x.coursedeals.domain.coupons.source.RemoteCouponDataSource
 import timber.log.Timber
-import javax.inject.Inject
 
-class RemoteCouponDataSourceImpl @Inject constructor(private val couponService: CouponService) :
+class RemoteCouponDataSourceImpl(private val couponService: CouponService) :
     RemoteCouponDataSource {
     @Suppress("TooGenericExceptionCaught")
     override suspend fun requestPostANewCoupon(couponUrl: String): AppResult<Unit> {

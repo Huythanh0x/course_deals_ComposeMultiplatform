@@ -8,9 +8,8 @@ import com.thanh0x.coursedeals.domain.user.UserPreferences
 import com.thanh0x.coursedeals.domain.user.UserProfile
 import com.thanh0x.coursedeals.domain.user.source.RemoteUserProfileDataSource
 import timber.log.Timber
-import javax.inject.Inject
 
-class RemoteUserProfileDataSourceImpl @Inject constructor(
+class RemoteUserProfileDataSourceImpl(
     private val userProfileService: UserProfileService,
 ) : RemoteUserProfileDataSource {
 

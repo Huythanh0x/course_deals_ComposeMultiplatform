@@ -8,9 +8,8 @@ import com.thanh0x.coursedeals.domain.user.source.LocalSettingsDataSource
 import com.thanh0x.coursedeals.core.common.Constant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
 
-class LocalSettingsDataSourceImpl @Inject constructor(
+class LocalSettingsDataSourceImpl(
     private val dataStore: DataStore<Preferences>,
 ) : LocalSettingsDataSource {
 

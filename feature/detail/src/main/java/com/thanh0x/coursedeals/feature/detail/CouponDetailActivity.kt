@@ -3,23 +3,21 @@ package com.thanh0x.coursedeals.feature.detail
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.viewModels
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.thanh0x.coursedeals.core.common.BundleKey
 import com.thanh0x.coursedeals.core.ui.BaseActivity
 import com.thanh0x.coursedeals.core.ui.R as CoreR
 import com.thanh0x.coursedeals.core.ui.theme.CourseDealsTheme
-import dagger.hilt.android.AndroidEntryPoint
+import com.thanh0x.coursedeals.core.ui.util.NetworkUtil
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
-import javax.inject.Inject
 
-@AndroidEntryPoint
 class CouponDetailActivity : BaseActivity() {
-    private val couponDetailViewModel: CouponDetailViewModel by viewModels()
+    private val couponDetailViewModel: CouponDetailViewModel by viewModel()
 
-    @Inject
-    lateinit var networkUtil: com.thanh0x.coursedeals.core.ui.util.NetworkUtil
+    private val networkUtil: NetworkUtil by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
