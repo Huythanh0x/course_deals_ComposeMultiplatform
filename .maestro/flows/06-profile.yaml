@@ -1,0 +1,56 @@
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: false
+- extendedWaitUntil:
+    visible: "Sign In"
+    timeout: 15000
+- tapOn: "Access as Guest"
+- extendedWaitUntil:
+    visible: "PROFILE"
+    timeout: 15000
+- tapOn: "PROFILE"
+# If guest auth gate is displayed, verify guest gate UI and sign in
+- extendedWaitUntil:
+    visible: "Sign in to Access Settings"
+    timeout: 10000
+- assertVisible: "Sign in to Access Settings"
+- tapOn: "Sign In"
+- extendedWaitUntil:
+    visible: "Continue with Google"
+    timeout: 10000
+- assertVisible: "Continue with Google"
+# Login via Google mock
+- tapOn: "Continue with Google"
+# On Android, a confirmation dialog pops up for Google Sign-In (Dev Mode)
+- tapOn:
+    text: "Sign In"
+    optional: true
+- extendedWaitUntil:
+    visible: "HOME"
+    timeout: 15000
+- tapOn: "PROFILE"
+- extendedWaitUntil:
+    visible: "Dark Mode"
+    timeout: 10000
+- assertVisible: "Dark Mode"
+# Toggle Dark Mode twice (On and Off)
+- tapOn: "Dark Mode"
+- tapOn: "Dark Mode"
+# Logout action
+- scrollUntilVisible:
+    element: "Log Out"
+    direction: DOWN
+- tapOn: "Log Out"
+# Verify landing on Login screen with Sign In
+- extendedWaitUntil:
+    visible: "Sign In"
+    timeout: 10000
+- assertVisible: "Sign In"
+- assertVisible: "Access as Guest"
+# Re-enter app via Guest Mode
+- tapOn: "Access as Guest"
+- extendedWaitUntil:
+    visible: "HOME"
+    timeout: 10000
+- assertVisible: "HOME"

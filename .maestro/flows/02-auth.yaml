@@ -1,0 +1,43 @@
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: false
+# Ensure we navigate to Login screen if currently in Main feed (e.g. on iOS)
+- runFlow:
+    when:
+      visible: "PROFILE"
+    commands:
+      - tapOn: "PROFILE"
+      - runFlow:
+          when:
+            visible: "Log Out"
+          commands:
+            - tapOn: "Log Out"
+      - runFlow:
+          when:
+            visible: "Sign in to Access Settings"
+          commands:
+            - tapOn: "Sign In"
+- extendedWaitUntil:
+    visible: "Email"
+    timeout: 10000
+- assertVisible: "Email"
+- assertVisible: "Password"
+- assertVisible: "Sign In"
+# Toggle to Register mode
+- tapOn: "Don't have an account? Register"
+- extendedWaitUntil:
+    visible: "Create Account"
+    timeout: 5000
+- assertVisible: "Create Account"
+# Toggle back to Sign In
+- tapOn: "Already have an account? Sign In"
+- extendedWaitUntil:
+    visible: "Sign In"
+    timeout: 5000
+# Continue / Guest bypass login
+- tapOn: "Access as Guest"
+- extendedWaitUntil:
+    visible: "HOME"
+    timeout: 10000
+- assertVisible: "HOME"

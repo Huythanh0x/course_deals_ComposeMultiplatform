@@ -1,0 +1,16 @@
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: false
+# If cold launch lands on Login screen (unauthenticated), enter as Guest
+- runFlow:
+    when:
+      visible: "Access as Guest"
+    commands:
+      - tapOn: "Access as Guest"
+- extendedWaitUntil:
+    visible: "HOME"
+    timeout: 15000
+- assertVisible: "HOME"
+- assertVisible: "COURSE"
+- assertVisible: "PROFILE"

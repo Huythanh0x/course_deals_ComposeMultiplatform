@@ -1,6 +1,26 @@
 # Comprehensive Test Suite & Use Case Specifications
 
-This document defines exhaustive, branch-complete use case stories across all application screens and features in `course_deals_ComposeMultiplatform` and `course_deals_backend`. It is designed for both **Manual QA Verification** and **Automated Compose UI / Unit Test Coverage** targeting 100% of code branches (`if-else`, `when`, error boundaries, network/cache permutations).
+This document defines exhaustive, branch-complete use case stories across all application screens and features in `course_deals_ComposeMultiplatform` and `course_deals_backend`. It is designed for both **Manual QA Verification** and **Automated Maestro E2E / Compose UI / Unit Test Coverage** targeting 100% of code branches (`if-else`, `when`, error boundaries, network/cache permutations).
+
+## Automated Maestro E2E Test Suite
+
+Declarative cross-platform Maestro E2E test flows are maintained in [`.maestro/flows/`](file:///.maestro/flows/):
+- [`01-splash.yaml`](file:///.maestro/flows/01-splash.yaml): Covers `SPLASH-*` (Cold launch, Bottom navigation destinations: HOME, COURSE, PROFILE).
+- [`02-auth.yaml`](file:///.maestro/flows/02-auth.yaml): Covers `AUTH-*` (Sign In <-> Register toggle, input field validation, Guest mode bypass).
+- [`03-home-feed.yaml`](file:///.maestro/flows/03-home-feed.yaml): Covers `HOME-*` (Filter bottom sheet, live search query, keyword filtering, clear query).
+- [`04-detail.yaml`](file:///.maestro/flows/04-detail.yaml): Covers `DETAIL-*` (Course detail header, action bar, report deal bottom sheet, report dialog dismissal).
+- [`05-enroll.yaml`](file:///.maestro/flows/05-enroll.yaml): Covers `ENROLL-*` (Enroll CTA dispatch, in-app WebView rendering, cancel navigation).
+- [`06-profile.yaml`](file:///.maestro/flows/06-profile.yaml): Covers `PROF-*` (Guest access gate, Google authentication sign-in, Dark Mode toggling, secure logout).
+
+### Executing the Suite
+
+```bash
+# Android Emulator (e.g. Medium_Phone / emulator-5554)
+~/.maestro/bin/maestro --device emulator-5554 test -e APP_ID=com.thanh0x.coursedeals .maestro/flows/<flow>.yaml
+
+# iOS Simulator (e.g. iPhone 17 Pro / UDID)
+~/.maestro/bin/maestro --device <IOS_UDID> test -e APP_ID=com.thanh0x.coursedeals.iosApp .maestro/flows/<flow>.yaml
+```
 
 ---
 
