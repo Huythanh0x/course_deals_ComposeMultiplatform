@@ -10,9 +10,22 @@ often as from a fresh `new-ticket` flow — e.g. splitting an existing umbrella 
 after the fact, or attaching issues that already existed before the parent did (as
 happened when #24 was created and #17/#18 were attached to it retroactively).
 
-Sub-issues are **intentionally excluded from the "Course Deals" board** — only a
-parent issue represents the work there (see `docs/project-board.md`). Every path below
-ends with the same board-cascade check for that reason.
+Sub-issues can be tracked on the "Course Deals" board (Project 4) when explicit tracking of child progress across sprint columns is desired by the team.
+
+To add sub-issues to GitHub Project [`Course Deals`](https://github.com/users/Huythanh0x/projects/4):
+```bash
+# Get node ID of the issue
+ISSUE_NODE_ID=$(gh api graphql -f query='query { repository(owner: "Huythanh0x", name: "course_deals_ComposeMultiplatform") { issue(number: <ISSUE_NUM>) { id } } }' -q .data.repository.issue.id)
+
+# Add to Project 4 (Project ID: PVT_kwHOBEROFc4BhjJ2)
+gh api graphql -f query='
+  mutation($projectId: ID!, $contentId: ID!) {
+    addProjectV2ItemById(input: {projectId: $projectId, contentId: $contentId}) {
+      item { id }
+    }
+  }
+' -f projectId="PVT_kwHOBEROFc4BhjJ2" -f contentId="$ISSUE_NODE_ID"
+```
 
 ## Sub-Issue Content Requirements
 
