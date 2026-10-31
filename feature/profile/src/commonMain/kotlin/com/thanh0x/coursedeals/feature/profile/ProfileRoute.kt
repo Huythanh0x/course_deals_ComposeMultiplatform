@@ -2,6 +2,7 @@ package com.thanh0x.coursedeals.feature.profile
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -12,10 +13,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.thanh0x.coursedeals.core.common.AppResult
 import com.thanh0x.coursedeals.core.common.NetworkStatusCode
 import com.thanh0x.coursedeals.core.ui.DialogType
+import com.thanh0x.coursedeals.core.ui.UiEvent
 import com.thanh0x.coursedeals.core.ui.resources.Res
 import com.thanh0x.coursedeals.core.ui.resources.getString
 import com.thanh0x.coursedeals.core.ui.util.PlatformActions
 import com.thanh0x.coursedeals.domain.user.TokenData
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -29,6 +32,21 @@ fun ProfileRoute(
     val coroutineScope = rememberCoroutineScope()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showCategoryPicker by remember { mutableStateOf(false) }
+
+    LaunchedEffect(viewModel) {
+        viewModel.uiEvent.collectLatest { event ->
+            when (event) {
+                is UiEvent.ShowToast -> PlatformActions.showToast(event.message)
+                is UiEvent.ShowAlertDialog -> showAlertDialog(event.title, event.message, event.type)
+                is UiEvent.Navigate -> {
+                    if (event.destination == "Login") {
+                        onNavigateToLogin()
+                    }
+                }
+                is UiEvent.HideKeyboard -> { }
+            }
+        }
+    }
 
     ProfileScreen(
         uiState = uiState,
@@ -66,6 +84,9 @@ fun ProfileRoute(
             viewModel.deleteLocalToken()
             onNavigateToLogin()
         },
+        onDeleteAccountClick = { viewModel.showDeleteAccountDialog() },
+        onConfirmDeleteAccount = { viewModel.deleteAccount() },
+        onDismissDeleteAccountDialog = { viewModel.dismissDeleteAccountDialog() },
         onDevEmailClick = {
             val sent = PlatformActions.sendEmail(
                 email = getString(Res.string.dev_email),
