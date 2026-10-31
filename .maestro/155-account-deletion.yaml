@@ -1,0 +1,18 @@
+appId: com.thanh0x.coursedeals
+---
+- launchApp:
+    clearState: false
+- assertVisible: "PROFILE"
+- tapOn: "PROFILE"
+- scrollUntilVisible:
+    element:
+      text: "Delete Account"
+    direction: DOWN
+    timeout: 10000
+- takeScreenshot: .maestro/screenshots/155-profile-options
+- tapOn: "Delete Account"
+- assertVisible: "Delete Account"
+- assertVisible: "Are you sure you want to permanently delete your account and all associated data? This action cannot be undone."
+- takeScreenshot: .maestro/screenshots/155-delete-account-dialog
+- tapOn: "Cancel"
+- assertNotVisible: "Are you sure you want to permanently delete your account and all associated data? This action cannot be undone."
