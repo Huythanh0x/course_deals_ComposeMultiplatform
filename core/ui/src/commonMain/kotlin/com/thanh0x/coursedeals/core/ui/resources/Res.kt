@@ -186,6 +186,11 @@ object Res {
         val login_error_unexpected_credential = StringResource("Unexpected credential received from Google.")
         val login_error_google_failed = StringResource("Failed to sign in with Google.")
         val retry_button_text = StringResource("Retry")
+        val countdown_days_left = StringResource("%d days left")
+        val countdown_one_day_left = StringResource("1 day left")
+        val countdown_hours_minutes_remaining = StringResource("%02dh %02dm remaining")
+        val countdown_expiring_soon = StringResource("Expiring soon: %dm")
+        val countdown_expiring_soon_seconds = StringResource("Expiring soon: %ds")
     }
 
     object drawable {
