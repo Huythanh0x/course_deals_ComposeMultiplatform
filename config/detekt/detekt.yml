@@ -31,7 +31,7 @@ naming:
     classPattern: '[A-Z][a-zA-Z0-9]*'
   FunctionNaming:
     active: true
-    functionPattern: '[a-z][a-zA-Z0-9]*'
+    functionPattern: '([a-z][a-zA-Z0-9]*)|([A-Z][a-zA-Z0-9]*)'
   VariableNaming:
     active: true
     variablePattern: '[a-z][a-zA-Z0-9]*'
