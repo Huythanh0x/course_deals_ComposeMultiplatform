@@ -33,6 +33,9 @@ class PeriodicCouponSyncWorker(
                 Timber.e("Periodic coupon sync failed: %s", result.message)
                 Result.retry()
             }
+            is AppResult.Loading -> {
+                Result.retry()
+            }
         }
     }
 
