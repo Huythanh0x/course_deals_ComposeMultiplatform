@@ -1,8 +1,13 @@
 plugins {
-    id 'coursedeals.kotlin.library'
+    id 'coursedeals.kmp.library'
 }
 
-dependencies {
-    testImplementation libs.junit
+kotlin {
+    sourceSets {
+        commonTest {
+            dependencies {
+                implementation kotlin('test')
+            }
+        }
+    }
 }
-

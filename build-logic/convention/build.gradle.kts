@@ -19,5 +19,9 @@ gradlePlugin {
             id = "coursedeals.kotlin.library"
             implementationClass = "com.thanh0x.coursedeals.convention.KotlinLibraryConventionPlugin"
         }
+        register("kmpLibrary") {
+            id = "coursedeals.kmp.library"
+            implementationClass = "com.thanh0x.coursedeals.convention.KmpLibraryConventionPlugin"
+        }
     }
 }
