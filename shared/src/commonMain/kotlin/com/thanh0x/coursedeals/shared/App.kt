@@ -1,105 +1,252 @@
 package com.thanh0x.coursedeals.shared
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.thanh0x.coursedeals.core.common.SystemTimeProvider
-import com.thanh0x.coursedeals.core.common.TimeLeft
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.thanh0x.coursedeals.core.network.di.coreNetworkModule
+import com.thanh0x.coursedeals.core.ui.DialogType
+import com.thanh0x.coursedeals.core.ui.UiEvent
+import com.thanh0x.coursedeals.core.ui.di.coreUiModule
+import com.thanh0x.coursedeals.core.ui.koinViewModel
+import com.thanh0x.coursedeals.core.ui.theme.CourseDealsTheme
+import com.thanh0x.coursedeals. core.ui.util.PlatformActions
+import com.thanh0x.coursedeals.data.coupons.di.couponDataModule
+import com.thanh0x.coursedeals.data.user.di.userDataModule
+import com.thanh0x.coursedeals.domain.coupons.di.couponDomainModule
+import com.thanh0x.coursedeals.domain.user.di.userDomainModule
+import com.thanh0x.coursedeals.feature.auth.LoginScreen
+import com.thanh0x.coursedeals.feature.auth.LoginViewModel
+import com.thanh0x.coursedeals.feature.auth.di.authModule
+import com.thanh0x.coursedeals.feature.course.di.courseModule
+import com.thanh0x.coursedeals.feature.detail.CouponDetailRoute
+import com.thanh0x.coursedeals.feature.detail.CouponDetailViewModel
+import com.thanh0x.coursedeals.feature.detail.di.detailModule
+import com.thanh0x.coursedeals.feature.enroll.CouponEnrollRoute
+import com.thanh0x.coursedeals.feature.home.di.homeModule
+import com.thanh0x.coursedeals.feature.profile.di.profileModule
+import com.thanh0x.coursedeals.navigation.MainAppScaffold
+import kotlinx.coroutines.flow.collectLatest
+import org.koin.core.context.startKoin
+import org.koin.mp.KoinPlatformTools
+
+val sharedKoinModules = listOf(
+    coreNetworkModule,
+    coreUiModule,
+    couponDataModule,
+    userDataModule,
+    couponDomainModule,
+    userDomainModule,
+    homeModule,
+    courseModule,
+    profileModule,
+    detailModule,
+    authModule,
+)
+
+fun initSharedKoin() {
+    if (KoinPlatformTools.defaultContext().getOrNull() == null) {
+        startKoin {
+            modules(sharedKoinModules)
+        }
+    }
+}
+
+sealed interface AppScreen {
+    data object Main : AppScreen
+    data object Login : AppScreen
+    data class Detail(val courseId: Int) : AppScreen
+    data class Enroll(val couponUrl: String?, val previousCourseId: Int?) : AppScreen
+}
+
+private data class DialogState(
+    val title: String,
+    val message: String,
+    val type: DialogType,
+)
 
 @Composable
 fun App() {
-    MaterialTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = Color(0xFF111318),
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(24.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text(
-                    text = "Course Deals",
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    textAlign = TextAlign.Center,
-                )
+    remember {
+        initSharedKoin()
+        true
+    }
 
-                Spacer(modifier = Modifier.height(8.dp))
+    var darkThemeOverride by remember { mutableStateOf<Boolean?>(null) }
+    var currentScreen by remember { mutableStateOf<AppScreen>(AppScreen.Main) }
+    var dialogState by remember { mutableStateOf<DialogState?>(null) }
 
-                Text(
-                    text = "Compose Multiplatform on iOS",
-                    fontSize = 16.sp,
-                    color = Color(0xFFA8C7FA),
-                    textAlign = TextAlign.Center,
-                )
+    LaunchedEffect(Unit) {
+        PlatformActions.onApplyDarkMode = { enabled ->
+            darkThemeOverride = enabled
+        }
+        PlatformActions.onShowToast = { message ->
+            dialogState = DialogState(
+                title = "Notice",
+                message = message,
+                type = DialogType.INFO,
+            )
+        }
+    }
 
-                Spacer(modifier = Modifier.height(32.dp))
+    val showAlertDialog: (String, String, DialogType) -> Unit = { title, message, type ->
+        dialogState = DialogState(title = title, message = message, type = type)
+    }
 
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFF1E2025),
-                    ),
-                ) {
-                    Column(
-                        modifier = Modifier.padding(20.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                    ) {
-                        Text(
-                            text = "Cross-Platform Engine",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Color.White,
-                        )
-
-                        Text(
-                            text = "Shared logic, UI rendering, and multiplatform models running natively via Skiko / UIKit.",
-                            fontSize = 14.sp,
-                            color = Color(0xFFC4C6D0),
-                        )
-
-                        val nowMillis = SystemTimeProvider.currentTimeMillis()
-                        val sampleTimeLeft = TimeLeft.getExpiryDuration(nowMillis + 86400000L)
-                        val status = when (sampleTimeLeft) {
-                            is TimeLeft.ExpiryDuration.Active -> "Active deal (24h left)"
-                            is TimeLeft.ExpiryDuration.Expired -> "Deal expired"
-                            is TimeLeft.ExpiryDuration.Unknown -> "Time unknown"
+    CourseDealsTheme(
+        darkTheme = darkThemeOverride ?: false,
+        dynamicColor = false,
+    ) {
+        when (val screen = currentScreen) {
+            is AppScreen.Main -> {
+                MainAppScaffold(
+                    onCouponClick = { coupon ->
+                        val courseId = coupon.courseId
+                        if (courseId != null) {
+                            currentScreen = AppScreen.Detail(courseId)
                         }
+                    },
+                    onNavigateToLogin = {
+                        currentScreen = AppScreen.Login
+                    },
+                    showAlertDialog = showAlertDialog,
+                )
+            }
 
-                        Text(
-                            text = "Multiplatform TimeLeft: $status",
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = Color(0xFF80D49C),
+            is AppScreen.Detail -> {
+                val detailViewModel: CouponDetailViewModel = koinViewModel(
+                    key = "detail_${screen.courseId}",
+                )
+                LaunchedEffect(screen.courseId) {
+                    detailViewModel.checkIfInternetAvailable()
+                    detailViewModel.fetchCouponDetail(screen.courseId)
+                }
+                CouponDetailRoute(
+                    viewModel = detailViewModel,
+                    onBackClick = {
+                        currentScreen = AppScreen.Main
+                    },
+                    onEnrollClick = { couponUrl ->
+                        currentScreen = AppScreen.Enroll(
+                            couponUrl = couponUrl,
+                            previousCourseId = screen.courseId,
                         )
+                    },
+                    onShareClick = { title, url ->
+                        PlatformActions.shareLink(title, url)
+                    },
+                    onReportSubmitted = { _, _ ->
+                        showAlertDialog(
+                            "Report Submitted",
+                            "Thank you for reporting this deal. Our team will verify it shortly.",
+                            DialogType.INFO,
+                        )
+                    },
+                )
+            }
+
+            is AppScreen.Enroll -> {
+                var isLoading by remember(screen.couponUrl) { mutableStateOf(true) }
+                var isError by remember(screen.couponUrl) { mutableStateOf(false) }
+                CouponEnrollRoute(
+                    couponUrl = screen.couponUrl,
+                    isLoading = isLoading,
+                    isError = isError,
+                    onBackClick = {
+                        val prevId = screen.previousCourseId
+                        currentScreen = if (prevId != null) {
+                            AppScreen.Detail(prevId)
+                        } else {
+                            AppScreen.Main
+                        }
+                    },
+                    onRetryClick = {
+                        isError = false
+                        isLoading = true
+                    },
+                    onPageStarted = {
+                        isLoading = true
+                    },
+                    onPageFinished = {
+                        isLoading = false
+                    },
+                    onPageError = {
+                        isLoading = false
+                        isError = true
+                    },
+                )
+            }
+
+            is AppScreen.Login -> {
+                val loginViewModel: LoginViewModel = koinViewModel(key = "login_vm")
+                val loginUiState by loginViewModel.uiState.collectAsStateWithLifecycle()
+
+                LaunchedEffect(loginViewModel) {
+                    loginViewModel.uiEvent.collectLatest { event ->
+                        when (event) {
+                            is UiEvent.Navigate -> {
+                                currentScreen = AppScreen.Main
+                            }
+                            is UiEvent.ShowToast -> {
+                                showAlertDialog("Authentication", event.message, DialogType.INFO)
+                            }
+                            else -> {}
+                        }
                     }
                 }
+
+                LaunchedEffect(loginUiState.error) {
+                    val err = loginUiState.error
+                    if (!err.isNullOrBlank()) {
+                        showAlertDialog("Authentication Error", err, DialogType.ERROR)
+                    }
+                }
+
+                LoginScreen(
+                    uiState = loginUiState,
+                    onLoginClick = { email, password ->
+                        loginViewModel.login(email, password)
+                    },
+                    onRegisterClick = { email, password, fullName ->
+                        loginViewModel.register(email, password, fullName)
+                    },
+                    onOtpClick = { otp ->
+                        loginViewModel.verifyOtp(otp)
+                    },
+                    onToggleAuthMode = {
+                        loginViewModel.toggleAuthMode()
+                    },
+                    onGoogleSignInClick = {
+                        loginViewModel.googleLogin("mock-google-token")
+                    },
+                    onFingerprintClick = {
+                        loginViewModel.onBiometricUnlockSuccess()
+                    },
+                    onGuestModeClick = {
+                        currentScreen = AppScreen.Main
+                    },
+                )
             }
+        }
+
+        val currentDialog = dialogState
+        if (currentDialog != null) {
+            AlertDialog(
+                onDismissRequest = { dialogState = null },
+                title = { Text(text = currentDialog.title) },
+                text = { Text(text = currentDialog.message) },
+                confirmButton = {
+                    TextButton(onClick = { dialogState = null }) {
+                        Text(text = "OK")
+                    }
+                },
+            )
         }
     }
 }

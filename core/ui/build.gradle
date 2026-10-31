@@ -1,46 +1,35 @@
 plugins {
-    id 'coursedeals.android.library'
-    id 'com.google.devtools.ksp'
+    id 'coursedeals.kmp.library'
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.compose.multiplatform)
 }
 
-android {
-    namespace 'com.thanh0x.coursedeals.core.ui'
-    buildFeatures {
-        compose = true
+kotlin {
+    sourceSets {
+        commonMain {
+            dependencies {
+                api project(':core:common')
+                api project(':domain:coupons')
+                api compose.runtime
+                api compose.foundation
+                api compose.material3
+                api compose.materialIconsExtended
+                api compose.ui
+                api libs.androidx.paging.common
+                api libs.koin.core
+                api libs.kotlinx.coroutines.core
+                implementation libs.ktor.client.core
+            }
+        }
+        jvmMain {
+            dependencies {
+                implementation libs.ktor.client.okhttp
+            }
+        }
+        iosMain {
+            dependencies {
+                implementation libs.ktor.client.darwin
+            }
+        }
     }
-    lint {
-        baseline = file("lint-baseline.xml")
-    }
-}
-
-compose.resources {
-    publicResClass = true
-    packageOfResClass = "com.thanh0x.coursedeals.core.ui.resources"
-}
-
-dependencies {
-    api project(':core:common')
-    api project(':domain:coupons')
-    api compose.components.resources
-    api libs.androidx.core.ktx
-    api libs.androidx.appcompat
-    api libs.material
-    api libs.androidx.fragment.ktx
-
-    api platform(libs.androidx.compose.bom)
-    api libs.androidx.compose.ui
-    api libs.androidx.compose.ui.graphics
-    api libs.androidx.compose.ui.tooling.preview
-    api libs.androidx.compose.material3
-    api libs.androidx.compose.material.icons.extended
-    api libs.androidx.lifecycle.runtime.compose
-    api libs.androidx.paging.compose
-    api libs.coil.compose
-    api libs.coil.network.okhttp
-    debugApi libs.androidx.compose.ui.tooling
-
-    implementation libs.androidx.biometric
-    implementation libs.timber
 }

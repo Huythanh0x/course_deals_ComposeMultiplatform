@@ -1,18 +1,25 @@
 plugins {
-    id 'coursedeals.android.library'
+    id 'coursedeals.kmp.library'
     alias(libs.plugins.kotlin.serialization)
 }
 
-android {
-    namespace 'com.thanh0x.coursedeals.domain.coupons'
-}
-
-dependencies {
-    implementation project(':core:common')
-    implementation project(':domain:user')
-    implementation libs.kotlinx.serialization.json
-    implementation libs.androidx.paging.common
-    implementation libs.androidx.paging.runtime
-
-    testImplementation libs.junit
+kotlin {
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation project(':core:common')
+                implementation project(':domain:user')
+                implementation libs.kotlinx.serialization.json
+                implementation libs.kotlinx.coroutines.core
+                implementation libs.androidx.paging.common
+                implementation libs.koin.core
+            }
+        }
+        commonTest {
+            dependencies {
+                implementation kotlin('test')
+                implementation libs.kotlinx.coroutines.test
+            }
+        }
+    }
 }

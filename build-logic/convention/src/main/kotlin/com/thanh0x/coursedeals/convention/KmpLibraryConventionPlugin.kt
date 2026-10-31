@@ -16,13 +16,16 @@ class KmpLibraryConventionPlugin : Plugin<Project> {
             extensions.configure<KotlinMultiplatformExtension> {
                 applyDefaultHierarchyTemplate()
 
+                compilerOptions {
+                    freeCompilerArgs.add("-Xexpect-actual-classes")
+                }
+
                 jvm {
                     compilerOptions {
                         jvmTarget.set(JvmTarget.JVM_17)
                     }
                 }
 
-                iosX64()
                 iosArm64()
                 iosSimulatorArm64()
             }
