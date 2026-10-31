@@ -130,6 +130,8 @@ configurations.configureEach {
     exclude group: 'org.jetbrains.compose.ui', module: 'ui-util-desktop'
     exclude group: 'androidx.compose.ui', module: 'ui-tooling-preview'
     exclude group: 'androidx.compose.ui', module: 'ui-tooling-preview-android'
+    exclude group: 'androidx.paging', module: 'paging-compose'
+    exclude group: 'androidx.paging', module: 'paging-compose-android'
 }
 
 dependencies {
@@ -170,7 +172,6 @@ dependencies {
     implementation libs.androidx.navigation.compose
     implementation libs.koin.android
     implementation libs.koin.androidx.compose
-    implementation libs.androidx.paging.compose
     implementation libs.coil.compose
     implementation libs.coil.network.okhttp
     debugImplementation libs.androidx.compose.ui.tooling
