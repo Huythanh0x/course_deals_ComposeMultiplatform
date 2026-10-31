@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Course (graduation cap) — outlined (inactive nav state)
+  Represents the Course/Browse tab
+  Color: onSurfaceVariant #FF44474E
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Mortarboard brim (diamond) -->
+    <path
+        android:strokeColor="#FF44474E"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M2,9L12,4L22,9L12,14L2,9Z"/>
+
+    <!-- Gown/body arc -->
+    <path
+        android:strokeColor="#FF44474E"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M6,11.5L6,17.5Q9,21 12,21Q15,21 18,17.5L18,11.5"/>
+
+    <!-- Tassel pole -->
+    <path
+        android:strokeColor="#FF44474E"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M20,9L20,14"/>
+
+    <!-- Tassel tip (small horizontal bar) -->
+    <path
+        android:strokeColor="#FF44474E"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M18.5,14L21.5,14"/>
+
+</vector>

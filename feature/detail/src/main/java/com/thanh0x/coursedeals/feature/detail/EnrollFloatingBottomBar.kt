@@ -21,10 +21,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.thanh0x.coursedeals.core.ui.R as CoreR
+import com.thanh0x.coursedeals.core.ui.resources.Res
+import com.thanh0x.coursedeals.core.ui.resources.stringResource
 
 @Composable
 fun EnrollFloatingBottomBar(
@@ -59,7 +59,7 @@ fun EnrollFloatingBottomBar(
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = stringResource(CoreR.string.action_report_title),
+                    text = stringResource(Res.string.action_report_title),
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.SemiBold,
                 )
@@ -73,7 +73,7 @@ fun EnrollFloatingBottomBar(
                     .height(48.dp),
             ) {
                 Text(
-                    text = stringResource(CoreR.string.text_button_enroll_now),
+                    text = stringResource(Res.string.text_button_enroll_now),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                 )

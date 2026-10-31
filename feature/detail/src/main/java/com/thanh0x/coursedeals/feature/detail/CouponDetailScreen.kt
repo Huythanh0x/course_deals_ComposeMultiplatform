@@ -24,11 +24,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.thanh0x.coursedeals.core.ui.R as CoreR
 import com.thanh0x.coursedeals.core.ui.util.MapperToView
 import com.thanh0x.coursedeals.domain.coupons.Coupon
 

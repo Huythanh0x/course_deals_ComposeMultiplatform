@@ -33,19 +33,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.thanh0x.coursedeals.core.ui.R as CoreR
+import com.thanh0x.coursedeals.core.ui.resources.Res
+import com.thanh0x.coursedeals.core.ui.resources.StringResource
+import com.thanh0x.coursedeals.core.ui.resources.stringResource
 
-private data class ReportReasonItem(val resId: Int, val isOther: Boolean = false)
+private data class ReportReasonItem(val resource: StringResource, val isOther: Boolean = false)
 
 private val REPORT_REASONS = listOf(
-    ReportReasonItem(CoreR.string.report_reason_not_free),
-    ReportReasonItem(CoreR.string.report_reason_no_data),
-    ReportReasonItem(CoreR.string.report_reason_expired),
-    ReportReasonItem(CoreR.string.report_reason_other, isOther = true),
+    ReportReasonItem(Res.string.report_reason_not_free),
+    ReportReasonItem(Res.string.report_reason_no_data),
+    ReportReasonItem(Res.string.report_reason_expired),
+    ReportReasonItem(Res.string.report_reason_other, isOther = true),
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,7 +56,7 @@ fun ReportDealBottomSheet(
     onSubmitReport: (reason: String, otherDetails: String?) -> Unit,
     sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
 ) {
-    var selectedReasonResId by remember { mutableStateOf<Int?>(null) }
+    var selectedReasonRes by remember { mutableStateOf<StringResource?>(null) }
     var otherReasonText by remember { mutableStateOf("") }
     var isError by remember { mutableStateOf(false) }
 
@@ -72,20 +73,20 @@ fun ReportDealBottomSheet(
                 .verticalScroll(rememberScrollState()),
         ) {
             Text(
-                text = stringResource(CoreR.string.report_title),
+                text = stringResource(Res.string.report_title),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
             )
             Spacer(modifier = Modifier.height(16.dp))
             ReportReasonSelector(
-                selectedReasonResId = selectedReasonResId,
+                selectedReason = selectedReasonRes,
                 onSelectReason = {
-                    selectedReasonResId = it
+                    selectedReasonRes = it
                     isError = false
                 },
             )
-            if (selectedReasonResId == CoreR.string.report_reason_other) {
+            if (selectedReasonRes == Res.string.report_reason_other) {
                 ReportOtherInput(
                     value = otherReasonText,
                     onValueChange = {
@@ -99,10 +100,10 @@ fun ReportDealBottomSheet(
             HorizontalDivider()
             ReportActionButtons(
                 onCancel = onDismissRequest,
-                canSubmit = selectedReasonResId != null,
+                canSubmit = selectedReasonRes != null,
                 onSubmit = {
                     handleReportSubmit(
-                        selectedReasonResId = selectedReasonResId,
+                        selectedReason = selectedReasonRes,
                         otherReasonText = otherReasonText,
                         onError = { isError = true },
                         onSubmit = onSubmitReport,
@@ -115,8 +116,8 @@ fun ReportDealBottomSheet(
 
 @Composable
 private fun ReportReasonSelector(
-    selectedReasonResId: Int?,
-    onSelectReason: (Int) -> Unit,
+    selectedReason: StringResource?,
+    onSelectReason: (StringResource) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -125,14 +126,14 @@ private fun ReportReasonSelector(
             .selectableGroup(),
     ) {
         REPORT_REASONS.forEach { item ->
-            val reasonLabel = stringResource(item.resId)
-            val selected = selectedReasonResId == item.resId
+            val reasonLabel = stringResource(item.resource)
+            val selected = selectedReason == item.resource
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .selectable(
                         selected = selected,
-                        onClick = { onSelectReason(item.resId) },
+                        onClick = { onSelectReason(item.resource) },
                         role = Role.RadioButton,
                     )
                     .padding(vertical = 8.dp),
@@ -163,10 +164,10 @@ private fun ReportOtherInput(
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        placeholder = { Text(stringResource(CoreR.string.report_other_hint)) },
+        placeholder = { Text(stringResource(Res.string.report_other_hint)) },
         isError = isError,
         supportingText = if (isError) {
-            { Text(stringResource(CoreR.string.report_other_hint)) }
+            { Text(stringResource(Res.string.report_other_hint)) }
         } else {
             null
         },
@@ -194,7 +195,7 @@ private fun ReportActionButtons(
             onClick = onCancel,
             modifier = Modifier.weight(1f),
         ) {
-            Text(stringResource(CoreR.string.btn_cancel))
+            Text(stringResource(Res.string.btn_cancel))
         }
         Spacer(modifier = Modifier.width(16.dp))
         Button(
@@ -206,28 +207,28 @@ private fun ReportActionButtons(
             ),
             modifier = Modifier.weight(1f),
         ) {
-            Text(stringResource(CoreR.string.btn_submit), fontWeight = FontWeight.Bold)
+            Text(stringResource(Res.string.btn_submit), fontWeight = FontWeight.Bold)
         }
     }
 }
 
 private fun handleReportSubmit(
-    selectedReasonResId: Int?,
+    selectedReason: StringResource?,
     otherReasonText: String,
     onError: () -> Unit,
     onSubmit: (String, String?) -> Unit,
 ) {
-    if (selectedReasonResId == null) return
-    val isOther = selectedReasonResId == CoreR.string.report_reason_other
+    if (selectedReason == null) return
+    val isOther = selectedReason == Res.string.report_reason_other
     val trimmed = otherReasonText.trim()
     if (isOther && trimmed.isEmpty()) {
         onError()
         return
     }
-    val reasonKey = when (selectedReasonResId) {
-        CoreR.string.report_reason_not_free -> "Not free"
-        CoreR.string.report_reason_no_data -> "No data"
-        CoreR.string.report_reason_expired -> "Expired deal"
+    val reasonKey = when (selectedReason) {
+        Res.string.report_reason_not_free -> "Not free"
+        Res.string.report_reason_no_data -> "No data"
+        Res.string.report_reason_expired -> "Expired deal"
         else -> "Other"
     }
     onSubmit(reasonKey, if (isOther) trimmed else null)

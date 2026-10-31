@@ -2,6 +2,7 @@ plugins {
     id 'coursedeals.android.library'
     id 'com.google.devtools.ksp'
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.compose.multiplatform)
 }
 
 android {
@@ -14,9 +15,15 @@ android {
     }
 }
 
+compose.resources {
+    publicResClass = true
+    packageOfResClass = "com.thanh0x.coursedeals.core.ui.resources"
+}
+
 dependencies {
     api project(':core:common')
     api project(':domain:coupons')
+    api compose.components.resources
     api libs.androidx.core.ktx
     api libs.androidx.appcompat
     api libs.material

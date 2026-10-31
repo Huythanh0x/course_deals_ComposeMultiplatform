@@ -26,12 +26,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.thanh0x.coursedeals.core.ui.R as CoreR
+import com.thanh0x.coursedeals.core.ui.resources.Res
+import com.thanh0x.coursedeals.core.ui.resources.stringResource
 import com.thanh0x.coursedeals.core.ui.theme.CourseDealsTheme
-import com.thanh0x.coursedeals.core.ui.util.categoryResId
+import com.thanh0x.coursedeals.core.ui.util.categoryResource
 import com.thanh0x.coursedeals.domain.coupons.CourseCategory
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -59,7 +59,7 @@ fun CategoryPickerBottomSheet(
                 .padding(bottom = 16.dp)
         ) {
             Text(
-                text = stringResource(CoreR.string.fav_cats_title),
+                text = stringResource(Res.string.fav_cats_title),
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
@@ -77,7 +77,7 @@ fun CategoryPickerBottomSheet(
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     CourseCategory.entries.forEach { category ->
-                        val categoryStr = stringResource(category.categoryResId)
+                        val categoryStr = stringResource(category.categoryResource)
                         val isSelected = selectedCategories.contains(categoryStr)
 
                         FilterChip(
@@ -116,7 +116,7 @@ fun CategoryPickerBottomSheet(
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(text = stringResource(CoreR.string.btn_done))
+                    Text(text = stringResource(Res.string.btn_done))
                 }
             }
         }

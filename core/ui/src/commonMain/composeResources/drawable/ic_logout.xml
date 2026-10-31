@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Logout — single state
+  Color: onErrorContainer #FF410002
+  Usage: Profile screen logout button icon
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Door frame (left/open side) -->
+    <path
+        android:strokeColor="#FF410002"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M14,4H8C6.9,4 6,4.9 6,6V18C6,19.1 6.9,20 8,20H14"/>
+
+    <!-- Arrow body pointing right (exit) -->
+    <path
+        android:strokeColor="#FF410002"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M10,12H22"/>
+
+    <!-- Arrow head -->
+    <path
+        android:strokeColor="#FF410002"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M18,8L22,12L18,16"/>
+
+</vector>

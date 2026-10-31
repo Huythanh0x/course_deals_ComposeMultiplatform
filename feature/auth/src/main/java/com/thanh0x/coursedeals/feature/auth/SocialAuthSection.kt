@@ -15,10 +15,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.thanh0x.coursedeals.core.ui.R as CoreR
+import com.thanh0x.coursedeals.core.ui.resources.Res
+import com.thanh0x.coursedeals.core.ui.resources.painterResource
+import com.thanh0x.coursedeals.core.ui.resources.stringResource
 
 @Composable
 fun SocialAuthSection(
@@ -32,7 +32,7 @@ fun SocialAuthSection(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = stringResource(CoreR.string.auth_subhead),
+            text = stringResource(Res.string.auth_subhead),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -59,13 +59,13 @@ private fun GoogleSignInButton(
         shape = RoundedCornerShape(29.dp),
     ) {
         Icon(
-            painter = painterResource(CoreR.drawable.ic_google),
+            painter = painterResource(Res.drawable.ic_google),
             contentDescription = null,
             tint = Color.Unspecified,
             modifier = Modifier.size(24.dp),
         )
         Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-        Text(text = stringResource(CoreR.string.auth_btn_google))
+        Text(text = stringResource(Res.string.auth_btn_google))
     }
 }
 
@@ -84,11 +84,11 @@ private fun FingerprintSignInButton(
         shape = RoundedCornerShape(29.dp),
     ) {
         Icon(
-            painter = painterResource(CoreR.drawable.ic_fingerprint),
+            painter = painterResource(Res.drawable.ic_fingerprint),
             contentDescription = null,
             modifier = Modifier.size(24.dp),
         )
         Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-        Text(text = stringResource(CoreR.string.auth_btn_fingerprint))
+        Text(text = stringResource(Res.string.auth_btn_fingerprint))
     }
 }

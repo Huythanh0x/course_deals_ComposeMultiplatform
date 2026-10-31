@@ -16,11 +16,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.thanh0x.coursedeals.core.ui.R as CoreR
+import com.thanh0x.coursedeals.core.ui.resources.Res
+import com.thanh0x.coursedeals.core.ui.resources.stringResource
 import com.thanh0x.coursedeals.core.ui.util.MapperToView
 import com.thanh0x.coursedeals.domain.coupons.Coupon
 
@@ -60,7 +60,7 @@ private fun CourseHeadingSubSection(
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         Text(
-            text = stringResource(CoreR.string.header_heading),
+            text = stringResource(Res.string.header_heading),
             style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,
@@ -88,7 +88,7 @@ private fun CourseBodyDescription(
             .animateContentSize(),
     ) {
         Text(
-            text = stringResource(CoreR.string.header_description),
+            text = stringResource(Res.string.header_description),
             style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,
