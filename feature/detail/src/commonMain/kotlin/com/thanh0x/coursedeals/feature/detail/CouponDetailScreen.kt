@@ -141,6 +141,7 @@ private fun CouponDetailContent(
             previewImage = coupon.previewImage,
             title = coupon.title ?: "",
             timeLeftText = timeLeftText,
+            expiredTime = coupon.expiredTime,
             isBookmarked = isBookmarked,
             onBackClick = onBackClick,
             onBookmarkToggle = onBookmarkToggle,

@@ -199,6 +199,11 @@ object Res {
         val delete_account_dialog_title = StringResource("Delete Account")
         val delete_account_dialog_message = StringResource("Are you sure you want to permanently delete your account and all associated data? This action cannot be undone.")
         val delete_account_confirm = StringResource("Delete")
+        val countdown_days_left = StringResource("%d days left")
+        val countdown_one_day_left = StringResource("1 day left")
+        val countdown_hours_minutes_remaining = StringResource("%02dh %02dm remaining")
+        val countdown_expiring_soon = StringResource("Expiring soon: %dm")
+        val countdown_expiring_soon_seconds = StringResource("Expiring soon: %ds")
     }
 
     object drawable {
