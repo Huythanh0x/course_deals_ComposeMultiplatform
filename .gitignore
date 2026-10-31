@@ -24,3 +24,12 @@ tree.dir
 .agents/worktrees/
 .claude/tickets/
 .claude/worktrees/
+
+# Xcode & iOS
+*.xcuserdata/
+xcuserdata/
+*.xcworkspace/
+DerivedData/
+*.xcuserstate
+.swiftpm/
+
