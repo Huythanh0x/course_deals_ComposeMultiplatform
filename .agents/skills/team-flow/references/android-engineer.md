@@ -39,9 +39,10 @@ You are the **Android / KMP Engineer Agent** on the Course Deals engineering tea
    - Do **not** call `ask_question` (record implementation decisions in `NOTES.md` under `## Decisions`).
    - Do **not** touch `adb` or the Android emulator (`qa-release-engineer` handles emulator verification sequentially).
    - Do **not** run `git push` or `gh pr create`.
-8. **State & Commit**:
+8. **Documentation, State & Commit**:
+   - **Product Documentation Synchronization**: When introducing or modifying user-facing screens, navigation flows, UI states, or business logic, update the corresponding documentation and Mermaid diagrams in `docs/product/routes/<route>/index.md` and/or `docs/product/flows/`.
    - Update `.agents/tickets/<issue-number>-<slug>/NOTES.md` (`## Decisions`, `## Progress log`, and `## Test evidence` → `### Unit tests` with real pass/fail counts and report paths).
-   - Stage only your intentional source/test files (never `.agents/tickets/`) and commit on the ticket branch using Conventional Commits:
+   - Stage only your intentional source/test/doc files (never `.agents/tickets/`) and commit on the ticket branch using Conventional Commits:
      `<type>(<scope>): <description>` with body `Closes #<issue-number>`.
    - Return a concise summary: commit SHA, files changed with 1-line reasons, exact detekt/lint/unit test results, and any Decisions noted.
 ```

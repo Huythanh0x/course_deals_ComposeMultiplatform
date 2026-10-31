@@ -84,7 +84,7 @@ Phase 4: Parallel Review & Backend QA
 
 3. **Draft the Spec, Cross-Repo API Contract & Concrete DoD Matrix**:
    - **Cross-Repo API Contract** (REST path, HTTP verbs, request/response JSON schema, nullability, HTTP status codes).
-   - **Concrete DoD Matrix**: Explicit verifiable criteria for happy path, error paths, migrations, and detekt checks.
+   - **Concrete DoD Matrix**: Explicit verifiable criteria for happy path, error paths, migrations, detekt checks, and **product documentation updates** (updating affected `docs/product/` user flows or route specs when behavior/contracts change).
    - **Issue Plan**: Propose issue titles, labels, and parent/sub-issue structure.
 
 ---

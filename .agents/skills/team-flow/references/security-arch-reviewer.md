@@ -33,10 +33,11 @@ If `course_deals_ComposeMultiplatform` was modified:
 - Verify ViewModels follow the `MutableStateFlow` / `asStateFlow()` + `UiState` convention.
 - Verify module `build.gradle` files use `coursedeals.android.library` or `coursedeals.kotlin.library` convention plugins.
 
-### 4. Backend Safety, ADR & Code Hygiene Audit (`adr`)
+### 4. Backend Safety, ADR, Docs Parity & Code Hygiene Audit (`adr`)
 - If a JPA `@Entity` in `course_deals_backend` was modified, verify a matching Flyway migration (`V<N>__<desc>.sql`) exists in `modules/coupon-domain/src/main/resources/db/migration/`.
 - Check `git diff` in both repos for leftover debug code (`println`, `Log.d`), hardcoded credentials/tokens, or unintended file changes (e.g., `.agents/tickets/` staged in git).
 - Check whether the change introduced a non-trivial architectural tradeoff that requires an ADR under `docs/adr/NNNN-*.md`.
+- **Product Docs Synchronization Audit**: If feature behavior, routes, or API schemas were modified, verify that the corresponding files and Mermaid diagrams in `docs/product/` were updated to reflect the new implementation.
 
 ## Output Format
 Return a structured report:
@@ -45,6 +46,6 @@ Return a structured report:
   1. **Cross-Repo Contract Parity**: PASS / FAIL / N/A (with specific file:line details)
   2. **Android Intent & Auth Security**: PASS / FAIL / N/A
   3. **KMP Readiness & Architecture**: PASS / FAIL / N/A
-  4. **Flyway, ADR & Hygiene**: PASS / FAIL
+  4. **Flyway, ADR, Product Docs Parity & Hygiene**: PASS / FAIL
 - **Actionable Fixes (if `NEEDS_FIX`)**: Exact file paths, line numbers, and what `backend-engineer` or `android-engineer` must fix.
 ```
