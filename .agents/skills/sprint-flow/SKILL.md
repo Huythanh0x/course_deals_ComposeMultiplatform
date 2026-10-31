@@ -31,9 +31,9 @@ Target GitHub Repositories & Project:
 
 ## 2. Sprint Sizing & Capacity Budget
 
-As a solo developer paired with Antigravity multi-agent orchestration (`team-flow`), boilerplate, DTO contracts, unit tests, and emulator runs are handled autonomously.
+As a solo developer supercharged with daily Antigravity multi-agent orchestration (`team-flow`), boilerplate generation, cross-repo contracts, automated unit tests, and emulator verifications occur rapidly and in parallel.
 
-- **Recommended Weekly Velocity**: **15 – 20 story points** total per sprint.
+- **Recommended Weekly Velocity**: **30 – 40 story points** total per sprint (~5–7 points per day).
 - **Fibonacci Point Scale**:
   - `size: 1`: Quick fix, documentation, minor config adjustment (~1-2 hours).
   - `size: 2`: Standard isolated endpoint or single-screen UI fix (~half day).
@@ -92,7 +92,7 @@ When invoked:
    - User choices: carry forward into new sprint or move to `"Backlog"`.
 3. **Pull Candidate Backlog Items**:
    - Query unassigned backlog items labeled `priority: P0` or `priority: P1`.
-   - Calculate total points using `size: N` labels (Cap at **20 points** max).
+   - Calculate total points using `size: N` labels (Cap at **30–40 points** max).
 4. **Update Project Board**:
    - Move approved issues to `"Ready"` / `"Todo"` status.
    - Stamp each approved issue with the target `iterationId`.
