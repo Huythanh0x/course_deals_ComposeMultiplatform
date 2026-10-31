@@ -7,6 +7,8 @@ import com.thanh0x.coursedeals.data.coupons.source.local.LocalCouponDataSourceIm
 import com.thanh0x.coursedeals.data.coupons.source.remote.CouponService
 import com.thanh0x.coursedeals.data.coupons.source.remote.CouponServiceImpl
 import com.thanh0x.coursedeals.data.coupons.source.remote.RemoteCouponDataSourceImpl
+import com.thanh0x.coursedeals.data.coupons.sync.CouponSyncManager
+import com.thanh0x.coursedeals.data.coupons.sync.CouponSyncManagerImpl
 import com.thanh0x.coursedeals.domain.coupons.CouponRepository
 import com.thanh0x.coursedeals.domain.coupons.SearchRepository
 import com.thanh0x.coursedeals.domain.coupons.source.RemoteCouponDataSource
@@ -30,6 +32,12 @@ val couponDataModule = module {
             localSettingsDataSource = get(),
             couponService = get(),
             searchRepository = get(),
+        )
+    }
+
+    single<CouponSyncManager> {
+        CouponSyncManagerImpl(
+            couponRepository = get(),
         )
     }
 }
