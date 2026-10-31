@@ -1,10 +1,9 @@
 package com.thanh0x.coursedeals.domain.coupons
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
-@Parcelize
-enum class CourseCategory(val dbValue: String) : Parcelable {
+@Serializable
+enum class CourseCategory(val dbValue: String) {
     DEVELOPMENT("Development"),
     DESIGN("Design"),
     BUSINESS("Business"),
@@ -17,18 +16,19 @@ enum class CourseCategory(val dbValue: String) : Parcelable {
     FINANCE("Finance"),
 }
 
-@Parcelize
-enum class CourseLanguage : Parcelable {
+@Serializable
+enum class CourseLanguage {
     ALL,
     ENGLISH,
     OTHERS,
 }
 
-@Parcelize
-enum class SortOption : Parcelable {
+@Serializable
+enum class SortOption {
     NEWEST,
     RATING,
     STUDENTS,
     REVIEWS,
     EXPIRING_SOON,
 }
+
