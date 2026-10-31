@@ -3,6 +3,8 @@ package com.thanh0x.coursedeals.shared
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,16 +32,18 @@ import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.OpenInBrowser
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material3.Badge
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.NavigationBar
@@ -52,8 +56,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -70,171 +74,232 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.thanh0x.coursedeals.core.common.SystemTimeProvider
-import com.thanh0x.coursedeals.core.common.TimeLeft
 
-data class DealItem(
+// Exact Material 3 Design Tokens matching core:ui Theme.kt
+val LightPrimary = Color(0xFF0B57D0)
+val LightOnPrimary = Color(0xFFFFFFFF)
+val LightPrimaryContainer = Color(0xFFD3E3FD)
+val LightOnPrimaryContainer = Color(0xFF041E49)
+val LightSurface = Color(0xFFFDFCFF)
+val LightSurfaceContainerLow = Color(0xFFF7F9FF)
+val LightSurfaceContainer = Color(0xFFF1F3FB)
+val LightSurfaceContainerHigh = Color(0xFFEBEDF6)
+val LightOnSurface = Color(0xFF1A1C1E)
+val LightOnSurfaceVariant = Color(0xFF44474E)
+val LightOutline = Color(0xFF74777F)
+val LightOutlineVariant = Color(0xFFC4C6D0)
+
+val DarkPrimary = Color(0xFFA8C7FA)
+val DarkOnPrimary = Color(0xFF00315C)
+val DarkPrimaryContainer = Color(0xFF00458F)
+val DarkOnPrimaryContainer = Color(0xFFD3E3FD)
+val DarkSurface = Color(0xFF111318)
+val DarkSurfaceContainerLow = Color(0xFF1A1C20)
+val DarkSurfaceContainer = Color(0xFF1E2025)
+val DarkSurfaceContainerHigh = Color(0xFF282A2F)
+val DarkOnSurface = Color(0xFFE2E2E6)
+val DarkOnSurfaceVariant = Color(0xFFC4C6D0)
+val DarkOutline = Color(0xFF8E9099)
+val DarkOutlineVariant = Color(0xFF44474E)
+
+val RatingAmber = Color(0xFFE8A33D)
+
+private val AppLightColorScheme = lightColorScheme(
+    primary = LightPrimary,
+    onPrimary = LightOnPrimary,
+    primaryContainer = LightPrimaryContainer,
+    onPrimaryContainer = LightOnPrimaryContainer,
+    surface = LightSurface,
+    surfaceContainerLow = LightSurfaceContainerLow,
+    surfaceContainer = LightSurfaceContainer,
+    surfaceContainerHigh = LightSurfaceContainerHigh,
+    onSurface = LightOnSurface,
+    onSurfaceVariant = LightOnSurfaceVariant,
+    outline = LightOutline,
+    outlineVariant = LightOutlineVariant,
+)
+
+private val AppDarkColorScheme = darkColorScheme(
+    primary = DarkPrimary,
+    onPrimary = DarkOnPrimary,
+    primaryContainer = DarkPrimaryContainer,
+    onPrimaryContainer = DarkOnPrimaryContainer,
+    surface = DarkSurface,
+    surfaceContainerLow = DarkSurfaceContainerLow,
+    surfaceContainer = DarkSurfaceContainer,
+    surfaceContainerHigh = DarkSurfaceContainerHigh,
+    onSurface = DarkOnSurface,
+    onSurfaceVariant = DarkOnSurfaceVariant,
+    outline = DarkOutline,
+    outlineVariant = DarkOutlineVariant,
+)
+
+data class CouponDeal(
     val id: String,
     val title: String,
     val instructor: String,
     val category: String,
     val rating: Double,
     val reviewCount: Int,
+    val students: String,
     val originalPrice: String,
     val couponCode: String,
     val expiryHours: Int,
     val description: String,
 )
 
-enum class AppTab(val title: String) {
-    HOME("Home"),
-    COURSES("Courses"),
-    PROFILE("Profile")
+enum class AppDestination(val route: String, val title: String) {
+    HOME("home", "HOME"),
+    COURSE("course", "COURSE"),
+    PROFILE("profile", "PROFILE")
 }
 
 @Composable
 fun App() {
-    MaterialTheme {
-        var currentTab by remember { mutableStateOf(AppTab.HOME) }
-        var selectedDeal by remember { mutableStateOf<DealItem?>(null) }
-        var isDarkMode by remember { mutableStateOf(true) }
+    var isDarkTheme by remember { mutableStateOf(false) }
+    val colorScheme = if (isDarkTheme) AppDarkColorScheme else AppLightColorScheme
 
-        val deals = remember {
+    MaterialTheme(colorScheme = colorScheme) {
+        var currentDestination by remember { mutableStateOf(AppDestination.HOME) }
+        var selectedCoupon by remember { mutableStateOf<CouponDeal?>(null) }
+
+        val sampleCoupons = remember {
             listOf(
-                DealItem(
-                    id = "1",
+                CouponDeal(
+                    id = "c1",
                     title = "The Complete 2026 Web Development Bootcamp",
                     instructor = "Dr. Angela Yu",
                     category = "Development",
                     rating = 4.8,
-                    reviewCount = 384210,
+                    reviewCount = 384200,
+                    students = "1.2M",
                     originalPrice = "\$84.99",
                     couponCode = "WEBDEV2026FREE",
-                    expiryHours = 18,
-                    description = "Master full-stack web development with HTML, CSS, JavaScript, React, Node.js, and multiplatform paradigms."
+                    expiryHours = 22,
+                    description = "Master HTML, CSS, Javascript, React, Node.js, and multiplatform web architectures. 65 hours of HD video content."
                 ),
-                DealItem(
-                    id = "2",
-                    title = "Kotlin Multiplatform (KMP) & Compose Multiplatform Masterclass",
+                CouponDeal(
+                    id = "c2",
+                    title = "Kotlin Multiplatform (KMP) & Compose Multiplatform Architecture",
                     instructor = "Philipp Lackner",
                     category = "Mobile",
                     rating = 4.9,
-                    reviewCount = 29540,
+                    reviewCount = 29500,
+                    students = "142K",
                     originalPrice = "\$79.99",
                     couponCode = "KMPCOMPOSENOW",
-                    expiryHours = 24,
-                    description = "Build production-grade iOS, Android, and Desktop apps sharing 100% of UI and domain logic using Compose Multiplatform."
+                    expiryHours = 14,
+                    description = "Build production iOS & Android apps sharing 100% of UI and domain logic using pure Compose Multiplatform and Koin."
                 ),
-                DealItem(
-                    id = "3",
-                    title = "Machine Learning A-Z: AI, Python & Deep Learning",
-                    instructor = "Kirill Eremenko & Hadelin de Ponteves",
+                CouponDeal(
+                    id = "c3",
+                    title = "Machine Learning A-Z: AI, Python & Deep Learning 2026",
+                    instructor = "Kirill Eremenko",
                     category = "Data Science",
                     rating = 4.7,
-                    reviewCount = 182390,
+                    reviewCount = 182400,
+                    students = "980K",
                     originalPrice = "\$94.99",
                     couponCode = "AIDATASETFREE",
-                    expiryHours = 8,
+                    expiryHours = 6,
                     description = "Learn to create Machine Learning Algorithms in Python from two Data Science experts. Code templates included."
                 ),
-                DealItem(
-                    id = "4",
-                    title = "Clean Architecture & Koin in Modern Mobile Apps",
+                CouponDeal(
+                    id = "c4",
+                    title = "Clean Architecture & Design Patterns in Kotlin",
                     instructor = "Course Deals Academy",
                     category = "Architecture",
                     rating = 4.9,
-                    reviewCount = 12480,
+                    reviewCount = 12400,
+                    students = "65K",
                     originalPrice = "\$49.99",
                     couponCode = "CLEANARCH100",
                     expiryHours = 36,
-                    description = "Explore Clean Architecture, Repository Pattern, and Koin Multiplatform Dependency Injection."
+                    description = "Deep dive into Domain-Driven Design, MVI, Clean Architecture, and Koin Multiplatform Dependency Injection."
                 ),
+                CouponDeal(
+                    id = "c5",
+                    title = "iOS 18 & Swift 6 - Complete App Development",
+                    instructor = "Angela Yu",
+                    category = "Mobile",
+                    rating = 4.8,
+                    reviewCount = 210000,
+                    students = "850K",
+                    originalPrice = "\$89.99",
+                    couponCode = "SWIFT6FREE2026",
+                    expiryHours = 18,
+                    description = "Learn iOS app development from scratch with Swift 6, SwiftUI, SwiftData, and UIKit interoperability."
+                )
             )
         }
 
-        val bgColor = if (isDarkMode) Color(0xFF111318) else Color(0xFFF9F9FC)
-        val surfaceColor = if (isDarkMode) Color(0xFF1E2025) else Color.White
-        val textColor = if (isDarkMode) Color.White else Color(0xFF191C20)
-        val brandColor = Color(0xFF0B57D0)
-
         Surface(
             modifier = Modifier.fillMaxSize(),
-            color = bgColor,
+            color = MaterialTheme.colorScheme.surfaceContainerLow,
         ) {
             Scaffold(
-                containerColor = bgColor,
+                containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
                 bottomBar = {
                     NavigationBar(
-                        containerColor = surfaceColor,
-                        tonalElevation = 8.dp,
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        tonalElevation = 3.dp,
                     ) {
                         NavigationBarItem(
-                            selected = currentTab == AppTab.HOME,
-                            onClick = { currentTab = AppTab.HOME },
-                            icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-                            label = { Text("Home") },
+                            selected = currentDestination == AppDestination.HOME,
+                            onClick = { currentDestination = AppDestination.HOME },
+                            icon = { Icon(Icons.Default.Home, contentDescription = "HOME") },
+                            label = { Text("HOME", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
                             colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = brandColor,
-                                selectedTextColor = brandColor,
-                                indicatorColor = brandColor.copy(alpha = 0.15f),
+                                selectedIconColor = MaterialTheme.colorScheme.primary,
+                                selectedTextColor = MaterialTheme.colorScheme.primary,
+                                indicatorColor = MaterialTheme.colorScheme.primaryContainer,
                             ),
                         )
                         NavigationBarItem(
-                            selected = currentTab == AppTab.COURSES,
-                            onClick = { currentTab = AppTab.COURSES },
-                            icon = { Icon(Icons.Default.Book, contentDescription = "Courses") },
-                            label = { Text("Courses") },
+                            selected = currentDestination == AppDestination.COURSE,
+                            onClick = { currentDestination = AppDestination.COURSE },
+                            icon = { Icon(Icons.Default.Book, contentDescription = "COURSE") },
+                            label = { Text("COURSE", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
                             colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = brandColor,
-                                selectedTextColor = brandColor,
-                                indicatorColor = brandColor.copy(alpha = 0.15f),
+                                selectedIconColor = MaterialTheme.colorScheme.primary,
+                                selectedTextColor = MaterialTheme.colorScheme.primary,
+                                indicatorColor = MaterialTheme.colorScheme.primaryContainer,
                             ),
                         )
                         NavigationBarItem(
-                            selected = currentTab == AppTab.PROFILE,
-                            onClick = { currentTab = AppTab.PROFILE },
-                            icon = { Icon(Icons.Default.AccountCircle, contentDescription = "Profile") },
-                            label = { Text("Profile") },
+                            selected = currentDestination == AppDestination.PROFILE,
+                            onClick = { currentDestination = AppDestination.PROFILE },
+                            icon = { Icon(Icons.Default.AccountCircle, contentDescription = "PROFILE") },
+                            label = { Text("PROFILE", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
                             colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = brandColor,
-                                selectedTextColor = brandColor,
-                                indicatorColor = brandColor.copy(alpha = 0.15f),
+                                selectedIconColor = MaterialTheme.colorScheme.primary,
+                                selectedTextColor = MaterialTheme.colorScheme.primary,
+                                indicatorColor = MaterialTheme.colorScheme.primaryContainer,
                             ),
                         )
                     }
                 }
-            ) { padding ->
-                Box(modifier = Modifier.padding(padding).fillMaxSize()) {
-                    when (currentTab) {
-                        AppTab.HOME -> HomeFeedTab(
-                            deals = deals,
-                            surfaceColor = surfaceColor,
-                            textColor = textColor,
-                            brandColor = brandColor,
-                            onDealClick = { selectedDeal = it }
+            ) { innerPadding ->
+                Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
+                    when (currentDestination) {
+                        AppDestination.HOME -> HomeRouteContent(
+                            coupons = sampleCoupons,
+                            onCouponClick = { selectedCoupon = it },
                         )
-                        AppTab.COURSES -> CoursesDirectoryTab(
-                            deals = deals,
-                            surfaceColor = surfaceColor,
-                            textColor = textColor,
-                            brandColor = brandColor,
-                            onDealClick = { selectedDeal = it }
+                        AppDestination.COURSE -> CourseRouteContent(
+                            coupons = sampleCoupons,
+                            onCouponClick = { selectedCoupon = it },
                         )
-                        AppTab.PROFILE -> ProfileSettingsTab(
-                            surfaceColor = surfaceColor,
-                            textColor = textColor,
-                            brandColor = brandColor,
-                            isDarkMode = isDarkMode,
-                            onToggleDarkMode = { isDarkMode = it }
+                        AppDestination.PROFILE -> ProfileRouteContent(
+                            isDarkTheme = isDarkTheme,
+                            onToggleDarkTheme = { isDarkTheme = it },
                         )
                     }
 
-                    selectedDeal?.let { deal ->
-                        DealDetailModal(
-                            deal = deal,
-                            surfaceColor = surfaceColor,
-                            textColor = textColor,
-                            brandColor = brandColor,
-                            onDismiss = { selectedDeal = null }
+                    selectedCoupon?.let { coupon ->
+                        CouponDetailBottomSheet(
+                            coupon = coupon,
+                            onDismiss = { selectedCoupon = null },
                         )
                     }
                 }
@@ -243,140 +308,143 @@ fun App() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun HomeFeedTab(
-    deals: List<DealItem>,
-    surfaceColor: Color,
-    textColor: Color,
-    brandColor: Color,
-    onDealClick: (DealItem) -> Unit,
+private fun HomeRouteContent(
+    coupons: List<CouponDeal>,
+    onCouponClick: (CouponDeal) -> Unit,
 ) {
-    var searchQuery by remember { mutableStateOf("") }
-    var selectedCategory by remember { mutableStateOf("All") }
+    var query by remember { mutableStateOf("") }
+    var selectedCategory by remember { mutableStateOf("ALL") }
 
-    val categories = listOf("All", "Development", "Mobile", "Data Science", "Architecture")
-    val filteredDeals = deals.filter {
-        (selectedCategory == "All" || it.category == selectedCategory) &&
-                (searchQuery.isBlank() || it.title.contains(searchQuery, ignoreCase = true))
+    val categories = listOf("ALL", "Development", "Mobile", "Data Science", "Architecture")
+    val filtered = coupons.filter {
+        (selectedCategory == "ALL" || it.category == selectedCategory) &&
+                (query.isBlank() || it.title.contains(query, ignoreCase = true) || it.instructor.contains(query, ignoreCase = true))
     }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         item {
+            // Android top search row: Search input + Filter button + Submit Deal button
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Column {
-                    Text(
-                        text = "Course Deals",
-                        fontSize = 26.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = textColor,
-                    )
-                    Text(
-                        text = "Free 100% discount Udemy coupons",
-                        fontSize = 13.sp,
-                        color = Color(0xFF9095A0),
-                    )
-                }
-                Box(
-                    modifier = Modifier
-                        .size(42.dp)
-                        .clip(CircleShape)
-                        .background(brandColor),
-                    contentAlignment = Alignment.Center,
+                OutlinedTextField(
+                    value = query,
+                    onValueChange = { query = it },
+                    modifier = Modifier.weight(1f).height(52.dp),
+                    placeholder = {
+                        Text(
+                            text = "Search courses",
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    },
+                    leadingIcon = {
+                        Icon(
+                            Icons.Default.Search,
+                            contentDescription = "Search",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    },
+                    trailingIcon = {
+                        if (query.isNotEmpty()) {
+                            IconButton(onClick = { query = "" }) {
+                                Icon(Icons.Default.Close, contentDescription = "Clear")
+                            }
+                        }
+                    },
+                    shape = RoundedCornerShape(26.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.surface,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
+                    ),
+                    singleLine = true,
+                )
+
+                FilledTonalIconButton(
+                    onClick = { /* open filter */ },
+                    modifier = Modifier.size(48.dp),
+                    shape = CircleShape,
+                    colors = IconButtonDefaults.filledTonalIconButtonColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                        contentColor = MaterialTheme.colorScheme.onSurface,
+                    ),
                 ) {
-                    Text(
-                        text = "CD",
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp
-                    )
+                    Icon(Icons.Default.FilterList, contentDescription = "Filter")
+                }
+
+                FilledTonalIconButton(
+                    onClick = { /* submit deal */ },
+                    modifier = Modifier.size(48.dp),
+                    shape = CircleShape,
+                    colors = IconButtonDefaults.filledTonalIconButtonColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    ),
+                ) {
+                    Icon(Icons.Default.Send, contentDescription = "Submit Deal")
                 }
             }
         }
 
         item {
-            OutlinedTextField(
-                value = searchQuery,
-                onValueChange = { searchQuery = it },
-                modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Search coupons, topics, authors...") },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
-                trailingIcon = {
-                    if (searchQuery.isNotEmpty()) {
-                        IconButton(onClick = { searchQuery = "" }) {
-                            Icon(Icons.Default.Close, contentDescription = "Clear")
-                        }
-                    }
-                },
-                shape = RoundedCornerShape(14.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = brandColor,
-                    unfocusedBorderColor = Color(0xFF333740),
-                ),
-                singleLine = true,
-            )
-        }
-
-        item {
+            // Category horizontal chips
             Row(
                 modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                categories.forEach { category ->
-                    val isSelected = category == selectedCategory
+                categories.forEach { cat ->
+                    val isSelected = cat == selectedCategory
+                    val chipBg = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerHigh
+                    val chipFg = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+
                     Box(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(20.dp))
-                            .background(if (isSelected) brandColor else surfaceColor)
-                            .clickable { selectedCategory = category }
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(chipBg)
+                            .clickable { selectedCategory = cat }
+                            .padding(horizontal = 14.dp, vertical = 7.dp),
                     ) {
                         Text(
-                            text = category,
-                            fontSize = 13.sp,
-                            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-                            color = if (isSelected) Color.White else textColor,
+                            text = cat,
+                            fontSize = 12.sp,
+                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                            color = chipFg,
                         )
                     }
                 }
             }
         }
 
-        items(filteredDeals) { deal ->
-            DealCard(
-                deal = deal,
-                surfaceColor = surfaceColor,
-                textColor = textColor,
-                brandColor = brandColor,
-                onClick = { onDealClick(deal) },
+        items(filtered) { coupon ->
+            CouponCardItem(
+                coupon = coupon,
+                onClick = { onCouponClick(coupon) },
             )
         }
     }
 }
 
 @Composable
-private fun DealCard(
-    deal: DealItem,
-    surfaceColor: Color,
-    textColor: Color,
-    brandColor: Color,
+private fun CouponCardItem(
+    coupon: CouponDeal,
     onClick: () -> Unit,
 ) {
     Card(
         modifier = Modifier.fillMaxWidth().clickable { onClick() },
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = surfaceColor),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(14.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -384,13 +452,13 @@ private fun DealCard(
             ) {
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(6.dp))
-                        .background(brandColor.copy(alpha = 0.15f))
-                        .padding(horizontal = 8.dp, vertical = 4.dp),
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(MaterialTheme.colorScheme.primaryContainer)
+                        .padding(horizontal = 8.dp, vertical = 3.dp),
                 ) {
                     Text(
-                        text = deal.category,
-                        color = brandColor,
+                        text = coupon.category.uppercase(),
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
                     )
@@ -399,16 +467,16 @@ private fun DealCard(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         Icons.Default.Timer,
-                        contentDescription = "Time left",
-                        tint = Color(0xFF80D49C),
+                        contentDescription = "Time Left",
+                        tint = Color(0xFF388E3C),
                         modifier = Modifier.size(14.dp),
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "${deal.expiryHours}h left",
-                        color = Color(0xFF80D49C),
+                        text = "${coupon.expiryHours} hours left",
+                        color = Color(0xFF388E3C),
                         fontSize = 12.sp,
-                        fontWeight = FontWeight.Medium,
+                        fontWeight = FontWeight.SemiBold,
                     )
                 }
             }
@@ -416,10 +484,10 @@ private fun DealCard(
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(
-                text = deal.title,
+                text = coupon.title,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = textColor,
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -427,9 +495,9 @@ private fun DealCard(
             Spacer(modifier = Modifier.height(6.dp))
 
             Text(
-                text = "Instructor: ${deal.instructor}",
+                text = "By ${coupon.instructor}",
                 fontSize = 13.sp,
-                color = Color(0xFF9095A0),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -443,41 +511,41 @@ private fun DealCard(
                     Icon(
                         Icons.Default.Star,
                         contentDescription = "Rating",
-                        tint = Color(0xFFFFB800),
+                        tint = RatingAmber,
                         modifier = Modifier.size(16.dp),
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "${deal.rating}",
+                        text = "${coupon.rating}",
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Bold,
-                        color = textColor,
+                        color = MaterialTheme.colorScheme.onSurface,
                     )
                     Text(
-                        text = " (${deal.reviewCount / 1000}k)",
+                        text = " • ${coupon.students} students",
                         fontSize = 12.sp,
-                        color = Color(0xFF9095A0),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = deal.originalPrice,
+                        text = coupon.originalPrice,
                         fontSize = 13.sp,
-                        color = Color(0xFF9095A0),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textDecoration = TextDecoration.LineThrough,
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Box(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(6.dp))
-                            .background(Color(0xFF00A86B))
-                            .padding(horizontal = 8.dp, vertical = 2.dp),
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(Color(0xFF2E7D32))
+                            .padding(horizontal = 8.dp, vertical = 3.dp),
                     ) {
                         Text(
-                            text = "FREE",
+                            text = "100% OFF",
                             color = Color.White,
-                            fontSize = 12.sp,
+                            fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
                         )
                     }
@@ -488,69 +556,55 @@ private fun DealCard(
 }
 
 @Composable
-private fun CoursesDirectoryTab(
-    deals: List<DealItem>,
-    surfaceColor: Color,
-    textColor: Color,
-    brandColor: Color,
-    onDealClick: (DealItem) -> Unit,
+private fun CourseRouteContent(
+    coupons: List<CouponDeal>,
+    onCouponClick: (CouponDeal) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         item {
             Text(
-                text = "Course Categories",
-                fontSize = 24.sp,
+                text = "COURSE DIRECTORY",
+                fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = textColor,
+                color = MaterialTheme.colorScheme.onSurface,
             )
             Text(
-                text = "Explore top rated free coupons across disciplines",
+                text = "Explore active coupon deals indexed across technical disciplines",
                 fontSize = 13.sp,
-                color = Color(0xFF9095A0),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
 
-        items(deals) { deal ->
-            DealCard(
-                deal = deal,
-                surfaceColor = surfaceColor,
-                textColor = textColor,
-                brandColor = brandColor,
-                onClick = { onDealClick(deal) },
-            )
+        items(coupons) { coupon ->
+            CouponCardItem(coupon = coupon, onClick = { onCouponClick(coupon) })
         }
     }
 }
 
 @Composable
-private fun ProfileSettingsTab(
-    surfaceColor: Color,
-    textColor: Color,
-    brandColor: Color,
-    isDarkMode: Boolean,
-    onToggleDarkMode: (Boolean) -> Unit,
+private fun ProfileRouteContent(
+    isDarkTheme: Boolean,
+    onToggleDarkTheme: (Boolean) -> Unit,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
+        modifier = Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Text(
-            text = "Profile & Settings",
-            fontSize = 24.sp,
+            text = "PROFILE",
+            fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
-            color = textColor,
+            color = MaterialTheme.colorScheme.onSurface,
         )
 
         Card(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = surfaceColor),
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         ) {
             Row(
                 modifier = Modifier.padding(16.dp),
@@ -560,13 +614,13 @@ private fun ProfileSettingsTab(
                     modifier = Modifier
                         .size(54.dp)
                         .clip(CircleShape)
-                        .background(brandColor.copy(alpha = 0.2f)),
+                        .background(MaterialTheme.colorScheme.primaryContainer),
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
                         Icons.Default.AccountCircle,
                         contentDescription = "User",
-                        tint = brandColor,
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
                         modifier = Modifier.size(36.dp),
                     )
                 }
@@ -578,12 +632,12 @@ private fun ProfileSettingsTab(
                         text = "Guest User",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = textColor,
+                        color = MaterialTheme.colorScheme.onSurface,
                     )
                     Text(
-                        text = "Browse & claim deals anonymously",
+                        text = "Offline & Guest Browsing Mode",
                         fontSize = 13.sp,
-                        color = Color(0xFF9095A0),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             }
@@ -591,8 +645,8 @@ private fun ProfileSettingsTab(
 
         Card(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = surfaceColor),
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         ) {
             Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
                 Row(
@@ -601,13 +655,25 @@ private fun ProfileSettingsTab(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Column {
-                        Text(text = "Dark Mode", fontSize = 16.sp, fontWeight = FontWeight.Medium, color = textColor)
-                        Text(text = "Toggle dark/light theme", fontSize = 12.sp, color = Color(0xFF9095A0))
+                        Text(
+                            text = "Dark Mode",
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                        Text(
+                            text = "Switch between light and dark palette",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
                     }
                     Switch(
-                        checked = isDarkMode,
-                        onCheckedChange = onToggleDarkMode,
-                        colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = brandColor)
+                        checked = isDarkTheme,
+                        onCheckedChange = onToggleDarkTheme,
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = Color.White,
+                            checkedTrackColor = MaterialTheme.colorScheme.primary,
+                        ),
                     )
                 }
 
@@ -617,10 +683,24 @@ private fun ProfileSettingsTab(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Column {
-                        Text(text = "Target Architecture", fontSize = 16.sp, fontWeight = FontWeight.Medium, color = textColor)
-                        Text(text = "Compose Multiplatform on iOS 17+", fontSize = 12.sp, color = Color(0xFF9095A0))
+                        Text(
+                            text = "Platform Architecture",
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                        Text(
+                            text = "Compose Multiplatform on iOS 17+",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
                     }
-                    Text(text = "Active", color = Color(0xFF80D49C), fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    Text(
+                        text = "Native",
+                        color = Color(0xFF2E7D32),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                    )
                 }
             }
         }
@@ -629,11 +709,8 @@ private fun ProfileSettingsTab(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun DealDetailModal(
-    deal: DealItem,
-    surfaceColor: Color,
-    textColor: Color,
-    brandColor: Color,
+private fun CouponDetailBottomSheet(
+    coupon: CouponDeal,
     onDismiss: () -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -642,12 +719,10 @@ private fun DealDetailModal(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        containerColor = surfaceColor,
+        containerColor = MaterialTheme.colorScheme.surface,
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(24.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Row(
@@ -657,63 +732,79 @@ private fun DealDetailModal(
             ) {
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(6.dp))
-                        .background(brandColor.copy(alpha = 0.15f))
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(MaterialTheme.colorScheme.primaryContainer)
                         .padding(horizontal = 10.dp, vertical = 4.dp),
                 ) {
                     Text(
-                        text = deal.category,
-                        color = brandColor,
+                        text = coupon.category.uppercase(),
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                     )
                 }
 
                 IconButton(onClick = onDismiss) {
-                    Icon(Icons.Default.Close, contentDescription = "Close", tint = textColor)
+                    Icon(
+                        Icons.Default.Close,
+                        contentDescription = "Close",
+                        tint = MaterialTheme.colorScheme.onSurface,
+                    )
                 }
             }
 
             Text(
-                text = deal.title,
+                text = coupon.title,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
-                color = textColor,
+                color = MaterialTheme.colorScheme.onSurface,
             )
 
             Text(
-                text = "Taught by ${deal.instructor}",
+                text = "Instructor: ${coupon.instructor} • ${coupon.students} students",
                 fontSize = 14.sp,
-                color = Color(0xFF9095A0),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
             Text(
-                text = deal.description,
+                text = coupon.description,
                 fontSize = 14.sp,
-                color = textColor.copy(alpha = 0.9f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f),
                 lineHeight = 20.sp,
             )
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = brandColor.copy(alpha = 0.1f)),
+                shape = RoundedCornerShape(10.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                ),
             ) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
+                    modifier = Modifier.fillMaxWidth().padding(16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Column {
-                        Text(text = "Coupon Code", fontSize = 11.sp, color = Color(0xFF9095A0))
-                        Text(text = deal.couponCode, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = brandColor)
+                        Text(
+                            text = "COUPON CODE",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        Text(
+                            text = coupon.couponCode,
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
                     }
 
                     Button(
                         onClick = { copied = true },
-                        colors = ButtonDefaults.buttonColors(containerColor = brandColor),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                        ),
                         shape = RoundedCornerShape(8.dp),
                     ) {
                         Icon(
@@ -722,20 +813,22 @@ private fun DealDetailModal(
                             modifier = Modifier.size(16.dp),
                         )
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text(if (copied) "Copied!" else "Copy Code")
+                        Text(if (copied) "COPIED" else "COPY")
                     }
                 }
             }
 
             Button(
                 onClick = onDismiss,
-                modifier = Modifier.fillMaxWidth().height(50.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = brandColor),
+                modifier = Modifier.fillMaxWidth().height(52.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                ),
                 shape = RoundedCornerShape(12.dp),
             ) {
-                Icon(Icons.Default.OpenInBrowser, contentDescription = "Claim")
+                Icon(Icons.Default.OpenInBrowser, contentDescription = "Enroll")
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Enroll on Udemy for 100% Free", fontWeight = FontWeight.Bold)
+                Text("ENROLL ON UDEMY (100% FREE)", fontWeight = FontWeight.Bold)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
