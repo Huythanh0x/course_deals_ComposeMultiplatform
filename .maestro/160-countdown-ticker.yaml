@@ -1,0 +1,17 @@
+appId: com.thanh0x.coursedeals
+---
+- launchApp:
+    clearState: false
+- extendedWaitUntil:
+    visible: "30 days left"
+    timeout: 15000
+- assertVisible: "HOME"
+- assertVisible: "30 days left"
+- takeScreenshot: .maestro/screenshots/160-home-screen-tickers
+- tapOn: "Professional Diploma in Procurement Management"
+- extendedWaitUntil:
+    visible: "Enroll Now"
+    timeout: 10000
+- takeScreenshot: .maestro/screenshots/160-detail-screen-urgency-badge
+- back
+- assertVisible: "HOME"
