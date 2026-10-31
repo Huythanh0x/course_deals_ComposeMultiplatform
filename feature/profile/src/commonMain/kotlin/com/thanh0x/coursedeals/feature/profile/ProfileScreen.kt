@@ -29,7 +29,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.ContentCopy
-import androidx.compose.material3.AlertDialog
+import com.thanh0x.coursedeals.core.ui.components.AppConfirmationDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -173,38 +173,15 @@ fun ProfileScreen(
         }
 
         if (uiState.isDeleteAccountDialogOpen) {
-            AlertDialog(
-                onDismissRequest = onDismissDeleteAccountDialog,
-                title = { Text(text = stringResource(Res.string.delete_account_dialog_title)) },
-                text = { Text(text = stringResource(Res.string.delete_account_dialog_message)) },
-                confirmButton = {
-                    Button(
-                        onClick = onConfirmDeleteAccount,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.error,
-                            contentColor = MaterialTheme.colorScheme.onError
-                        ),
-                        enabled = !uiState.isDeletingAccount
-                    ) {
-                        if (uiState.isDeletingAccount) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(16.dp),
-                                color = MaterialTheme.colorScheme.onError,
-                                strokeWidth = 2.dp
-                            )
-                        } else {
-                            Text(text = stringResource(Res.string.delete_account_confirm))
-                        }
-                    }
-                },
-                dismissButton = {
-                    TextButton(
-                        onClick = onDismissDeleteAccountDialog,
-                        enabled = !uiState.isDeletingAccount
-                    ) {
-                        Text(text = stringResource(Res.string.cancel_button_text))
-                    }
-                }
+            AppConfirmationDialog(
+                title = stringResource(Res.string.delete_account_dialog_title),
+                message = stringResource(Res.string.delete_account_dialog_message),
+                confirmText = stringResource(Res.string.delete_account_confirm),
+                cancelText = stringResource(Res.string.cancel_button_text),
+                onConfirm = onConfirmDeleteAccount,
+                onDismiss = onDismissDeleteAccountDialog,
+                isLoading = uiState.isDeletingAccount,
+                isDestructive = true
             )
         }
     }
