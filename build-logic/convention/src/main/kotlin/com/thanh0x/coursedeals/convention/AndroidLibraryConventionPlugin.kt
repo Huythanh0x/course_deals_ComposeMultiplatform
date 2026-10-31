@@ -26,7 +26,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
                     targetCompatibility = JavaVersion.VERSION_17
                 }
                 buildFeatures {
-                    dataBinding = true
+                    dataBinding = false
                     buildConfig = true
                 }
             }

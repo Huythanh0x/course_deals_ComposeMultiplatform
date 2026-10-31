@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Selected: stroke uses the color M3 guarantees to contrast against the
-         selected-state background (colorPrimary) in both light and dark theme -->
-    <item android:color="?attr/colorOnPrimary" android:state_checked="true" />
-    <!-- Default: no stroke -->
-    <item android:color="@android:color/transparent" />
-</selector>
