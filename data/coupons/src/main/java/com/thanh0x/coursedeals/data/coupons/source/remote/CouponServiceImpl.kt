@@ -16,9 +16,8 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
-import javax.inject.Inject
 
-class CouponServiceImpl @Inject constructor(
+class CouponServiceImpl(
     private val httpClient: HttpClient
 ) : CouponService {
 

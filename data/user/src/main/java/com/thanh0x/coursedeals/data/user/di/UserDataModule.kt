@@ -1,5 +1,13 @@
 package com.thanh0x.coursedeals.data.user.di
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
+import androidx.datastore.preferences.SharedPreferencesMigration
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.preferencesDataStoreFile
+import com.thanh0x.coursedeals.core.common.Constant
 import com.thanh0x.coursedeals.data.user.repository.UserAuthenticationRepositoryImpl
 import com.thanh0x.coursedeals.data.user.repository.UserProfileRepositoryImpl
 import com.thanh0x.coursedeals.data.user.source.datastore.LocalAuthenticationDataSourceImpl
@@ -18,67 +26,44 @@ import com.thanh0x.coursedeals.domain.user.source.LocalSettingsDataSource
 import com.thanh0x.coursedeals.domain.user.source.LocalUserProfileDataSource
 import com.thanh0x.coursedeals.domain.user.source.RemoteAuthenticationDataSource
 import com.thanh0x.coursedeals.domain.user.source.RemoteUserProfileDataSource
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import org.koin.android.ext.koin.androidContext
+import org.koin.dsl.module
 
-@Module
-@InstallIn(SingletonComponent::class)
-abstract class UserDataModule {
+val userDataModule = module {
+    single<DataStore<Preferences>> {
+        val appContext = androidContext()
+        PreferenceDataStoreFactory.create(
+            corruptionHandler = ReplaceFileCorruptionHandler(produceNewData = { emptyPreferences() }),
+            produceFile = { appContext.preferencesDataStoreFile(Constant.DATA_STORE_NAME) },
+            migrations = listOf(SharedPreferencesMigration(appContext, Constant.DATA_STORE_NAME)),
+            scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+        )
+    }
 
-    @Binds
-    @Singleton
-    abstract fun bindUserAuthenticationRepository(
-        impl: UserAuthenticationRepositoryImpl
-    ): UserAuthenticationRepository
+    single<UserAuthenticationService> { UserAuthenticationServiceImpl(httpClient = get()) }
+    single<UserProfileService> { UserProfileServiceImpl(httpClient = get()) }
 
-    @Binds
-    @Singleton
-    abstract fun bindUserProfileRepository(
-        impl: UserProfileRepositoryImpl
-    ): UserProfileRepository
+    single<LocalAuthenticationDataSource> { LocalAuthenticationDataSourceImpl(datastore = get()) }
+    single<LocalUserProfileDataSource> { LocalUserProfileDataSourceImpl(datastore = get()) }
+    single<LocalSettingsDataSource> { LocalSettingsDataSourceImpl(dataStore = get()) }
 
-    @Binds
-    @Singleton
-    abstract fun bindLocalAuthenticationDataSource(
-        impl: LocalAuthenticationDataSourceImpl
-    ): LocalAuthenticationDataSource
+    single<RemoteAuthenticationDataSource> { RemoteAuthenticationDataSourceImpl(userAuthenticationService = get()) }
+    single<RemoteUserProfileDataSource> { RemoteUserProfileDataSourceImpl(userProfileService = get()) }
 
-    @Binds
-    @Singleton
-    abstract fun bindLocalUserProfileDataSource(
-        impl: LocalUserProfileDataSourceImpl
-    ): LocalUserProfileDataSource
+    single<UserAuthenticationRepository> {
+        UserAuthenticationRepositoryImpl(
+            localAuthenticationDataSource = get(),
+            remoteAuthenticationDataSource = get()
+        )
+    }
 
-    @Binds
-    @Singleton
-    abstract fun bindLocalSettingsDataSource(
-        impl: LocalSettingsDataSourceImpl
-    ): LocalSettingsDataSource
-
-    @Binds
-    @Singleton
-    abstract fun bindRemoteAuthenticationDataSource(
-        impl: RemoteAuthenticationDataSourceImpl
-    ): RemoteAuthenticationDataSource
-
-    @Binds
-    @Singleton
-    abstract fun bindRemoteUserProfileDataSource(
-        impl: RemoteUserProfileDataSourceImpl
-    ): RemoteUserProfileDataSource
-
-    @Binds
-    @Singleton
-    abstract fun bindUserAuthenticationService(
-        impl: UserAuthenticationServiceImpl
-    ): UserAuthenticationService
-
-    @Binds
-    @Singleton
-    abstract fun bindUserProfileService(
-        impl: UserProfileServiceImpl
-    ): UserProfileService
+    single<UserProfileRepository> {
+        UserProfileRepositoryImpl(
+            localUserProfileDataSource = get(),
+            remoteUserProfileDataSource = get()
+        )
+    }
 }

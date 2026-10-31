@@ -11,9 +11,8 @@ import com.thanh0x.coursedeals.domain.user.source.LocalUserProfileDataSource
 import com.thanh0x.coursedeals.core.common.Constant
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
 
-class LocalUserProfileDataSourceImpl @Inject constructor(private val datastore: DataStore<Preferences>) :
+class LocalUserProfileDataSourceImpl(private val datastore: DataStore<Preferences>) :
     LocalUserProfileDataSource {
     private object PreferenceKey {
         val enableDarkMode = booleanPreferencesKey(Constant.PREFERENCES_ENABLE_DARK_MODE)

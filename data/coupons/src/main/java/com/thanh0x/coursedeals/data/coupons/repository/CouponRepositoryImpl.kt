@@ -24,9 +24,8 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
-import javax.inject.Inject
 
-class CouponRepositoryImpl @Inject constructor(
+class CouponRepositoryImpl(
     private val localCouponDataSource: LocalCouponDataSource,
     private val remoteCouponDataSource: RemoteCouponDataSource,
     private val localSettingsDataSource: LocalSettingsDataSource,

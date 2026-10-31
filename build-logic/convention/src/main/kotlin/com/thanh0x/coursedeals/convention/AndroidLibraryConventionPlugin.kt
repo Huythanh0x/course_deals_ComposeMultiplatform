@@ -13,7 +13,6 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
             with(pluginManager) {
                 apply("com.android.library")
                 apply("com.google.devtools.ksp")
-                apply("dagger.hilt.android.plugin")
             }
 
             extensions.configure<LibraryExtension> {
@@ -32,8 +31,8 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
             }
 
             dependencies {
-                add("implementation", libs.findLibrary("hilt.android").get())
-                add("ksp", libs.findLibrary("hilt.android.compiler").get())
+                add("implementation", libs.findLibrary("koin.core").get())
+                add("implementation", libs.findLibrary("koin.android").get())
             }
         }
     }

@@ -6,9 +6,8 @@ import com.thanh0x.coursedeals.domain.user.UserProfile
 import com.thanh0x.coursedeals.domain.user.UserProfileRepository
 import com.thanh0x.coursedeals.domain.user.source.LocalUserProfileDataSource
 import com.thanh0x.coursedeals.domain.user.source.RemoteUserProfileDataSource
-import javax.inject.Inject
 
-class UserProfileRepositoryImpl @Inject constructor(
+class UserProfileRepositoryImpl(
     private val localUserProfileDataSource: LocalUserProfileDataSource,
     private val remoteUserProfileDataSource: RemoteUserProfileDataSource,
 ) : UserProfileRepository {
