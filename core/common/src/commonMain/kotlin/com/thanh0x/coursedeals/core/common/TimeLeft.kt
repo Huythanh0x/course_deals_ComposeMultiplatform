@@ -1,11 +1,25 @@
 package com.thanh0x.coursedeals.core.common
 
-import java.time.Clock
-import java.time.Duration
-import java.time.Instant
+/**
+ * Platform-independent time provider abstraction for multiplatform time queries and testability.
+ */
+fun interface TimeProvider {
+    fun currentTimeMillis(): Long
+}
+
+/**
+ * Expected platform-specific current time in milliseconds since Unix epoch (1970-01-01T00:00:00Z).
+ */
+expect fun platformCurrentTimeMillis(): Long
+
+/**
+ * Default system time provider.
+ */
+val SystemTimeProvider: TimeProvider = TimeProvider { platformCurrentTimeMillis() }
 
 object TimeLeft {
     private const val MILLIS_THRESHOLD = 10_000_000_000L
+    private const val MILLIS_PER_MINUTE = 60_000L
 
     sealed interface ExpiryDuration {
         object Unknown : ExpiryDuration
@@ -13,19 +27,22 @@ object TimeLeft {
         data class Active(val minutesLeft: Long) : ExpiryDuration
     }
 
-    fun getExpiryDuration(expiredDate: Long?, clock: Clock = Clock.systemUTC()): ExpiryDuration {
+    fun getExpiryDuration(
+        expiredDate: Long?,
+        timeProvider: TimeProvider = SystemTimeProvider,
+    ): ExpiryDuration {
         if (expiredDate == null || expiredDate <= 0L) return ExpiryDuration.Unknown
         return try {
-            val inputInstant = if (expiredDate > MILLIS_THRESHOLD) {
-                Instant.ofEpochMilli(expiredDate)
+            val inputMillis = if (expiredDate > MILLIS_THRESHOLD) {
+                expiredDate
             } else {
-                Instant.ofEpochSecond(expiredDate)
+                expiredDate * 1000L
             }
-            val now = Instant.now(clock)
-            if (inputInstant.isBefore(now)) {
+            val nowMillis = timeProvider.currentTimeMillis()
+            if (inputMillis < nowMillis) {
                 ExpiryDuration.Expired
             } else {
-                val minutes = Duration.between(now, inputInstant).toMinutes()
+                val minutes = (inputMillis - nowMillis) / MILLIS_PER_MINUTE
                 ExpiryDuration.Active(if (minutes <= 0L) 1L else minutes)
             }
         } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
@@ -41,23 +58,25 @@ object TimeLeft {
         }
     }
 
-    fun getDurationFromNowToAgo(timestamp: Long?, clock: Clock = Clock.systemUTC()): Long {
+    fun getDurationFromNowToAgo(
+        timestamp: Long?,
+        timeProvider: TimeProvider = SystemTimeProvider,
+    ): Long {
         if (timestamp == null || timestamp <= 0L) return -1L
         return try {
-            val inputInstant = if (timestamp > MILLIS_THRESHOLD) {
-                Instant.ofEpochMilli(timestamp)
+            val inputMillis = if (timestamp > MILLIS_THRESHOLD) {
+                timestamp
             } else {
-                Instant.ofEpochSecond(timestamp)
+                timestamp * 1000L
             }
-            val now = Instant.now(clock)
-            if (inputInstant.isAfter(now)) {
+            val nowMillis = timeProvider.currentTimeMillis()
+            if (inputMillis > nowMillis) {
                 -1L
             } else {
-                Duration.between(inputInstant, now).toMinutes()
+                (nowMillis - inputMillis) / MILLIS_PER_MINUTE
             }
         } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
             -1L
         }
     }
 }
-
