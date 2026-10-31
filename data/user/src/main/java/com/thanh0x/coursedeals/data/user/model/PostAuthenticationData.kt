@@ -1,12 +1,14 @@
 package com.thanh0x.coursedeals.data.user.model
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class PostAuthenticationData(
-    @SerializedName("email")
+    @SerialName("email")
     val email: String,
-    @SerializedName("password")
+    @SerialName("password")
     val password: String,
-    @SerializedName("fcmToken")
+    @SerialName("fcmToken")
     val fcmToken: String? = null
 )

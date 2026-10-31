@@ -1,14 +1,16 @@
 package com.thanh0x.coursedeals.data.user.model
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class TokenResponseData(
-    @SerializedName("accessToken")
+    @SerialName("accessToken")
     val accessToken: String,
-    @SerializedName("refreshToken")
+    @SerialName("refreshToken")
     val refreshToken: String? = null,
-    @SerializedName("tokenType")
+    @SerialName("tokenType")
     val tokenType: String? = null,
-    @SerializedName("expiresIn")
+    @SerialName("expiresIn")
     val expiresIn: Long? = null
 )

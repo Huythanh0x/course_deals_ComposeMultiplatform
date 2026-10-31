@@ -1,12 +1,14 @@
 package com.thanh0x.coursedeals.data.user.model
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class ResponseStatusFromServer(
-    @SerializedName("status")
+    @SerialName("status")
     val status: Int,
-    @SerializedName("message")
+    @SerialName("message")
     val message: String,
-    @SerializedName("route")
+    @SerialName("route")
     val route: String
 )

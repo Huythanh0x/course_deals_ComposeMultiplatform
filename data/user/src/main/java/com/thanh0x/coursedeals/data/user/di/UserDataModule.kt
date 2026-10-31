@@ -8,7 +8,9 @@ import com.thanh0x.coursedeals.data.user.source.datastore.LocalUserProfileDataSo
 import com.thanh0x.coursedeals.data.user.source.remote.RemoteAuthenticationDataSourceImpl
 import com.thanh0x.coursedeals.data.user.source.remote.RemoteUserProfileDataSourceImpl
 import com.thanh0x.coursedeals.data.user.source.remote.UserAuthenticationService
+import com.thanh0x.coursedeals.data.user.source.remote.UserAuthenticationServiceImpl
 import com.thanh0x.coursedeals.data.user.source.remote.UserProfileService
+import com.thanh0x.coursedeals.data.user.source.remote.UserProfileServiceImpl
 import com.thanh0x.coursedeals.domain.user.UserAuthenticationRepository
 import com.thanh0x.coursedeals.domain.user.UserProfileRepository
 import com.thanh0x.coursedeals.domain.user.source.LocalAuthenticationDataSource
@@ -18,10 +20,8 @@ import com.thanh0x.coursedeals.domain.user.source.RemoteAuthenticationDataSource
 import com.thanh0x.coursedeals.domain.user.source.RemoteUserProfileDataSource
 import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import retrofit2.Retrofit
 import javax.inject.Singleton
 
 @Module
@@ -70,15 +70,15 @@ abstract class UserDataModule {
         impl: RemoteUserProfileDataSourceImpl
     ): RemoteUserProfileDataSource
 
-    companion object {
-        @Provides
-        @Singleton
-        fun provideUserAuthenticationService(retrofit: Retrofit): UserAuthenticationService =
-            retrofit.create(UserAuthenticationService::class.java)
+    @Binds
+    @Singleton
+    abstract fun bindUserAuthenticationService(
+        impl: UserAuthenticationServiceImpl
+    ): UserAuthenticationService
 
-        @Provides
-        @Singleton
-        fun provideUserProfileService(retrofit: Retrofit): UserProfileService =
-            retrofit.create(UserProfileService::class.java)
-    }
+    @Binds
+    @Singleton
+    abstract fun bindUserProfileService(
+        impl: UserProfileServiceImpl
+    ): UserProfileService
 }

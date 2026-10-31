@@ -1,12 +1,14 @@
 package com.thanh0x.coursedeals.data.user.model
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class RegisterResponseData(
-    @SerializedName("message")
+    @SerialName("message")
     val message: String? = null,
-    @SerializedName("email")
+    @SerialName("email")
     val email: String? = null,
-    @SerializedName("expiresInSeconds")
+    @SerialName("expiresInSeconds")
     val expiresInSeconds: Long? = null
 )

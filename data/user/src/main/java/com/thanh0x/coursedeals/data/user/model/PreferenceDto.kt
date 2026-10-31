@@ -1,16 +1,18 @@
 package com.thanh0x.coursedeals.data.user.model
 
-import com.google.gson.annotations.SerializedName
 import com.thanh0x.coursedeals.domain.user.UserPreferences
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class PreferenceDto(
-    @SerializedName("categories")
+    @SerialName("categories")
     val categories: List<String>,
-    @SerializedName("keywords")
+    @SerialName("keywords")
     val keywords: List<String>,
-    @SerializedName("notificationsEnabled")
+    @SerialName("notificationsEnabled")
     val notificationsEnabled: Boolean,
-    @SerializedName("updatedAt")
+    @SerialName("updatedAt")
     val updatedAt: Long,
 )
 

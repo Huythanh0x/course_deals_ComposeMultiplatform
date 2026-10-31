@@ -1,20 +1,22 @@
 package com.thanh0x.coursedeals.data.user.model
 
-import com.google.gson.annotations.SerializedName
 import com.thanh0x.coursedeals.domain.user.UserProfile
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class UserProfileDto(
-    @SerializedName("id")
+    @SerialName("id")
     val id: Int = 0,
-    @SerializedName("email")
+    @SerialName("email")
     val email: String? = null,
-    @SerializedName("fullName")
+    @SerialName("fullName")
     val fullName: String? = null,
-    @SerializedName("avatarUrl")
+    @SerialName("avatarUrl")
     val avatarUrl: String? = null,
-    @SerializedName("fcmToken")
+    @SerialName("fcmToken")
     val fcmToken: String? = null,
-    @SerializedName("preferences")
+    @SerialName("preferences")
     val preferences: PreferenceDto? = null,
 )
 

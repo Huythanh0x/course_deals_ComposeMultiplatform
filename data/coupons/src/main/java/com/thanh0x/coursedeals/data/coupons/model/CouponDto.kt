@@ -1,50 +1,52 @@
 package com.thanh0x.coursedeals.data.coupons.model
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class CouponDto(
-    @SerializedName("courseId")
+    @SerialName("courseId")
     val courseId: Int,
-    @SerializedName("author")
+    @SerialName("author")
     val author: String? = null,
-    @SerializedName("category")
+    @SerialName("category")
     val category: String? = null,
-    @SerializedName("contentLength")
+    @SerialName("contentLength")
     val contentLength: Int? = null,
-    @SerializedName("couponCode")
+    @SerialName("couponCode")
     val couponCode: String? = null,
-    @SerializedName("couponUrl")
+    @SerialName("couponUrl")
     val couponUrl: String? = null,
-    @SerializedName("description")
+    @SerialName("description")
     val description: String? = null,
-    @SerializedName("expiredTime")
+    @SerialName("expiredTime")
     val expiredTime: Long? = null,
-    @SerializedName("heading")
+    @SerialName("heading")
     val heading: String? = null,
-    @SerializedName("language")
+    @SerialName("language")
     val language: String? = null,
-    @SerializedName("level")
+    @SerialName("level")
     val level: String? = null,
-    @SerializedName("previewImage")
+    @SerialName("previewImage")
     val previewImage: String? = null,
-    @SerializedName("previewVideo")
+    @SerialName("previewVideo")
     val previewVideo: String? = null,
-    @SerializedName("rating")
+    @SerialName("rating")
     val rating: Double? = null,
-    @SerializedName("reviews")
+    @SerialName("reviews")
     val reviews: Int? = null,
-    @SerializedName("students")
+    @SerialName("students")
     val students: Int? = null,
-    @SerializedName("subCategory")
+    @SerialName("subCategory")
     val subCategory: String? = null,
-    @SerializedName("title")
+    @SerialName("title")
     val title: String? = null,
-    @SerializedName("usesRemaining")
+    @SerialName("usesRemaining")
     val usesRemaining: Int? = null,
-    @SerializedName("isNew")
+    @SerialName("isNew")
     val isNew: Boolean? = null,
-    @SerializedName("createdAt")
+    @SerialName("createdAt")
     val createdAt: Long? = null,
-    @SerializedName("updatedAt")
+    @SerialName("updatedAt")
     val updatedAt: Long? = null,
 )

@@ -1,12 +1,14 @@
 package com.thanh0x.coursedeals.data.user.model
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class SocialLoginRequest(
-    @SerializedName("idToken")
+    @SerialName("idToken")
     val idToken: String,
-    @SerializedName("provider")
+    @SerialName("provider")
     val provider: String,
-    @SerializedName("fcmToken")
+    @SerialName("fcmToken")
     val fcmToken: String? = null
 )

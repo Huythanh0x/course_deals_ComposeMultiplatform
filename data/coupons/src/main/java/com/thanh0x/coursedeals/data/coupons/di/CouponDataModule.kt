@@ -4,17 +4,16 @@ import com.thanh0x.coursedeals.data.coupons.repository.CouponRepositoryImpl
 import com.thanh0x.coursedeals.data.coupons.repository.SearchRepositoryImpl
 import com.thanh0x.coursedeals.data.coupons.source.LocalCouponDataSource
 import com.thanh0x.coursedeals.data.coupons.source.local.LocalCouponDataSourceImpl
-import com.thanh0x.coursedeals.data.coupons.source.remote.RemoteCouponDataSourceImpl
 import com.thanh0x.coursedeals.data.coupons.source.remote.CouponService
+import com.thanh0x.coursedeals.data.coupons.source.remote.CouponServiceImpl
+import com.thanh0x.coursedeals.data.coupons.source.remote.RemoteCouponDataSourceImpl
 import com.thanh0x.coursedeals.domain.coupons.CouponRepository
 import com.thanh0x.coursedeals.domain.coupons.SearchRepository
 import com.thanh0x.coursedeals.domain.coupons.source.RemoteCouponDataSource
 import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import retrofit2.Retrofit
 import javax.inject.Singleton
 
 @Module
@@ -45,10 +44,9 @@ abstract class CouponDataModule {
         impl: RemoteCouponDataSourceImpl
     ): RemoteCouponDataSource
 
-    companion object {
-        @Provides
-        @Singleton
-        fun provideCouponService(retrofit: Retrofit): CouponService =
-            retrofit.create(CouponService::class.java)
-    }
+    @Binds
+    @Singleton
+    abstract fun bindCouponService(
+        impl: CouponServiceImpl
+    ): CouponService
 }
