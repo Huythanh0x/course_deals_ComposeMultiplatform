@@ -61,8 +61,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
@@ -71,7 +69,9 @@ import androidx.compose.ui.unit.sp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemKey
-import com.thanh0x.coursedeals.core.ui.R as CoreR
+import com.thanh0x.coursedeals.core.ui.resources.Res
+import com.thanh0x.coursedeals.core.ui.resources.painterResource
+import com.thanh0x.coursedeals.core.ui.resources.stringResource
 import com.thanh0x.coursedeals.core.ui.util.MapperToView
 import com.thanh0x.coursedeals.domain.coupons.Coupon
 import com.thanh0x.coursedeals.domain.coupons.CourseLanguage
@@ -161,7 +161,7 @@ fun HomeScreen(
                         },
                     placeholder = {
                         Text(
-                            text = stringResource(CoreR.string.search_here_hint_search),
+                            text = stringResource(Res.string.search_here_hint_search),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -223,7 +223,7 @@ fun HomeScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.FilterList,
-                            contentDescription = stringResource(CoreR.string.filter_title),
+                            contentDescription = stringResource(Res.string.filter_title),
                             modifier = Modifier.size(24.dp),
                         )
                     }
@@ -254,9 +254,9 @@ fun HomeScreen(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     val dealsText = if (isFiltered) {
-                        stringResource(CoreR.string.stat_matching_deals, uiState.matchingDeals, uiState.statDeals)
+                        stringResource(Res.string.stat_matching_deals, uiState.matchingDeals, uiState.statDeals)
                     } else {
-                        stringResource(CoreR.string.stat_deals, uiState.statDeals)
+                        stringResource(Res.string.stat_deals, uiState.statDeals)
                     }
 
                     Text(
@@ -275,14 +275,14 @@ fun HomeScreen(
                             uiState.statUpdatedTimestamp
                         }
 
-                        val labelResId = if (uiState.showLocalFetchTime) {
-                            CoreR.string.stat_fetched
+                        val labelRes = if (uiState.showLocalFetchTime) {
+                            Res.string.stat_fetched
                         } else {
-                            CoreR.string.stat_updated
+                            Res.string.stat_updated
                         }
 
                         Text(
-                            text = stringResource(labelResId, mapper.mapTimeAgo(timestamp)),
+                            text = stringResource(labelRes, mapper.mapTimeAgo(timestamp)),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.clickable(onClick = onToggleTimestampClick),
@@ -303,7 +303,7 @@ fun HomeScreen(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = stringResource(CoreR.string.btn_clear),
+                            text = stringResource(Res.string.btn_clear),
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                         )
@@ -314,14 +314,14 @@ fun HomeScreen(
                         contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
                     ) {
                         Icon(
-                            painter = painterResource(CoreR.drawable.ic_logo_mark),
+                            painter = painterResource(Res.drawable.ic_logo_mark),
                             contentDescription = null,
                             modifier = Modifier.size(14.dp),
                             tint = MaterialTheme.colorScheme.primary,
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = stringResource(CoreR.string.submit_deal),
+                            text = stringResource(Res.string.submit_deal),
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                         )
@@ -358,7 +358,7 @@ fun HomeScreen(
                         Spacer(modifier = Modifier.height(16.dp))
 
                         Text(
-                            text = stringResource(CoreR.string.empty_state_message),
+                            text = stringResource(Res.string.empty_state_message),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center,
@@ -367,7 +367,7 @@ fun HomeScreen(
                         Spacer(modifier = Modifier.height(24.dp))
 
                         FilledTonalButton(onClick = onClearFiltersClick) {
-                            Text(stringResource(CoreR.string.btn_reset_filters))
+                            Text(stringResource(Res.string.btn_reset_filters))
                         }
                     }
                 } else {

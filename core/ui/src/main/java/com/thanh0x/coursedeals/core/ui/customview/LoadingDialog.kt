@@ -23,13 +23,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.DialogFragment
-import com.thanh0x.coursedeals.core.ui.R
+import com.thanh0x.coursedeals.core.ui.resources.Res
+import com.thanh0x.coursedeals.core.ui.resources.painterResource
 import com.thanh0x.coursedeals.core.ui.theme.CourseDealsTheme
 
 class LoadingDialog : DialogFragment() {
@@ -101,7 +100,7 @@ fun LoadingDialogContent(
                     color = MaterialTheme.colorScheme.primary
                 )
                 Image(
-                    painter = painterResource(id = R.drawable.ic_logo_mark),
+                    painter = painterResource(Res.drawable.ic_logo_mark),
                     contentDescription = null,
                     modifier = Modifier.size(40.dp)
                 )

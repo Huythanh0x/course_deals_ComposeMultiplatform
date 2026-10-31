@@ -35,13 +35,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.thanh0x.coursedeals.core.ui.R as CoreR
+import com.thanh0x.coursedeals.core.ui.resources.Res
+import com.thanh0x.coursedeals.core.ui.resources.stringResource
 import com.thanh0x.coursedeals.domain.coupons.Coupon
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -89,7 +88,7 @@ fun OfflineCacheNoticeBanner(
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Text(
-                text = stringResource(CoreR.string.cache_banner_text, cachedAtText),
+                text = stringResource(Res.string.cache_banner_text, cachedAtText),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -104,7 +103,7 @@ fun OfflineCacheNoticeBanner(
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = stringResource(CoreR.string.cache_banner_refresh),
+                    text = stringResource(Res.string.cache_banner_refresh),
                     style = MaterialTheme.typography.labelMedium,
                 )
             }

@@ -36,13 +36,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.thanh0x.coursedeals.core.ui.R as CoreR
+import com.thanh0x.coursedeals.core.ui.resources.Res
+import com.thanh0x.coursedeals.core.ui.resources.stringResource
 import com.thanh0x.coursedeals.core.ui.theme.CourseDealsTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,7 +57,7 @@ fun SubmitDealBottomSheetDialog(
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    val invalidUrlMessage = stringResource(CoreR.string.url_error_invalid)
+    val invalidUrlMessage = stringResource(Res.string.url_error_invalid)
 
     fun submit() {
         val trimmed = urlText.trim()
@@ -82,7 +82,7 @@ fun SubmitDealBottomSheetDialog(
                 .padding(top = 8.dp),
         ) {
             Text(
-                text = stringResource(CoreR.string.submit_deal_title),
+                text = stringResource(Res.string.submit_deal_title),
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.padding(horizontal = 24.dp),
@@ -96,7 +96,7 @@ fun SubmitDealBottomSheetDialog(
                     .padding(horizontal = 24.dp, vertical = 12.dp),
             ) {
                 Text(
-                    text = stringResource(CoreR.string.submit_deal_subhead),
+                    text = stringResource(Res.string.submit_deal_subhead),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -112,7 +112,7 @@ fun SubmitDealBottomSheetDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .focusRequester(focusRequester),
-                    label = { Text(stringResource(CoreR.string.url_hint)) },
+                    label = { Text(stringResource(Res.string.url_hint)) },
                     placeholder = { Text("https://www.udemy.com/course/...") },
                     leadingIcon = {
                         Icon(
@@ -151,7 +151,7 @@ fun SubmitDealBottomSheetDialog(
                     },
                     modifier = Modifier.weight(1f),
                 ) {
-                    Text(stringResource(CoreR.string.btn_cancel))
+                    Text(stringResource(Res.string.btn_cancel))
                 }
 
                 Spacer(modifier = Modifier.height(0.dp))
@@ -162,7 +162,7 @@ fun SubmitDealBottomSheetDialog(
                         .weight(1f)
                         .padding(start = 16.dp),
                 ) {
-                    Text(stringResource(CoreR.string.btn_submit))
+                    Text(stringResource(Res.string.btn_submit))
                 }
             }
         }

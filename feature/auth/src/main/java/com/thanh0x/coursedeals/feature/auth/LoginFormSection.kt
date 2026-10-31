@@ -22,12 +22,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import com.thanh0x.coursedeals.core.ui.R as CoreR
+import com.thanh0x.coursedeals.core.ui.resources.Res
+import com.thanh0x.coursedeals.core.ui.resources.stringResource
 
 @Suppress("LongParameterList")
 @Composable
@@ -129,7 +129,7 @@ private fun FullNameField(
         value = value,
         onValueChange = onValueChange,
         modifier = modifier.fillMaxWidth(),
-        label = { Text(stringResource(CoreR.string.auth_full_name_hint)) },
+        label = { Text(stringResource(Res.string.auth_full_name_hint)) },
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
     )
@@ -145,7 +145,7 @@ private fun EmailField(
         value = value,
         onValueChange = onValueChange,
         modifier = modifier.fillMaxWidth(),
-        label = { Text(stringResource(CoreR.string.auth_email_hint)) },
+        label = { Text(stringResource(Res.string.auth_email_hint)) },
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
     )
@@ -163,7 +163,7 @@ private fun PasswordField(
         value = value,
         onValueChange = onValueChange,
         modifier = modifier.fillMaxWidth(),
-        label = { Text(stringResource(CoreR.string.auth_password_hint)) },
+        label = { Text(stringResource(Res.string.auth_password_hint)) },
         singleLine = true,
         visualTransformation = if (isVisible) VisualTransformation.None else PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -188,8 +188,8 @@ private fun OtpField(
         value = value,
         onValueChange = { if (it.length <= 6) onValueChange(it) },
         modifier = modifier.fillMaxWidth(),
-        label = { Text(stringResource(CoreR.string.auth_otp_hint)) },
-        supportingText = { Text(stringResource(CoreR.string.auth_otp_helper)) },
+        label = { Text(stringResource(Res.string.auth_otp_hint)) },
+        supportingText = { Text(stringResource(Res.string.auth_otp_helper)) },
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
     )
@@ -202,9 +202,9 @@ private fun AuthSubmitButton(
     modifier: Modifier = Modifier,
 ) {
     val textRes = when (authMode) {
-        AuthMode.LOGIN -> CoreR.string.auth_btn_sign_in
-        AuthMode.REGISTER -> CoreR.string.auth_btn_create_account
-        AuthMode.VERIFY_OTP -> CoreR.string.auth_btn_verify_otp
+        AuthMode.LOGIN -> Res.string.auth_btn_sign_in
+        AuthMode.REGISTER -> Res.string.auth_btn_create_account
+        AuthMode.VERIFY_OTP -> Res.string.auth_btn_verify_otp
     }
     Button(
         onClick = onClick,
@@ -227,9 +227,9 @@ private fun AuthToggleButton(
     modifier: Modifier = Modifier,
 ) {
     val textRes = when (authMode) {
-        AuthMode.LOGIN -> CoreR.string.auth_toggle_to_register
-        AuthMode.REGISTER -> CoreR.string.auth_toggle_to_login
-        AuthMode.VERIFY_OTP -> CoreR.string.auth_toggle_back_to_login
+        AuthMode.LOGIN -> Res.string.auth_toggle_to_register
+        AuthMode.REGISTER -> Res.string.auth_toggle_to_login
+        AuthMode.VERIFY_OTP -> Res.string.auth_toggle_back_to_login
     }
     TextButton(
         onClick = onClick,

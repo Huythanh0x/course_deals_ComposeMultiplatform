@@ -7,7 +7,7 @@
     <string name="ok_text_button">OK</string>
     <string name="no_internet_title">NO INTERNET CONNECTION</string>
     <string name="no_internet_message">Please enable your internet connection to continue using this app</string>
-    <string name="empty_email_password_warning_text">"Email and password cannot be empty</string>
+    <string name="empty_email_password_warning_text">Email and password cannot be empty</string>
     <string name="email_hint_input">EMAIL</string>
     <string name="invalid_email_format_warning_text">Email address is not valid, re-check it !!!</string>
     <string name="error_status_code_500">Got 500 error code, internal server error</string>

@@ -34,16 +34,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.thanh0x.coursedeals.core.ui.R as CoreR
+import com.thanh0x.coursedeals.core.ui.resources.Res
+import com.thanh0x.coursedeals.core.ui.resources.stringResource
 import com.thanh0x.coursedeals.core.ui.theme.CourseDealsTheme
 import com.thanh0x.coursedeals.core.ui.theme.RatingAmber
-import com.thanh0x.coursedeals.core.ui.util.categoryResId
-import com.thanh0x.coursedeals.core.ui.util.languageResId
-import com.thanh0x.coursedeals.core.ui.util.sortResId
+import com.thanh0x.coursedeals.core.ui.util.categoryResource
+import com.thanh0x.coursedeals.core.ui.util.languageResource
+import com.thanh0x.coursedeals.core.ui.util.sortResource
 import com.thanh0x.coursedeals.domain.coupons.CourseCategory
 import com.thanh0x.coursedeals.domain.coupons.CourseLanguage
 import com.thanh0x.coursedeals.domain.coupons.FilterData
@@ -109,7 +109,7 @@ fun FilterBottomSheetDialogContent(
                 .padding(top = 16.dp),
         ) {
             Text(
-                text = stringResource(CoreR.string.filter_title),
+                text = stringResource(Res.string.filter_title),
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.padding(horizontal = 24.dp),
@@ -192,7 +192,7 @@ private fun FilterCategorySection(
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         Text(
-            text = stringResource(CoreR.string.fav_cats_title),
+            text = stringResource(Res.string.fav_cats_title),
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -209,7 +209,7 @@ private fun FilterCategorySection(
                 FilterChip(
                     selected = isSelected,
                     onClick = { onToggleCategory(category, isSelected) },
-                    label = { Text(stringResource(category.categoryResId)) },
+                    label = { Text(stringResource(category.categoryResource)) },
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
                         selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -234,16 +234,16 @@ private fun FilterRatingSection(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = stringResource(CoreR.string.filter_rating),
+                text = stringResource(Res.string.filter_rating),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
             Text(
                 text = if (currentRating > 0.0) {
-                    stringResource(CoreR.string.filter_rating_format, currentRating)
+                    stringResource(Res.string.filter_rating_format, currentRating)
                 } else {
-                    stringResource(CoreR.string.filter_rating_any)
+                    stringResource(Res.string.filter_rating_any)
                 },
                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
                 color = RatingAmber,
@@ -268,12 +268,12 @@ private fun FilterRatingSection(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
-                text = stringResource(CoreR.string.filter_rating_any),
+                text = stringResource(Res.string.filter_rating_any),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
             )
             Text(
-                text = stringResource(CoreR.string.filter_rating_max),
+                text = stringResource(Res.string.filter_rating_max),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
             )
@@ -290,7 +290,7 @@ private fun FilterLanguageSection(
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         Text(
-            text = stringResource(CoreR.string.lang_label),
+            text = stringResource(Res.string.lang_label),
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -307,7 +307,7 @@ private fun FilterLanguageSection(
                 FilterChip(
                     selected = isSelected,
                     onClick = { onSelectLanguage(language) },
-                    label = { Text(stringResource(language.languageResId)) },
+                    label = { Text(stringResource(language.languageResource)) },
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
                         selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -327,7 +327,7 @@ private fun FilterSortSection(
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         Text(
-            text = stringResource(CoreR.string.sort_label),
+            text = stringResource(Res.string.sort_label),
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -344,7 +344,7 @@ private fun FilterSortSection(
                 FilterChip(
                     selected = isSelected,
                     onClick = { onSelectSort(sort) },
-                    label = { Text(stringResource(sort.sortResId)) },
+                    label = { Text(stringResource(sort.sortResource)) },
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
                         selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -371,7 +371,7 @@ private fun FilterActionFooter(
             onClick = onReset,
             modifier = Modifier.weight(1f),
         ) {
-            Text(stringResource(CoreR.string.filter_reset))
+            Text(stringResource(Res.string.filter_reset))
         }
 
         Button(
@@ -380,7 +380,7 @@ private fun FilterActionFooter(
                 .weight(1f)
                 .padding(start = 16.dp),
         ) {
-            Text(stringResource(CoreR.string.filter_apply))
+            Text(stringResource(Res.string.filter_apply))
         }
     }
 }

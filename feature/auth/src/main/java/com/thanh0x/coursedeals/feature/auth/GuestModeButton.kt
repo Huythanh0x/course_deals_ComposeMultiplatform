@@ -7,9 +7,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.thanh0x.coursedeals.core.ui.R as CoreR
+import com.thanh0x.coursedeals.core.ui.resources.Res
+import com.thanh0x.coursedeals.core.ui.resources.stringResource
 
 @Composable
 fun GuestModeButton(
@@ -24,7 +24,7 @@ fun GuestModeButton(
         shape = RoundedCornerShape(24.dp),
     ) {
         Text(
-            text = stringResource(CoreR.string.continue_as_guest),
+            text = stringResource(Res.string.continue_as_guest),
         )
     }
 }

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Search — single state (always outlined)
+  Color: onSurfaceVariant #FF44474E
+  Usage: SearchBar leading icon, top app bar action
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Lens circle — center (10.5, 10.5) r=6.5 -->
+    <path
+        android:strokeColor="#FF44474E"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M10.5,4A6.5,6.5 0 0,1 10.5,17A6.5,6.5 0 0,1 10.5,4Z"/>
+
+    <!-- Handle -->
+    <path
+        android:strokeColor="#FF44474E"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M15.65,15.65L21,21"/>
+
+</vector>

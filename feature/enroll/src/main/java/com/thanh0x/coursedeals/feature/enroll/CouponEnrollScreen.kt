@@ -32,14 +32,13 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.thanh0x.coursedeals.core.ui.R as CoreR
+import com.thanh0x.coursedeals.core.ui.resources.Res
+import com.thanh0x.coursedeals.core.ui.resources.stringResource
 
 @Composable
 fun CouponEnrollRoute(
@@ -88,7 +87,7 @@ fun CouponEnrollScreen(
         modifier = modifier.fillMaxSize(),
         topBar = {
             EnrollTopBar(
-                title = stringResource(CoreR.string.text_button_enroll_now),
+                title = stringResource(Res.string.text_button_enroll_now),
                 onBackClick = onBackClick,
             )
         },
@@ -101,7 +100,7 @@ fun CouponEnrollScreen(
             when {
                 isError || couponUrl.isNullOrBlank() -> {
                     val message = errorMessage
-                        ?: stringResource(CoreR.string.error_fetching_null_coupon)
+                        ?: stringResource(Res.string.error_fetching_null_coupon)
                     EnrollErrorState(
                         errorMessage = message,
                         onRetryClick = onRetryClick,
@@ -149,7 +148,7 @@ fun EnrollTopBar(
             IconButton(onClick = onBackClick) {
                 Icon(
                     imageVector = Icons.Default.Close,
-                    contentDescription = stringResource(CoreR.string.cancel_button_text),
+                    contentDescription = stringResource(Res.string.cancel_button_text),
                 )
             }
         },
@@ -247,7 +246,7 @@ fun EnrollErrorState(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(dimensionResource(CoreR.dimen.spacing_24)),
+            .padding(24.dp),
         contentAlignment = Alignment.Center,
     ) {
         Column(
@@ -259,9 +258,9 @@ fun EnrollErrorState(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
             )
-            Spacer(modifier = Modifier.height(dimensionResource(CoreR.dimen.spacing_16)))
+            Spacer(modifier = Modifier.height(16.dp))
             Button(onClick = onRetryClick) {
-                Text(text = stringResource(CoreR.string.retry_button_text))
+                Text(text = stringResource(Res.string.retry_button_text))
             }
         }
     }

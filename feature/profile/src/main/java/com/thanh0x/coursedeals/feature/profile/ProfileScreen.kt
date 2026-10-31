@@ -62,14 +62,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.thanh0x.coursedeals.core.ui.R as CoreR
+import com.thanh0x.coursedeals.core.ui.resources.Res
+import com.thanh0x.coursedeals.core.ui.resources.stringResource
 import com.thanh0x.coursedeals.core.ui.theme.CourseDealsTheme
 
 @Composable
@@ -346,7 +346,7 @@ private fun UserHeaderSection(
 
         // Display Name
         val displayName = when {
-            uiState.isGuestMode -> stringResource(CoreR.string.guest_user_title)
+            uiState.isGuestMode -> stringResource(Res.string.guest_user_title)
             uiState.displayName.isNotEmpty() -> uiState.displayName
             else -> "User Name"
         }
@@ -361,7 +361,7 @@ private fun UserHeaderSection(
 
         // Email Container
         val email = when {
-            uiState.isGuestMode -> stringResource(CoreR.string.guest_user_subtitle)
+            uiState.isGuestMode -> stringResource(Res.string.guest_user_subtitle)
             uiState.email.isNotEmpty() -> uiState.email
             else -> "user@example.com"
         }
@@ -412,7 +412,7 @@ private fun PreferencesSection(
     Column(modifier = modifier) {
         // Favorite Categories Header
         Text(
-            text = stringResource(CoreR.string.fav_cats_title),
+            text = stringResource(Res.string.fav_cats_title),
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(bottom = 8.dp)
@@ -467,7 +467,7 @@ private fun PreferencesSection(
 
         // Favorite Keywords Header
         Text(
-            text = stringResource(CoreR.string.fav_kws_title),
+            text = stringResource(Res.string.fav_kws_title),
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(bottom = 8.dp)
@@ -495,7 +495,7 @@ private fun PreferencesSection(
                             isAddingKeyword = false
                         }
                     },
-                placeholder = { Text(stringResource(CoreR.string.kw_hint)) },
+                placeholder = { Text(stringResource(Res.string.kw_hint)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = { submitKeyword() }),
@@ -574,7 +574,7 @@ private fun SettingsSection(
 ) {
     Column(modifier = modifier) {
         Text(
-            text = stringResource(CoreR.string.settings_title),
+            text = stringResource(Res.string.settings_title),
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(bottom = 8.dp)
@@ -582,14 +582,14 @@ private fun SettingsSection(
 
         // Dark Mode Switch
         SettingSwitchRow(
-            title = stringResource(CoreR.string.enable_dark_mode_switch_text),
+            title = stringResource(Res.string.enable_dark_mode_switch_text),
             checked = isDarkModeEnabled,
             onCheckedChange = onDarkModeToggled
         )
 
         // Fingerprint Switch
         SettingSwitchRow(
-            title = stringResource(CoreR.string.enable_finger_print_switch_text),
+            title = stringResource(Res.string.enable_finger_print_switch_text),
             checked = if (isGuestMode) false else isFingerprintEnabled,
             onCheckedChange = onFingerprintToggled,
             enabled = !isGuestMode
@@ -597,7 +597,7 @@ private fun SettingsSection(
 
         // Notifications Master Switch
         SettingSwitchRow(
-            title = stringResource(CoreR.string.notif_master),
+            title = stringResource(Res.string.notif_master),
             checked = isNotificationsEnabled,
             onCheckedChange = onNotificationsToggled
         )
@@ -605,17 +605,17 @@ private fun SettingsSection(
         // Notification Sub-toggles
         if (isNotificationsEnabled) {
             SettingSubSwitchRow(
-                title = stringResource(CoreR.string.notif_cat),
+                title = stringResource(Res.string.notif_cat),
                 checked = true,
                 onCheckedChange = {}
             )
             SettingSubSwitchRow(
-                title = stringResource(CoreR.string.notif_kw),
+                title = stringResource(Res.string.notif_kw),
                 checked = true,
                 onCheckedChange = {}
             )
             SettingSubSwitchRow(
-                title = stringResource(CoreR.string.notif_hot),
+                title = stringResource(Res.string.notif_hot),
                 checked = true,
                 onCheckedChange = {}
             )
@@ -697,7 +697,7 @@ private fun LogoutButton(
         )
     ) {
         Text(
-            text = stringResource(CoreR.string.logout_button_text),
+            text = stringResource(Res.string.logout_button_text),
             fontWeight = FontWeight.SemiBold
         )
     }
@@ -714,7 +714,7 @@ private fun FooterLinksSection(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = stringResource(CoreR.string.dev_email),
+            text = stringResource(Res.string.dev_email),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier
@@ -726,7 +726,7 @@ private fun FooterLinksSection(
         Spacer(modifier = Modifier.height(4.dp))
 
         Text(
-            text = stringResource(CoreR.string.dev_website),
+            text = stringResource(Res.string.dev_website),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier
@@ -775,7 +775,7 @@ private fun GuestAuthGateOverlay(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = stringResource(CoreR.string.guest_profile_auth_gate_title),
+                    text = stringResource(Res.string.guest_profile_auth_gate_title),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -785,7 +785,7 @@ private fun GuestAuthGateOverlay(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = stringResource(CoreR.string.guest_profile_auth_gate_message),
+                    text = stringResource(Res.string.guest_profile_auth_gate_message),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center
@@ -800,7 +800,7 @@ private fun GuestAuthGateOverlay(
                         .height(48.dp),
                     shape = RoundedCornerShape(24.dp)
                 ) {
-                    Text(text = stringResource(CoreR.string.sign_in_cta))
+                    Text(text = stringResource(Res.string.sign_in_cta))
                 }
             }
         }

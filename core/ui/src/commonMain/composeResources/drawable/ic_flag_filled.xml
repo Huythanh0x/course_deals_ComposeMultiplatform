@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Flag / Report — filled (report selected / submitted)
+  Color: onErrorContainer #FF410002
+  Usage: active state after a report reason is chosen
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Pole -->
+    <path
+        android:strokeColor="#FF410002"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M5,4L5,21"/>
+
+    <!-- Flag body filled with error color -->
+    <path
+        android:fillColor="#FF410002"
+        android:pathData="M5,4L17,4Q20.5,4 20.5,7.25Q20.5,10.5 17,10.5L5,10.5Z"/>
+
+</vector>

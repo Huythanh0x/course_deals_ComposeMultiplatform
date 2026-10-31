@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Students / Group (two people) — single state
+  Color: onSurfaceVariant #FF44474E
+  Usage: Course Detail and card student count
+  Based on Material Design group icon
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Back person head (right, smaller) — center (16,7) r=3 -->
+    <path
+        android:fillColor="#FF44474E"
+        android:pathData="M16,4C17.66,4 19,5.34 19,7C19,8.66 17.66,10 16,10C14.34,10 13,8.66 13,7C13,5.34 14.34,4 16,4Z"/>
+
+    <!-- Back person body -->
+    <path
+        android:fillColor="#FF44474E"
+        android:pathData="M23,21C23,18.33 20.76,16.5 18,16.16C17.38,16.06 16.73,16 16,16C15.27,16 14.62,16.06 14,16.16C13.5,17.05 13.14,18.02 13.04,19.06C13.7,19.02 14.35,19 15,19H17C19.21,19 21,20.79 21,23H23V21Z"/>
+
+    <!-- Front person head (left, larger) — center (9,7) r=4 -->
+    <path
+        android:fillColor="#FF44474E"
+        android:pathData="M9,3C11.21,3 13,4.79 13,7C13,9.21 11.21,11 9,11C6.79,11 5,9.21 5,7C5,4.79 6.79,3 9,3Z"/>
+
+    <!-- Front person body -->
+    <path
+        android:fillColor="#FF44474E"
+        android:pathData="M15,21C15,18 12.31,16 9,16C5.69,16 3,18 3,21H15Z"/>
+
+</vector>
