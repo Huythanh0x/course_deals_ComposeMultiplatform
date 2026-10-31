@@ -25,6 +25,7 @@ import com.thanh0x.coursedeals.core.ui.util.PlatformActions
 import com.thanh0x.coursedeals.core.ui.web.customPlatformWebViewRenderer
 import com.thanh0x.coursedeals.di.appModules
 import com.thanh0x.coursedeals.domain.user.UserProfileRepository
+import com.thanh0x.coursedeals.sync.PeriodicCouponSyncWorker
 import kotlinx.coroutines.runBlocking
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
@@ -50,6 +51,7 @@ class MyApplication : Application() {
             modules(appModules)
         }
         applyPersistedDarkMode()
+        PeriodicCouponSyncWorker.schedule(this)
     }
 
     @SuppressLint("SetJavaScriptEnabled")
