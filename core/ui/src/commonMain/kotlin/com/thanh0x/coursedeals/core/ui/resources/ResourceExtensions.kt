@@ -49,8 +49,19 @@ fun formatMultiplatformString(template: String, vararg formatArgs: Any): String 
             val rounded = ((num * 10.0).roundToInt() / 10.0).toString()
             result = result.replace("%$pos$.1f", rounded)
         }
-        result = result.replace("%$pos\$d", arg.toString())
-        result = result.replace("%$pos\$s", arg.toString())
+        val formattedArg = when (arg) {
+            is Long, is Int, is Short, is Byte -> {
+                val num = (arg as Number).toLong()
+                if (result.contains("%$pos\$02d")) {
+                    val padded = if (num in 0..9) "0$num" else num.toString()
+                    result = result.replace("%$pos\$02d", padded)
+                }
+                arg.toString()
+            }
+            else -> arg.toString()
+        }
+        result = result.replace("%$pos\$d", formattedArg)
+        result = result.replace("%$pos\$s", formattedArg)
     }
     formatArgs.forEach { arg ->
         when {
@@ -58,6 +69,11 @@ fun formatMultiplatformString(template: String, vararg formatArgs: Any): String 
                 val num = (arg as? Number)?.toDouble() ?: 0.0
                 val rounded = ((num * 10.0).roundToInt() / 10.0).toString()
                 result = result.replaceFirst("%.1f", rounded)
+            }
+            result.contains("%02d") -> {
+                val num = (arg as? Number)?.toLong() ?: 0L
+                val padded = if (num in 0..9) "0$num" else num.toString()
+                result = result.replaceFirst("%02d", padded)
             }
             result.contains("%d") -> result = result.replaceFirst("%d", arg.toString())
             result.contains("%s") -> result = result.replaceFirst("%s", arg.toString())

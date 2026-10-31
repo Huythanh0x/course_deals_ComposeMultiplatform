@@ -28,6 +28,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.thanh0x.coursedeals.core.ui.components.CountdownTicker
 import com.thanh0x.coursedeals.core.ui.components.NetworkImage
 import com.thanh0x.coursedeals.core.ui.resources.Res
 import com.thanh0x.coursedeals.core.ui.resources.painterResource
@@ -42,6 +43,7 @@ fun DetailHeroHeader(
     onBookmarkToggle: () -> Unit,
     onShareClick: () -> Unit,
     modifier: Modifier = Modifier,
+    expiredTime: Long? = null,
 ) {
     Box(
         modifier = modifier
@@ -63,8 +65,18 @@ fun DetailHeroHeader(
             onShareClick = onShareClick,
             modifier = Modifier.align(Alignment.TopCenter),
         )
-        timeLeftText?.takeIf { it.isNotBlank() }?.let { timeText ->
-            ExpiryBadge(timeText = timeText, modifier = Modifier.align(Alignment.BottomEnd))
+        if (expiredTime != null) {
+            CountdownTicker(
+                expiredDate = expiredTime,
+                fontSize = 12.sp,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(12.dp),
+            )
+        } else {
+            timeLeftText?.takeIf { it.isNotBlank() }?.let { timeText ->
+                ExpiryBadge(timeText = timeText, modifier = Modifier.align(Alignment.BottomEnd))
+            }
         }
     }
 }
