@@ -74,7 +74,7 @@ android {
 
     buildFeatures {
         compose true
-        dataBinding true
+        dataBinding false
         buildConfig true
     }
 
@@ -130,7 +130,6 @@ dependencies {
     implementation libs.androidx.core.ktx
     implementation libs.androidx.appcompat
     implementation libs.material
-    implementation libs.androidx.constraintlayout
     implementation libs.androidx.navigation.fragment.ktx
     implementation libs.androidx.navigation.ui.ktx
 
@@ -154,9 +153,6 @@ dependencies {
     androidTestImplementation libs.androidx.junit
     androidTestImplementation libs.androidx.espresso.core
 
-    //Coordinator layout
-    implementation libs.androidx.coordinatorlayout
-
     //Navigation component
     implementation libs.androidx.navigation.fragment
     implementation libs.androidx.navigation.ui
@@ -170,9 +166,6 @@ dependencies {
 
     //Datastore
     implementation libs.androidx.datastore.preferences
-
-    //Recyclerview
-    implementation libs.androidx.recyclerview
 
     //Retrofit
     implementation libs.retrofit
@@ -195,17 +188,11 @@ dependencies {
     implementation libs.androidx.lifecycle.viewmodel.ktx
     implementation libs.androidx.lifecycle.livedata.ktx
 
-    //Loading image
-    implementation libs.picasso
-
     //Gson
     implementation libs.gson
 
     //Jsoup
     implementation libs.jsoup
-
-    //circular avatar
-    implementation libs.circularimageview
 
     //paging
     implementation libs.androidx.paging.runtime
@@ -215,7 +202,4 @@ dependencies {
 
     // Logging
     implementation libs.timber
-
-    // Swipe Refresh Layout
-    implementation libs.androidx.swiperefreshlayout
 }
