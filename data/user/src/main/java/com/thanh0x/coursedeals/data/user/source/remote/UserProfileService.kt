@@ -1,23 +1,16 @@
 package com.thanh0x.coursedeals.data.user.source.remote
 
+import com.thanh0x.coursedeals.core.network.NetworkResponse
 import com.thanh0x.coursedeals.data.user.model.PreferenceDto
 import com.thanh0x.coursedeals.data.user.model.UpdateUserProfileRequest
 import com.thanh0x.coursedeals.data.user.model.UserProfileDto
-import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.PUT
 
 interface UserProfileService {
-    @GET("api/v1/preferences")
-    suspend fun getPreferences(): Response<PreferenceDto>
+    suspend fun getPreferences(): NetworkResponse<PreferenceDto>
 
-    @PUT("api/v1/preferences")
-    suspend fun updatePreferences(@Body preferences: PreferenceDto): Response<PreferenceDto>
+    suspend fun updatePreferences(preferences: PreferenceDto): NetworkResponse<PreferenceDto>
 
-    @GET("api/v1/user/profile")
-    suspend fun getUserProfile(): Response<UserProfileDto>
+    suspend fun getUserProfile(): NetworkResponse<UserProfileDto>
 
-    @PUT("api/v1/user/profile")
-    suspend fun updateUserProfile(@Body request: UpdateUserProfileRequest): Response<UserProfileDto>
+    suspend fun updateUserProfile(request: UpdateUserProfileRequest): NetworkResponse<UserProfileDto>
 }

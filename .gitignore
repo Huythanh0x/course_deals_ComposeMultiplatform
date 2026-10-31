@@ -17,6 +17,7 @@ local.properties
 .idea/
 .artifacts/
 tree.dir
+.kotlin/
 
 # Per-ticket working memory and worktrees — local scratch, not project docs
 .agents/tickets/

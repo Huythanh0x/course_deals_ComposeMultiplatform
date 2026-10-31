@@ -2,6 +2,7 @@ plugins {
     id 'coursedeals.android.library'
     id 'com.google.devtools.ksp'
     id 'dagger.hilt.android.plugin'
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -22,9 +23,11 @@ dependencies {
     // Datastore
     implementation libs.androidx.datastore.preferences
 
-    // Retrofit
-    implementation libs.retrofit
-    implementation libs.retrofit.converter.gson
+    // Ktor
+    implementation libs.ktor.client.core
+    implementation libs.ktor.client.content.negotiation
+    implementation libs.ktor.serialization.kotlinx.json
+    implementation libs.kotlinx.serialization.json
 
     // Logging
     implementation libs.timber

@@ -167,9 +167,9 @@ dependencies {
     //Datastore
     implementation libs.androidx.datastore.preferences
 
-    //Retrofit
-    implementation libs.retrofit
-    implementation libs.retrofit.converter.gson
+    //Ktor
+    implementation libs.ktor.client.core
+    implementation libs.ktor.client.okhttp
 
     //Dagger-Hilt
     implementation libs.androidx.hilt.common
@@ -187,9 +187,6 @@ dependencies {
     implementation libs.androidx.lifecycle.runtime.ktx
     implementation libs.androidx.lifecycle.viewmodel.ktx
     implementation libs.androidx.lifecycle.livedata.ktx
-
-    //Gson
-    implementation libs.gson
 
     //Jsoup
     implementation libs.jsoup

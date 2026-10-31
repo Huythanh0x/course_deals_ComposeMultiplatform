@@ -1,16 +1,18 @@
 package com.thanh0x.coursedeals.data.coupons.model
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class CourseDealResponse(
-    @SerializedName("lastFetchTime")
+    @SerialName("lastFetchTime")
     val lastFetchTime: Long,
-    @SerializedName("totalCoupon")
+    @SerialName("totalCoupon")
     val totalCoupon: Long,
-    @SerializedName("totalPage")
+    @SerialName("totalPage")
     val totalPage: Int,
-    @SerializedName("currentPage")
+    @SerialName("currentPage")
     val currentPage: Int,
-    @SerializedName("courses")
+    @SerialName("courses")
     val courses: List<CouponDto>
 )

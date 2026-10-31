@@ -23,7 +23,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import retrofit2.Response
+import com.thanh0x.coursedeals.core.network.NetworkResponse
 
 class CouponRepositoryImplTest {
 
@@ -291,30 +291,30 @@ class CouponRepositoryImplTest {
     }
 
     private class FakeCouponService : CouponService {
-        override suspend fun fetchAllCoupons(): Response<CourseDealResponse> =
+        override suspend fun fetchAllCoupons(): NetworkResponse<CourseDealResponse> =
             throw UnsupportedOperationException()
 
         override suspend fun fetchPagedCoupons(
             pageIndex: Int,
             numberPerPage: Int,
-        ): Response<CourseDealResponse> = throw UnsupportedOperationException()
+        ): NetworkResponse<CourseDealResponse> = throw UnsupportedOperationException()
 
-        override suspend fun fetchCouponDetail(courseId: Int): Response<CouponDto> =
+        override suspend fun fetchCouponDetail(courseId: Int): NetworkResponse<CouponDto> =
             throw UnsupportedOperationException()
 
-        override suspend fun fetchEnhancedCouponDetail(courseId: Int): Response<CouponDto> =
+        override suspend fun fetchEnhancedCouponDetail(courseId: Int): NetworkResponse<CouponDto> =
             throw UnsupportedOperationException()
 
         override suspend fun searchCourseCoupon(
             query: String,
             pageIndex: Int,
             numberPerPage: Int,
-        ): Response<CourseDealResponse> = throw UnsupportedOperationException()
+        ): NetworkResponse<CourseDealResponse> = throw UnsupportedOperationException()
 
-        override suspend fun postCoupon(couponUrl: String): Response<ResponseStatusFromServer> =
+        override suspend fun postCoupon(couponUrl: String): NetworkResponse<ResponseStatusFromServer> =
             throw UnsupportedOperationException()
 
-        override suspend fun deleteCoupon(couponUrl: String): Response<ResponseStatusFromServer> =
+        override suspend fun deleteCoupon(couponUrl: String): NetworkResponse<ResponseStatusFromServer> =
             throw UnsupportedOperationException()
     }
 
