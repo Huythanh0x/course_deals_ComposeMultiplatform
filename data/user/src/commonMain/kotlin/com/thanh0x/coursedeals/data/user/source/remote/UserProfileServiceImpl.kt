@@ -6,6 +6,7 @@ import com.thanh0x.coursedeals.data.user.model.UpdateUserProfileRequest
 import com.thanh0x.coursedeals.data.user.model.UserProfileDto
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
@@ -71,6 +72,29 @@ class UserProfileServiceImpl(
                 contentType(ContentType.Application.Json)
                 setBody(request)
             }
+        }
+    }
+
+    override suspend fun deleteAccount(): NetworkResponse<Unit> {
+        return try {
+            val response = httpClient.delete("/api/v1/users/me")
+            if (response.status.isSuccess()) {
+                NetworkResponse.success(
+                    body = Unit,
+                    code = response.status.value,
+                    message = response.status.description
+                )
+            } else {
+                NetworkResponse.error(
+                    code = response.status.value,
+                    message = response.status.description
+                )
+            }
+        } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+            NetworkResponse.error(
+                code = -1,
+                message = e.message ?: "Unknown Error"
+            )
         }
     }
 }

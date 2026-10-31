@@ -8,6 +8,7 @@ import com.thanh0x.coursedeals.domain.user.UserProfileRepository
 import com.thanh0x.coursedeals.domain.user.usecase.CheckIfTokenExpiredUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.ClearLocalTokenUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.CryptographyManagerUseCase
+import com.thanh0x.coursedeals.domain.user.usecase.DeleteAccountUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.GetLocalTokenUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.GetUserProfileUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.RequestFingerprintTokenUseCase
@@ -36,6 +37,7 @@ class ProfileViewModel(
     private val clearLocalTokenUseCase: ClearLocalTokenUseCase,
     private val checkIfTokenExpiredUseCase: CheckIfTokenExpiredUseCase,
     private val getLocalTokenUseCase: GetLocalTokenUseCase,
+    private val deleteAccountUseCase: DeleteAccountUseCase? = null,
     private val networkUtil: NetworkUtil,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : ViewModel() {
@@ -234,5 +236,52 @@ class ProfileViewModel(
 
     fun isNetworkAvailable(): Boolean {
         return networkUtil.isInternetAvailable()
+    }
+
+    fun showDeleteAccountDialog() {
+        _uiState.update { it.copy(isDeleteAccountDialogOpen = true) }
+    }
+
+    fun dismissDeleteAccountDialog() {
+        _uiState.update { it.copy(isDeleteAccountDialogOpen = false) }
+    }
+
+    fun deleteAccount() {
+        if (_uiState.value.isGuestMode) return
+        viewModelScope.launch(ioDispatcher) {
+            _uiState.update { it.copy(isDeletingAccount = true, isDeleteAccountDialogOpen = false) }
+            val result = deleteAccountUseCase?.invoke() ?: userProfileRepository.deleteAccount()
+            when (result) {
+                is AppResult.Success -> {
+                    clearLocalTokenUseCase()
+                    userProfileRepository.clearCachedUserProfile()
+                    _uiState.update {
+                        it.copy(
+                            isDeletingAccount = false,
+                            isGuestMode = true,
+                            displayName = "",
+                            email = "",
+                            avatarUrl = null,
+                            favCategories = emptyList(),
+                            favKeywords = emptyList(),
+                            isFingerprintEnabled = false,
+                            errorMessage = null,
+                        )
+                    }
+                    _uiEvent.emit(UiEvent.ShowToast("Account deleted successfully"))
+                    _uiEvent.emit(UiEvent.Navigate("Login"))
+                }
+                is AppResult.Error -> {
+                    _uiState.update {
+                        it.copy(
+                            isDeletingAccount = false,
+                            errorMessage = result.message,
+                        )
+                    }
+                    _uiEvent.emit(UiEvent.ShowToast(result.message))
+                }
+                is AppResult.Loading -> { }
+            }
+        }
     }
 }

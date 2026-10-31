@@ -3,6 +3,7 @@ package com.thanh0x.coursedeals.data.user.repository
 import com.thanh0x.coursedeals.core.common.AppResult
 import com.thanh0x.coursedeals.domain.user.UserPreferences
 import com.thanh0x.coursedeals.domain.user.UserProfile
+import com.thanh0x.coursedeals.domain.user.source.LocalAuthenticationDataSource
 import com.thanh0x.coursedeals.domain.user.source.LocalUserProfileDataSource
 import com.thanh0x.coursedeals.domain.user.source.RemoteUserProfileDataSource
 import kotlinx.coroutines.test.runTest
@@ -16,13 +17,19 @@ class UserProfileRepositoryImplTest {
 
     private lateinit var fakeLocalDataSource: FakeLocalUserProfileDataSource
     private lateinit var fakeRemoteDataSource: FakeRemoteUserProfileDataSource
+    private lateinit var fakeAuthDataSource: FakeLocalAuthenticationDataSource
     private lateinit var repository: UserProfileRepositoryImpl
 
     @BeforeTest
     fun setUp() {
         fakeLocalDataSource = FakeLocalUserProfileDataSource()
         fakeRemoteDataSource = FakeRemoteUserProfileDataSource()
-        repository = UserProfileRepositoryImpl(fakeLocalDataSource, fakeRemoteDataSource)
+        fakeAuthDataSource = FakeLocalAuthenticationDataSource()
+        repository = UserProfileRepositoryImpl(
+            fakeLocalDataSource,
+            fakeRemoteDataSource,
+            fakeAuthDataSource
+        )
     }
 
     @Test
@@ -100,6 +107,38 @@ class UserProfileRepositoryImplTest {
         assertNull(fakeLocalDataSource.getUserAvatar())
     }
 
+    @Test
+    fun deleteAccount_whenSuccess_clearsLocalTokensAndProfileData() = runTest {
+        fakeAuthDataSource.saveLocalToken("token-123")
+        fakeAuthDataSource.saveLocalRefreshToken("refresh-123")
+        fakeAuthDataSource.saveCipherTextWrapper("cipher-123")
+        fakeLocalDataSource.saveUserName("Cached Name")
+        fakeLocalDataSource.saveUserEmail("cached@test.com")
+        fakeRemoteDataSource.deleteAccountResult = AppResult.Success(Unit)
+
+        val result = repository.deleteAccount()
+
+        assertTrue(result is AppResult.Success)
+        assertNull(fakeAuthDataSource.getLocalToken())
+        assertNull(fakeAuthDataSource.getLocalRefreshToken())
+        assertNull(fakeAuthDataSource.getCipherTextWrapper())
+        assertNull(fakeLocalDataSource.getUserName())
+        assertNull(fakeLocalDataSource.getUserEmail())
+    }
+
+    @Test
+    fun deleteAccount_whenError_doesNotClearLocalTokens() = runTest {
+        fakeAuthDataSource.saveLocalToken("token-123")
+        fakeAuthDataSource.saveLocalRefreshToken("refresh-123")
+        fakeRemoteDataSource.deleteAccountResult = AppResult.Error("Failed to delete", 500)
+
+        val result = repository.deleteAccount()
+
+        assertTrue(result is AppResult.Error)
+        assertEquals("token-123", fakeAuthDataSource.getLocalToken())
+        assertEquals("refresh-123", fakeAuthDataSource.getLocalRefreshToken())
+    }
+
     private class FakeLocalUserProfileDataSource : LocalUserProfileDataSource {
         private var darkMode: Boolean? = null
         private var fingerprint: Boolean? = null
@@ -153,5 +192,25 @@ class UserProfileRepositoryImplTest {
             avatarUrl: String?,
             fcmToken: String?,
         ): AppResult<UserProfile> = updateResult
+
+        var deleteAccountResult: AppResult<Unit> = AppResult.Error("Not configured")
+
+        override suspend fun deleteAccount(): AppResult<Unit> = deleteAccountResult
+    }
+
+    private class FakeLocalAuthenticationDataSource : LocalAuthenticationDataSource {
+        private var token: String? = null
+        private var refreshToken: String? = null
+        private var cipherText: String? = null
+
+        override suspend fun getLocalToken(): String? = token
+        override suspend fun saveLocalToken(newLoginToken: String) { token = newLoginToken }
+        override suspend fun clearLocalToken() { token = null }
+        override suspend fun getCipherTextWrapper(): String? = cipherText
+        override suspend fun saveCipherTextWrapper(newLoginToken: String) { cipherText = newLoginToken }
+        override suspend fun clearCipherTextWrapper() { cipherText = null }
+        override suspend fun getLocalRefreshToken(): String? = refreshToken
+        override suspend fun saveLocalRefreshToken(newLoginToken: String) { refreshToken = newLoginToken }
+        override suspend fun clearLocalRefreshToken() { refreshToken = null }
     }
 }

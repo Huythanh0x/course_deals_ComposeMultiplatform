@@ -13,5 +13,7 @@ data class ProfileUiState(
     val isNotificationsEnabled: Boolean = true,
     val isSyncing: Boolean = false,
     val isGuestMode: Boolean = false,
+    val isDeleteAccountDialogOpen: Boolean = false,
+    val isDeletingAccount: Boolean = false,
     val errorMessage: String? = null,
 )

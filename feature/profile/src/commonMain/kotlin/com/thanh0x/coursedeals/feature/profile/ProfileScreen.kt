@@ -29,10 +29,12 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.ContentCopy
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
@@ -45,6 +47,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import com.thanh0x.coursedeals.core.common.BuildConfig
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -84,6 +87,9 @@ fun ProfileScreen(
     onFingerprintToggled: (Boolean) -> Unit = {},
     onNotificationsToggled: (Boolean) -> Unit = {},
     onLogoutClick: () -> Unit = {},
+    onDeleteAccountClick: () -> Unit = {},
+    onConfirmDeleteAccount: () -> Unit = {},
+    onDismissDeleteAccountDialog: () -> Unit = {},
     onDevEmailClick: () -> Unit = {},
     onDevWebsiteClick: () -> Unit = {},
     onSignInClick: () -> Unit = {},
@@ -127,6 +133,7 @@ fun ProfileScreen(
                         onFingerprintToggled = onFingerprintToggled,
                         onNotificationsToggled = onNotificationsToggled,
                         onLogoutClick = onLogoutClick,
+                        onDeleteAccountClick = onDeleteAccountClick,
                         onDevEmailClick = onDevEmailClick,
                         onDevWebsiteClick = onDevWebsiteClick,
                     )
@@ -142,6 +149,7 @@ fun ProfileScreen(
                         onFingerprintToggled = onFingerprintToggled,
                         onNotificationsToggled = onNotificationsToggled,
                         onLogoutClick = onLogoutClick,
+                        onDeleteAccountClick = onDeleteAccountClick,
                         onDevEmailClick = onDevEmailClick,
                         onDevWebsiteClick = onDevWebsiteClick,
                     )
@@ -164,6 +172,42 @@ fun ProfileScreen(
                 modifier = Modifier.fillMaxSize()
             )
         }
+
+        if (uiState.isDeleteAccountDialogOpen) {
+            AlertDialog(
+                onDismissRequest = onDismissDeleteAccountDialog,
+                title = { Text(text = stringResource(Res.string.delete_account_dialog_title)) },
+                text = { Text(text = stringResource(Res.string.delete_account_dialog_message)) },
+                confirmButton = {
+                    Button(
+                        onClick = onConfirmDeleteAccount,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error,
+                            contentColor = MaterialTheme.colorScheme.onError
+                        ),
+                        enabled = !uiState.isDeletingAccount
+                    ) {
+                        if (uiState.isDeletingAccount) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(16.dp),
+                                color = MaterialTheme.colorScheme.onError,
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Text(text = stringResource(Res.string.delete_account_confirm))
+                        }
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = onDismissDeleteAccountDialog,
+                        enabled = !uiState.isDeletingAccount
+                    ) {
+                        Text(text = stringResource(Res.string.cancel_button_text))
+                    }
+                }
+            )
+        }
     }
 }
 
@@ -179,6 +223,7 @@ private fun ProfileContentPortrait(
     onFingerprintToggled: (Boolean) -> Unit,
     onNotificationsToggled: (Boolean) -> Unit,
     onLogoutClick: () -> Unit,
+    onDeleteAccountClick: () -> Unit,
     onDevEmailClick: () -> Unit,
     onDevWebsiteClick: () -> Unit,
 ) {
@@ -226,6 +271,11 @@ private fun ProfileContentPortrait(
                 onClick = onLogoutClick,
                 modifier = Modifier.fillMaxWidth()
             )
+            Spacer(modifier = Modifier.height(16.dp))
+            DeleteAccountButton(
+                onClick = onDeleteAccountClick,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -248,6 +298,7 @@ private fun ProfileContentLandscape(
     onFingerprintToggled: (Boolean) -> Unit,
     onNotificationsToggled: (Boolean) -> Unit,
     onLogoutClick: () -> Unit,
+    onDeleteAccountClick: () -> Unit,
     onDevEmailClick: () -> Unit,
     onDevWebsiteClick: () -> Unit,
 ) {
@@ -273,6 +324,11 @@ private fun ProfileContentLandscape(
                 Spacer(modifier = Modifier.height(32.dp))
                 LogoutButton(
                     onClick = onLogoutClick,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                DeleteAccountButton(
+                    onClick = onDeleteAccountClick,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -699,6 +755,27 @@ private fun LogoutButton(
     ) {
         Text(
             text = stringResource(Res.string.logout_button_text),
+            fontWeight = FontWeight.SemiBold
+        )
+    }
+}
+
+@Composable
+private fun DeleteAccountButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Button(
+        onClick = onClick,
+        modifier = modifier,
+        shape = RoundedCornerShape(24.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.error,
+            contentColor = MaterialTheme.colorScheme.onError
+        )
+    ) {
+        Text(
+            text = stringResource(Res.string.delete_account_button_text),
             fontWeight = FontWeight.SemiBold
         )
     }
