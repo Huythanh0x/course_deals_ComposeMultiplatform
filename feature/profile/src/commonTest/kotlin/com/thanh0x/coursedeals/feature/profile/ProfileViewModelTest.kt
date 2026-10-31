@@ -11,6 +11,7 @@ import com.thanh0x.coursedeals.domain.user.UserPreferences
 import com.thanh0x.coursedeals.domain.user.usecase.CheckIfTokenExpiredUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.ClearLocalTokenUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.CryptographyManagerUseCase
+import com.thanh0x.coursedeals.domain.user.usecase.DeleteAccountUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.GetLocalTokenUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.GetUserProfileUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.LoadCipherTextWrapperUseCase
@@ -30,6 +31,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -68,6 +70,7 @@ class ProfileViewModelTest {
         val requestFingerprintTokenUseCase = RequestFingerprintTokenUseCase(fakeAuthRepository)
         val clearLocalTokenUseCase = ClearLocalTokenUseCase(fakeAuthRepository)
         val checkIfTokenExpiredUseCase = CheckIfTokenExpiredUseCase(fakeAuthRepository)
+        val deleteAccountUseCase = DeleteAccountUseCase(fakeUserProfileRepository)
 
         return ProfileViewModel(
             userProfileRepository = fakeUserProfileRepository,
@@ -79,6 +82,7 @@ class ProfileViewModelTest {
             clearLocalTokenUseCase = clearLocalTokenUseCase,
             checkIfTokenExpiredUseCase = checkIfTokenExpiredUseCase,
             getLocalTokenUseCase = getLocalTokenUseCase,
+            deleteAccountUseCase = deleteAccountUseCase,
             networkUtil = fakeNetworkUtil,
             ioDispatcher = testDispatcher,
         )
@@ -153,6 +157,52 @@ class ProfileViewModelTest {
         assertEquals(true, fakeUserProfileRepository.savedDarkMode)
     }
 
+    @Test
+    fun deleteAccount_success_clearsSessionAndTransitionsToGuest() = runTest {
+        fakeUserProfileRepository.cachedProfile = UserProfile(
+            fullName = "John Doe",
+            email = "john@example.com"
+        )
+        viewModel = createViewModel(token = "valid_token")
+        testScheduler.advanceUntilIdle()
+
+        viewModel.showDeleteAccountDialog()
+        assertTrue(viewModel.uiState.value.isDeleteAccountDialogOpen)
+
+        fakeUserProfileRepository.deleteAccountResult = AppResult.Success(Unit)
+        viewModel.deleteAccount()
+        testScheduler.advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertFalse(state.isDeletingAccount)
+        assertFalse(state.isDeleteAccountDialogOpen)
+        assertTrue(state.isGuestMode)
+        assertEquals("", state.displayName)
+        assertEquals("", state.email)
+        assertNull(fakeAuthRepository.localToken)
+    }
+
+    @Test
+    fun deleteAccount_failure_retainsStateAndSetsErrorMessage() = runTest {
+        fakeUserProfileRepository.cachedProfile = UserProfile(
+            fullName = "John Doe",
+            email = "john@example.com"
+        )
+        viewModel = createViewModel(token = "valid_token")
+        testScheduler.advanceUntilIdle()
+
+        fakeUserProfileRepository.deleteAccountResult = AppResult.Error("Network error", 500)
+        viewModel.deleteAccount()
+        testScheduler.advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertFalse(state.isDeletingAccount)
+        assertFalse(state.isGuestMode)
+        assertEquals("John Doe", state.displayName)
+        assertEquals("Network error", state.errorMessage)
+        assertEquals("valid_token", fakeAuthRepository.localToken)
+    }
+
     private class FakeUserAuthenticationRepository : UserAuthenticationRepository {
         var localToken: String? = null
         var cipherText: String? = null
@@ -188,6 +238,8 @@ class ProfileViewModelTest {
         override suspend fun updateUserProfile(fullName: String?, avatarUrl: String?, fcmToken: String?): AppResult<UserProfile> = AppResult.Success(cachedProfile)
         override suspend fun getCachedUserProfile(): UserProfile = cachedProfile
         override suspend fun clearCachedUserProfile() { cachedProfile = UserProfile() }
+        var deleteAccountResult: AppResult<Unit> = AppResult.Success(Unit)
+        override suspend fun deleteAccount(): AppResult<Unit> = deleteAccountResult
         override suspend fun syncPreferences(): AppResult<UserPreferences> = AppResult.Success(cachedProfile.preferences ?: UserPreferences())
         override suspend fun getFavoriteCategories(): Set<String> = savedCategories
         override suspend fun saveFavoriteCategories(categories: Set<String>): AppResult<UserPreferences> {

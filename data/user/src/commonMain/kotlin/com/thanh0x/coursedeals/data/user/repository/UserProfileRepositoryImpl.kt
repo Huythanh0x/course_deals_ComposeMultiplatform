@@ -5,12 +5,14 @@ import com.thanh0x.coursedeals.core.common.platformCurrentTimeMillis
 import com.thanh0x.coursedeals.domain.user.UserPreferences
 import com.thanh0x.coursedeals.domain.user.UserProfile
 import com.thanh0x.coursedeals.domain.user.UserProfileRepository
+import com.thanh0x.coursedeals.domain.user.source.LocalAuthenticationDataSource
 import com.thanh0x.coursedeals.domain.user.source.LocalUserProfileDataSource
 import com.thanh0x.coursedeals.domain.user.source.RemoteUserProfileDataSource
 
 class UserProfileRepositoryImpl(
     private val localUserProfileDataSource: LocalUserProfileDataSource,
     private val remoteUserProfileDataSource: RemoteUserProfileDataSource,
+    private val localAuthenticationDataSource: LocalAuthenticationDataSource? = null,
 ) : UserProfileRepository {
     override suspend fun getEnableDarkMode() = localUserProfileDataSource.getEnableDarkMode()
 
@@ -138,5 +140,16 @@ class UserProfileRepositoryImpl(
 
     override suspend fun clearCachedUserProfile() {
         localUserProfileDataSource.clearUserProfile()
+    }
+
+    override suspend fun deleteAccount(): AppResult<Unit> {
+        val result = remoteUserProfileDataSource.deleteAccount()
+        if (result is AppResult.Success) {
+            localAuthenticationDataSource?.clearLocalToken()
+            localAuthenticationDataSource?.clearLocalRefreshToken()
+            localAuthenticationDataSource?.clearCipherTextWrapper()
+            localUserProfileDataSource.clearUserProfile()
+        }
+        return result
     }
 }

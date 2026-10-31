@@ -80,4 +80,18 @@ class RemoteUserProfileDataSourceImpl(
             AppResult.Error(e.message ?: "Unknown Error")
         }
     }
+
+    @Suppress("TooGenericExceptionCaught")
+    override suspend fun deleteAccount(): AppResult<Unit> {
+        return try {
+            val response = userProfileService.deleteAccount()
+            if (response.isSuccessful) {
+                AppResult.Success(Unit)
+            } else {
+                AppResult.Error(response.message(), response.code())
+            }
+        } catch (e: Exception) {
+            AppResult.Error(e.message ?: "Unknown Error")
+        }
+    }
 }

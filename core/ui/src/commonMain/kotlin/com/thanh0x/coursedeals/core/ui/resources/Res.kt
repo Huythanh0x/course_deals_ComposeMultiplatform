@@ -186,6 +186,10 @@ object Res {
         val login_error_unexpected_credential = StringResource("Unexpected credential received from Google.")
         val login_error_google_failed = StringResource("Failed to sign in with Google.")
         val retry_button_text = StringResource("Retry")
+        val delete_account_button_text = StringResource("Delete Account")
+        val delete_account_dialog_title = StringResource("Delete Account")
+        val delete_account_dialog_message = StringResource("Are you sure you want to permanently delete your account and all associated data? This action cannot be undone.")
+        val delete_account_confirm = StringResource("Delete")
     }
 
     object drawable {
