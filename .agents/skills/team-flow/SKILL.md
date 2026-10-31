@@ -121,6 +121,19 @@ Once approved at Checkpoint 1:
        ```bash
        gh issue create -R Huythanh0x/<repo> --title "..." --label "type: ..." --label "priority: ..." --label "area: ..." --label "size: ..." --project "Course Deals" --body "..."
        ```
+     - **Mandatory Active Sprint Stamping**: Immediately after creating the issue (or linking an existing one), stamp it to the currently active sprint on `Sprint` field (`PVTIF_lAHOBEROFc4BhjJ2zhn_l1Q`) so no board item is left as "No Sprint":
+       ```bash
+       gh api graphql -f query='
+         mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $iterationId: String!) {
+           updateProjectV2ItemFieldValue(input: {
+             projectId: $projectId,
+             itemId: $itemId,
+             fieldId: $fieldId,
+             value: { iterationId: $iterationId }
+           }) { projectV2Item { id } }
+         }
+       ' -f projectId="PVT_kwHOBEROFc4BhjJ2" -f itemId="<PROJECT_ITEM_ID>" -f fieldId="PVTIF_lAHOBEROFc4BhjJ2zhn_l1Q" -f iterationId="<ACTIVE_ITERATION_ID>"
+       ```
      - **Sub-issues (for full-stack parent + child issues)**: Create parent (`--project "Course Deals"`) and both BE (`area: backend`) & App (`area: android`) sub-issues in `Huythanh0x/course_deals_ComposeMultiplatform` (or target repos). Each sub-issue body **MUST** specify its own concrete, domain-specific architecture and tech stack details (e.g. Spring Boot/Flyway/JPA/JobRunr for BE; Jetpack Compose/Clean Architecture/Hilt/Coroutines for App). Link via the Sub-issues REST API, and run the GraphQL board auto-cascade cleanup so sub-issues don't clutter the `"Course Deals"` board.
    - In each target repo, checkout latest `main`, pull, and create the branch `<type>/<issue-number>-<slug>`:
      ```bash
