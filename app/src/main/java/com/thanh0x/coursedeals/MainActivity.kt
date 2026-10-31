@@ -1,32 +1,47 @@
 package com.thanh0x.coursedeals
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.databinding.DataBindingUtil
-import androidx.navigation.NavController
-import androidx.navigation.Navigation
-import androidx.navigation.ui.NavigationUI
-import com.google.android.material.navigation.NavigationBarView
-import com.thanh0x.coursedeals.databinding.ActivityMainBinding
+import androidx.activity.compose.setContent
+import com.thanh0x.coursedeals.core.common.BundleKey
 import com.thanh0x.coursedeals.core.ui.BaseActivity
+import com.thanh0x.coursedeals.core.ui.theme.CourseDealsTheme
+import com.thanh0x.coursedeals.domain.coupons.Coupon
+import com.thanh0x.coursedeals.navigation.MainAppScaffold
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity() {
-    lateinit var binding: ActivityMainBinding
-    private lateinit var navController: NavController
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        navController = Navigation.findNavController(this, R.id.fragmentMainNavigationHost)
-        (binding.bottomNavigationView as? NavigationBarView)?.let {
-            NavigationUI.setupWithNavController(it, navController)
-        }
-        navController.addOnDestinationChangedListener { _, _, _ ->
-            hideLoading(immediate = true)
+        setContent {
+            CourseDealsTheme {
+                MainAppScaffold(
+                    onCouponClick = { coupon -> navigateToDetail(coupon) },
+                    onNavigateToLogin = { navigateToLogin() },
+                    showAlertDialog = { title, message, type ->
+                        showAlertDialog(title = title, message = message, type = type)
+                    },
+                )
+            }
         }
     }
 
-    override fun onNavigateUp(): Boolean {
-        return navController.navigateUp() || super.onNavigateUp()
+    private fun navigateToDetail(coupon: Coupon) {
+        val detailIntent = Intent().apply {
+            setClassName(packageName, "com.thanh0x.coursedeals.feature.detail.CouponDetailActivity")
+            putExtra(BundleKey.TO_DETAIL_ACTIVITY, coupon.courseId)
+        }
+        startActivity(detailIntent)
+    }
+
+    private fun navigateToLogin() {
+        val intent = Intent().apply {
+            setClassName(packageName, "com.thanh0x.coursedeals.feature.auth.LoginActivity")
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        startActivity(intent)
+        finish()
     }
 }
