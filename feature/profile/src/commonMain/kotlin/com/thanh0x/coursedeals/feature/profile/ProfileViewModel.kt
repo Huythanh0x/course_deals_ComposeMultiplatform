@@ -2,6 +2,7 @@ package com.thanh0x.coursedeals.feature.profile
 
 import com.thanh0x.coursedeals.domain.user.CiphertextWrapper
 import com.thanh0x.coursedeals.core.common.AppResult
+import com.thanh0x.coursedeals.core.ui.DialogType
 import com.thanh0x.coursedeals.core.ui.ViewModel
 import com.thanh0x.coursedeals.domain.user.TokenData
 import com.thanh0x.coursedeals.domain.user.UserProfileRepository
@@ -278,7 +279,13 @@ class ProfileViewModel(
                             errorMessage = result.message,
                         )
                     }
-                    _uiEvent.emit(UiEvent.ShowToast(result.message))
+                    _uiEvent.emit(
+                        UiEvent.ShowAlertDialog(
+                            title = "Delete Account Failed",
+                            message = result.message.ifBlank { "Failed to delete account. Please try again later." },
+                            type = DialogType.ERROR,
+                        )
+                    )
                 }
                 is AppResult.Loading -> { }
             }
