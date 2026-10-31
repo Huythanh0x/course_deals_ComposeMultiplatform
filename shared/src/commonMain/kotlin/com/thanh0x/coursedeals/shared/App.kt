@@ -20,6 +20,7 @@ import com.thanh0x.coursedeals. core.ui.util.PlatformActions
 import com.thanh0x.coursedeals.data.coupons.di.couponDataModule
 import com.thanh0x.coursedeals.data.user.di.userDataModule
 import com.thanh0x.coursedeals.domain.coupons.di.couponDomainModule
+import com.thanh0x.coursedeals.domain.user.UserProfileRepository
 import com.thanh0x.coursedeals.domain.user.di.userDomainModule
 import com.thanh0x.coursedeals.feature.auth.LoginScreen
 import com.thanh0x.coursedeals.feature.auth.LoginViewModel
@@ -93,6 +94,11 @@ fun App() {
                 type = DialogType.INFO,
             )
         }
+        val repo = KoinPlatformTools.defaultContext().getOrNull()?.getOrNull<UserProfileRepository>()
+        val savedDarkMode = repo?.getEnableDarkMode()
+        if (savedDarkMode != null && darkThemeOverride == null) {
+            darkThemeOverride = savedDarkMode
+        }
     }
 
     val showAlertDialog: (String, String, DialogType) -> Unit = { title, message, type ->
@@ -123,9 +129,17 @@ fun App() {
                 val detailViewModel: CouponDetailViewModel = koinViewModel(
                     key = "detail_${screen.courseId}",
                 )
+                val detailUiState by detailViewModel.uiState.collectAsStateWithLifecycle()
                 LaunchedEffect(screen.courseId) {
                     detailViewModel.checkIfInternetAvailable()
                     detailViewModel.fetchCouponDetail(screen.courseId)
+                }
+                LaunchedEffect(detailUiState.error, detailUiState.coupon) {
+                    val err = detailUiState.error
+                    if (!err.isNullOrBlank() && detailUiState.coupon == null) {
+                        showAlertDialog("Error", err, DialogType.ERROR)
+                        currentScreen = AppScreen.Main
+                    }
                 }
                 CouponDetailRoute(
                     viewModel = detailViewModel,

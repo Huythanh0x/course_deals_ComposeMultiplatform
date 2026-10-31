@@ -147,6 +147,7 @@ class LocalUserProfileDataSourceImpl(private val datastore: DataStore<Preference
             preferences.remove(PreferenceKey.userName)
             preferences.remove(PreferenceKey.userEmail)
             preferences.remove(PreferenceKey.userAvatar)
+            preferences.remove(PreferenceKey.updatedAt)
         }
     }
 }

@@ -167,10 +167,6 @@ fun SubmitDealBottomSheetDialog(
             }
         }
     }
-
-    LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
-    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

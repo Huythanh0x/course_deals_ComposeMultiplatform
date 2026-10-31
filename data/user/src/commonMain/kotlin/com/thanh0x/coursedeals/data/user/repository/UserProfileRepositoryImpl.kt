@@ -28,7 +28,7 @@ class UserProfileRepositoryImpl(
 
         if (remoteResult is AppResult.Success) {
             val remotePrefs = remoteResult.data
-            if (remotePrefs.updatedAt >= localUpdatedAt) {
+            if (remotePrefs.updatedAt == 0L || remotePrefs.updatedAt >= localUpdatedAt) {
                 updateLocalStore(remotePrefs)
             } else {
                 return pushPreferencesToRemote()

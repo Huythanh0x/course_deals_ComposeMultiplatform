@@ -7,13 +7,13 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PreferenceDto(
     @SerialName("categories")
-    val categories: List<String>,
+    val categories: List<String> = emptyList(),
     @SerialName("keywords")
-    val keywords: List<String>,
+    val keywords: List<String> = emptyList(),
     @SerialName("notificationsEnabled")
-    val notificationsEnabled: Boolean,
+    val notificationsEnabled: Boolean = true,
     @SerialName("updatedAt")
-    val updatedAt: Long,
+    val updatedAt: Long = 0L,
 )
 
 fun PreferenceDto.toDomain() = UserPreferences(

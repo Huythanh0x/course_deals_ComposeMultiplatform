@@ -50,7 +50,7 @@ class ProfileViewModel(
         initSettings()
     }
 
-    private fun initSettings() {
+    fun initSettings() {
         viewModelScope.launch(ioDispatcher) {
             val token = getLocalTokenUseCase()
             val isGuest = token.isNullOrBlank()

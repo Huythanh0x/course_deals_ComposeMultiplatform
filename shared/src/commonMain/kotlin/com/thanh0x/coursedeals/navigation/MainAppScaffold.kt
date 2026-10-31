@@ -67,6 +67,9 @@ fun MainAppScaffold(
                     )
                 }
                 TopLevelDestination.PROFILE.route -> {
+                    LaunchedEffect(Unit) {
+                        profileViewModel.initSettings()
+                    }
                     ProfileRoute(
                         viewModel = profileViewModel,
                         onNavigateToLogin = onNavigateToLogin,
