@@ -1,0 +1,43 @@
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: false
+- extendedWaitUntil:
+    visible: "Sign In"
+    timeout: 15000
+- tapOn: "Access as Guest"
+- extendedWaitUntil:
+    visible: "HOME"
+    timeout: 15000
+- tapOn: "HOME"
+- extendedWaitUntil:
+    visible: "Search courses"
+    timeout: 10000
+- tapOn: "Search courses"
+- inputText: "Management"
+- extendedWaitUntil:
+    visible: "Professional Diploma in Procurement Management"
+    timeout: 15000
+- tapOn: "Professional Diploma in Procurement Management"
+- extendedWaitUntil:
+    visible: "Enroll Now"
+    timeout: 10000
+- assertVisible: "Enroll Now"
+- extendedWaitUntil:
+    visible: "Report"
+    timeout: 5000
+- assertVisible: "Report"
+- tapOn: "Report"
+# Verify bottom sheet report dialog opens
+- extendedWaitUntil:
+    visible: "Report this deal"
+    timeout: 5000
+- assertVisible: "Report this deal"
+# Cancel report dialog
+- tapOn: "Cancel"
+# Back navigation
+- tapOn: "Back"
+- extendedWaitUntil:
+    visible: "HOME"
+    timeout: 10000
+- assertVisible: "HOME"

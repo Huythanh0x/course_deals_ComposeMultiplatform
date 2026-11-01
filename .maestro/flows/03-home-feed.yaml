@@ -1,0 +1,34 @@
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: false
+- extendedWaitUntil:
+    visible: "Sign In"
+    timeout: 15000
+- tapOn: "Access as Guest"
+- extendedWaitUntil:
+    visible: "HOME"
+    timeout: 15000
+- tapOn: "HOME"
+- extendedWaitUntil:
+    visible: "Search courses"
+    timeout: 10000
+- assertVisible: "Search courses"
+- tapOn: "Filter"
+- extendedWaitUntil:
+    visible: "Reset"
+    timeout: 5000
+- assertVisible: "Reset"
+- assertVisible: "Apply"
+- tapOn: "Reset"
+- tapOn: "Apply"
+- extendedWaitUntil:
+    visible: "Search courses"
+    timeout: 10000
+- tapOn: "Search courses"
+- inputText: "Management"
+- extendedWaitUntil:
+    visible: "Professional Diploma in Procurement Management"
+    timeout: 15000
+- assertVisible: "Professional Diploma in Procurement Management"
+- tapOn: "Clear"

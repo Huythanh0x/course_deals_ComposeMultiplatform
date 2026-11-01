@@ -33,3 +33,6 @@ DerivedData/
 *.xcuserstate
 .swiftpm/
 
+# Evidence & screenshots
+docs/product/screenshots/
+
