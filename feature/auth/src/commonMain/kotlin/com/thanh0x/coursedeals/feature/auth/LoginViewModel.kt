@@ -86,6 +86,16 @@ class LoginViewModel(
         }
     }
 
+    fun setOtpVerificationState(email: String, showTerms: Boolean = false) {
+        _uiState.update {
+            it.copy(
+                authMode = AuthMode.VERIFY_OTP,
+                pendingEmail = email,
+                showTermsDialog = showTerms,
+            )
+        }
+    }
+
     fun clearError() {
         _uiState.update { it.copy(error = null) }
     }

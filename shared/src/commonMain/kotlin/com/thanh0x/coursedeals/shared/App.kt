@@ -75,14 +75,20 @@ private data class DialogState(
 )
 
 @Composable
-fun App() {
+fun App(
+    initialScreen: AppScreen = AppScreen.Login,
+    initialRoute: String = "home_route",
+    initialAuthMode: AuthMode = AuthMode.LOGIN,
+    initialPendingEmail: String = "",
+    initialShowTermsDialog: Boolean = false,
+) {
     remember {
         initSharedKoin()
         true
     }
 
     var darkThemeOverride by remember { mutableStateOf<Boolean?>(null) }
-    var currentScreen by remember { mutableStateOf<AppScreen>(AppScreen.Main) }
+    var currentScreen by remember { mutableStateOf<AppScreen>(initialScreen) }
     var dialogState by remember { mutableStateOf<DialogState?>(null) }
 
     LaunchedEffect(Unit) {
@@ -114,6 +120,7 @@ fun App() {
         when (val screen = currentScreen) {
             is AppScreen.Main -> {
                 MainAppScaffold(
+                    initialRoute = initialRoute,
                     onCouponClick = { coupon ->
                         val courseId = coupon.courseId
                         if (courseId != null) {
@@ -202,6 +209,15 @@ fun App() {
             is AppScreen.Login -> {
                 val loginViewModel: LoginViewModel = koinViewModel(key = "login_vm")
                 val loginUiState by loginViewModel.uiState.collectAsStateWithLifecycle()
+
+                LaunchedEffect(Unit) {
+                    if (initialAuthMode == AuthMode.VERIFY_OTP) {
+                        loginViewModel.setOtpVerificationState(
+                            email = initialPendingEmail,
+                            showTerms = initialShowTermsDialog,
+                        )
+                    }
+                }
 
                 LaunchedEffect(loginViewModel) {
                     loginViewModel.uiEvent.collectLatest { event ->
