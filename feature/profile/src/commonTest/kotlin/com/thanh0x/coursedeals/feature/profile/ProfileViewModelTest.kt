@@ -159,6 +159,7 @@ class ProfileViewModelTest {
 
         override suspend fun login(credentials: AuthCredentials): AppResult<TokenData> = AppResult.Error("Not configured")
         override suspend fun register(email: String, password: String, fullName: String?): AppResult<String> = AppResult.Error("Not configured")
+        override suspend fun sendOtp(email: String): AppResult<String> = AppResult.Error("Not configured")
         override suspend fun verifyOtp(email: String, otp: String): AppResult<TokenData> = AppResult.Error("Not configured")
         override suspend fun refreshToken(refreshToken: String): AppResult<TokenData> = AppResult.Error("Not configured")
         override suspend fun getLocalToken(): String? = localToken
