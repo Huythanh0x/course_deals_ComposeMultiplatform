@@ -34,7 +34,6 @@ DerivedData/
 .swiftpm/
 
 # Evidence & screenshots
-docs/evidence/
 docs/product/screenshots/
 /screenshots/
 
