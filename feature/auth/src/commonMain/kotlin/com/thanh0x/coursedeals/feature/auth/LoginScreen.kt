@@ -184,20 +184,23 @@ private fun LoginPortraitContent(
         LoginInfoMessage(message = uiState.infoMessage)
         LoginFormSection(
             authMode = uiState.authMode,
+            pendingEmail = uiState.pendingEmail,
             onSendOtpClick = onSendOtpClick,
             onSubmitOtp = onSubmitOtp,
             onBackToEmailClick = onBackToEmailClick,
             onToggleAuthMode = onToggleAuthMode,
         )
-        Spacer(modifier = Modifier.height(12.dp))
-        SocialAuthSection(
-            isFingerprintEnabled = uiState.isFingerprintEnabled,
-            isFingerprintFeatureEnabled = uiState.isFingerprintFeatureEnabled,
-            onGoogleSignInClick = onGoogleSignInClick,
-            onFingerprintClick = onFingerprintClick,
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        GuestModeButton(onClick = onGuestModeClick)
+        if (uiState.authMode != AuthMode.VERIFY_OTP) {
+            Spacer(modifier = Modifier.height(12.dp))
+            SocialAuthSection(
+                isFingerprintEnabled = uiState.isFingerprintEnabled,
+                isFingerprintFeatureEnabled = uiState.isFingerprintFeatureEnabled,
+                onGoogleSignInClick = onGoogleSignInClick,
+                onFingerprintClick = onFingerprintClick,
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            GuestModeButton(onClick = onGuestModeClick)
+        }
     }
 }
 
@@ -240,20 +243,23 @@ private fun LoginLandscapeContent(
             LoginInfoMessage(message = uiState.infoMessage)
             LoginFormSection(
                 authMode = uiState.authMode,
+                pendingEmail = uiState.pendingEmail,
                 onSendOtpClick = onSendOtpClick,
                 onSubmitOtp = onSubmitOtp,
                 onBackToEmailClick = onBackToEmailClick,
                 onToggleAuthMode = onToggleAuthMode,
             )
-            Spacer(modifier = Modifier.height(12.dp))
-            SocialAuthSection(
-                isFingerprintEnabled = uiState.isFingerprintEnabled,
-                isFingerprintFeatureEnabled = uiState.isFingerprintFeatureEnabled,
-                onGoogleSignInClick = onGoogleSignInClick,
-                onFingerprintClick = onFingerprintClick,
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            GuestModeButton(onClick = onGuestModeClick)
+            if (uiState.authMode != AuthMode.VERIFY_OTP) {
+                Spacer(modifier = Modifier.height(12.dp))
+                SocialAuthSection(
+                    isFingerprintEnabled = uiState.isFingerprintEnabled,
+                    isFingerprintFeatureEnabled = uiState.isFingerprintFeatureEnabled,
+                    onGoogleSignInClick = onGoogleSignInClick,
+                    onFingerprintClick = onFingerprintClick,
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                GuestModeButton(onClick = onGuestModeClick)
+            }
         }
     }
 }

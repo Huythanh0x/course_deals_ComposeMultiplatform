@@ -99,6 +99,9 @@
     <string name="auth_full_name_hint">Full Name (optional)</string>
     <string name="auth_otp_hint">6-digit OTP</string>
     <string name="auth_otp_helper">Enter 6-digit OTP (use 000000)</string>
+    <string name="auth_otp_title">Verify Your Email</string>
+    <string name="auth_otp_sent_to">We sent a 6-digit verification code to</string>
+    <string name="auth_btn_resend_otp">Resend Code</string>
     <string name="auth_btn_sign_in">Sign In</string>
     <string name="auth_btn_send_otp">Continue with Email</string>
     <string name="auth_btn_create_account">Create Account</string>
