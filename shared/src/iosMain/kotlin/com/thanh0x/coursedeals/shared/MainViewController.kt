@@ -51,8 +51,8 @@ fun MainViewController(): UIViewController {
         else -> AppScreen.Login
     }
     val initialRoute = when {
-        isProfile -> "profile_route"
-        else -> "home_route"
+        isProfile -> "profile"
+        else -> "home"
     }
     val initialAuthMode = when {
         isOtp || isConsent -> AuthMode.VERIFY_OTP
