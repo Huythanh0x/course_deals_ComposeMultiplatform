@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.thanh0x.coursedeals.core.common.BuildConfig
 import com.thanh0x.coursedeals.core.ui.resources.Res
 import com.thanh0x.coursedeals.core.ui.resources.painterResource
 import com.thanh0x.coursedeals.core.ui.resources.stringResource
@@ -25,6 +26,7 @@ fun SocialAuthSection(
     isFingerprintEnabled: Boolean,
     onGoogleSignInClick: () -> Unit,
     onFingerprintClick: () -> Unit,
+    isFingerprintFeatureEnabled: Boolean = BuildConfig.FEATURE_FINGERPRINT,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -38,11 +40,13 @@ fun SocialAuthSection(
         )
         Spacer(modifier = Modifier.height(12.dp))
         GoogleSignInButton(onClick = onGoogleSignInClick)
-        Spacer(modifier = Modifier.height(8.dp))
-        FingerprintSignInButton(
-            enabled = isFingerprintEnabled,
-            onClick = onFingerprintClick,
-        )
+        if (isFingerprintFeatureEnabled) {
+            Spacer(modifier = Modifier.height(8.dp))
+            FingerprintSignInButton(
+                enabled = isFingerprintEnabled,
+                onClick = onFingerprintClick,
+            )
+        }
     }
 }
 

@@ -35,6 +35,7 @@ composeBom = "2026.03.00"
 coil = "3.0.4"
 koin = "4.0.2"
 compose-multiplatform = "1.8.0"
+buildconfig = "5.5.1"
 
 [libraries]
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
@@ -124,3 +125,4 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 navigation-safeargs = { id = "androidx.navigation.safeargs.kotlin", version.ref = "navigation" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
+buildconfig = { id = "com.github.gmazzo.buildconfig", version.ref = "buildconfig" }

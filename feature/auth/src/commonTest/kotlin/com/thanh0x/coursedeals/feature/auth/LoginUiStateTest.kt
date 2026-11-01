@@ -13,6 +13,8 @@ class LoginUiStateTest {
         val state = LoginUiState()
         assertFalse(state.isLoading)
         assertFalse(state.isFingerprintEnabled)
+        assertFalse(state.showTermsDialog)
+        assertNull(state.pendingTokenData)
         assertEquals(AuthMode.LOGIN, state.authMode)
         assertEquals("", state.pendingEmail)
         assertNull(state.infoMessage)

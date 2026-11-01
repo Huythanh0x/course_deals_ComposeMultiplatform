@@ -1,9 +1,25 @@
 package com.thanh0x.coursedeals.feature.auth.di
 
 import com.thanh0x.coursedeals.feature.auth.LoginViewModel
-import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
 val authModule = module {
-    factoryOf(::LoginViewModel)
+    factory {
+        LoginViewModel(
+            loginUseCase = get(),
+            registerUseCase = get(),
+            verifyOtpUseCase = get(),
+            sendOtpUseCase = get(),
+            socialLoginUseCase = get(),
+            saveJwtTokenUseCase = get(),
+            saveRefreshTokenUseCase = get(),
+            settingFingerprintUseCase = get(),
+            cryptographyManagerUseCase = get(),
+            clearLocalTokenUseCase = get(),
+            clearCachedUserProfileUseCase = get(),
+            requestAccessTokenUseCase = get(),
+            settingUserProfileUseCase = get(),
+            networkUtil = get(),
+        )
+    }
 }

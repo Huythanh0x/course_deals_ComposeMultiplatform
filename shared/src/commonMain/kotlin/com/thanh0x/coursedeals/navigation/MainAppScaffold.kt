@@ -27,8 +27,9 @@ fun MainAppScaffold(
     onNavigateToLogin: () -> Unit,
     showAlertDialog: (String, String, DialogType) -> Unit,
     modifier: Modifier = Modifier,
+    initialRoute: String = TopLevelDestination.HOME.route,
 ) {
-    var currentRoute by rememberSaveable { mutableStateOf(TopLevelDestination.HOME.route) }
+    var currentRoute by rememberSaveable { mutableStateOf(initialRoute) }
     val homeViewModel: HomeViewModel = koinViewModel(key = "home_vm")
     val courseViewModel: CourseViewModel = koinViewModel(key = "course_vm")
     val profileViewModel: ProfileViewModel = koinViewModel(key = "profile_vm")

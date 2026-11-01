@@ -18,4 +18,12 @@ actual fun createPlatformHttpClient(block: HttpClientConfig<*>.() -> Unit): Http
     }
 }
 
-actual fun platformBaseUrl(): String = "http://192.168.2.185:8081"
+actual fun platformBaseUrl(): String {
+    val isAndroid = try {
+        Class.forName("android.os.Build")
+        true
+    } catch (_: Throwable) {
+        false
+    }
+    return if (isAndroid) "http://10.0.2.2:8081" else "http://localhost:8081"
+}

@@ -22,20 +22,31 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.thanh0x.coursedeals.core.ui.resources.Res
+import com.thanh0x.coursedeals.core.ui.resources.stringResource
 
 @Suppress("LongParameterList")
 @Composable
 fun LoginScreen(
     uiState: LoginUiState,
-    onLoginClick: (email: String, password: String) -> Unit,
-    onRegisterClick: (email: String, password: String, fullName: String) -> Unit,
-    onOtpClick: (otp: String) -> Unit,
-    onToggleAuthMode: () -> Unit,
     onGoogleSignInClick: () -> Unit,
     onFingerprintClick: () -> Unit,
     onGuestModeClick: () -> Unit,
     modifier: Modifier = Modifier,
+    onSendOtpClick: (email: String) -> Unit = {},
+    onOtpClick: (otp: String) -> Unit = {},
+    onBackToEmailClick: () -> Unit = {},
+    onAcceptTermsClick: () -> Unit = {},
+    onDeclineTermsClick: () -> Unit = {},
+    onLoginClick: (email: String, password: String) -> Unit = { email, _ -> onSendOtpClick(email) },
+    onRegisterClick: (email: String, password: String, fullName: String) -> Unit = { email, _, _ -> onSendOtpClick(email) },
+    onToggleAuthMode: () -> Unit = onBackToEmailClick,
 ) {
+    val handleSendOtp: (String) -> Unit = { email ->
+        onSendOtpClick(email)
+        onLoginClick(email, "")
+    }
+
     BoxWithConstraints(
         modifier = modifier
             .fillMaxSize()
@@ -46,9 +57,9 @@ fun LoginScreen(
         if (isLandscape) {
             LoginLandscapeContent(
                 uiState = uiState,
-                onLoginClick = onLoginClick,
-                onRegisterClick = onRegisterClick,
-                onOtpClick = onOtpClick,
+                onSendOtpClick = handleSendOtp,
+                onSubmitOtp = onOtpClick,
+                onBackToEmailClick = onBackToEmailClick,
                 onToggleAuthMode = onToggleAuthMode,
                 onGoogleSignInClick = onGoogleSignInClick,
                 onFingerprintClick = onFingerprintClick,
@@ -57,9 +68,9 @@ fun LoginScreen(
         } else {
             LoginPortraitContent(
                 uiState = uiState,
-                onLoginClick = onLoginClick,
-                onRegisterClick = onRegisterClick,
-                onOtpClick = onOtpClick,
+                onSendOtpClick = handleSendOtp,
+                onSubmitOtp = onOtpClick,
+                onBackToEmailClick = onBackToEmailClick,
                 onToggleAuthMode = onToggleAuthMode,
                 onGoogleSignInClick = onGoogleSignInClick,
                 onFingerprintClick = onFingerprintClick,
@@ -72,6 +83,13 @@ fun LoginScreen(
                 modifier = Modifier.align(Alignment.Center),
             )
         }
+
+        if (uiState.showTermsDialog) {
+            TermsAndPrivacyDialog(
+                onAccept = onAcceptTermsClick,
+                onDecline = onDeclineTermsClick,
+            )
+        }
     }
 }
 
@@ -79,9 +97,9 @@ fun LoginScreen(
 @Composable
 private fun LoginPortraitContent(
     uiState: LoginUiState,
-    onLoginClick: (email: String, password: String) -> Unit,
-    onRegisterClick: (email: String, password: String, fullName: String) -> Unit,
-    onOtpClick: (otp: String) -> Unit,
+    onSendOtpClick: (email: String) -> Unit,
+    onSubmitOtp: (otp: String) -> Unit,
+    onBackToEmailClick: () -> Unit,
     onToggleAuthMode: () -> Unit,
     onGoogleSignInClick: () -> Unit,
     onFingerprintClick: () -> Unit,
@@ -101,15 +119,17 @@ private fun LoginPortraitContent(
         Spacer(modifier = Modifier.height(20.dp))
         LoginInfoMessage(message = uiState.infoMessage)
         LoginFormSection(
-            authMode = uiState.authMode,
-            onSubmitLogin = onLoginClick,
-            onSubmitRegister = onRegisterClick,
-            onSubmitOtp = onOtpClick,
+            authMode = AuthMode.LOGIN,
+            pendingEmail = uiState.pendingEmail,
+            onSendOtpClick = onSendOtpClick,
+            onSubmitOtp = onSubmitOtp,
+            onBackToEmailClick = onBackToEmailClick,
             onToggleAuthMode = onToggleAuthMode,
         )
         Spacer(modifier = Modifier.height(12.dp))
         SocialAuthSection(
             isFingerprintEnabled = uiState.isFingerprintEnabled,
+            isFingerprintFeatureEnabled = uiState.isFingerprintFeatureEnabled,
             onGoogleSignInClick = onGoogleSignInClick,
             onFingerprintClick = onFingerprintClick,
         )
@@ -122,9 +142,9 @@ private fun LoginPortraitContent(
 @Composable
 private fun LoginLandscapeContent(
     uiState: LoginUiState,
-    onLoginClick: (email: String, password: String) -> Unit,
-    onRegisterClick: (email: String, password: String, fullName: String) -> Unit,
-    onOtpClick: (otp: String) -> Unit,
+    onSendOtpClick: (email: String) -> Unit,
+    onSubmitOtp: (otp: String) -> Unit,
+    onBackToEmailClick: () -> Unit,
     onToggleAuthMode: () -> Unit,
     onGoogleSignInClick: () -> Unit,
     onFingerprintClick: () -> Unit,
@@ -156,15 +176,17 @@ private fun LoginLandscapeContent(
         ) {
             LoginInfoMessage(message = uiState.infoMessage)
             LoginFormSection(
-                authMode = uiState.authMode,
-                onSubmitLogin = onLoginClick,
-                onSubmitRegister = onRegisterClick,
-                onSubmitOtp = onOtpClick,
+                authMode = AuthMode.LOGIN,
+                pendingEmail = uiState.pendingEmail,
+                onSendOtpClick = onSendOtpClick,
+                onSubmitOtp = onSubmitOtp,
+                onBackToEmailClick = onBackToEmailClick,
                 onToggleAuthMode = onToggleAuthMode,
             )
             Spacer(modifier = Modifier.height(12.dp))
             SocialAuthSection(
                 isFingerprintEnabled = uiState.isFingerprintEnabled,
+                isFingerprintFeatureEnabled = uiState.isFingerprintFeatureEnabled,
                 onGoogleSignInClick = onGoogleSignInClick,
                 onFingerprintClick = onFingerprintClick,
             )

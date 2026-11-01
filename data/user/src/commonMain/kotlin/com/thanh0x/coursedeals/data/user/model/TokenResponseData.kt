@@ -12,5 +12,7 @@ data class TokenResponseData(
     @SerialName("tokenType")
     val tokenType: String? = null,
     @SerialName("expiresIn")
-    val expiresIn: Long? = null
+    val expiresIn: Long? = null,
+    @SerialName("isNewUser")
+    val isNewUser: Boolean = false
 )

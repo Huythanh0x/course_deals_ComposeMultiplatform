@@ -2,6 +2,8 @@ package com.thanh0x.coursedeals.shared
 
 import androidx.compose.ui.window.ComposeUIViewController
 import com.thanh0x.coursedeals.core.ui.util.PlatformActions
+import com.thanh0x.coursedeals.feature.auth.AuthMode
+import platform.Foundation.NSProcessInfo
 import platform.Foundation.NSURL
 import platform.UIKit.UIApplication
 import platform.UIKit.UIPasteboard
@@ -38,7 +40,32 @@ fun MainViewController(): UIViewController {
         UIPasteboard.generalPasteboard.string = "$title - $url"
     }
 
+    val args = NSProcessInfo.processInfo.arguments.map { it.toString() }
+    val isOtp = args.any { it.contains("--screen=otp") }
+    val isConsent = args.any { it.contains("--screen=consent") }
+    val isHome = args.any { it.contains("--screen=home") }
+    val isProfile = args.any { it.contains("--screen=profile") }
+
+    val initialScreen = when {
+        isHome || isProfile -> AppScreen.Main
+        else -> AppScreen.Login
+    }
+    val initialRoute = when {
+        isProfile -> "profile"
+        else -> "home"
+    }
+    val initialAuthMode = when {
+        isOtp || isConsent -> AuthMode.VERIFY_OTP
+        else -> AuthMode.LOGIN
+    }
+
     return ComposeUIViewController {
-        App()
+        App(
+            initialScreen = initialScreen,
+            initialRoute = initialRoute,
+            initialAuthMode = initialAuthMode,
+            initialPendingEmail = if (isOtp || isConsent) "brandnewuser@test.com" else "",
+            initialShowTermsDialog = isConsent,
+        )
     }
 }

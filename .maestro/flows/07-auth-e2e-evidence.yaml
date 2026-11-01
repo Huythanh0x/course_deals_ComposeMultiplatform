@@ -1,0 +1,80 @@
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: true
+
+# 1. Login Screen
+- extendedWaitUntil:
+    visible: "Continue with Email"
+    timeout: 15000
+
+- assertVisible: "Continue with Email"
+- assertVisible: "Email"
+- assertNotVisible: "Password"
+
+- takeScreenshot: android_01_login_screen
+
+# Input email and send OTP
+- tapOn: "Email"
+- inputText: "brandnewuser@test.com"
+- tapOn: "Continue with Email"
+
+# 2. Dedicated OTP Verification Screen
+- extendedWaitUntil:
+    visible: "Verify Your Email"
+    timeout: 15000
+
+- assertVisible: "Verify Your Email"
+- assertVisible: "brandnewuser@test.com"
+- assertVisible: "6-digit OTP"
+- assertVisible: "Verify OTP"
+- assertNotVisible: "Continue with Google"
+- assertNotVisible: "Access as Guest"
+
+- takeScreenshot: android_02_otp_screen
+
+# Input OTP
+- tapOn: "6-digit OTP"
+- inputText: "000000"
+- tapOn: "Verify OTP"
+
+# 3. Terms & Privacy Consent Dialog
+- extendedWaitUntil:
+    visible: "Terms of Service & Privacy Policy"
+    timeout: 15000
+
+- assertVisible: "Terms of Service & Privacy Policy"
+- assertVisible: "Agree & Continue"
+- assertVisible: "Decline"
+
+- takeScreenshot: android_03_terms_privacy_dialog
+
+# Accept Terms
+- tapOn: "Agree & Continue"
+
+# 4. Authenticated Home Screen
+- extendedWaitUntil:
+    visible: "HOME"
+    timeout: 15000
+
+- extendedWaitUntil:
+    visible: "Complete Web Development Bootcamp 2026"
+    timeout: 15000
+
+- assertVisible: "HOME"
+- assertVisible: "COURSE"
+- assertVisible: "PROFILE"
+
+- takeScreenshot: android_04_authenticated_home
+
+# 5. Profile Screen
+- tapOn: "PROFILE"
+
+- extendedWaitUntil:
+    visible: "brandnewuser@test.com"
+    timeout: 15000
+
+- assertVisible: "brandnewuser@test.com"
+- assertNotVisible: "Fingerprint"
+
+- takeScreenshot: android_05_profile_screen

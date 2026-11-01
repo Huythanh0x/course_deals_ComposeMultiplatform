@@ -26,6 +26,17 @@ class UserAuthenticationRepositoryImplTest {
     }
 
     @Test
+    fun sendOtp_delegatesToRemoteDataSourceAndReturnsMessage() = runTest {
+        fakeRemoteDataSource.sendOtpResult = AppResult.Success("OTP sent to email")
+
+        val result = repository.sendOtp("student@coursedeals.com")
+
+        assertTrue(result is AppResult.Success)
+        assertEquals("OTP sent to email", result.data)
+        assertEquals("student@coursedeals.com", fakeRemoteDataSource.lastEmail)
+    }
+
+    @Test
     fun register_delegatesToRemoteDataSourceAndReturnsMessage() = runTest {
         fakeRemoteDataSource.registerResult = AppResult.Success("OTP sent to email")
 
@@ -117,6 +128,7 @@ class UserAuthenticationRepositoryImplTest {
         var lastRefreshToken: String? = null
 
         var registerResult: AppResult<String> = AppResult.Error("Not configured")
+        var sendOtpResult: AppResult<String> = AppResult.Error("Not configured")
         var verifyOtpResult: AppResult<TokenData> = AppResult.Error("Not configured")
         var refreshResult: AppResult<TokenData> = AppResult.Error("Not configured")
         var loginResult: AppResult<TokenData> = AppResult.Error("Not configured")
@@ -130,6 +142,11 @@ class UserAuthenticationRepositoryImplTest {
             lastPassword = password
             lastFullName = fullName
             return registerResult
+        }
+
+        override suspend fun sendOtp(email: String): AppResult<String> {
+            lastEmail = email
+            return sendOtpResult
         }
 
         override suspend fun verifyOtp(email: String, otp: String): AppResult<TokenData> {

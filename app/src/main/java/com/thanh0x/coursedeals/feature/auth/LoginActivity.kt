@@ -40,30 +40,66 @@ class LoginActivity : BaseActivity() {
         setContent {
             CourseDealsTheme {
                 val uiState by loginViewModel.uiState.collectAsStateWithLifecycle()
-                LoginScreen(
-                    uiState = uiState,
-                    onLoginClick = { email, password ->
-                        loginViewModel.login(email, password)
-                    },
-                    onRegisterClick = { email, password, fullName ->
-                        loginViewModel.register(email, password, fullName)
-                    },
-                    onOtpClick = { otp ->
-                        loginViewModel.verifyOtp(otp)
-                    },
-                    onToggleAuthMode = {
-                        loginViewModel.toggleAuthMode()
-                    },
-                    onGoogleSignInClick = {
-                        signInWithGoogle()
-                    },
-                    onFingerprintClick = {
-                        authenticateWithFingerprint()
-                    },
-                    onGuestModeClick = {
-                        navigateToMainScreen()
-                    },
-                )
+                when (uiState.authMode) {
+                    AuthMode.VERIFY_OTP -> {
+                        OtpVerificationScreen(
+                            uiState = uiState,
+                            onOtpClick = { otp ->
+                                loginViewModel.verifyOtp(otp)
+                            },
+                            onBackToEmailClick = {
+                                loginViewModel.backToLogin()
+                            },
+                            onResendOtpClick = { email ->
+                                loginViewModel.sendOtp(email)
+                            },
+                            onAcceptTermsClick = {
+                                loginViewModel.acceptTerms()
+                            },
+                            onDeclineTermsClick = {
+                                loginViewModel.declineTerms()
+                            },
+                        )
+                    }
+                    else -> {
+                        LoginScreen(
+                            uiState = uiState,
+                            onSendOtpClick = { email ->
+                                loginViewModel.sendOtp(email)
+                            },
+                            onOtpClick = { otp ->
+                                loginViewModel.verifyOtp(otp)
+                            },
+                            onBackToEmailClick = {
+                                loginViewModel.backToLogin()
+                            },
+                            onAcceptTermsClick = {
+                                loginViewModel.acceptTerms()
+                            },
+                            onDeclineTermsClick = {
+                                loginViewModel.declineTerms()
+                            },
+                            onLoginClick = { email, password ->
+                                loginViewModel.login(email, password)
+                            },
+                            onRegisterClick = { email, password, fullName ->
+                                loginViewModel.register(email, password, fullName)
+                            },
+                            onToggleAuthMode = {
+                                loginViewModel.toggleAuthMode()
+                            },
+                            onGoogleSignInClick = {
+                                signInWithGoogle()
+                            },
+                            onFingerprintClick = {
+                                authenticateWithFingerprint()
+                            },
+                            onGuestModeClick = {
+                                navigateToMainScreen()
+                            },
+                        )
+                    }
+                }
             }
         }
     }
