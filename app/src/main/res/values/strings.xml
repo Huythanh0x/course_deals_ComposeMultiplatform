@@ -100,11 +100,17 @@
     <string name="auth_otp_hint">6-digit OTP</string>
     <string name="auth_otp_helper">Enter 6-digit OTP (use 000000)</string>
     <string name="auth_btn_sign_in">Sign In</string>
+    <string name="auth_btn_send_otp">Continue with Email</string>
     <string name="auth_btn_create_account">Create Account</string>
     <string name="auth_btn_verify_otp">Verify OTP</string>
     <string name="auth_toggle_to_register">Don\'t have an account? Register</string>
     <string name="auth_toggle_to_login">Already have an account? Sign In</string>
     <string name="auth_toggle_back_to_login">Back to Sign In</string>
+    <string name="auth_back_to_email">Change Email</string>
+    <string name="auth_terms_dialog_title">Terms of Service &amp; Privacy Policy</string>
+    <string name="auth_terms_dialog_message">By continuing, you agree to Course Deals\' Terms of Service and acknowledge that you have read our Privacy Policy.</string>
+    <string name="auth_terms_btn_agree">Agree &amp; Continue</string>
+    <string name="auth_terms_btn_decline">Decline</string>
     <string name="auth_btn_google">Continue with Google</string>
     <string name="auth_btn_apple">Continue with Apple</string>
     <string name="auth_btn_fingerprint">Continue with Fingerprint</string>

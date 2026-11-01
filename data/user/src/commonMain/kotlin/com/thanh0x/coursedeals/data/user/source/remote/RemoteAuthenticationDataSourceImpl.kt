@@ -5,6 +5,7 @@ import com.thanh0x.coursedeals.data.user.mapper.toDomain
 import com.thanh0x.coursedeals.data.user.mapper.toDto
 import com.thanh0x.coursedeals.data.user.model.RefreshTokenRequest
 import com.thanh0x.coursedeals.data.user.model.RegisterRequest
+import com.thanh0x.coursedeals.data.user.model.SendOtpRequest
 import com.thanh0x.coursedeals.data.user.model.SocialLoginRequest
 import com.thanh0x.coursedeals.data.user.model.VerifyOtpRequest
 import com.thanh0x.coursedeals.domain.user.AuthCredentials
@@ -25,6 +26,21 @@ class RemoteAuthenticationDataSourceImpl(
             val response = userAuthenticationService.register(
                 RegisterRequest(email = email, password = password, fullName = fullName)
             )
+            val body = response.body()
+            if (response.isSuccessful) {
+                AppResult.Success(body?.message ?: body?.email ?: email)
+            } else {
+                AppResult.Error(response.message(), response.code())
+            }
+        } catch (e: Exception) {
+            AppResult.Error(e.message ?: "Unknown Error")
+        }
+    }
+
+    @Suppress("TooGenericExceptionCaught")
+    override suspend fun sendOtp(email: String): AppResult<String> {
+        return try {
+            val response = userAuthenticationService.sendOtp(SendOtpRequest(email = email))
             val body = response.body()
             if (response.isSuccessful) {
                 AppResult.Success(body?.message ?: body?.email ?: email)

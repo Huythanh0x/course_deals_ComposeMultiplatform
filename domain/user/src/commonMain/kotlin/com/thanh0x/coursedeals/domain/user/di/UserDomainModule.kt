@@ -19,6 +19,7 @@ import com.thanh0x.coursedeals.domain.user.usecase.SaveDarkModeUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.SaveFingerprintUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.SaveJwtTokenUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.SaveRefreshTokenUseCase
+import com.thanh0x.coursedeals.domain.user.usecase.SendOtpUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.SettingFingerprintUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.SettingUserProfileUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.SocialLoginUseCase
@@ -47,6 +48,7 @@ val userDomainModule = module {
     factoryOf(::SaveFingerprintUseCase)
     factoryOf(::SaveJwtTokenUseCase)
     factoryOf(::SaveRefreshTokenUseCase)
+    factoryOf(::SendOtpUseCase)
     factoryOf(::SettingFingerprintUseCase)
     factoryOf(::SettingUserProfileUseCase)
     factoryOf(::SocialLoginUseCase)

@@ -6,6 +6,7 @@ import com.thanh0x.coursedeals.core.common.AppResult
 interface UserAuthenticationRepository {
     suspend fun login(credentials: AuthCredentials): AppResult<TokenData>
     suspend fun register(email: String, password: String, fullName: String? = null): AppResult<String>
+    suspend fun sendOtp(email: String): AppResult<String>
     suspend fun verifyOtp(email: String, otp: String): AppResult<TokenData>
     suspend fun refreshToken(refreshToken: String): AppResult<TokenData>
     suspend fun getLocalToken(): String?

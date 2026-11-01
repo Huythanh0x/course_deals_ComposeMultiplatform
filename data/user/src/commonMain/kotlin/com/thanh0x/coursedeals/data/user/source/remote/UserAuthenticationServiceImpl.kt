@@ -5,6 +5,7 @@ import com.thanh0x.coursedeals.data.user.model.PostAuthenticationData
 import com.thanh0x.coursedeals.data.user.model.RefreshTokenRequest
 import com.thanh0x.coursedeals.data.user.model.RegisterRequest
 import com.thanh0x.coursedeals.data.user.model.RegisterResponseData
+import com.thanh0x.coursedeals.data.user.model.SendOtpRequest
 import com.thanh0x.coursedeals.data.user.model.SocialLoginRequest
 import com.thanh0x.coursedeals.data.user.model.TokenResponseData
 import com.thanh0x.coursedeals.data.user.model.VerifyOtpRequest
@@ -69,6 +70,15 @@ class UserAuthenticationServiceImpl(
     override suspend fun register(request: RegisterRequest): NetworkResponse<RegisterResponseData> {
         return safeRequest {
             httpClient.post("/api/v1/auth/register") {
+                contentType(ContentType.Application.Json)
+                setBody(request)
+            }
+        }
+    }
+
+    override suspend fun sendOtp(request: SendOtpRequest): NetworkResponse<RegisterResponseData> {
+        return safeRequest {
+            httpClient.post("/api/v1/auth/send-otp") {
                 contentType(ContentType.Application.Json)
                 setBody(request)
             }

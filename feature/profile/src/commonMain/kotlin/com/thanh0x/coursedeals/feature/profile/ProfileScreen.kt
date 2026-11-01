@@ -43,6 +43,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
+import com.thanh0x.coursedeals.core.common.Constant
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
@@ -586,12 +587,14 @@ private fun SettingsSection(
         )
 
         // Fingerprint Switch
-        SettingSwitchRow(
-            title = stringResource(Res.string.enable_finger_print_switch_text),
-            checked = if (isGuestMode) false else isFingerprintEnabled,
-            onCheckedChange = onFingerprintToggled,
-            enabled = !isGuestMode
-        )
+        if (Constant.FEATURE_FINGERPRINT) {
+            SettingSwitchRow(
+                title = stringResource(Res.string.enable_finger_print_switch_text),
+                checked = if (isGuestMode) false else isFingerprintEnabled,
+                onCheckedChange = onFingerprintToggled,
+                enabled = !isGuestMode
+            )
+        }
 
         // Notifications Master Switch
         SettingSwitchRow(

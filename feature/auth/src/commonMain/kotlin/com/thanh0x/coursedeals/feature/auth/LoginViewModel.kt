@@ -1,6 +1,7 @@
 package com.thanh0x.coursedeals.feature.auth
 
 import com.thanh0x.coursedeals.core.common.AppResult
+import com.thanh0x.coursedeals.core.common.Constant
 import com.thanh0x.coursedeals.core.ui.UiEvent
 import com.thanh0x.coursedeals.core.ui.ViewModel
 import com.thanh0x.coursedeals.core.ui.util.NetworkUtil
@@ -13,10 +14,12 @@ import com.thanh0x.coursedeals.domain.user.usecase.RegisterUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.RequestAccessTokenUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.SaveJwtTokenUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.SaveRefreshTokenUseCase
+import com.thanh0x.coursedeals.domain.user.usecase.SendOtpUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.SettingFingerprintUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.SettingUserProfileUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.SocialLoginUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.VerifyOtpUseCase
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -31,6 +34,7 @@ class LoginViewModel(
     private val loginUseCase: LoginUseCase,
     private val registerUseCase: RegisterUseCase,
     private val verifyOtpUseCase: VerifyOtpUseCase,
+    private val sendOtpUseCase: SendOtpUseCase,
     private val socialLoginUseCase: SocialLoginUseCase,
     private val saveJwtTokenUseCase: SaveJwtTokenUseCase,
     private val saveRefreshTokenUseCase: SaveRefreshTokenUseCase,
@@ -40,7 +44,8 @@ class LoginViewModel(
     private val clearCachedUserProfileUseCase: ClearCachedUserProfileUseCase,
     private val requestAccessTokenUseCase: RequestAccessTokenUseCase,
     private val settingUserProfileUseCase: SettingUserProfileUseCase,
-    private val networkUtil: NetworkUtil
+    private val networkUtil: NetworkUtil,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginUiState())
@@ -85,28 +90,62 @@ class LoginViewModel(
         _uiState.update { it.copy(error = null) }
     }
 
-    fun login(email: String, password: String) {
+    fun sendOtp(email: String) {
         val trimmedEmail = email.trim()
-        if (trimmedEmail.isBlank() || password.isBlank()) {
-            _uiState.update { it.copy(error = "Email and password cannot be empty") }
+        if (trimmedEmail.isBlank() || !EMAIL_REGEX.matches(trimmedEmail)) {
+            _uiState.update { it.copy(error = "Please enter a valid email address") }
             return
         }
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(ioDispatcher) {
+            _uiState.update { it.copy(isLoading = true, error = null) }
+            val result = sendOtpUseCase(trimmedEmail)
+            _uiState.update { it.copy(isLoading = false) }
+
+            when (result) {
+                is AppResult.Success -> {
+                    _uiState.update {
+                        it.copy(
+                            authMode = AuthMode.VERIFY_OTP,
+                            pendingEmail = trimmedEmail,
+                            infoMessage = "OTP sent to $trimmedEmail. Enter 000000 to verify."
+                        )
+                    }
+                }
+                is AppResult.Error -> {
+                    _uiState.update {
+                        it.copy(error = result.message.ifBlank { "Failed to send OTP. Please try again." })
+                    }
+                }
+                is AppResult.Loading -> { }
+            }
+        }
+    }
+
+    fun login(email: String, password: String) {
+        val trimmedEmail = email.trim()
+        if (trimmedEmail.isBlank()) {
+            _uiState.update { it.copy(error = "Email cannot be empty") }
+            return
+        }
+        if (password.isBlank()) {
+            sendOtp(trimmedEmail)
+            return
+        }
+        viewModelScope.launch(ioDispatcher) {
             _uiState.update { it.copy(isLoading = true, error = null) }
             val result = loginUseCase(trimmedEmail, password)
             _uiState.update { it.copy(isLoading = false) }
 
             when (result) {
                 is AppResult.Success -> {
-                    saveTokens(result.data)
-                    _uiEvent.emit(UiEvent.Navigate("Main"))
+                    handleSuccessfulAuth(result.data)
                 }
                 is AppResult.Error -> {
                     _uiState.update {
                         it.copy(error = result.message.ifBlank { "Invalid email or password" })
                     }
                 }
-                is AppResult.Loading -> { /* Handled by manually setting isLoading */ }
+                is AppResult.Loading -> { }
             }
         }
     }
@@ -122,7 +161,7 @@ class LoginViewModel(
             _uiState.update { it.copy(error = "Password must be at least $MIN_PASSWORD_LENGTH characters") }
             return
         }
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(ioDispatcher) {
             _uiState.update { it.copy(isLoading = true, error = null) }
             val result = registerUseCase(trimmedEmail, password, trimmedFullName)
             _uiState.update { it.copy(isLoading = false) }
@@ -158,15 +197,14 @@ class LoginViewModel(
             _uiState.update { it.copy(error = "OTP must be exactly $OTP_LENGTH digits") }
             return
         }
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(ioDispatcher) {
             _uiState.update { it.copy(isLoading = true, error = null) }
             val result = verifyOtpUseCase(email, trimmedOtp)
             _uiState.update { it.copy(isLoading = false) }
 
             when (result) {
                 is AppResult.Success -> {
-                    saveTokens(result.data)
-                    _uiEvent.emit(UiEvent.Navigate("Main"))
+                    handleSuccessfulAuth(result.data)
                 }
                 is AppResult.Error -> {
                     _uiState.update {
@@ -179,20 +217,18 @@ class LoginViewModel(
     }
 
     fun googleLogin(idToken: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(ioDispatcher) {
             _uiState.update { it.copy(isLoading = true, error = null) }
             val result = socialLoginUseCase("GOOGLE", idToken)
             _uiState.update { it.copy(isLoading = false) }
 
             when (result) {
                 is AppResult.Success -> {
-                    saveTokens(result.data)
-                    _uiEvent.emit(UiEvent.Navigate("Main"))
+                    handleSuccessfulAuth(result.data)
                 }
                 is AppResult.Error -> {
                     if (idToken.startsWith("mock-")) {
-                        saveJwtTokenUseCase("mock-dev-jwt-token")
-                        _uiEvent.emit(UiEvent.Navigate("Main"))
+                        handleSuccessfulAuth(TokenData(accessToken = "mock-dev-jwt-token", isNewUser = false))
                     } else {
                         _uiState.update { it.copy(error = result.message) }
                     }
@@ -202,8 +238,45 @@ class LoginViewModel(
         }
     }
 
+    private suspend fun handleSuccessfulAuth(tokenData: TokenData) {
+        if (tokenData.isNewUser) {
+            _uiState.update {
+                it.copy(
+                    showTermsDialog = true,
+                    pendingTokenData = tokenData
+                )
+            }
+        } else {
+            saveTokens(tokenData)
+            _uiEvent.emit(UiEvent.Navigate("Main"))
+        }
+    }
+
+    fun acceptTerms() {
+        val pending = _uiState.value.pendingTokenData
+        if (pending != null) {
+            viewModelScope.launch(ioDispatcher) {
+                saveTokens(pending)
+                _uiState.update { it.copy(showTermsDialog = false, pendingTokenData = null) }
+                _uiEvent.emit(UiEvent.Navigate("Main"))
+            }
+        } else {
+            _uiState.update { it.copy(showTermsDialog = false) }
+        }
+    }
+
+    fun declineTerms() {
+        _uiState.update {
+            it.copy(
+                showTermsDialog = false,
+                pendingTokenData = null,
+                error = "You must agree to the Terms of Service & Privacy Policy to complete registration."
+            )
+        }
+    }
+
     fun onBiometricUnlockSuccess() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(ioDispatcher) {
             _uiEvent.emit(UiEvent.Navigate("Main"))
         }
     }
@@ -258,9 +331,13 @@ class LoginViewModel(
     }
 
     private fun checkIsAbleLoginByFingerprint() {
+        if (!Constant.FEATURE_FINGERPRINT) {
+            _uiState.update { it.copy(isFingerprintEnabled = false, isFingerprintFeatureEnabled = false) }
+            return
+        }
         viewModelScope.launch {
             val isEnabled = settingUserProfileUseCase.loadFingerprintUseCase() ?: false
-            _uiState.update { it.copy(isFingerprintEnabled = isEnabled) }
+            _uiState.update { it.copy(isFingerprintEnabled = isEnabled, isFingerprintFeatureEnabled = true) }
         }
     }
 

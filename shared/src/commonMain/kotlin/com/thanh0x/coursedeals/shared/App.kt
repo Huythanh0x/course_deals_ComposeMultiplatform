@@ -224,14 +224,26 @@ fun App() {
 
                 LoginScreen(
                     uiState = loginUiState,
+                    onSendOtpClick = { email ->
+                        loginViewModel.sendOtp(email)
+                    },
+                    onOtpClick = { otp ->
+                        loginViewModel.verifyOtp(otp)
+                    },
+                    onBackToEmailClick = {
+                        loginViewModel.backToLogin()
+                    },
+                    onAcceptTermsClick = {
+                        loginViewModel.acceptTerms()
+                    },
+                    onDeclineTermsClick = {
+                        loginViewModel.declineTerms()
+                    },
                     onLoginClick = { email, password ->
                         loginViewModel.login(email, password)
                     },
                     onRegisterClick = { email, password, fullName ->
                         loginViewModel.register(email, password, fullName)
-                    },
-                    onOtpClick = { otp ->
-                        loginViewModel.verifyOtp(otp)
                     },
                     onToggleAuthMode = {
                         loginViewModel.toggleAuthMode()

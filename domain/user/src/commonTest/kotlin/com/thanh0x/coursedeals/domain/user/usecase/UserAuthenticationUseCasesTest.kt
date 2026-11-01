@@ -21,6 +21,17 @@ class UserAuthenticationUseCasesTest {
     }
 
     @Test
+    fun sendOtpUseCase_invokesRepositoryWithEmail() = runTest {
+        val useCase = SendOtpUseCase(fakeRepo)
+
+        val result = useCase(email = "otpuser@example.com")
+
+        assertTrue(result is AppResult.Success)
+        assertEquals("OTP sent to email", result.data)
+        assertEquals("otpuser@example.com", fakeRepo.lastSentOtpEmail)
+    }
+
+    @Test
     fun registerUseCase_invokesRepositoryWithEmailPasswordAndFullName() = runTest {
         val useCase = RegisterUseCase(fakeRepo)
 
@@ -87,12 +98,18 @@ class UserAuthenticationUseCasesTest {
         var lastRegisteredEmail: String? = null
         var lastRegisteredPassword: String? = null
         var lastRegisteredFullName: String? = null
+        var lastSentOtpEmail: String? = null
         var lastVerifiedEmail: String? = null
         var lastVerifiedOtp: String? = null
 
         private var accessToken: String? = null
         private var refreshToken: String? = null
         private var cipherText: String? = null
+
+        override suspend fun sendOtp(email: String): AppResult<String> {
+            lastSentOtpEmail = email
+            return AppResult.Success("OTP sent to email")
+        }
 
         override suspend fun login(credentials: AuthCredentials): AppResult<TokenData> {
             lastLoginCredentials = credentials

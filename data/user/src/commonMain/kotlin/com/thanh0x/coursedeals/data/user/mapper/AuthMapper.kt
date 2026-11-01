@@ -9,7 +9,8 @@ fun TokenResponseData.toDomain(): TokenData {
     return TokenData(
         accessToken = accessToken,
         refreshToken = refreshToken,
-        tokenType = tokenType
+        tokenType = tokenType,
+        isNewUser = isNewUser
     )
 }
 

@@ -21,6 +21,9 @@ class UserAuthenticationRepositoryImpl(
         fullName: String?
     ): AppResult<String> = remoteAuthenticationDataSource.register(email, password, fullName)
 
+    override suspend fun sendOtp(email: String): AppResult<String> =
+        remoteAuthenticationDataSource.sendOtp(email)
+
     override suspend fun verifyOtp(email: String, otp: String): AppResult<TokenData> =
         remoteAuthenticationDataSource.verifyOtp(email, otp)
 
