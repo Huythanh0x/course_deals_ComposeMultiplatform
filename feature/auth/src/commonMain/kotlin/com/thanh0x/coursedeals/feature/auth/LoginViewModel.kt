@@ -7,6 +7,7 @@ import com.thanh0x.coursedeals.core.ui.ViewModel
 import com.thanh0x.coursedeals.core.ui.util.NetworkUtil
 import com.thanh0x.coursedeals.domain.user.TokenData
 import com.thanh0x.coursedeals.domain.user.usecase.ClearCachedUserProfileUseCase
+import com.thanh0x.coursedeals.core.common.BuildConfig
 import com.thanh0x.coursedeals.domain.user.usecase.ClearLocalTokenUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.CryptographyManagerUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.LoginUseCase
@@ -341,7 +342,7 @@ class LoginViewModel(
     }
 
     private fun checkIsAbleLoginByFingerprint() {
-        if (!Constant.FEATURE_FINGERPRINT) {
+        if (!BuildConfig.FEATURE_FINGERPRINT) {
             _uiState.update { it.copy(isFingerprintEnabled = false, isFingerprintFeatureEnabled = false) }
             return
         }

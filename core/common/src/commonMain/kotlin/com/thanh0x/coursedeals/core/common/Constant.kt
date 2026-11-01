@@ -8,7 +8,7 @@ object Constant {
     const val PREFERENCES_LOGIN_TOKEN = "login_token"
     const val PREFERENCES_ENABLE_DARK_MODE = "enable_dark_mode"
     const val PREFERENCES_ENABLE_FINGERPRINT = "fingerprint"
-    const val FEATURE_FINGERPRINT = false
+    const val FEATURE_FINGERPRINT = BuildConfig.FEATURE_FINGERPRINT
     const val PREFERENCES_REFRESH_TOKEN = "refresh_token"
     const val PREFERENCES_FINGERPRINT_TOKEN = "fingerprint_token"
     const val PREFERENCES_SHOW_LOCAL_FETCH_TIME = "show_local_fetch_time"
