@@ -22,8 +22,10 @@ import com.thanh0x.coursedeals.data.user.di.userDataModule
 import com.thanh0x.coursedeals.domain.coupons.di.couponDomainModule
 import com.thanh0x.coursedeals.domain.user.UserProfileRepository
 import com.thanh0x.coursedeals.domain.user.di.userDomainModule
+import com.thanh0x.coursedeals.feature.auth.AuthMode
 import com.thanh0x.coursedeals.feature.auth.LoginScreen
 import com.thanh0x.coursedeals.feature.auth.LoginViewModel
+import com.thanh0x.coursedeals.feature.auth.OtpVerificationScreen
 import com.thanh0x.coursedeals.feature.auth.di.authModule
 import com.thanh0x.coursedeals.feature.course.di.courseModule
 import com.thanh0x.coursedeals.feature.detail.CouponDetailRoute
@@ -222,42 +224,66 @@ fun App() {
                     }
                 }
 
-                LoginScreen(
-                    uiState = loginUiState,
-                    onSendOtpClick = { email ->
-                        loginViewModel.sendOtp(email)
-                    },
-                    onOtpClick = { otp ->
-                        loginViewModel.verifyOtp(otp)
-                    },
-                    onBackToEmailClick = {
-                        loginViewModel.backToLogin()
-                    },
-                    onAcceptTermsClick = {
-                        loginViewModel.acceptTerms()
-                    },
-                    onDeclineTermsClick = {
-                        loginViewModel.declineTerms()
-                    },
-                    onLoginClick = { email, password ->
-                        loginViewModel.login(email, password)
-                    },
-                    onRegisterClick = { email, password, fullName ->
-                        loginViewModel.register(email, password, fullName)
-                    },
-                    onToggleAuthMode = {
-                        loginViewModel.toggleAuthMode()
-                    },
-                    onGoogleSignInClick = {
-                        loginViewModel.googleLogin("mock-google-token")
-                    },
-                    onFingerprintClick = {
-                        loginViewModel.onBiometricUnlockSuccess()
-                    },
-                    onGuestModeClick = {
-                        currentScreen = AppScreen.Main
-                    },
-                )
+                when (loginUiState.authMode) {
+                    AuthMode.VERIFY_OTP -> {
+                        OtpVerificationScreen(
+                            uiState = loginUiState,
+                            onOtpClick = { otp ->
+                                loginViewModel.verifyOtp(otp)
+                            },
+                            onBackToEmailClick = {
+                                loginViewModel.backToLogin()
+                            },
+                            onResendOtpClick = { email ->
+                                loginViewModel.sendOtp(email)
+                            },
+                            onAcceptTermsClick = {
+                                loginViewModel.acceptTerms()
+                            },
+                            onDeclineTermsClick = {
+                                loginViewModel.declineTerms()
+                            },
+                        )
+                    }
+                    else -> {
+                        LoginScreen(
+                            uiState = loginUiState,
+                            onSendOtpClick = { email ->
+                                loginViewModel.sendOtp(email)
+                            },
+                            onOtpClick = { otp ->
+                                loginViewModel.verifyOtp(otp)
+                            },
+                            onBackToEmailClick = {
+                                loginViewModel.backToLogin()
+                            },
+                            onAcceptTermsClick = {
+                                loginViewModel.acceptTerms()
+                            },
+                            onDeclineTermsClick = {
+                                loginViewModel.declineTerms()
+                            },
+                            onLoginClick = { email, password ->
+                                loginViewModel.login(email, password)
+                            },
+                            onRegisterClick = { email, password, fullName ->
+                                loginViewModel.register(email, password, fullName)
+                            },
+                            onToggleAuthMode = {
+                                loginViewModel.toggleAuthMode()
+                            },
+                            onGoogleSignInClick = {
+                                loginViewModel.googleLogin("mock-google-token")
+                            },
+                            onFingerprintClick = {
+                                loginViewModel.onBiometricUnlockSuccess()
+                            },
+                            onGuestModeClick = {
+                                currentScreen = AppScreen.Main
+                            },
+                        )
+                    }
+                }
             }
         }
 
