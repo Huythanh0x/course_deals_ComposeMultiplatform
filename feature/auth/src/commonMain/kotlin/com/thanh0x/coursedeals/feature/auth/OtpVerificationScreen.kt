@@ -107,14 +107,20 @@ fun OtpVerificationScreen(
             val targetEmail = uiState.pendingEmail
             if (targetEmail.isNotBlank()) {
                 Text(
-                    text = "${stringResource(Res.string.auth_otp_sent_to)}\n$targetEmail",
+                    text = stringResource(Res.string.auth_otp_sent_to),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
                 )
-            }
-
-            if (!uiState.infoMessage.isNullOrBlank()) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = targetEmail,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Center,
+                )
+            } else if (!uiState.infoMessage.isNullOrBlank()) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = uiState.infoMessage,

@@ -77,7 +77,7 @@ private data class DialogState(
 @Composable
 fun App(
     initialScreen: AppScreen = AppScreen.Login,
-    initialRoute: String = "home_route",
+    initialRoute: String = "home",
     initialAuthMode: AuthMode = AuthMode.LOGIN,
     initialPendingEmail: String = "",
     initialShowTermsDialog: Boolean = false,
