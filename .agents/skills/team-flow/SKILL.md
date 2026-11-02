@@ -28,11 +28,20 @@ When the user gives a general or raw requirement (e.g. "Add Course Reports", "Of
    - Define structured **Use Cases (UCs)** and the **GUI Framework Test Specification** (Maestro E2E flows) for the feature.
    - Use `ask_question` to resolve architectural forks and product ambiguities with the user.
    - Run competitive/best-practice research (`search_web`) if needed.
-3. **Publish to GitHub Issue(s) & Initialize Workspace Memory (`STATE.json` & `NOTES.md`)**:
-   - Create parent issue and sub-issues on GitHub containing the locked API contract, Use Cases, 4-quadrant test scenarios, GUI framework test plan, and Definition of Done matrix.
+3. **Synchronize GitHub Issue Description & Propose Plan (Stop #1)**:
+   - Update existing issue description (`gh issue edit <id> --body "..."`) or create the top-level issue containing the solution architecture plan, Use Cases, 4-quadrant test scenarios, Maestro test plan, and DoD matrix.
+   - Render the complete proposal brief in the visible chat response and create the `TEAM_EXECUTION_BRIEF.md` artifact before requesting approval.
+4. **Publish Workspace Memory & Branches (Phase 2)**:
    - Stamp the active sprint onto the issue.
+   - Create platform sub-issues under the parent issue via `create-sub-issues`:
+     - `+ Android` (Mandatory for client features)
+     - `+ iOS` (Mandatory for client features)
+     - `+ WatchOS` (if needed)
+     - `+ BE` (if needed)
+     - `+ Desktop` (if needed)
    - Checkout branches `<type>/<issue-number>-<slug>`.
-4. **Implement in Parallel**:
+   - Initialize `.agents/tickets/<issue-number>-<slug>/STATE.json` and `NOTES.md`.
+5. **Implement in Parallel (Phase 3)**:
    - Only AFTER the issue is live and approved, launch `backend-engineer` and `android-engineer` subagents in parallel.
 
 ### 2. Living Ticket Memory & Step Resumption: Never Lose Context Across Sessions
@@ -42,16 +51,15 @@ When the user gives a general or raw requirement (e.g. "Add Course Reports", "Of
 
 ---
 
-## The 6 Specialized Agent Roles
+## The 5 Specialized Agent Roles
 
 | Role | Agent Type / Name | Scope & Responsibility | Reference Prompt |
 |---|---|---|---|
-| **1. PM & Solutions Architect** | Main Agent + `research` subagents | Scans code in parallel; defines cross-repo REST/DTO contract; specifies **4-quadrant test scenarios** (Happy, Failed, Error, Related Changes), structured **Use Cases**, and **GUI framework test specification** (Maestro / Compose UI Test); creates GitHub parent/sub-issues, stamps active sprint & initializes `NOTES.md`. | Built into this `SKILL.md` |
+| **1. PM & Solutions Architect** | Main Agent + `research` subagents | Scans code in parallel; defines cross-repo REST/DTO contract; specifies **4-quadrant test scenarios** (Happy, Failed, Error, Related Changes), structured **Use Cases**, and **GUI framework test specification** (Maestro); creates GitHub parent/sub-issues, stamps active sprint & initializes `NOTES.md`. | Built into this `SKILL.md` |
 | **2. Backend Engineer** | `backend-engineer` | Implements Spring Boot / Kotlin / Flyway / JobRunr changes & unit/integration tests (covering happy, failed, and error paths) in `course_deals_backend`, runs `./gradlew ktlintCheck detekt test`, commits locally. | [references/backend-engineer.md](references/backend-engineer.md) |
 | **3. Android / KMP Engineer** | `android-engineer` | Implements Clean Architecture in `course_deals_ComposeMultiplatform` across shared KMP/Android/iOS modules, exposes UI testability (semantic tags/labels for Maestro), handles multi-state UI (empty/success/error), runs `:app:detekt`, lint, and unit tests, commits locally. | [references/android-engineer.md](references/android-engineer.md) |
-| **4. Desktop CMP Engineer** | `desktop-engineer` | Implements Compose Multiplatform Desktop (`:desktopApp` & `jvmMain`) features: Window State & native menus/shortcuts, Swing/JavaFX interop (`SwingPanel`/`JFXPanel`), Skia `GraphicsLayer` screenshot sync, and **Compose Desktop UI Framework Tests (`runComposeUiTest` / `createComposeRule`)**; runs `:desktopApp:detekt` & `:desktopApp:test`, commits locally. | [references/desktop-engineer.md](references/desktop-engineer.md) |
-| **5. Security & Arch Reviewer** | `security-arch-reviewer` | Read-only auditor (runs in parallel with QA): verifies Backend↔Client DTO JSON contract parity, Android Intent & Desktop URI/clipboard security (`intent-security-review`), KMP readiness (`kmp-readiness`), ADR criteria (`adr`), and verifies 4-quadrant test coverage. | [references/security-arch-reviewer.md](references/security-arch-reviewer.md) |
-| **6. QA & Release Engineer** | `qa-release-engineer` | Runs live E2E verification: Backend `curl -i` / test script locally ➔ **Cross-platform Kotlin Multiplatform (Android + iOS `maestro` & Desktop `:desktopApp:run`)** ➔ visual pixel inspection (`read_file`) ➔ Cloudflare R2 uploads ➔ **Explicit Side-by-Side Comparison Matrix** ➔ opens labeled PRs (`ship-pr`) ➔ reclaims host RAM/CPU (`release-resource`). | [references/qa-release-engineer.md](references/qa-release-engineer.md) |
+| **4. Security & Arch Reviewer** | `security-arch-reviewer` | Read-only auditor (runs in parallel with QA): verifies Backend↔Client DTO JSON contract parity, Android Intent security (`intent-security-review`), KMP readiness (`kmp-readiness`), ADR criteria (`adr`), and verifies 4-quadrant test coverage. | [references/security-arch-reviewer.md](references/security-arch-reviewer.md) |
+| **5. QA & Release Engineer** | `qa-release-engineer` | Runs live E2E verification: Backend `curl -i` / test script locally ➔ **Cross-platform Kotlin Multiplatform (Android + iOS) GUI framework tests (`maestro`)** ➔ visual pixel inspection (`read_file`) ➔ Cloudflare R2 uploads ➔ **Explicit Side-by-Side Comparison Matrix (Android vs. iOS)** ➔ opens labeled PRs (`ship-pr`). | [references/qa-release-engineer.md](references/qa-release-engineer.md) |
 
 ---
 
@@ -75,14 +83,13 @@ Phase 4: Parallel Review & Backend QA
   • security-arch-reviewer: Audits DTO contract, intent security, KMP readiness, 4-quadrant coverage
   • qa-release-engineer (Backend): docker compose up -> bootRun -> curl -i / test script -> ship backend PR
                     │   │
-                    └───┼───> Phase 5: Gated Cross-Platform Mobile Live E2E, Release & Resource Cleanup
+                    └───┼───> Phase 5: Gated Cross-Platform Mobile Live E2E & Release
                               (Triggered once BE is verified locally & Mobile is ready)
                               • Run GUI framework tests (Maestro) on BOTH Android & iOS
                               • Android (emulator-5554) + iOS (iPhone Simulator)
                               • Visual pixel inspection (read_file) & R2 upload
                               • Side-by-side comparison matrix (Android vs. iOS)
                               • Ship Mobile PR with comparative evidence
-                              • Execute release-resource (stop Gradle/Kotlin daemons & test JVMs, log RAM/CPU stats)
                                         │
                               [Checkpoint 2: Merge Gate]
 ```
@@ -92,7 +99,7 @@ Phase 4: Parallel Review & Backend QA
 ## Phase 1: PM & Architect Discovery (Main Agent)
 
 1. **Determine Repository Scope & Task Type**:
-   - Scope: Backend-only, Android/KMP-only (`area: android` / `area: desktop`), or Full-Stack (Cross-Repo).
+   - Scope: Backend-only, Android/KMP-only, or Full-Stack (Cross-Repo).
    - Task Type: **Bug** vs. **Feature / Chore**.
 
 2. **Differentiated Discovery Protocol**:
@@ -139,15 +146,37 @@ Phase 4: Parallel Review & Backend QA
 6. **Draft Cross-Repo API Contract & Cross-Platform DoD Matrix**:
    - **Cross-Repo API Contract** (REST path, HTTP verbs, request/response JSON schema, nullability, HTTP status codes).
    - **Cross-Platform DoD Matrix**: Explicit verifiable criteria for happy path, failed path, error path, migrations, detekt/lint checks, and **product documentation updates** (updating affected `docs/product/` user flows or route specs).
-   - **Issue Plan**: Propose issue titles, labels, and parent/sub-issue structure.
+   - **Multi-Platform Issue Plan**: Propose top-level parent issue title and the platform sub-issue matrix:
+     - `+ Android` (Compose Multiplatform / Android target)
+     - `+ iOS` (Compose Multiplatform / iOS SwiftUI target)
+     - `+ WatchOS` (if needed)
+     - `+ BE` (if needed)
+     - `+ Desktop` (if needed)
 
 ---
 
 ## Checkpoint 1: Spec & Plan Gate (Stop #1)
 
-Present a concise **Team Execution Brief** to the user:
+> [!CRITICAL]
+> **MANDATORY PROTOCOL AT STOP #1: UPDATE GITHUB ISSUE & DELIVER PROPOSAL PLAN**:
+> 1. **Update or Create GitHub Issue Description BEFORE Calling `ask_question`**:
+>    - **For existing issues** (e.g. `#158`): Agent MUST immediately update the GitHub issue description to reflect the full, elaborated proposal plan:
+>      ```bash
+>      gh issue edit <issue-number> -R Huythanh0x/<repo> --body "<comprehensive solution architecture plan>"
+>      ```
+>    - **For raw requirements without an existing issue**: Agent MUST create the top-level issue on GitHub containing the full proposal plan and add it to the Project board (`Course Deals`):
+>      ```bash
+>      gh issue create -R Huythanh0x/<repo> --title "..." --label "type: ..." --label "priority: ..." --label "area: ..." --label "size: ..." --project "Course Deals" --body "<comprehensive solution architecture plan>"
+>      ```
+> 2. **Explicit Chat Response & Artifact Generation (No Blank Calls)**:
+>    - **NEVER** call `ask_question` with empty message content or `content: None`.
+>    - Agent MUST generate a user-facing artifact `<appDataDir>/brain/<conversation-id>/TEAM_EXECUTION_BRIEF.md` containing the complete proposal plan.
+>    - In the **same turn** as calling `ask_question`, agent MUST output the full markdown **Team Execution Brief** directly in the visible chat response so the user can review all details and click the updated GitHub issue link right alongside the confirmation buttons.
+
+### Team Execution Brief Structure:
+- **GitHub Issue Link**: Clickable link to updated/created issue (e.g. `[#158](https://github.com/Huythanh0x/course_deals_ComposeMultiplatform/issues/158)`)
 - **Scope**: Backend / Android / Full-Stack
-- **Issue Plan**: Proposed issue title(s) and labels (or existing issue `#N`)
+- **Problem & Motivation**: User value & objective
 - **Use Cases & 4-Quadrant Test Scenarios**: Summary of Happy, Failed, Error, and Related scenarios
 - **GUI Framework Test Plan**: Maestro E2E flow outline for Android and iOS
 - **API Contract** (if applicable): Endpoint(s) and JSON DTO schema
@@ -172,26 +201,28 @@ Do **not** proceed to Phase 2 until the user approves.
 
 Once approved at Checkpoint 1:
 
-1. **Create GitHub Issue(s) & Branches** (skip issue creation ONLY if the user provided existing issue number(s)):
-   - Follow `new-ticket` and `create-sub-issues` in the target repo(s):
-     - **Top-level feature issue**: MUST be added to GitHub Project [`Course Deals`](https://github.com/users/Huythanh0x/projects/4) (`--project "Course Deals"`). The issue body MUST include the **solution architecture plan** (problem & motivation, Use Cases, 4-quadrant test scenarios, GUI framework test specification, API/DTO contract, and DoD matrix).
-       ```bash
-       gh issue create -R Huythanh0x/<repo> --title "..." --label "type: ..." --label "priority: ..." --label "area: ..." --label "size: ..." --project "Course Deals" --body "..."
-       ```
-     - **Mandatory Active Sprint Stamping**: Immediately after creating the issue (or linking an existing one), stamp it to the currently active sprint on `Sprint` field (`PVTIF_lAHOBEROFc4BhjJ2zhn_l1Q`) so no board item is left as "No Sprint":
-       ```bash
-       gh api graphql -f query='
-         mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $iterationId: String!) {
-           updateProjectV2ItemFieldValue(input: {
-             projectId: $projectId,
-             itemId: $itemId,
-             fieldId: $fieldId,
-             value: { iterationId: $iterationId }
-           }) { projectV2Item { id } }
-         }
-       ' -f projectId="PVT_kwHOBEROFc4BhjJ2" -f itemId="<PROJECT_ITEM_ID>" -f fieldId="PVTIF_lAHOBEROFc4BhjJ2zhn_l1Q" -f iterationId="<ACTIVE_ITERATION_ID>"
-       ```
-     - **Sub-issues (for full-stack parent + child issues)**: Create parent (`--project "Course Deals"`) and both BE (`area: backend`) & App (`area: android`) sub-issues in `Huythanh0x/course_deals_ComposeMultiplatform` (or target repos). Each sub-issue body **MUST** specify its own concrete, domain-specific architecture and tech stack details (e.g. Spring Boot/Flyway/JPA/JobRunr for BE; Jetpack Compose/Clean Architecture/Hilt/Coroutines for App). Link via the Sub-issues REST API, and run the GraphQL board auto-cascade cleanup so sub-issues don't clutter the `"Course Deals"` board.
+1. **Verify GitHub Issue(s), Active Sprint Stamping & Branches**:
+   - Ensure the top-level feature issue description contains the locked solution architecture plan (from Stop #1). If not already edited, edit now: `gh issue edit <issue-number> --body "..."`.
+   - **Mandatory Active Sprint Stamping**: Immediately after creating the issue (or linking an existing one), stamp it to the currently active sprint on `Sprint` field (`PVTIF_lAHOBEROFc4BhjJ2zhn_l1Q`) so no board item is left as "No Sprint":
+     ```bash
+     gh api graphql -f query='
+       mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $iterationId: String!) {
+         updateProjectV2ItemFieldValue(input: {
+           projectId: $projectId,
+           itemId: $itemId,
+           fieldId: $fieldId,
+           value: { iterationId: $iterationId }
+         }) { projectV2Item { id } }
+       }
+     ' -f projectId="PVT_kwHOBEROFc4BhjJ2" -f itemId="<PROJECT_ITEM_ID>" -f fieldId="PVTIF_lAHOBEROFc4BhjJ2zhn_l1Q" -f iterationId="<ACTIVE_ITERATION_ID>"
+     ```
+   - **Multi-Platform Sub-Issues Generation**: Create parent (`--project "Course Deals"`) and generate dedicated platform sub-issues via `create-sub-issues`:
+     - `+ Android` (`area: android`): CMP, `:app`, Glance AppWidgets, Room, Android Maestro test flow.
+     - `+ iOS` (`area: android` or `area: design`): CMP `iosApp`, SwiftUI WidgetKit, App Intents, iOS Maestro flow.
+     - `+ WatchOS (if needed)` (`area: android`): SwiftUI WatchApp, Smart Stack complications.
+     - `+ BE (if needed)` (`area: backend`): Spring Boot, Flyway, JobRunr, REST API.
+     - `+ Desktop (if needed)` (`area: desktop`): CMP `:desktopApp`, JavaFX WebView, Desktop test runner.
+     Each sub-issue body **MUST** specify its own concrete, domain-specific architecture and tech stack details per `create-sub-issues`. Link via the Sub-issues REST API, and run the GraphQL board auto-cascade cleanup so sub-issues don't clutter the `"Course Deals"` board.
    - In each target repo, checkout latest `main`, pull, and create the branch `<type>/<issue-number>-<slug>`:
      ```bash
      git -C <repo-path> checkout main && git -C <repo-path> pull origin main
@@ -314,16 +345,13 @@ If `course_deals_ComposeMultiplatform` was modified:
    - Backend local server is running and verified locally via committed test script (ready for live API integration on port 8081).
 2. **Execute Automated GUI Framework Tests with Embedded Screenshot Capture (Maestro)**:
    - The declarative Maestro test flow (`.maestro/flows/<flow>.yaml`) **MUST declare step-by-step `- takeScreenshot: <step_name>` checkpoints** for every significant interaction and screen state transition along the user journey.
-   - Run the automated suite across **ALL THREE platforms** (Android + iOS + Desktop):
+   - Run the automated suite on **BOTH platforms**:
      ```bash
      # Android Emulator (emulator-5554)
      ~/.maestro/bin/maestro --device emulator-5554 test -e APP_ID=com.thanh0x.coursedeals .maestro/flows/<flow>.yaml
 
      # iOS Simulator (booted iPhone Simulator)
      ~/.maestro/bin/maestro --device booted test -e APP_ID=com.thanh0x.coursedeals.iosApp .maestro/flows/<flow>.yaml
-
-     # Compose Desktop (:desktopApp Maestro Flow Runner)
-     ./gradlew :desktopApp:runMaestroFlow -Pflow=.maestro/flows/<flow>.yaml -PscreenshotDir=/tmp/desktop-e2e
      ```
    - (Or capture step screenshots directly via `adb exec-out screencap` and `xcrun simctl io booted screenshot` if augmenting the automated runner).
 3. **Mandatory Visual Pixel Inspection (`read_file`)**:
@@ -335,17 +363,17 @@ If `course_deals_ComposeMultiplatform` was modified:
    - Upload each step screenshot to Cloudflare R2 worker (`https://r2-image-worker.huythanh0x.workers.dev/upload`), verify HTTP 200, and construct public URLs.
 5. **Feature-Rich Step-by-Step Flow Evidence in GitHub PR**:
    - The GitHub PR **MUST NOT** contain a few isolated or unstructured screenshots.
-   - It **MUST** present a **feature-rich, step-by-step user journey walkthrough** comparing Android, iOS, and Desktop side-by-side using `<img src="..." width="250" />` (or markdown image links):
+   - It **MUST** present a **feature-rich, step-by-step user journey walkthrough** comparing Android and iOS side-by-side using `<img src="..." width="300" />` (or markdown image links):
      ```markdown
      ## Screenshots
 
-     | Step | Android Evidence (`emulator-5554`) | iOS Evidence (`iPhone Simulator`) | Desktop Evidence (`:desktopApp`) |
-     | :--- | :---: | :---: | :---: |
-     | **1. Unauthenticated Login Screen**<br>• Clean email input<br>• "Continue with Email" CTA<br>• Social & Guest auth options | <img src="<android_url>" width="250" /> | <img src="<ios_url>" width="250" /> | <img src="<desktop_url>" width="250" /> |
-     | **2. OTP Verification Screen**<br>• Sent-to email recipient notification<br>• 6-digit code input & "Verify OTP"<br>• "Change Email" and "Resend Code" | <img src="<android_url>" width="250" /> | <img src="<ios_url>" width="250" /> | <img src="<desktop_url>" width="250" /> |
-     | **3. Terms & Privacy Consent Dialog**<br>• Triggered for new user onboarding<br>• "Agree & Continue" & "Decline" actions<br>• Native Compose overlay | <img src="<android_url>" width="250" /> | <img src="<ios_url>" width="250" /> | <img src="<desktop_url>" width="250" /> |
-     | **4. Authenticated Home Screen**<br>• Navigated upon consent<br>• Live deals served from backend port 8081 | <img src="<android_url>" width="250" /> | <img src="<ios_url>" width="250" /> | <img src="<desktop_url>" width="250" /> |
-     | **5. Profile & Settings**<br>• Verified email displayed<br>• Feature flags respected (Fingerprint hidden)<br>• Dark / Light mode parity | <img src="<android_url>" width="250" /> | <img src="<ios_url>" width="250" /> | <img src="<desktop_url>" width="250" /> |
+     | Step | Android Evidence (`emulator-5554`) | iOS Evidence (`iPhone Simulator`) |
+     | :--- | :---: | :---: |
+     | **1. Unauthenticated Login Screen**<br>• Clean email input<br>• "Continue with Email" CTA<br>• Social & Guest auth options | <img src="<android_url>" width="300" /> | <img src="<ios_url>" width="300" /> |
+     | **2. OTP Verification Screen**<br>• Sent-to email recipient notification<br>• 6-digit code input & "Verify OTP"<br>• "Change Email" and "Resend Code" | <img src="<android_url>" width="300" /> | <img src="<ios_url>" width="300" /> |
+     | **3. Terms & Privacy Consent Dialog**<br>• Triggered for new user onboarding<br>• "Agree & Continue" & "Decline" actions<br>• Native Compose overlay | <img src="<android_url>" width="300" /> | <img src="<ios_url>" width="300" /> |
+     | **4. Authenticated Home Screen**<br>• Navigated upon consent<br>• Live deals served from backend port 8081 | <img src="<android_url>" width="300" /> | <img src="<ios_url>" width="300" /> |
+     | **5. Profile & Settings**<br>• Verified email displayed<br>• Feature flags respected (Fingerprint hidden)<br>• Dark / Light mode parity | <img src="<android_url>" width="300" /> | <img src="<ios_url>" width="300" /> |
      ```
    - Actively audits for discrepancies (insets clipping, dialog differences, theme discrepancies). If any defect is found, logs it and routes back to `android-engineer` for resolution before shipping.
 6. **Ship Android/KMP PR**:
@@ -353,18 +381,12 @@ If `course_deals_ComposeMultiplatform` was modified:
      - Feature-rich step-by-step walkthrough table comparing Android vs. iOS
      - Maestro E2E test execution results on both platforms
      - Mirrored issue labels and `Closes #<N>` reference.
-7. **Post-Ticket Resource Reclamation (`release-resource`) — `[BLOCKING RULE]`**:
-   - Immediately after PR(s) are opened and E2E verification is complete, execute `.agents/skills/release-resource/SKILL.md`:
-     1. Capture **Before** system stats (`top -l 1 -n 0 | grep -E "^CPU|^Load|^PhysMem"`, `sysctl vm.swapusage`, `memory_pressure`, `jps -l`).
-     2. Stop all Gradle & Kotlin compile daemons across `./course_deals_backend` and `./course_deals_ComposeMultiplatform` (`./gradlew --stop`).
-     3. Terminate orphaned `gradle-wrapper.jar`, `KotlinCompileDaemon`, `:desktopApp` (`MainKt`), and ephemeral Spring Boot instances on ports `8080`/`8081`/`8082`.
-     4. Capture **After** system stats and include the **Before vs. After Resource Reclamation Summary** in the delivery report.
 
 ---
 
 ## Checkpoint 2: Ready to Merge Gate (Stop #2 / Auto-Merge on Complete)
 
-Once `qa-release-engineer` reports back with the opened PR URL(s), `release-resource` reclamation stats, and `security-arch-reviewer` passes:
+Once `qa-release-engineer` reports back with the opened PR URL(s) and `security-arch-reviewer` passes:
 
 ### A. Auto-Merge on Complete Path (When instructed or selected at Checkpoint 1)
 If the user instructed "on complete, merge for me" or `"auto_merge_on_complete": true` in `STATE.json`:
@@ -386,8 +408,8 @@ If the user instructed "on complete, merge for me" or `"auto_merge_on_complete":
    gh issue view <issue-number> -R Huythanh0x/<repo-name> --json state,stateReason
    ```
 7. Update `STATE.json` (`phases.CHECKPOINT_2_MERGE_APPROVAL.status = "MERGED"`, `phases.CHECKPOINT_2_MERGE_APPROVAL.merged_at = "<timestamp>"`).
-8. Clean up local branch (`git checkout main && git pull origin main && git branch -d <branch>`) and ensure `release-resource` has been executed.
-9. Present the final **Team Delivery & Merge Confirmation Report** (including the `release-resource` Before/After RAM & CPU table) to the user.
+8. Clean up local branch (`git checkout main && git pull origin main && git branch -d <branch>`).
+9. Present the final **Team Delivery & Merge Confirmation Report** to the user.
 
 ### B. Interactive Review Gate (If user chose manual gate at Checkpoint 1)
 1. Present the **Team Delivery Report**:
@@ -397,7 +419,7 @@ If the user instructed "on complete, merge for me" or `"auto_merge_on_complete":
      - `backend-engineer`: commit + ktlint/detekt/JUnit summary
      - `android-engineer`: commit + detekt/lint/JUnit summary
      - `security-arch-reviewer`: contract, security & 4-quadrant audit verdict
-     - `qa-release-engineer`: Maestro E2E runs, Backend test script output, embedded side-by-side R2 screenshots & **`release-resource` Before/After RAM & CPU Reclamation Summary**
+     - `qa-release-engineer`: Maestro E2E runs, Backend test script output & embedded side-by-side R2 screenshots
 2. Call `ask_question` with:
    - **Merge PR(s) now (run `merge-pr` once CI is green)**
    - **Leave PR(s) open — I will review/merge manually**
