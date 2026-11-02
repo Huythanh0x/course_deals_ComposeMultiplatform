@@ -104,7 +104,32 @@ build_apk() {
   if [[ -f "${source_apk}" ]]; then
     local target_apk="${OUTPUT_DIR}/CourseDeals-${CLEAN_VERSION}-${FLAVOR}.apk"
     cp -v "${source_apk}" "${target_apk}"
-    echo "✔ Android APK created: ${target_apk}"
+    echo "✔ Android APK copied to: ${target_apk}"
+
+    # Verify and ensure valid signature with apksigner
+    local apksigner_bin=""
+    if command -v apksigner >/dev/null 2>&1; then
+      apksigner_bin="apksigner"
+    else
+      local sdk_path="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/Volumes/MacExt/thanh0x/Library/Android/sdk}}"
+      apksigner_bin=$(find "${sdk_path}/build-tools" -name apksigner 2>/dev/null | sort -V | tail -n 1 || true)
+    fi
+
+    if [[ -n "${apksigner_bin}" && -x "${apksigner_bin}" ]]; then
+      echo "Checking APK signature with apksigner..."
+      if ! "${apksigner_bin}" verify "${target_apk}" >/dev/null 2>&1; then
+        echo "⚠️ APK has no valid signature. Signing with debug keystore..."
+        local debug_keystore="${HOME}/.android/debug.keystore"
+        if [[ -f "${debug_keystore}" ]]; then
+          "${apksigner_bin}" sign --ks "${debug_keystore}" --ks-pass pass:android --key-pass pass:android "${target_apk}"
+          echo "✔ APK signed successfully."
+        else
+          echo "⚠️ debug.keystore not found at ${debug_keystore}."
+        fi
+      else
+        echo "✔ APK signature verified (valid signature schemes present)."
+      fi
+    fi
   else
     echo "❌ Error: APK not found at expected path: ${source_apk}" >&2
     return 1
