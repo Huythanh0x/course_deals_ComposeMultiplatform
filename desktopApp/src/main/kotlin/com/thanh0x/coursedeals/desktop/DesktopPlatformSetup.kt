@@ -92,7 +92,7 @@ fun installDesktopPlatformActions() {
     }
 }
 
-fun installDesktopRenderers() {
+fun installDesktopRenderers(enableNativeWebEngine: Boolean = true) {
     customNetworkImageRenderer = { url, contentDescription, modifier, contentScale, error ->
         DesktopNetworkImage(
             url = url,
@@ -110,6 +110,7 @@ fun installDesktopRenderers() {
             onPageStarted = onPageStarted,
             onPageFinished = onPageFinished,
             onPageError = onPageError,
+            enableNativeWebEngine = enableNativeWebEngine,
         )
     }
 }

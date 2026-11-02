@@ -94,6 +94,8 @@ General Flow/coroutines discipline to follow:
 - Desktop app launch (fast local UI & API testing without Android Emulator):
   - Interactive window: `./gradlew :desktopApp:run`
   - Deep-link & automated screenshot capture: `./gradlew :desktopApp:run -Dcoursedeals.args="--screen=home --capture-screenshot=/tmp/desktop_home.png"`
+  - Maestro-compatible Desktop E2E YAML flow runner & step-by-step screenshot export:
+    `./gradlew :desktopApp:runMaestroFlow -Pflow=.maestro/flows/07-auth-e2e-evidence.yaml -PscreenshotDir=/tmp/desktop-e2e`
 - iOS Simulator framework link gate (mirrors macOS CI job):
   `./gradlew :shared:linkDebugFrameworkIosSimulatorArm64`
 - Android debug APK assemble: `./gradlew :app:assembleLocalDebug`
