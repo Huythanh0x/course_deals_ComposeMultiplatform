@@ -194,18 +194,25 @@ build_ipa() {
 build_dmg() {
   echo ""
   echo "==> [3/5] Building macOS Native App & DMG..."
-  ./gradlew :desktopApp:packageDmg
+  ./gradlew :desktopApp:packageReleaseDmg || ./gradlew :desktopApp:packageDmg
 
   local dmg_file
-  dmg_file=$(find "${REPO_ROOT}/desktopApp/build/compose/binaries" -name "*.dmg" | head -n 1)
+  dmg_file=$(find "${REPO_ROOT}/desktopApp/build/compose/binaries" -name "*.dmg" | grep "main-release" | head -n 1 || true)
+  if [[ -z "${dmg_file}" ]]; then
+    dmg_file=$(find "${REPO_ROOT}/desktopApp/build/compose/binaries" -name "*.dmg" | head -n 1 || true)
+  fi
   if [[ -n "${dmg_file}" && -f "${dmg_file}" ]]; then
     local target_dmg="${OUTPUT_DIR}/CourseDeals-${CLEAN_VERSION}-macos.dmg"
     cp -v "${dmg_file}" "${target_dmg}"
     echo "✔ macOS DMG installer created: ${target_dmg}"
   fi
 
-  local app_dir="${REPO_ROOT}/desktopApp/build/compose/binaries/main/app/CourseDeals.app"
-  if [[ -d "${app_dir}" ]]; then
+  local app_dir
+  app_dir=$(find "${REPO_ROOT}/desktopApp/build/compose/binaries" -type d -name "CourseDeals.app" | grep "main-release" | head -n 1 || true)
+  if [[ -z "${app_dir}" ]]; then
+    app_dir=$(find "${REPO_ROOT}/desktopApp/build/compose/binaries" -type d -name "CourseDeals.app" | head -n 1 || true)
+  fi
+  if [[ -n "${app_dir}" && -d "${app_dir}" ]]; then
     local target_zip="${OUTPUT_DIR}/CourseDeals-${CLEAN_VERSION}-macos-app.zip"
     echo "Creating compressed macOS .app bundle: ${target_zip}..."
     (cd "$(dirname "${app_dir}")" && zip -r -q "${target_zip}" "$(basename "${app_dir}")")

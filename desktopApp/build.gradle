@@ -85,6 +85,24 @@ compose.desktop {
             macOS {
                 bundleID = "com.thanh0x.coursedeals"
             }
+            modules(
+                "java.base",
+                "java.desktop",
+                "java.instrument",
+                "java.logging",
+                "java.management",
+                "java.naming",
+                "java.net.http",
+                "java.security.jgss",
+                "java.security.sasl",
+                "java.sql",
+                "jdk.unsupported"
+            )
+        }
+        buildTypes.release.proguard {
+            isEnabled().set(true)
+            obfuscate.set(false)
+            configurationFiles.from(project.file("compose-desktop.pro"))
         }
     }
 }
