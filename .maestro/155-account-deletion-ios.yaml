@@ -36,6 +36,7 @@ appId: com.thanh0x.coursedeals.iosApp
     visible: "delete-e2e-ios@coursedeals.com"
     timeout: 10000
 - assertVisible: "delete-e2e-ios@coursedeals.com"
+- takeScreenshot: .maestro/screenshots/155-ios-authenticated-profile
 
 # 3. Scroll to Delete Account and trigger deletion
 - scrollUntilVisible:
@@ -128,5 +129,6 @@ appId: com.thanh0x.coursedeals.iosApp
     timeout: 15000
 - assertVisible: "Terms of Service & Privacy Policy"
 - assertVisible: "Agree & Continue"
+- takeScreenshot: .maestro/screenshots/155-ios-terms-reprompt-after-decline
 - tapOn: "Decline"
 
