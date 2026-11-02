@@ -51,7 +51,7 @@ When the user gives a general or raw requirement (e.g. "Add Course Reports", "Of
 | **3. Android / KMP Engineer** | `android-engineer` | Implements Clean Architecture in `course_deals_ComposeMultiplatform` across shared KMP/Android/iOS modules, exposes UI testability (semantic tags/labels for Maestro), handles multi-state UI (empty/success/error), runs `:app:detekt`, lint, and unit tests, commits locally. | [references/android-engineer.md](references/android-engineer.md) |
 | **4. Desktop CMP Engineer** | `desktop-engineer` | Implements Compose Multiplatform Desktop (`:desktopApp` & `jvmMain`) features: Window State & native menus/shortcuts, Swing/JavaFX interop (`SwingPanel`/`JFXPanel`), Skia `GraphicsLayer` screenshot sync, and **Compose Desktop UI Framework Tests (`runComposeUiTest` / `createComposeRule`)**; runs `:desktopApp:detekt` & `:desktopApp:test`, commits locally. | [references/desktop-engineer.md](references/desktop-engineer.md) |
 | **5. Security & Arch Reviewer** | `security-arch-reviewer` | Read-only auditor (runs in parallel with QA): verifies Backend↔Client DTO JSON contract parity, Android Intent & Desktop URI/clipboard security (`intent-security-review`), KMP readiness (`kmp-readiness`), ADR criteria (`adr`), and verifies 4-quadrant test coverage. | [references/security-arch-reviewer.md](references/security-arch-reviewer.md) |
-| **6. QA & Release Engineer** | `qa-release-engineer` | Runs live E2E verification: Backend `curl -i` / test script locally ➔ **Cross-platform Kotlin Multiplatform (Android + iOS `maestro` & Desktop `:desktopApp:run`)** ➔ visual pixel inspection (`read_file`) ➔ Cloudflare R2 uploads ➔ **Explicit Side-by-Side Comparison Matrix** ➔ opens labeled PRs (`ship-pr`). | [references/qa-release-engineer.md](references/qa-release-engineer.md) |
+| **6. QA & Release Engineer** | `qa-release-engineer` | Runs live E2E verification: Backend `curl -i` / test script locally ➔ **Cross-platform Kotlin Multiplatform (Android + iOS `maestro` & Desktop `:desktopApp:run`)** ➔ visual pixel inspection (`read_file`) ➔ Cloudflare R2 uploads ➔ **Explicit Side-by-Side Comparison Matrix** ➔ opens labeled PRs (`ship-pr`) ➔ reclaims host RAM/CPU (`release-resource`). | [references/qa-release-engineer.md](references/qa-release-engineer.md) |
 
 ---
 
@@ -75,13 +75,14 @@ Phase 4: Parallel Review & Backend QA
   • security-arch-reviewer: Audits DTO contract, intent security, KMP readiness, 4-quadrant coverage
   • qa-release-engineer (Backend): docker compose up -> bootRun -> curl -i / test script -> ship backend PR
                     │   │
-                    └───┼───> Phase 5: Gated Cross-Platform Mobile Live E2E & Release
+                    └───┼───> Phase 5: Gated Cross-Platform Mobile Live E2E, Release & Resource Cleanup
                               (Triggered once BE is verified locally & Mobile is ready)
                               • Run GUI framework tests (Maestro) on BOTH Android & iOS
                               • Android (emulator-5554) + iOS (iPhone Simulator)
                               • Visual pixel inspection (read_file) & R2 upload
                               • Side-by-side comparison matrix (Android vs. iOS)
                               • Ship Mobile PR with comparative evidence
+                              • Execute release-resource (stop Gradle/Kotlin daemons & test JVMs, log RAM/CPU stats)
                                         │
                               [Checkpoint 2: Merge Gate]
 ```
@@ -352,12 +353,18 @@ If `course_deals_ComposeMultiplatform` was modified:
      - Feature-rich step-by-step walkthrough table comparing Android vs. iOS
      - Maestro E2E test execution results on both platforms
      - Mirrored issue labels and `Closes #<N>` reference.
+7. **Post-Ticket Resource Reclamation (`release-resource`) — `[BLOCKING RULE]`**:
+   - Immediately after PR(s) are opened and E2E verification is complete, execute `.agents/skills/release-resource/SKILL.md`:
+     1. Capture **Before** system stats (`top -l 1 -n 0 | grep -E "^CPU|^Load|^PhysMem"`, `sysctl vm.swapusage`, `memory_pressure`, `jps -l`).
+     2. Stop all Gradle & Kotlin compile daemons across `./course_deals_backend` and `./course_deals_ComposeMultiplatform` (`./gradlew --stop`).
+     3. Terminate orphaned `gradle-wrapper.jar`, `KotlinCompileDaemon`, `:desktopApp` (`MainKt`), and ephemeral Spring Boot instances on ports `8080`/`8081`/`8082`.
+     4. Capture **After** system stats and include the **Before vs. After Resource Reclamation Summary** in the delivery report.
 
 ---
 
 ## Checkpoint 2: Ready to Merge Gate (Stop #2 / Auto-Merge on Complete)
 
-Once `qa-release-engineer` reports back with the opened PR URL(s) and `security-arch-reviewer` passes:
+Once `qa-release-engineer` reports back with the opened PR URL(s), `release-resource` reclamation stats, and `security-arch-reviewer` passes:
 
 ### A. Auto-Merge on Complete Path (When instructed or selected at Checkpoint 1)
 If the user instructed "on complete, merge for me" or `"auto_merge_on_complete": true` in `STATE.json`:
@@ -379,8 +386,8 @@ If the user instructed "on complete, merge for me" or `"auto_merge_on_complete":
    gh issue view <issue-number> -R Huythanh0x/<repo-name> --json state,stateReason
    ```
 7. Update `STATE.json` (`phases.CHECKPOINT_2_MERGE_APPROVAL.status = "MERGED"`, `phases.CHECKPOINT_2_MERGE_APPROVAL.merged_at = "<timestamp>"`).
-8. Clean up local branch (`git checkout main && git pull origin main && git branch -d <branch>`).
-9. Present the final **Team Delivery & Merge Confirmation Report** to the user.
+8. Clean up local branch (`git checkout main && git pull origin main && git branch -d <branch>`) and ensure `release-resource` has been executed.
+9. Present the final **Team Delivery & Merge Confirmation Report** (including the `release-resource` Before/After RAM & CPU table) to the user.
 
 ### B. Interactive Review Gate (If user chose manual gate at Checkpoint 1)
 1. Present the **Team Delivery Report**:
@@ -390,7 +397,7 @@ If the user instructed "on complete, merge for me" or `"auto_merge_on_complete":
      - `backend-engineer`: commit + ktlint/detekt/JUnit summary
      - `android-engineer`: commit + detekt/lint/JUnit summary
      - `security-arch-reviewer`: contract, security & 4-quadrant audit verdict
-     - `qa-release-engineer`: Maestro E2E runs, Backend test script output & embedded side-by-side R2 screenshots
+     - `qa-release-engineer`: Maestro E2E runs, Backend test script output, embedded side-by-side R2 screenshots & **`release-resource` Before/After RAM & CPU Reclamation Summary**
 2. Call `ask_question` with:
    - **Merge PR(s) now (run `merge-pr` once CI is green)**
    - **Leave PR(s) open — I will review/merge manually**
