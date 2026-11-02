@@ -50,5 +50,6 @@ class GetUserProfileUseCaseTest {
         override suspend fun updateUserProfile(fullName: String?, avatarUrl: String?, fcmToken: String?): AppResult<UserProfile> = AppResult.Error("Not implemented")
         override suspend fun getCachedUserProfile(): UserProfile = UserProfile()
         override suspend fun clearCachedUserProfile() {}
+        override suspend fun deleteAccount(): AppResult<Unit> = AppResult.Success(Unit)
     }
 }
