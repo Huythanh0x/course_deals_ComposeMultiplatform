@@ -9,6 +9,7 @@ kotlin {
         commonMain {
             dependencies {
                 api project(':core:common')
+                implementation project(':core:logging')
                 api project(':core:ui')
                 api project(':domain:coupons')
                 api project(':domain:user')

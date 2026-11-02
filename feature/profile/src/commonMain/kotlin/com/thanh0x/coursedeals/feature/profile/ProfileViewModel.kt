@@ -2,6 +2,8 @@ package com.thanh0x.coursedeals.feature.profile
 
 import com.thanh0x.coursedeals.domain.user.CiphertextWrapper
 import com.thanh0x.coursedeals.core.common.AppResult
+import com.thanh0x.coursedeals.core.logging.LogFileManager
+import com.thanh0x.coursedeals.core.logging.LogLevel
 import com.thanh0x.coursedeals.core.ui.DialogType
 import com.thanh0x.coursedeals.core.ui.ViewModel
 import com.thanh0x.coursedeals.domain.user.TokenData
@@ -290,6 +292,31 @@ class ProfileViewModel(
                 }
                 is AppResult.Loading -> { }
             }
+        }
+    }
+
+    fun openDiagnosticLogs() {
+        val currentFilter = _uiState.value.logFilterLevel
+        val logs = LogFileManager.getFormattedLogs(maxLines = 500, levelFilter = currentFilter)
+        _uiState.update {
+            it.copy(
+                isDiagnosticLogsOpen = true,
+                diagnosticLogs = logs,
+            )
+        }
+    }
+
+    fun dismissDiagnosticLogs() {
+        _uiState.update { it.copy(isDiagnosticLogsOpen = false) }
+    }
+
+    fun filterLogs(level: LogLevel?) {
+        val logs = LogFileManager.getFormattedLogs(maxLines = 500, levelFilter = level)
+        _uiState.update {
+            it.copy(
+                logFilterLevel = level,
+                diagnosticLogs = logs,
+            )
         }
     }
 }

@@ -60,6 +60,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
@@ -88,6 +89,7 @@ fun ProfileScreen(
     onDevEmailClick: () -> Unit = {},
     onDevWebsiteClick: () -> Unit = {},
     onSignInClick: () -> Unit = {},
+    onDiagnosticLogsClick: () -> Unit = {},
 ) {
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -131,6 +133,7 @@ fun ProfileScreen(
                         onDeleteAccountClick = onDeleteAccountClick,
                         onDevEmailClick = onDevEmailClick,
                         onDevWebsiteClick = onDevWebsiteClick,
+                        onDiagnosticLogsClick = onDiagnosticLogsClick,
                     )
                 } else {
                     ProfileContentPortrait(
@@ -147,6 +150,7 @@ fun ProfileScreen(
                         onDeleteAccountClick = onDeleteAccountClick,
                         onDevEmailClick = onDevEmailClick,
                         onDevWebsiteClick = onDevWebsiteClick,
+                        onDiagnosticLogsClick = onDiagnosticLogsClick,
                     )
                 }
             }
@@ -198,6 +202,7 @@ private fun ProfileContentPortrait(
     onDeleteAccountClick: () -> Unit,
     onDevEmailClick: () -> Unit,
     onDevWebsiteClick: () -> Unit,
+    onDiagnosticLogsClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -234,6 +239,7 @@ private fun ProfileContentPortrait(
             onDarkModeToggled = onDarkModeToggled,
             onFingerprintToggled = onFingerprintToggled,
             onNotificationsToggled = onNotificationsToggled,
+            onDiagnosticLogsClick = onDiagnosticLogsClick,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -273,6 +279,7 @@ private fun ProfileContentLandscape(
     onDeleteAccountClick: () -> Unit,
     onDevEmailClick: () -> Unit,
     onDevWebsiteClick: () -> Unit,
+    onDiagnosticLogsClick: () -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -336,6 +343,7 @@ private fun ProfileContentLandscape(
                 onDarkModeToggled = onDarkModeToggled,
                 onFingerprintToggled = onFingerprintToggled,
                 onNotificationsToggled = onNotificationsToggled,
+                onDiagnosticLogsClick = onDiagnosticLogsClick,
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -597,6 +605,7 @@ private fun SettingsSection(
     onDarkModeToggled: (Boolean) -> Unit,
     onFingerprintToggled: (Boolean) -> Unit,
     onNotificationsToggled: (Boolean) -> Unit,
+    onDiagnosticLogsClick: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -649,6 +658,36 @@ private fun SettingsSection(
                 onCheckedChange = {}
             )
         }
+
+        // Diagnostic Logs Action Row
+        SettingActionRow(
+            title = "Diagnostic Logs",
+            onClick = onDiagnosticLogsClick,
+            modifier = Modifier.testTag("diagnostic_logs_row")
+        )
+    }
+}
+
+@Composable
+private fun SettingActionRow(
+    title: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(58.dp)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.onSurface
+        )
     }
 }
 

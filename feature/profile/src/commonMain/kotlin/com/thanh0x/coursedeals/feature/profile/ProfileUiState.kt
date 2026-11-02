@@ -1,5 +1,7 @@
 package com.thanh0x.coursedeals.feature.profile
 
+import com.thanh0x.coursedeals.core.logging.LogLevel
+
 data class ProfileUiState(
     val displayName: String = "",
     val email: String = "",
@@ -16,4 +18,7 @@ data class ProfileUiState(
     val isDeleteAccountDialogOpen: Boolean = false,
     val isDeletingAccount: Boolean = false,
     val errorMessage: String? = null,
+    val isDiagnosticLogsOpen: Boolean = false,
+    val diagnosticLogs: String = "",
+    val logFilterLevel: LogLevel? = null,
 )
