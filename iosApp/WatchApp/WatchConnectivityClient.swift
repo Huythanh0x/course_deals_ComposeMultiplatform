@@ -10,7 +10,7 @@ public class WatchConnectivityClient: NSObject, WCSessionDelegate, ObservableObj
     @Published public var syncSource: String = "Connecting..."
     @Published public var isLoading: Bool = false
 
-    private let directApiEndpoint = URL(string: "http://127.0.0.1:8081/api/v1/coupons?page=0&size=5")!
+    private let directApiEndpoint = URL(string: "http://127.0.0.1:8081/api/v1/coupons?page=0&size=20")!
 
     public override init() {
         super.init()
@@ -19,7 +19,7 @@ public class WatchConnectivityClient: NSObject, WCSessionDelegate, ObservableObj
             session.delegate = self
             session.activate()
         }
-        self.deals = WatchDealModel.sampleDeals
+        self.deals = []
         requestDealsFromPhone()
     }
 

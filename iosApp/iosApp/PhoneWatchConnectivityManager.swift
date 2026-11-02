@@ -7,7 +7,7 @@ public class PhoneWatchConnectivityManager: NSObject, WCSessionDelegate, Observa
     @Published public var isWatchPaired: Bool = false
     @Published public var isWatchAppInstalled: Bool = false
 
-    private let apiEndpoint = URL(string: "http://127.0.0.1:8081/api/v1/coupons?page=0&size=5")!
+    private let apiEndpoint = URL(string: "http://127.0.0.1:8081/api/v1/coupons?page=0&size=20")!
 
     public override init() {
         super.init()
@@ -34,24 +34,35 @@ public class PhoneWatchConnectivityManager: NSObject, WCSessionDelegate, Observa
             do {
                 if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
                    let courses = json["courses"] as? [[String: Any]] {
-                    let mappedDeals: [[String: Any]] = courses.map { course in
+                    let mappedDeals: [[String: Any]] = courses.prefix(5).map { course in
                         let idVal = "\(course["courseId"] ?? 0)"
-                        let title = course["title"] as? String ?? "Deal"
-                        let expiredTime = (course["expiredTime"] as? Double) ?? Date().addingTimeInterval(7200).timeIntervalSince1970
-                        let code = course["couponCode"] as? String ?? "LIVEAPI"
-                        let targetUrl = course["targetUrl"] as? String ?? "https://coursedeals.com"
-                        let rating = course["rating"] as? Double ?? 4.9
-                        let usesLeft = course["usesLeft"] as? Int ?? 15
+                        let title = course["title"] as? String ?? "Course Deal"
+                        let author = course["author"] as? String ?? "Instructor"
+                        let expiredTimeNum = (course["expiredTime"] as? NSNumber)?.doubleValue ?? Date().addingTimeInterval(7200).timeIntervalSince1970
+                        let code = course["couponCode"] as? String ?? "FREE100"
+                        let previewImage = course["previewImage"] as? String ?? ""
+                        let rating = (course["rating"] as? NSNumber)?.doubleValue ?? 4.8
+                        let reviews = (course["reviews"] as? NSNumber)?.intValue ?? 10
+
+                        let platform: String
+                        if previewImage.contains("udemy") {
+                            platform = "Udemy"
+                        } else if previewImage.contains("coursera") {
+                            platform = "Coursera"
+                        } else {
+                            platform = "edX"
+                        }
 
                         return [
                             "id": idVal,
                             "title": title,
-                            "platform": title.contains("Swift") ? "Udemy" : (title.contains("PyTorch") ? "Coursera" : "edX"),
-                            "expiresAtEpochSeconds": expiredTime,
+                            "author": author,
+                            "platform": platform,
+                            "expiresAtEpochSeconds": expiredTimeNum,
                             "couponCode": code,
-                            "targetUrl": targetUrl,
+                            "targetUrl": "https://coursedeals.com/deal/\(idVal)",
                             "rating": rating,
-                            "usesLeft": usesLeft
+                            "usesLeft": max(5, reviews / 10)
                         ]
                     }
                     completion(mappedDeals)
@@ -73,17 +84,15 @@ public class PhoneWatchConnectivityManager: NSObject, WCSessionDelegate, Observa
         let payload: [String: Any] = [
             "deals": deals,
             "timestamp": Date().timeIntervalSince1970,
-            "source": "iPhone 17 -> API :8081"
+            "source": "Spring Boot :8081 via iPhone"
         ]
 
-        // 1. Guaranteed background delivery via application context
         do {
             try session.updateApplicationContext(payload)
         } catch {
             print("[PhoneWatchConnectivity] Failed to update application context: \(error)")
         }
 
-        // 2. Real-time immediate message if watch is reachable
         if session.isReachable {
             session.sendMessage(payload, replyHandler: nil) { error in
                 print("[PhoneWatchConnectivity] Send message failed: \(error)")
@@ -129,7 +138,7 @@ public class PhoneWatchConnectivityManager: NSObject, WCSessionDelegate, Observa
                     replyHandler([
                         "status": "success",
                         "deals": liveDeals,
-                        "source": "API :8081 via iPhone 17"
+                        "source": "Spring Boot DB via iPhone"
                     ])
                 } else {
                     replyHandler([
