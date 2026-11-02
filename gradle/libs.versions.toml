@@ -33,6 +33,7 @@ buildconfig = "5.5.1"
 openapiGenerator = "7.12.0"
 kotlinxDatetime = "0.6.2"
 javafx = "21.0.5"
+firebase-bom = "33.9.0"
 
 [libraries]
 compose-material-icons-core = { group = "org.jetbrains.compose.material", name = "material-icons-core", version = "1.7.3" }
@@ -88,6 +89,8 @@ androidx-credentials = { group = "androidx.credentials", name = "credentials", v
 androidx-credentials-play-services-auth = { group = "androidx.credentials", name = "credentials-play-services-auth", version.ref = "credentials" }
 googleid = { group = "com.google.android.libraries.identity.googleid", name = "googleid", version.ref = "googleid" }
 androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "workmanager" }
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
+firebase-messaging-ktx = { group = "com.google.firebase", name = "firebase-messaging-ktx" }
 
 # Compose
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }

@@ -240,4 +240,9 @@ dependencies {
 
     // WorkManager
     implementation libs.androidx.work.runtime.ktx
+
+    // Firebase
+    def firebaseBom = platform(libs.firebase.bom)
+    implementation firebaseBom
+    implementation libs.firebase.messaging.ktx
 }
