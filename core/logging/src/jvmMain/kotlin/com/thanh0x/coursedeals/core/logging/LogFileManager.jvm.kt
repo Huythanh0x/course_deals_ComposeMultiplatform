@@ -1,9 +1,10 @@
+@file:Suppress("MatchingDeclarationName")
+
 package com.thanh0x.coursedeals.core.logging
 
 import java.io.File
 import java.io.FileWriter
 import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.Locale
 
 actual object LogFileManager {
@@ -40,6 +41,7 @@ actual object LogFileManager {
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     actual fun appendLog(entry: LogEntry) {
         synchronized(lock) {
             if (memoryBuffer.size >= MAX_BUFFER_SIZE) {

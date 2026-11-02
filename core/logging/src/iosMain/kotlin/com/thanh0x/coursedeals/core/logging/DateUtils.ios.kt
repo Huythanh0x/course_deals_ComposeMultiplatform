@@ -5,10 +5,12 @@ import platform.Foundation.NSDateFormatter
 import platform.Foundation.dateWithTimeIntervalSince1970
 import platform.Foundation.timeIntervalSince1970
 
-actual fun currentTimeMillis(): Long = (NSDate().timeIntervalSince1970 * 1000.0).toLong()
+private const val MILLIS_PER_SECOND = 1000.0
+
+actual fun currentTimeMillis(): Long = (NSDate().timeIntervalSince1970 * MILLIS_PER_SECOND).toLong()
 
 actual fun formatLogDate(epochMillis: Long): String {
-    val date = NSDate.dateWithTimeIntervalSince1970(epochMillis / 1000.0)
+    val date = NSDate.dateWithTimeIntervalSince1970(epochMillis / MILLIS_PER_SECOND)
     val formatter = NSDateFormatter().apply {
         dateFormat = "yyyy-MM-dd"
     }
@@ -16,7 +18,7 @@ actual fun formatLogDate(epochMillis: Long): String {
 }
 
 actual fun formatLogTimestamp(epochMillis: Long): String {
-    val date = NSDate.dateWithTimeIntervalSince1970(epochMillis / 1000.0)
+    val date = NSDate.dateWithTimeIntervalSince1970(epochMillis / MILLIS_PER_SECOND)
     val formatter = NSDateFormatter().apply {
         dateFormat = "yyyy-MM-dd HH:mm:ss.SSS"
     }

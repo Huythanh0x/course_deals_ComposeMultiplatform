@@ -1,7 +1,8 @@
+@file:Suppress("MatchingDeclarationName")
+
 package com.thanh0x.coursedeals.core.logging
 
 import kotlinx.cinterop.ExperimentalForeignApi
-import platform.Foundation.NSDate
 import platform.Foundation.NSDateFormatter
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
@@ -14,6 +15,8 @@ import platform.Foundation.timeIntervalSince1970
 import platform.posix.fclose
 import platform.posix.fopen
 import platform.posix.fputs
+
+private const val MILLIS_PER_SEC = 1000.0
 
 @OptIn(ExperimentalForeignApi::class)
 actual object LogFileManager {
@@ -87,6 +90,7 @@ actual object LogFileManager {
             .sortedDescending()
     }
 
+    @Suppress("NestedBlockDepth")
     actual fun getRecentLogs(maxLines: Int, levelFilter: LogLevel?): List<String> {
         if (memoryBuffer.isNotEmpty()) {
             val filtered = memoryBuffer
@@ -142,7 +146,7 @@ actual object LogFileManager {
             val dateStr = match.groupValues[1]
             val date = formatter.dateFromString(dateStr)
             if (date != null) {
-                val epochMillis = (date.timeIntervalSince1970 * 1000.0).toLong()
+                val epochMillis = (date.timeIntervalSince1970 * MILLIS_PER_SEC).toLong()
                 if (epochMillis < cutoffMillis) {
                     fileManager.removeItemAtPath("$dir/$fileName", error = null)
                 }
@@ -150,7 +154,9 @@ actual object LogFileManager {
         }
     }
 
-    actual fun flush() {}
+    actual fun flush() {
+        // POSIX file operations flush directly, no extra buffer flush required
+    }
 
     actual fun clearLogs() {
         memoryBuffer.clear()

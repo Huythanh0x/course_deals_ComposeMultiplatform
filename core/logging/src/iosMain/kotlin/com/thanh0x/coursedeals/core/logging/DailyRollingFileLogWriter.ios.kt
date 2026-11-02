@@ -1,3 +1,5 @@
+@file:Suppress("MatchingDeclarationName")
+
 package com.thanh0x.coursedeals.core.logging
 
 class DailyRollingFileLogWriter : LogWriter {
