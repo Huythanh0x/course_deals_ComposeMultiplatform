@@ -5,5 +5,11 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
 val detailModule = module {
-    factoryOf(::CouponDetailViewModel)
+    factory {
+        CouponDetailViewModel(
+            fetchCouponDetailUseCase = get(),
+            reportCourseUseCase = get(),
+            networkUtil = get(),
+        )
+    }
 }

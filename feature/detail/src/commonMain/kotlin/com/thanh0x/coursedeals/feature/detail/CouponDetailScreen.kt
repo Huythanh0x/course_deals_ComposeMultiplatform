@@ -10,7 +10,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,7 +30,7 @@ fun CouponDetailRoute(
     onBackClick: () -> Unit,
     onEnrollClick: (String?) -> Unit,
     onShareClick: (title: String, url: String) -> Unit,
-    onReportSubmitted: (reason: String, otherDetails: String?) -> Unit,
+    onReportSubmitted: (reason: String, otherDetails: String?) -> Unit = { _, _ -> },
     modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -37,7 +40,12 @@ fun CouponDetailRoute(
         onEnrollClick = onEnrollClick,
         onShareClick = onShareClick,
         onRefreshCache = { uiState.coupon?.courseId?.let { viewModel.fetchCouponDetail(it, true) } },
-        onReportSubmitted = onReportSubmitted,
+        onReportSubmitted = { reason, otherDetails ->
+            uiState.coupon?.courseId?.let { courseId ->
+                viewModel.reportCourse(courseId, reason, otherDetails)
+            }
+            onReportSubmitted(reason, otherDetails)
+        },
         modifier = modifier,
     )
 }
@@ -55,10 +63,25 @@ fun CouponDetailScreen(
 ) {
     var showReportSheet by remember { mutableStateOf(false) }
     var isBookmarked by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(uiState.reportSuccess) {
+        if (uiState.reportSuccess) {
+            snackbarHostState.showSnackbar("Report submitted successfully")
+        }
+    }
+
+    LaunchedEffect(uiState.reportError) {
+        val error = uiState.reportError
+        if (!error.isNullOrBlank()) {
+            snackbarHostState.showSnackbar(error)
+        }
+    }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
             if (uiState.coupon != null) {
                 EnrollFloatingBottomBar(

@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.thanh0x.coursedeals.core.ui.resources.Res
@@ -48,7 +49,9 @@ fun EnrollFloatingBottomBar(
             OutlinedButton(
                 onClick = onReportClick,
                 shape = RoundedCornerShape(24.dp),
-                modifier = Modifier.height(48.dp),
+                modifier = Modifier
+                    .testTag("report_button")
+                    .height(48.dp),
                 colors = ButtonDefaults.outlinedButtonColors(
                     contentColor = MaterialTheme.colorScheme.error,
                 ),
@@ -70,6 +73,7 @@ fun EnrollFloatingBottomBar(
                 onClick = onEnrollClick,
                 shape = RoundedCornerShape(24.dp),
                 modifier = Modifier
+                    .testTag("enroll_button")
                     .weight(1f)
                     .height(48.dp),
             ) {

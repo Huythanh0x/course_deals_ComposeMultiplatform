@@ -33,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -174,6 +175,7 @@ private fun ReportOtherInput(
         singleLine = true,
         shape = RoundedCornerShape(12.dp),
         modifier = modifier
+            .testTag("report_other_input")
             .fillMaxWidth()
             .padding(top = 8.dp),
     )
@@ -193,7 +195,9 @@ private fun ReportActionButtons(
     ) {
         TextButton(
             onClick = onCancel,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .testTag("report_cancel_button")
+                .weight(1f),
         ) {
             Text(stringResource(Res.string.btn_cancel))
         }
@@ -205,7 +209,9 @@ private fun ReportActionButtons(
                 containerColor = MaterialTheme.colorScheme.errorContainer,
                 contentColor = MaterialTheme.colorScheme.onErrorContainer,
             ),
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .testTag("report_submit_button")
+                .weight(1f),
         ) {
             Text(stringResource(Res.string.btn_submit), fontWeight = FontWeight.Bold)
         }

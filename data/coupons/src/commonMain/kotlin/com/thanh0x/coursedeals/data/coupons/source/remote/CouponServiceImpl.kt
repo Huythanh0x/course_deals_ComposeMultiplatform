@@ -4,6 +4,7 @@ import com.thanh0x.coursedeals.core.network.NetworkResponse
 import com.thanh0x.coursedeals.data.coupons.model.CouponDto
 import com.thanh0x.coursedeals.data.coupons.model.CouponRequestDto
 import com.thanh0x.coursedeals.data.coupons.model.CourseDealResponse
+import com.thanh0x.coursedeals.data.coupons.model.CourseReportRequest
 import com.thanh0x.coursedeals.data.coupons.model.ResponseStatusFromServer
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -27,7 +28,12 @@ class CouponServiceImpl(
         return try {
             val response = block()
             if (response.status.isSuccess()) {
-                val parsedBody: T = response.body()
+                val parsedBody: T = if (Unit is T) {
+                    @Suppress("UNCHECKED_CAST")
+                    Unit as T
+                } else {
+                    response.body()
+                }
                 NetworkResponse.success(
                     body = parsedBody,
                     code = response.status.value,
@@ -105,6 +111,18 @@ class CouponServiceImpl(
             httpClient.delete("/api/v1/coupons") {
                 contentType(ContentType.Application.Json)
                 setBody(CouponRequestDto(couponUrl = couponUrl))
+            }
+        }
+    }
+
+    override suspend fun reportCourse(
+        courseId: Int,
+        request: CourseReportRequest,
+    ): NetworkResponse<Unit> {
+        return safeRequest {
+            httpClient.post("api/courses/$courseId/reports") {
+                contentType(ContentType.Application.Json)
+                setBody(request)
             }
         }
     }
