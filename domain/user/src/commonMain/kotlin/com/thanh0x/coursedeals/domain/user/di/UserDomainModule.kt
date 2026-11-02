@@ -1,10 +1,12 @@
 package com.thanh0x.coursedeals.domain.user.di
 
+import com.thanh0x.coursedeals.domain.user.usecase.AcceptTermsUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.CheckIfTokenExpiredUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.ClearCachedUserProfileUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.ClearLocalRefreshTokenUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.ClearLocalTokenUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.CryptographyManagerUseCase
+import com.thanh0x.coursedeals.domain.user.usecase.DeleteAccountUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.GetLocalTokenUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.GetUserProfileUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.LoadCipherTextWrapperUseCase
@@ -29,11 +31,13 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
 val userDomainModule = module {
+    factoryOf(::AcceptTermsUseCase)
     factoryOf(::CheckIfTokenExpiredUseCase)
     factoryOf(::ClearCachedUserProfileUseCase)
     factoryOf(::ClearLocalRefreshTokenUseCase)
     factoryOf(::ClearLocalTokenUseCase)
     factoryOf(::CryptographyManagerUseCase)
+    factoryOf(::DeleteAccountUseCase)
     factoryOf(::GetLocalTokenUseCase)
     factoryOf(::GetUserProfileUseCase)
     factoryOf(::LoadCipherTextWrapperUseCase)

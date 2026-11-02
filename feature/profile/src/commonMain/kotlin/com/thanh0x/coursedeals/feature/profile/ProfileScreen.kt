@@ -29,10 +29,12 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.ContentCopy
+import com.thanh0x.coursedeals.core.ui.components.AppConfirmationDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
@@ -45,6 +47,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import com.thanh0x.coursedeals.core.common.BuildConfig
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -84,6 +87,9 @@ fun ProfileScreen(
     onFingerprintToggled: (Boolean) -> Unit = {},
     onNotificationsToggled: (Boolean) -> Unit = {},
     onLogoutClick: () -> Unit = {},
+    onDeleteAccountClick: () -> Unit = {},
+    onConfirmDeleteAccount: () -> Unit = {},
+    onDismissDeleteAccountDialog: () -> Unit = {},
     onDevEmailClick: () -> Unit = {},
     onDevWebsiteClick: () -> Unit = {},
     onSignInClick: () -> Unit = {},
@@ -127,6 +133,7 @@ fun ProfileScreen(
                         onFingerprintToggled = onFingerprintToggled,
                         onNotificationsToggled = onNotificationsToggled,
                         onLogoutClick = onLogoutClick,
+                        onDeleteAccountClick = onDeleteAccountClick,
                         onDevEmailClick = onDevEmailClick,
                         onDevWebsiteClick = onDevWebsiteClick,
                     )
@@ -142,6 +149,7 @@ fun ProfileScreen(
                         onFingerprintToggled = onFingerprintToggled,
                         onNotificationsToggled = onNotificationsToggled,
                         onLogoutClick = onLogoutClick,
+                        onDeleteAccountClick = onDeleteAccountClick,
                         onDevEmailClick = onDevEmailClick,
                         onDevWebsiteClick = onDevWebsiteClick,
                     )
@@ -164,6 +172,19 @@ fun ProfileScreen(
                 modifier = Modifier.fillMaxSize()
             )
         }
+
+        if (uiState.isDeleteAccountDialogOpen) {
+            AppConfirmationDialog(
+                title = stringResource(Res.string.delete_account_dialog_title),
+                message = stringResource(Res.string.delete_account_dialog_message),
+                confirmText = stringResource(Res.string.delete_account_confirm),
+                cancelText = stringResource(Res.string.cancel_button_text),
+                onConfirm = onConfirmDeleteAccount,
+                onDismiss = onDismissDeleteAccountDialog,
+                isLoading = uiState.isDeletingAccount,
+                isDestructive = true
+            )
+        }
     }
 }
 
@@ -179,6 +200,7 @@ private fun ProfileContentPortrait(
     onFingerprintToggled: (Boolean) -> Unit,
     onNotificationsToggled: (Boolean) -> Unit,
     onLogoutClick: () -> Unit,
+    onDeleteAccountClick: () -> Unit,
     onDevEmailClick: () -> Unit,
     onDevWebsiteClick: () -> Unit,
 ) {
@@ -226,6 +248,11 @@ private fun ProfileContentPortrait(
                 onClick = onLogoutClick,
                 modifier = Modifier.fillMaxWidth()
             )
+            Spacer(modifier = Modifier.height(16.dp))
+            DeleteAccountButton(
+                onClick = onDeleteAccountClick,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -248,6 +275,7 @@ private fun ProfileContentLandscape(
     onFingerprintToggled: (Boolean) -> Unit,
     onNotificationsToggled: (Boolean) -> Unit,
     onLogoutClick: () -> Unit,
+    onDeleteAccountClick: () -> Unit,
     onDevEmailClick: () -> Unit,
     onDevWebsiteClick: () -> Unit,
 ) {
@@ -273,6 +301,11 @@ private fun ProfileContentLandscape(
                 Spacer(modifier = Modifier.height(32.dp))
                 LogoutButton(
                     onClick = onLogoutClick,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                DeleteAccountButton(
+                    onClick = onDeleteAccountClick,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -699,6 +732,27 @@ private fun LogoutButton(
     ) {
         Text(
             text = stringResource(Res.string.logout_button_text),
+            fontWeight = FontWeight.SemiBold
+        )
+    }
+}
+
+@Composable
+private fun DeleteAccountButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Button(
+        onClick = onClick,
+        modifier = modifier,
+        shape = RoundedCornerShape(24.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.error,
+            contentColor = MaterialTheme.colorScheme.onError
+        )
+    ) {
+        Text(
+            text = stringResource(Res.string.delete_account_button_text),
             fontWeight = FontWeight.SemiBold
         )
     }

@@ -62,7 +62,8 @@ val userDataModule = module {
     single<UserProfileRepository> {
         UserProfileRepositoryImpl(
             localUserProfileDataSource = get(),
-            remoteUserProfileDataSource = get()
+            remoteUserProfileDataSource = get(),
+            localAuthenticationDataSource = get()
         )
     }
 }

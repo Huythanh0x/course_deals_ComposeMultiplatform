@@ -15,6 +15,7 @@ val profileModule = module {
             clearLocalTokenUseCase = get(),
             checkIfTokenExpiredUseCase = get(),
             getLocalTokenUseCase = get(),
+            deleteAccountUseCase = get(),
             networkUtil = get()
         )
     }

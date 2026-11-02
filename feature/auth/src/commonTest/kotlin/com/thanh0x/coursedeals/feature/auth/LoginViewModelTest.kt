@@ -9,6 +9,7 @@ import com.thanh0x.coursedeals.domain.user.UserAuthenticationRepository
 import com.thanh0x.coursedeals.domain.user.UserProfile
 import com.thanh0x.coursedeals.domain.user.UserProfileRepository
 import com.thanh0x.coursedeals.domain.user.UserPreferences
+import com.thanh0x.coursedeals.domain.user.usecase.AcceptTermsUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.ClearCachedUserProfileUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.ClearLocalTokenUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.CryptographyManagerUseCase
@@ -83,6 +84,7 @@ class LoginViewModelTest {
         val networkUtil = object : NetworkUtil() {
             override fun isInternetAvailable(): Boolean = true
         }
+        val acceptTermsUseCase = AcceptTermsUseCase(fakeUserProfileRepo)
 
         viewModel = LoginViewModel(
             loginUseCase = loginUseCase,
@@ -99,6 +101,7 @@ class LoginViewModelTest {
             requestAccessTokenUseCase = requestAccessTokenUseCase,
             settingUserProfileUseCase = settingUserProfileUseCase,
             networkUtil = networkUtil,
+            acceptTermsUseCase = acceptTermsUseCase,
             ioDispatcher = testDispatcher
         )
     }
@@ -229,8 +232,48 @@ class LoginViewModelTest {
         val state = viewModel.uiState.value
         assertFalse(state.showTermsDialog)
         assertNull(state.pendingTokenData)
+        assertEquals(1, fakeUserProfileRepo.acceptTermsCalledCount)
         assertEquals("new-user-access-token", fakeAuthRepo.savedAccessToken)
         assertEquals("Main", navigatedDestination)
+        job.cancel()
+    }
+
+    @Test
+    fun acceptTerms_whenBackendFails_rollsBackTokensAndDisplaysError() = runTest {
+        viewModel.sendOtp("new@coursedeals.com")
+        advanceUntilIdle()
+
+        val tokenData = TokenData(
+            accessToken = "new-user-access-token",
+            refreshToken = "new-user-refresh-token",
+            isNewUser = true
+        )
+        fakeAuthRepo.verifyOtpResult = AppResult.Success(tokenData)
+        fakeUserProfileRepo.acceptTermsResult = AppResult.Error("Failed to record Terms acceptance")
+
+        viewModel.verifyOtp("000000")
+        advanceUntilIdle()
+        assertTrue(viewModel.uiState.value.showTermsDialog)
+
+        var navigatedDestination: String? = null
+        val job = launch {
+            viewModel.uiEvent.collect { event ->
+                if (event is UiEvent.Navigate) {
+                    navigatedDestination = event.destination
+                }
+            }
+        }
+
+        viewModel.acceptTerms()
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertEquals(1, fakeUserProfileRepo.acceptTermsCalledCount)
+        assertTrue(state.showTermsDialog)
+        assertEquals(tokenData, state.pendingTokenData)
+        assertNull(fakeAuthRepo.savedAccessToken)
+        assertEquals("Failed to record Terms acceptance", state.error)
+        assertNull(navigatedDestination)
         job.cancel()
     }
 
@@ -345,5 +388,12 @@ class LoginViewModelTest {
             fcmToken: String?
         ): AppResult<UserProfile> = AppResult.Success(UserProfile())
         override suspend fun syncPreferences(): AppResult<UserPreferences> = AppResult.Success(UserPreferences())
+        override suspend fun deleteAccount(): AppResult<Unit> = AppResult.Success(Unit)
+        var acceptTermsResult: AppResult<Unit> = AppResult.Success(Unit)
+        var acceptTermsCalledCount = 0
+        override suspend fun acceptTerms(): AppResult<Unit> {
+            acceptTermsCalledCount++
+            return acceptTermsResult
+        }
     }
 }
