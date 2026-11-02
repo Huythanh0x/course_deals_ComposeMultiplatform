@@ -1,15 +1,25 @@
 package com.thanh0x.coursedeals.shared
 
 import androidx.compose.ui.window.ComposeUIViewController
+import com.thanh0x.coursedeals.core.logging.IosLoggingConfigurator
+import com.thanh0x.coursedeals.core.logging.LoggerFactory
+import com.thanh0x.coursedeals.core.logging.debug
 import com.thanh0x.coursedeals.core.ui.util.PlatformActions
 import com.thanh0x.coursedeals.feature.auth.AuthMode
 import platform.Foundation.NSProcessInfo
 import platform.Foundation.NSURL
+import platform.UIKit.UIActivityViewController
 import platform.UIKit.UIApplication
 import platform.UIKit.UIPasteboard
 import platform.UIKit.UIViewController
 
 fun MainViewController(): UIViewController {
+    IosLoggingConfigurator.install()
+    val logger = LoggerFactory.getLogger("CourseDeals")
+    logger.debug { "iOS Application initialized" }
+
+    lateinit var composeViewController: UIViewController
+
     PlatformActions.onCopyToClipboard = { text ->
         UIPasteboard.generalPasteboard.string = text
     }
@@ -37,7 +47,11 @@ fun MainViewController(): UIViewController {
         }
     }
     PlatformActions.onShareLink = { title, url ->
-        UIPasteboard.generalPasteboard.string = "$title - $url"
+        val activityController = UIActivityViewController(
+            activityItems = listOf("$title\n$url"),
+            applicationActivities = null
+        )
+        composeViewController.presentViewController(activityController, animated = true, completion = null)
     }
 
     val args = NSProcessInfo.processInfo.arguments.map { it.toString() }
@@ -59,7 +73,7 @@ fun MainViewController(): UIViewController {
         else -> AuthMode.LOGIN
     }
 
-    return ComposeUIViewController {
+    composeViewController = ComposeUIViewController {
         App(
             initialScreen = initialScreen,
             initialRoute = initialRoute,
@@ -68,4 +82,5 @@ fun MainViewController(): UIViewController {
             initialShowTermsDialog = isConsent,
         )
     }
+    return composeViewController
 }

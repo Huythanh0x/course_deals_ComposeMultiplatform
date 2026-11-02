@@ -1,0 +1,80 @@
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: false
+
+# 1. Sign In via Google mock if on login screen
+- runFlow:
+    when:
+      visible: "Continue with Google"
+    commands:
+      - tapOn: "Continue with Google"
+      - extendedWaitUntil:
+          visible: "Sign In"
+          timeout: 10000
+          optional: true
+      - tapOn:
+          text: "Sign In"
+          optional: true
+      - extendedWaitUntil:
+          visible: "Agree & Continue"
+          timeout: 10000
+          optional: true
+      - tapOn:
+          text: "Agree & Continue"
+          optional: true
+
+# 2. Navigate to PROFILE
+- extendedWaitUntil:
+    visible: "PROFILE"
+    timeout: 15000
+- tapOn: "PROFILE"
+
+# 3. Wait for Dark Mode row
+- extendedWaitUntil:
+    visible: "Dark Mode"
+    timeout: 15000
+
+# 4. Scroll to Diagnostic Logs
+- scrollUntilVisible:
+    element: "Diagnostic Logs"
+    direction: DOWN
+    timeout: 10000
+- swipe:
+    start: "50%,60%"
+    end: "50%,40%"
+- assertVisible: "Diagnostic Logs"
+
+# Step 1: Profile settings row with Diagnostic Logs
+- takeScreenshot: "01_profile_settings_row_ios"
+
+# 5. Tap Diagnostic Logs
+- tapOn: "Diagnostic Logs"
+- extendedWaitUntil:
+    visible: "Close"
+    timeout: 10000
+- assertVisible: "Diagnostic Logs"
+- assertVisible: "ALL"
+- assertVisible: "DEBUG"
+- assertVisible: "INFO"
+- assertVisible: "WARN"
+- assertVisible: "ERROR"
+
+# Step 2: Diagnostic logs bottom sheet open
+- takeScreenshot: "02_diagnostic_logs_sheet_ios"
+
+# 6. Tap DEBUG filter chip
+- tapOn: "DEBUG"
+
+# Step 3: Filter applied
+- takeScreenshot: "03_diagnostic_logs_level_filter_ios"
+
+# 7. Tap Share Logs
+- tapOn: "Share Logs"
+- swipe:
+    direction: UP
+    duration: 300
+    optional: true
+
+# Step 4: Share / action sheet open
+- takeScreenshot: "04_diagnostic_logs_copied_shared_ios"
