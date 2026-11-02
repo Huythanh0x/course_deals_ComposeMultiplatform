@@ -102,6 +102,12 @@ fun painterResource(resource: DrawableResource): Painter {
     return rememberVectorPainter(vector)
 }
 
+private const val COLOR_BRAND_BLUE = 0xFF0B57D0
+private const val COLOR_GOOGLE_BLUE = 0xFF4285F4
+private const val COLOR_GOOGLE_GREEN = 0xFF34A853
+private const val COLOR_GOOGLE_YELLOW = 0xFFFBBC05
+private const val COLOR_GOOGLE_RED = 0xFFEA4335
+
 private fun buildLogoMarkVector(): ImageVector {
     return ImageVector.Builder(
         name = "ic_logo_mark",
@@ -116,11 +122,11 @@ private fun buildLogoMarkVector(): ImageVector {
                     "M 256,56 A 30,30 0 0,1 256,116 A 30,30 0 0,1 256,56 Z"
             ).toNodes(),
             pathFillType = PathFillType.EvenOdd,
-            fill = SolidColor(Color(0xFF0B57D0)),
+            fill = SolidColor(Color(COLOR_BRAND_BLUE)),
         )
         addPath(
             pathData = PathParser().parsePathString("M 228,56 A 36,36 0 0,1 284,56").toNodes(),
-            stroke = SolidColor(Color(0xFF0B57D0)),
+            stroke = SolidColor(Color(COLOR_BRAND_BLUE)),
             strokeLineWidth = 10f,
             strokeLineCap = StrokeCap.Round,
         )
@@ -146,27 +152,31 @@ private fun buildGoogleVector(): ImageVector {
     ).apply {
         addPath(
             pathData = PathParser().parsePathString(
-                "m22.766,12.248c0,-0.724 -0.064,-1.412 -0.174,-2.081l-10.358,0l0,4.134l5.931,0c-0.266,1.357 -1.045,2.503 -2.2,3.282l0,2.75l3.538,0c2.072,-1.916 3.263,-4.739 3.263,-8.085z"
+                "m22.766,12.248c0,-0.724 -0.064,-1.412 -0.174,-2.081l-10.358,0l0,4.134l5.931,0" +
+                    "c-0.266,1.357 -1.045,2.503 -2.2,3.282l0,2.75l3.538,0c2.072,-1.916 3.263,-4.739 3.263,-8.085z"
             ).toNodes(),
-            fill = SolidColor(Color(0xFF4285F4)),
+            fill = SolidColor(Color(COLOR_GOOGLE_BLUE)),
         )
         addPath(
             pathData = PathParser().parsePathString(
-                "m12.234,23c2.97,0 5.454,-0.99 7.269,-2.668l-3.538,-2.75c-0.99,0.66 -2.246,1.063 -3.731,1.063 -2.869,0 -5.298,-1.934 -6.169,-4.547l-3.648,0l0,2.832c1.806,3.593 5.518,6.068 9.818,6.068z"
+                "m12.234,23c2.97,0 5.454,-0.99 7.269,-2.668l-3.538,-2.75c-0.99,0.66 -2.246,1.063 -3.731,1.063 " +
+                    "-2.869,0 -5.298,-1.934 -6.169,-4.547l-3.648,0l0,2.832c1.806,3.593 5.518,6.068 9.818,6.068z"
             ).toNodes(),
-            fill = SolidColor(Color(0xFF34A853)),
+            fill = SolidColor(Color(COLOR_GOOGLE_GREEN)),
         )
         addPath(
             pathData = PathParser().parsePathString(
-                "m6.065,14.099c-0.229,-0.66 -0.348,-1.366 -0.348,-2.099 0,-0.733 0.128,-1.439 0.348,-2.099l0,-2.832l-3.648,0c-0.752,1.485 -1.183,3.153 -1.183,4.932 0,1.778 0.431,3.447 1.183,4.932z"
+                "m6.065,14.099c-0.229,-0.66 -0.348,-1.366 -0.348,-2.099 0,-0.733 0.128,-1.439 0.348,-2.099" +
+                    "l0,-2.832l-3.648,0c-0.752,1.485 -1.183,3.153 -1.183,4.932 0,1.778 0.431,3.447 1.183,4.932z"
             ).toNodes(),
-            fill = SolidColor(Color(0xFFFBBC05)),
+            fill = SolidColor(Color(COLOR_GOOGLE_YELLOW)),
         )
         addPath(
             pathData = PathParser().parsePathString(
-                "m12.234,5.354c1.623,0 3.071,0.559 4.217,1.65l3.135,-3.135c-1.898,-1.778 -4.382,-2.869 -7.352,-2.869 -4.299,0 -8.012,2.475 -9.818,6.068l3.648,2.832c0.871,-2.612 3.3,-4.547 6.169,-4.547z"
+                "m12.234,5.354c1.623,0 3.071,0.559 4.217,1.65l3.135,-3.135c-1.898,-1.778 -4.382,-2.869 " +
+                    "-7.352,-2.869 -4.299,0 -8.012,2.475 -9.818,6.068l3.648,2.832c0.871,-2.612 3.3,-4.547 6.169,-4.547z"
             ).toNodes(),
-            fill = SolidColor(Color(0xFFEA4335)),
+            fill = SolidColor(Color(COLOR_GOOGLE_RED)),
         )
     }.build()
 }

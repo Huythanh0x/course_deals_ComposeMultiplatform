@@ -52,6 +52,7 @@ import com.thanh0x.coursedeals.domain.coupons.SortOption
 private const val MIN_QUALIFIED_RATING = 4.0
 private const val RATING_STEP_FACTOR = 10.0
 private const val MAX_SLIDER_STEPS = 10 // 0 to 11 has 10 steps
+private const val MAX_SLIDER_VALUE = 11.0f
 
 private fun sliderToRating(value: Float): Double {
     return if (value == 0.0f) {
@@ -67,7 +68,7 @@ private fun ratingToSlider(rating: Double): Float {
     } else {
         (((rating - MIN_QUALIFIED_RATING) * RATING_STEP_FACTOR) + 1.0)
             .toFloat()
-            .coerceIn(0.0f, 11.0f)
+            .coerceIn(0.0f, MAX_SLIDER_VALUE)
     }
 }
 

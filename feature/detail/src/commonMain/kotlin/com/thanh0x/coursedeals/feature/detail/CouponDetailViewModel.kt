@@ -2,9 +2,8 @@ package com.thanh0x.coursedeals.feature.detail
 
 import com.thanh0x.coursedeals.core.common.AppResult
 import com.thanh0x.coursedeals.core.ui.ViewModel
-import com.thanh0x.coursedeals.domain.coupons.Coupon
-import com.thanh0x.coursedeals.domain.coupons.usecase.FetchCouponDetailUseCase
 import com.thanh0x.coursedeals.core.ui.util.NetworkUtil
+import com.thanh0x.coursedeals.domain.coupons.usecase.FetchCouponDetailUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -18,6 +17,7 @@ class CouponDetailViewModel(
     private val _uiState = MutableStateFlow(CouponDetailUiState())
     val uiState = _uiState.asStateFlow()
 
+    @Suppress("UnusedParameter")
     fun fetchCouponDetail(courseId: Int, forceRefresh: Boolean = false) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }

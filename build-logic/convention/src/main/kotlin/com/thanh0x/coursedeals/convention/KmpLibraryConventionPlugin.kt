@@ -1,5 +1,6 @@
 package com.thanh0x.coursedeals.convention
 
+import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
@@ -11,6 +12,7 @@ class KmpLibraryConventionPlugin : Plugin<Project> {
         with(target) {
             with(pluginManager) {
                 apply("org.jetbrains.kotlin.multiplatform")
+                apply("io.gitlab.arturbosch.detekt")
             }
 
             extensions.configure<KotlinMultiplatformExtension> {
@@ -28,6 +30,23 @@ class KmpLibraryConventionPlugin : Plugin<Project> {
 
                 iosArm64()
                 iosSimulatorArm64()
+            }
+
+            extensions.configure<DetektExtension> {
+                toolVersion = libs.findVersion("detekt").get().toString()
+                config.setFrom(rootProject.file("config/detekt/detekt.yml"))
+                buildUponDefaultConfig = true
+                allRules = false
+                source.setFrom(
+                    files(
+                        "src/commonMain/kotlin",
+                        "src/jvmMain/kotlin",
+                        "src/iosMain/kotlin",
+                        "src/androidMain/kotlin",
+                        "src/main/java",
+                        "src/main/kotlin",
+                    )
+                )
             }
         }
     }

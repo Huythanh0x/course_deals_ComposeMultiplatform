@@ -105,7 +105,11 @@ fun AppConfirmationDialog(
                             CircularProgressIndicator(
                                 modifier = Modifier.size(16.dp),
                                 strokeWidth = 2.dp,
-                                color = if (isDestructive) MaterialTheme.colorScheme.onError else MaterialTheme.colorScheme.onPrimary
+                                color = if (isDestructive) {
+                                    MaterialTheme.colorScheme.onError
+                                } else {
+                                    MaterialTheme.colorScheme.onPrimary
+                                }
                             )
                         } else {
                             Text(text = confirmText)

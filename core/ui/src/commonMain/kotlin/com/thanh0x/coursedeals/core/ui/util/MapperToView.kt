@@ -6,6 +6,8 @@ import com.thanh0x.coursedeals.core.ui.resources.Res
 import com.thanh0x.coursedeals.core.ui.resources.formatMultiplatformString
 import kotlin.math.roundToInt
 
+private const val RATING_TENTHS_FACTOR = 10
+
 class MapperToView(val context: Any? = null) {
     fun mapTimeLeft(expiredDate: Long?): String {
         val minutesInHour = Constant.MINUTES_IN_HOUR
@@ -108,8 +110,8 @@ class MapperToView(val context: Any? = null) {
 
     fun mapRatingValue(rating: Double?): String {
         val value = rating ?: 0.0
-        val tenths = (value * 10.0).roundToInt()
-        return "${tenths / 10}.${tenths % 10}"
+        val tenths = (value * RATING_TENTHS_FACTOR).roundToInt()
+        return "${tenths / RATING_TENTHS_FACTOR}.${tenths % RATING_TENTHS_FACTOR}"
     }
 
     fun mapNumberOfReview(numberOfReview: Int?): String {
