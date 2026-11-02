@@ -25,7 +25,7 @@ A single arbitrary screenshot is strictly forbidden. Evidence capture requires t
 
 The declarative Maestro test flows in `.maestro/flows/` **MUST embed `- takeScreenshot: <step_name>` checkpoints** at each significant transition of the user journey.
 
-Always execute the automated GUI framework test suite on **BOTH** Android and iOS:
+Always execute the automated GUI framework test suite across **ALL THREE** platforms (Android, iOS, and Desktop):
 
 ```bash
 # Android Emulator (emulator-5554)
@@ -33,6 +33,9 @@ Always execute the automated GUI framework test suite on **BOTH** Android and iO
 
 # iOS Simulator (booted iPhone Simulator)
 ~/.maestro/bin/maestro --device booted test -e APP_ID=com.thanh0x.coursedeals.iosApp .maestro/flows/<feature-flow>.yaml
+
+# Compose Desktop (:desktopApp Maestro Flow Runner)
+./gradlew :desktopApp:runMaestroFlow -Pflow=.maestro/flows/<feature-flow>.yaml -PscreenshotDir=/tmp/desktop-e2e
 ```
 
 If platform-specific flows are defined (e.g. `<flow>.yaml` and `<flow>-ios.yaml`), execute each on its respective platform.
@@ -77,20 +80,21 @@ Extract public image URL (`${worker_base}/<filename>`) and verify HTTP 200 (`cur
 
 ## 5. Feature-Rich Step-by-Step Flow Evidence in GitHub PR
 
-Every mobile PR **MUST** present a feature-rich, numbered step-by-step user journey walkthrough comparing Android and iOS side-by-side using `<img src="..." width="300" />`:
+Every mobile/KMP PR **MUST** present a feature-rich, numbered step-by-step user journey walkthrough comparing Android, iOS, and Desktop side-by-side using `<img src="..." width="250" />`:
 
 ```markdown
 ## Screenshots
 
-| Step | Android Evidence (`emulator-5554`) | iOS Evidence (`iPhone Simulator`) |
-| :--- | :---: | :---: |
-| **1. [Step Name]**<br>• [Key assertion / displayed elements]<br>• [Input or action triggering transition]<br>• [Zero coordinate taps] | <img src="<android_r2_url>" width="300" /> | <img src="<ios_r2_url>" width="300" /> |
-| **2. [Step Name]**<br>• [Key assertion / displayed elements]<br>• [Input or action triggering transition] | <img src="<android_r2_url>" width="300" /> | <img src="<ios_r2_url>" width="300" /> |
-| **3. [Step Name]**<br>• [Key assertion / dialog modal]<br>• [Accept / Decline or error recovery] | <img src="<android_r2_url>" width="300" /> | <img src="<ios_r2_url>" width="300" /> |
-| **4. [Step Name]**<br>• [Target destination loaded]<br>• [Live backend data populated] | <img src="<android_r2_url>" width="300" /> | <img src="<ios_r2_url>" width="300" /> |
-| **5. [Step Name]**<br>• [Profile / Settings updated]<br>• [Dark mode & insets parity verified] | <img src="<android_r2_url>" width="300" /> | <img src="<ios_r2_url>" width="300" /> |
+| Step | Android Evidence (`emulator-5554`) | iOS Evidence (`iPhone Simulator`) | Desktop Evidence (`:desktopApp`) |
+| :--- | :---: | :---: | :---: |
+| **1. [Step Name]**<br>• [Key assertion / displayed elements]<br>• [Input or action triggering transition]<br>• [Zero coordinate taps] | <img src="<android_r2_url>" width="250" /> | <img src="<ios_r2_url>" width="250" /> | <img src="<desktop_r2_url>" width="250" /> |
+| **2. [Step Name]**<br>• [Key assertion / displayed elements]<br>• [Input or action triggering transition] | <img src="<android_r2_url>" width="250" /> | <img src="<ios_r2_url>" width="250" /> | <img src="<desktop_r2_url>" width="250" /> |
+| **3. [Step Name]**<br>• [Key assertion / dialog modal]<br>• [Accept / Decline or error recovery] | <img src="<android_r2_url>" width="250" /> | <img src="<ios_r2_url>" width="250" /> | <img src="<desktop_r2_url>" width="250" /> |
+| **4. [Step Name]**<br>• [Target destination loaded]<br>• [Live backend data populated] | <img src="<android_r2_url>" width="250" /> | <img src="<ios_r2_url>" width="250" /> | <img src="<desktop_r2_url>" width="250" /> |
+| **5. [Step Name]**<br>• [Profile / Settings updated]<br>• [Dark mode & insets parity verified] | <img src="<android_r2_url>" width="250" /> | <img src="<ios_r2_url>" width="250" /> | <img src="<desktop_r2_url>" width="250" /> |
 
 ### Automated Maestro GUI Test Results
 - Android (`emulator-5554`): **PASSED** (100% assertions green)
 - iOS (`iPhone Simulator`): **PASSED** (100% assertions green)
+- Desktop (`:desktopApp:runMaestroFlow`): **PASSED** (100% assertions green)
 ```
