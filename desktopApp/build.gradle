@@ -78,6 +78,32 @@ dependencies {
 compose.desktop {
     application {
         mainClass = "com.thanh0x.coursedeals.desktop.MainKt"
+        nativeDistributions {
+            targetFormats(org.jetbrains.compose.desktop.application.dsl.TargetFormat.Dmg)
+            packageName = "CourseDeals"
+            packageVersion = "1.0.0"
+            macOS {
+                bundleID = "com.thanh0x.coursedeals"
+            }
+            modules(
+                "java.base",
+                "java.desktop",
+                "java.instrument",
+                "java.logging",
+                "java.management",
+                "java.naming",
+                "java.net.http",
+                "java.security.jgss",
+                "java.security.sasl",
+                "java.sql",
+                "jdk.unsupported"
+            )
+        }
+        buildTypes.release.proguard {
+            isEnabled().set(true)
+            obfuscate.set(false)
+            configurationFiles.from(project.file("compose-desktop.pro"))
+        }
     }
 }
 
