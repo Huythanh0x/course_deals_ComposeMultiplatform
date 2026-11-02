@@ -234,34 +234,37 @@ build_desktop_jar() {
 # ------------------------------------------------------------------------------
 # Execute Requested Targets
 # ------------------------------------------------------------------------------
-case "${TARGET}" in
-  all)
-    build_apk
-    build_ipa
-    build_dmg
-    build_exe
-    build_desktop_jar
-    ;;
-  apk)
-    build_apk
-    ;;
-  ipa)
-    build_ipa
-    ;;
-  dmg)
-    build_dmg
-    ;;
-  exe)
-    build_exe
-    ;;
-  jar)
-    build_desktop_jar
-    ;;
-  *)
-    echo "Unknown target: ${TARGET}" >&2
-    exit 1
-    ;;
-esac
+IFS=',' read -ra TARGET_LIST <<< "${TARGET}"
+for t in "${TARGET_LIST[@]}"; do
+  case "${t}" in
+    all)
+      build_apk
+      build_ipa
+      build_dmg
+      build_exe
+      build_desktop_jar
+      break
+      ;;
+    apk)
+      build_apk
+      ;;
+    ipa)
+      build_ipa
+      ;;
+    dmg)
+      build_dmg
+      ;;
+    exe)
+      build_exe
+      ;;
+    jar)
+      build_desktop_jar
+      ;;
+    *)
+      echo "ℹ️  Skipping non-client target: ${t}"
+      ;;
+  esac
+done
 
 # ------------------------------------------------------------------------------
 # Checksums
