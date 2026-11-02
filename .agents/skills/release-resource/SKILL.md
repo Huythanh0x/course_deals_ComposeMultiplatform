@@ -63,7 +63,8 @@ fi
 Clean up any remaining Kotlin compile daemons, orphaned `gradle-wrapper.jar` processes, lingering `:desktopApp` (`com.thanh0x.coursedeals.desktop.MainKt`) instances, ephemeral backend dev/test processes (`8080`, `8081`, `8082`), and temporary E2E screenshot staging files:
 
 ```bash
-# 1. Kill lingering KotlinCompileDaemon, Desktop MainKt, or orphaned gradle-wrapper processes
+# 1. Kill any remaining GradleDaemon (across different JDKs like JBR-21 vs OpenJDK-17), KotlinCompileDaemon, Desktop MainKt, or orphaned gradle-wrapper processes
+pkill -f "org.gradle.launcher.daemon.bootstrap.GradleDaemon" 2>/dev/null || true
 pkill -f "org.jetbrains.kotlin.daemon.KotlinCompileDaemon" 2>/dev/null || true
 pkill -f "com.thanh0x.coursedeals.desktop.MainKt" 2>/dev/null || true
 pkill -f "gradle-wrapper.jar" 2>/dev/null || true
