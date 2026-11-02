@@ -138,6 +138,7 @@ configurations.configureEach {
 dependencies {
     implementation project(':shared')
     implementation project(':core:common')
+    implementation project(':core:logging')
     implementation project(':core:network')
     implementation project(':core:ui')
     implementation project(':data:coupons')
@@ -217,9 +218,6 @@ dependencies {
 
     //finger print
     implementation libs.androidx.biometric
-
-    // Logging
-    implementation libs.timber
 
     // WorkManager
     implementation libs.androidx.work.runtime.ktx

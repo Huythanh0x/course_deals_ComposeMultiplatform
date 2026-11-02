@@ -22,7 +22,10 @@ import com.thanh0x.coursedeals.core.ui.UiEvent
 import com.thanh0x.coursedeals.core.ui.theme.CourseDealsTheme
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
-import timber.log.Timber
+import com.thanh0x.coursedeals.core.logging.AppLogger
+import com.thanh0x.coursedeals.core.logging.debug
+import com.thanh0x.coursedeals.core.logging.warn
+import com.thanh0x.coursedeals.core.logging.error
 
 class LoginActivity : BaseActivity() {
     private val loginViewModel: LoginViewModel by inject()
@@ -202,12 +205,12 @@ class LoginActivity : BaseActivity() {
                     )
                 }
             } catch (e: GetCredentialCancellationException) {
-                Timber.d(e, "User cancelled Google Sign-In prompt")
+                AppLogger.debug(e) { "User cancelled Google Sign-In prompt" }
             } catch (e: NoCredentialException) {
-                Timber.w(e, "No Google credential found on device, offering dev mock login")
+                AppLogger.warn(e) { "No Google credential found on device, offering dev mock login" }
                 showDevMockDialog()
             } catch (e: GetCredentialException) {
-                Timber.e(e, "Google Sign-In failed")
+                AppLogger.error(e) { "Google Sign-In failed" }
                 showAlertDialog(
                     title = getString(CoreR.string.login_error_title),
                     message = e.localizedMessage ?: getString(CoreR.string.login_error_google_failed),

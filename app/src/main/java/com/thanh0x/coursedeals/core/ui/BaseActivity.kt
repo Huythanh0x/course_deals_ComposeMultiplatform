@@ -15,7 +15,8 @@ import com.thanh0x.coursedeals.R
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import timber.log.Timber
+import com.thanh0x.coursedeals.core.logging.AppLogger
+import com.thanh0x.coursedeals.core.logging.error
 
 internal fun DialogType.toIconRes(): Int = R.drawable.ic_logo_mark
 
@@ -81,8 +82,8 @@ abstract class BaseActivity : AppCompatActivity() {
         ivLogo.imageTintList = ColorStateList.valueOf(iconColor)
 
         if (type == DialogType.ERROR) {
-            Timber.tag(this.javaClass.simpleName)
-                .e("showAlertDialog: title=$title, message=$message, cause=$cause")
+            AppLogger.tag(this.javaClass.simpleName)
+                .error { "showAlertDialog: title=$title, message=$message, cause=$cause" }
         }
 
         val positiveText = positiveButtonText ?: getString(R.string.ok_text_button)

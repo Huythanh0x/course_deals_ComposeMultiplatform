@@ -203,6 +203,42 @@ class ProfileViewModelTest {
         assertEquals("valid_token", fakeAuthRepository.localToken)
     }
 
+    @Test
+    fun openDiagnosticLogs_setsIsOpenAndFetchesLogs() = runTest {
+        viewModel = createViewModel(token = "valid_token")
+        testScheduler.advanceUntilIdle()
+
+        assertFalse(viewModel.uiState.value.isDiagnosticLogsOpen)
+
+        viewModel.openDiagnosticLogs()
+        testScheduler.advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertTrue(state.isDiagnosticLogsOpen)
+        assertTrue(state.diagnosticLogs.isNotEmpty())
+    }
+
+    @Test
+    fun dismissDiagnosticLogs_closesSheet() = runTest {
+        viewModel = createViewModel(token = "valid_token")
+        testScheduler.advanceUntilIdle()
+
+        viewModel.openDiagnosticLogs()
+        assertTrue(viewModel.uiState.value.isDiagnosticLogsOpen)
+
+        viewModel.dismissDiagnosticLogs()
+        assertFalse(viewModel.uiState.value.isDiagnosticLogsOpen)
+    }
+
+    @Test
+    fun filterLogs_updatesFilterLevelAndLogs() = runTest {
+        viewModel = createViewModel(token = "valid_token")
+        testScheduler.advanceUntilIdle()
+
+        viewModel.filterLogs(com.thanh0x.coursedeals.core.logging.LogLevel.ERROR)
+        assertEquals(com.thanh0x.coursedeals.core.logging.LogLevel.ERROR, viewModel.uiState.value.logFilterLevel)
+    }
+
     private class FakeUserAuthenticationRepository : UserAuthenticationRepository {
         var localToken: String? = null
         var cipherText: String? = null

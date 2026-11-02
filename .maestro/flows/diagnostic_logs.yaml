@@ -1,0 +1,47 @@
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: false
+- extendedWaitUntil:
+    visible: "PROFILE"
+    timeout: 15000
+- tapOn: "PROFILE"
+# If guest gate appears, sign in or proceed
+- tapOn:
+    text: "Sign In"
+    optional: true
+- tapOn:
+    text: "Continue with Google"
+    optional: true
+- tapOn:
+    text: "Sign In"
+    optional: true
+- extendedWaitUntil:
+    visible: "Dark Mode"
+    timeout: 15000
+# Scroll to Diagnostic Logs row
+- scrollUntilVisible:
+    element: "Diagnostic Logs"
+    direction: DOWN
+    timeout: 10000
+- assertVisible: "Diagnostic Logs"
+# Tap Diagnostic Logs to open bottom sheet
+- tapOn: "Diagnostic Logs"
+- extendedWaitUntil:
+    visible: "Close"
+    timeout: 10000
+- assertVisible: "Diagnostic Logs"
+- assertVisible: "ALL"
+- assertVisible: "DEBUG"
+- assertVisible: "INFO"
+- assertVisible: "WARN"
+- assertVisible: "ERROR"
+# Tap on filter chip
+- tapOn: "INFO"
+# Tap Copy Logs action
+- tapOn: "Copy Logs"
+# Tap Close button to dismiss
+- tapOn: "Close"
+- extendedWaitUntil:
+    visible: "Diagnostic Logs"
+    timeout: 10000

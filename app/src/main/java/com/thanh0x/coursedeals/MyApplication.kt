@@ -27,12 +27,13 @@ import com.thanh0x.coursedeals.di.appModules
 import com.thanh0x.coursedeals.domain.user.UserProfileRepository
 import com.thanh0x.coursedeals.sync.PeriodicCouponSyncWorker
 import kotlinx.coroutines.runBlocking
+import com.thanh0x.coursedeals.core.logging.AndroidLogger
+import com.thanh0x.coursedeals.core.logging.LogLevel
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
-import timber.log.Timber
 
 class MyApplication : Application() {
 
@@ -40,9 +41,8 @@ class MyApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        if (BuildConfig.DEBUG) {
-            Timber.plant(Timber.DebugTree())
-        }
+        val minLevel = if (BuildConfig.DEBUG) LogLevel.DEBUG else LogLevel.INFO
+        AndroidLogger.install(filesDir.resolve("logs"), minLevel = minLevel)
         setupMultiplatformRenderers()
         setupPlatformActions()
         startKoin {
