@@ -6,11 +6,14 @@ import WatchKit
 /// Main flash deals feed for Apple Watch companion app.
 /// Presents top 5 expiring deals with Digital Crown scroll physics and real-time countdown tickers.
 public struct WatchDealListView: View {
-    @State private var deals: [WatchDealModel] = []
-    @State private var isLoading: Bool = false
+    @ObservedObject private var client = WatchConnectivityClient.shared
     @State private var selectedDealIndex: Int? = nil
     @State private var crownScrollPosition: CGFloat = 0.0
     @State private var now: Date = Date()
+
+    private var deals: [WatchDealModel] {
+        client.deals
+    }
 
     // Refresh countdown every 30 seconds
     private let countdownTimer = Timer.publish(every: 30, on: .main, in: .common).autoconnect()
@@ -20,7 +23,7 @@ public struct WatchDealListView: View {
     public var body: some View {
         NavigationStack {
             Group {
-                if isLoading {
+                if client.isLoading && deals.isEmpty {
                     loadingView
                 } else if deals.isEmpty {
                     emptyView
@@ -31,14 +34,12 @@ public struct WatchDealListView: View {
             .navigationTitle("Flash Deals")
             .navigationBarTitleDisplayMode(.inline)
             .sheet(item: selectedDealBinding) { _ in
-                if let index = selectedDealIndex, deals.indices.contains(index) {
-                    WatchDealDetailView(deal: $deals[index])
+                if let index = selectedDealIndex, client.deals.indices.contains(index) {
+                    WatchDealDetailView(deal: $client.deals[index])
                 }
             }
             .onAppear {
-                if deals.isEmpty {
-                    loadDeals()
-                }
+                client.requestDealsFromPhone()
             }
             .onReceive(countdownTimer) { currentTimestamp in
                 now = currentTimestamp
@@ -49,15 +50,25 @@ public struct WatchDealListView: View {
     private var dealListContent: some View {
         ScrollView {
             LazyVStack(spacing: 8) {
-                // Flash summary pill
+                // Flash summary pill & iPhone Sync Status
                 HStack {
-                    Image(systemName: "bolt.fill")
-                        .foregroundColor(.yellow)
+                    Image(systemName: "iphone.gen3")
+                        .foregroundColor(.blue)
                         .font(.caption2)
-                    Text("Top 5 Expiring Now")
-                        .font(.caption2.bold())
-                        .foregroundColor(.secondary)
+                    Text(client.syncSource)
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundColor(.cyan)
+                        .lineLimit(1)
                     Spacer()
+                    Button(action: {
+                        playHapticFeedback(.click)
+                        client.requestDealsFromPhone()
+                    }) {
+                        Image(systemName: "arrow.clockwise")
+                            .font(.system(size: 10))
+                            .foregroundColor(.secondary)
+                    }
+                    .buttonStyle(.plain)
                 }
                 .padding(.horizontal, 4)
                 .padding(.top, 2)
@@ -154,12 +165,7 @@ public struct WatchDealListView: View {
     }
 
     private func loadDeals() {
-        isLoading = true
-        // Simulate low-latency local/KMP cache retrieval
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-            self.deals = WatchDealModel.sampleDeals
-            self.isLoading = false
-        }
+        client.requestDealsFromPhone()
     }
 
     private func playHapticFeedback(_ type: WatchHapticType) {
