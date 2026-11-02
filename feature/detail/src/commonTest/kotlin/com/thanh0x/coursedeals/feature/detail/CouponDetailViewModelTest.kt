@@ -8,6 +8,7 @@ import com.thanh0x.coursedeals.domain.coupons.CouponMetadata
 import com.thanh0x.coursedeals.domain.coupons.CouponRepository
 import com.thanh0x.coursedeals.domain.coupons.FilterData
 import com.thanh0x.coursedeals.domain.coupons.usecase.FetchCouponDetailUseCase
+import com.thanh0x.coursedeals.domain.coupons.usecase.ReportCourseUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -32,6 +33,7 @@ class CouponDetailViewModelTest {
     private lateinit var fakeCouponRepository: FakeCouponRepository
     private lateinit var fakeNetworkUtil: FakeNetworkUtil
     private lateinit var fetchCouponDetailUseCase: FetchCouponDetailUseCase
+    private lateinit var reportCourseUseCase: ReportCourseUseCase
     private lateinit var viewModel: CouponDetailViewModel
 
     @BeforeTest
@@ -40,7 +42,12 @@ class CouponDetailViewModelTest {
         fakeCouponRepository = FakeCouponRepository()
         fakeNetworkUtil = FakeNetworkUtil()
         fetchCouponDetailUseCase = FetchCouponDetailUseCase(fakeCouponRepository)
-        viewModel = CouponDetailViewModel(fetchCouponDetailUseCase, fakeNetworkUtil)
+        reportCourseUseCase = ReportCourseUseCase(fakeCouponRepository)
+        viewModel = CouponDetailViewModel(
+            fetchCouponDetailUseCase = fetchCouponDetailUseCase,
+            reportCourseUseCase = reportCourseUseCase,
+            networkUtil = fakeNetworkUtil,
+        )
     }
 
     @AfterTest
@@ -149,8 +156,68 @@ class CouponDetailViewModelTest {
         assertTrue(viewModel.uiState.value.isInternetAvailable)
     }
 
+    @Test
+    fun reportCourse_whenSuccessful_updatesUiStateToSuccess() = runTest {
+        fakeCouponRepository.reportResult = AppResult.Success(Unit)
+
+        viewModel.reportCourse(courseId = 777, reason = "NOT_FREE", details = "Now costs $10")
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertFalse(state.isReporting)
+        assertTrue(state.reportSuccess)
+        assertNull(state.reportError)
+        assertEquals(777, fakeCouponRepository.lastReportCourseId)
+        assertEquals("NOT_FREE", fakeCouponRepository.lastReportReason)
+        assertEquals("Now costs $10", fakeCouponRepository.lastReportDetails)
+    }
+
+    @Test
+    fun reportCourse_whenError_updatesUiStateToError() = runTest {
+        fakeCouponRepository.reportResult = AppResult.Error("Failed to report", 500)
+
+        viewModel.reportCourse(courseId = 777, reason = "EXPIRED", details = null)
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertFalse(state.isReporting)
+        assertFalse(state.reportSuccess)
+        assertEquals("Failed to report", state.reportError)
+    }
+
+    @Test
+    fun clearReportState_resetsReportFlagsAndError() = runTest {
+        fakeCouponRepository.reportResult = AppResult.Error("Some error")
+        viewModel.reportCourse(courseId = 777, reason = "OTHER", details = "Broken")
+        advanceUntilIdle()
+
+        assertEquals("Some error", viewModel.uiState.value.reportError)
+
+        viewModel.clearReportState()
+
+        val state = viewModel.uiState.value
+        assertFalse(state.isReporting)
+        assertFalse(state.reportSuccess)
+        assertNull(state.reportError)
+    }
+
     private class FakeCouponRepository : CouponRepository {
         var detailResult: AppResult<Coupon> = AppResult.Error("Not configured")
+        var reportResult: AppResult<Unit> = AppResult.Success(Unit)
+        var lastReportCourseId: Int? = null
+        var lastReportReason: String? = null
+        var lastReportDetails: String? = null
+
+        override suspend fun reportCourse(
+            courseId: Int,
+            reason: String,
+            details: String?,
+        ): AppResult<Unit> {
+            lastReportCourseId = courseId
+            lastReportReason = reason
+            lastReportDetails = details
+            return reportResult
+        }
 
         override suspend fun getAllCoupons(): List<Coupon> = emptyList()
         override fun getCouponsPager(query: String?, filter: FilterData): Flow<PagingData<Coupon>> = emptyFlow()

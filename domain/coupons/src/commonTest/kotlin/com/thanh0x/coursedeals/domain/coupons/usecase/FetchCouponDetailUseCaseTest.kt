@@ -68,5 +68,6 @@ class FetchCouponDetailUseCaseTest {
         override fun getShowLocalFetchTime(): Flow<Boolean> = emptyFlow()
         override suspend fun saveShowLocalFetchTime(show: Boolean) {}
         override suspend fun fetchCouponDetail(courseId: Int): AppResult<Coupon> = AppResult.Error("Not implemented")
+        override suspend fun reportCourse(courseId: Int, reason: String, details: String?): AppResult<Unit> = AppResult.Success(Unit)
     }
 }

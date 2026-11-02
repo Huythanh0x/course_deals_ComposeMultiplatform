@@ -9,4 +9,7 @@ data class CouponDetailUiState(
     val isInternetAvailable: Boolean = true,
     val isFromCache: Boolean = false,
     val cachedAt: Long? = null,
+    val isReporting: Boolean = false,
+    val reportSuccess: Boolean = false,
+    val reportError: String? = null,
 )

@@ -3,6 +3,7 @@ package com.thanh0x.coursedeals.data.coupons.source.remote
 import com.thanh0x.coursedeals.core.network.NetworkResponse
 import com.thanh0x.coursedeals.data.coupons.model.CouponDto
 import com.thanh0x.coursedeals.data.coupons.model.CourseDealResponse
+import com.thanh0x.coursedeals.data.coupons.model.CourseReportRequest
 import com.thanh0x.coursedeals.data.coupons.model.ResponseStatusFromServer
 
 interface CouponService {
@@ -30,4 +31,9 @@ interface CouponService {
     suspend fun postCoupon(couponUrl: String): NetworkResponse<ResponseStatusFromServer>
 
     suspend fun deleteCoupon(couponUrl: String): NetworkResponse<ResponseStatusFromServer>
+
+    suspend fun reportCourse(
+        courseId: Int,
+        request: CourseReportRequest,
+    ): NetworkResponse<Unit>
 }

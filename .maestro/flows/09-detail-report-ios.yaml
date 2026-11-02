@@ -1,0 +1,33 @@
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: false
+- runFlow:
+    when:
+      visible: "Access as Guest"
+    commands:
+      - tapOn: "Access as Guest"
+- extendedWaitUntil:
+    visible: "Certified SQL & Databases for Data Science"
+    timeout: 15000
+- tapOn: "Certified SQL & Databases for Data Science"
+- extendedWaitUntil:
+    visible: "Enroll Now"
+    timeout: 10000
+- assertVisible: "Enroll Now"
+- assertVisible: "Report"
+- takeScreenshot: "01_detail_screen_ios"
+- tapOn: "Report"
+- extendedWaitUntil:
+    visible: "Report this deal"
+    timeout: 5000
+- assertVisible: "Report this deal"
+- takeScreenshot: "02_report_bottom_sheet_ios"
+- tapOn: "Expired deal"
+- takeScreenshot: "03_report_reason_selected_ios"
+- tapOn: "Submit"
+- extendedWaitUntil:
+    visible: "Report submitted successfully"
+    timeout: 5000
+- assertVisible: "Report submitted successfully"
+- takeScreenshot: "04_report_submitted_ios"
