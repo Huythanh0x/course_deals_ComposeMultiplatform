@@ -48,7 +48,7 @@ When the user gives a general or raw requirement (e.g. "Add Course Reports", "Of
 |---|---|---|---|
 | **1. PM & Solutions Architect** | Main Agent + `research` subagents | Scans code in parallel; defines cross-repo REST/DTO contract; specifies **4-quadrant test scenarios** (Happy, Failed, Error, Related Changes), structured **Use Cases**, and **GUI framework test specification** (Maestro); creates GitHub parent/sub-issues, stamps active sprint & initializes `NOTES.md`. | Built into this `SKILL.md` |
 | **2. Backend Engineer** | `backend-engineer` | Implements Spring Boot / Kotlin / Flyway / JobRunr changes & unit/integration tests (covering happy, failed, and error paths) in `course_deals_backend`, runs `./gradlew ktlintCheck detekt test`, commits locally. | [references/backend-engineer.md](references/backend-engineer.md) |
-| **3. Android / KMP Engineer** | `android-engineer` | Implements Clean Architecture in `course_deals_ComposeMultiplatform` across shared KMP/Android/iOS modules, exposes UI testability (semantic tags/labels for Maestro), handles multi-state UI (empty/success/error), runs `:app:detekt`, lint, and unit tests, commits locally. | [references/android-engineer.md](references/android-engineer.md) |
+| **3. Android / KMP Engineer** | `android-engineer` | Implements Clean Architecture in `course_deals_ComposeMultiplatform` across shared KMP/Android/Desktop (`:desktopApp`)/iOS modules, exposes UI testability (semantic tags/labels for Maestro and Desktop CLI flags), handles multi-state UI (empty/success/error), runs `:app:detekt`, `:desktopApp:detekt`, lint, and unit tests, commits locally. | [references/android-engineer.md](references/android-engineer.md) |
 | **4. Security & Arch Reviewer** | `security-arch-reviewer` | Read-only auditor (runs in parallel with QA): verifies Backend↔Client DTO JSON contract parity, Android Intent security (`intent-security-review`), KMP readiness (`kmp-readiness`), ADR criteria (`adr`), and verifies 4-quadrant test coverage. | [references/security-arch-reviewer.md](references/security-arch-reviewer.md) |
 | **5. QA & Release Engineer** | `qa-release-engineer` | Runs live E2E verification: Backend `curl -i` / test script locally ➔ **Cross-platform Kotlin Multiplatform (Android + iOS) GUI framework tests (`maestro`)** ➔ visual pixel inspection (`read_file`) ➔ Cloudflare R2 uploads ➔ **Explicit Side-by-Side Comparison Matrix (Android vs. iOS)** ➔ opens labeled PRs (`ship-pr`). | [references/qa-release-engineer.md](references/qa-release-engineer.md) |
 
@@ -90,7 +90,7 @@ Phase 4: Parallel Review & Backend QA
 ## Phase 1: PM & Architect Discovery (Main Agent)
 
 1. **Determine Repository Scope & Task Type**:
-   - Scope: Backend-only, Android/KMP-only, or Full-Stack (Cross-Repo).
+   - Scope: Backend-only, Android/KMP/Desktop-only (`area: android`, `area: desktop`), or Full-Stack (Cross-Repo).
    - Task Type: **Bug** vs. **Feature / Chore**.
 
 2. **Differentiated Discovery Protocol**:

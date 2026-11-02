@@ -28,8 +28,8 @@ flow this repo's own docs prescribe.
    for the full taxonomy):
    - `type: <feature|bug|chore|docs|refactor|test|design>`
    - `priority: <P0|P1|P2|P3>` — ask if not obvious from context
-   - `area: <android|backend|web|design|testing|ci|infra>` — usually `area: android`
-     for this repo
+   - `area: <android|desktop|backend|web|design|testing|ci|infra>` — usually `area: android`
+     or `area: desktop` for this repo
    - `size: <1|2|3|5|8|13>` — if it feels like `13`, say so and suggest splitting
      before creating the issue (per `docs/project-management.md`'s sizing guidance)
 4. **Decide top-level issue vs. sub-issue**, per `docs/project-board.md`: only

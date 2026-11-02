@@ -26,9 +26,9 @@ here is the source of truth (versioned, PR-reviewable).
 **Priority** (every issue gets exactly one)
 - `priority: P0` (blocking) · `priority: P1` (this session) · `priority: P2` (backlog) · `priority: P3` (someday)
 
-**Area** (tag with whichever apply — this repo will mostly be `area: android`, sometimes
+**Area** (tag with whichever apply — this repo will mostly be `area: android` or `area: desktop`, sometimes
 `area: design`, `area: testing`, `area: ci`)
-- `area: android` · `area: backend` · `area: web` · `area: design` · `area: testing` · `area: ci` · `area: infra`
+- `area: android` · `area: desktop` · `area: backend` · `area: web` · `area: design` · `area: testing` · `area: ci` · `area: infra`
 
 **Size — Fibonacci story points, mapped to real hours** (rougher at larger sizes on purpose)
 
