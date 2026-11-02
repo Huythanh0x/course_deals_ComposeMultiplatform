@@ -1,13 +1,14 @@
 package com.thanh0x.coursedeals.data.user.source.remote
 
 import com.thanh0x.coursedeals.core.common.AppResult
+import com.thanh0x.coursedeals.core.network.openapi.model.RefreshTokenRequestDTO
+import com.thanh0x.coursedeals.core.network.openapi.model.RegisterRequestDTO
+import com.thanh0x.coursedeals.core.network.openapi.model.SendOtpRequestDTO
+import com.thanh0x.coursedeals.core.network.openapi.model.SocialLoginRequestDTO
+import com.thanh0x.coursedeals.core.network.openapi.model.VerifyOtpRequestDTO
 import com.thanh0x.coursedeals.data.user.mapper.toDomain
 import com.thanh0x.coursedeals.data.user.mapper.toDto
-import com.thanh0x.coursedeals.data.user.model.RefreshTokenRequest
-import com.thanh0x.coursedeals.data.user.model.RegisterRequest
-import com.thanh0x.coursedeals.data.user.model.SendOtpRequest
-import com.thanh0x.coursedeals.data.user.model.SocialLoginRequest
-import com.thanh0x.coursedeals.data.user.model.VerifyOtpRequest
+import com.thanh0x.coursedeals.data.user.mapper.toSocialProvider
 import com.thanh0x.coursedeals.domain.user.AuthCredentials
 import com.thanh0x.coursedeals.domain.user.TokenData
 import com.thanh0x.coursedeals.domain.user.source.RemoteAuthenticationDataSource
@@ -24,11 +25,15 @@ class RemoteAuthenticationDataSourceImpl(
     ): AppResult<String> {
         return try {
             val response = userAuthenticationService.register(
-                RegisterRequest(email = email, password = password, fullName = fullName)
+                RegisterRequestDTO(email = email, password = password, fullName = fullName)
             )
             val body = response.body()
             if (response.isSuccessful) {
-                AppResult.Success(body?.message ?: body?.email ?: email)
+                AppResult.Success(
+                    body?.message?.takeIf { it.isNotBlank() }
+                        ?: body?.email?.takeIf { it.isNotBlank() }
+                        ?: email
+                )
             } else {
                 AppResult.Error(response.message(), response.code())
             }
@@ -40,10 +45,14 @@ class RemoteAuthenticationDataSourceImpl(
     @Suppress("TooGenericExceptionCaught")
     override suspend fun sendOtp(email: String): AppResult<String> {
         return try {
-            val response = userAuthenticationService.sendOtp(SendOtpRequest(email = email))
+            val response = userAuthenticationService.sendOtp(SendOtpRequestDTO(email = email))
             val body = response.body()
             if (response.isSuccessful) {
-                AppResult.Success(body?.message ?: body?.email ?: email)
+                AppResult.Success(
+                    body?.message?.takeIf { it.isNotBlank() }
+                        ?: body?.email?.takeIf { it.isNotBlank() }
+                        ?: email
+                )
             } else {
                 AppResult.Error(response.message(), response.code())
             }
@@ -56,7 +65,7 @@ class RemoteAuthenticationDataSourceImpl(
     override suspend fun verifyOtp(email: String, otp: String): AppResult<TokenData> {
         return try {
             val response = userAuthenticationService.verifyOtp(
-                VerifyOtpRequest(email = email, otp = otp)
+                VerifyOtpRequestDTO(email = email, otp = otp)
             )
             val body = response.body()
             if (response.isSuccessful && body != null) {
@@ -73,7 +82,7 @@ class RemoteAuthenticationDataSourceImpl(
     override suspend fun refreshToken(refreshToken: String): AppResult<TokenData> {
         return try {
             val response = userAuthenticationService.refreshToken(
-                RefreshTokenRequest(refreshToken = refreshToken)
+                RefreshTokenRequestDTO(refreshToken = refreshToken)
             )
             val body = response.body()
             if (response.isSuccessful && body != null) {
@@ -149,9 +158,9 @@ class RemoteAuthenticationDataSourceImpl(
     override suspend fun socialLogin(provider: String, idToken: String): AppResult<TokenData> {
         return try {
             val response = userAuthenticationService.socialLogin(
-                SocialLoginRequest(
+                SocialLoginRequestDTO(
                     idToken = idToken,
-                    provider = provider
+                    provider = provider.toSocialProvider()
                 )
             )
             val body = response.body()

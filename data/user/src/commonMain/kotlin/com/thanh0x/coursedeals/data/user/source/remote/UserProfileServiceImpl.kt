@@ -1,9 +1,9 @@
 package com.thanh0x.coursedeals.data.user.source.remote
 
 import com.thanh0x.coursedeals.core.network.NetworkResponse
-import com.thanh0x.coursedeals.data.user.model.PreferenceDto
-import com.thanh0x.coursedeals.data.user.model.UpdateUserProfileRequest
-import com.thanh0x.coursedeals.data.user.model.UserProfileDto
+import com.thanh0x.coursedeals.core.network.openapi.model.PreferenceDTO
+import com.thanh0x.coursedeals.core.network.openapi.model.UpdateUserProfileRequestDTO
+import com.thanh0x.coursedeals.core.network.openapi.model.UserProfileDTO
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.delete
@@ -46,13 +46,13 @@ class UserProfileServiceImpl(
         }
     }
 
-    override suspend fun getPreferences(): NetworkResponse<PreferenceDto> {
+    override suspend fun getPreferences(): NetworkResponse<PreferenceDTO> {
         return safeRequest {
             httpClient.get("/api/v1/preferences")
         }
     }
 
-    override suspend fun updatePreferences(preferences: PreferenceDto): NetworkResponse<PreferenceDto> {
+    override suspend fun updatePreferences(preferences: PreferenceDTO): NetworkResponse<PreferenceDTO> {
         return safeRequest {
             httpClient.put("/api/v1/preferences") {
                 contentType(ContentType.Application.Json)
@@ -61,13 +61,13 @@ class UserProfileServiceImpl(
         }
     }
 
-    override suspend fun getUserProfile(): NetworkResponse<UserProfileDto> {
+    override suspend fun getUserProfile(): NetworkResponse<UserProfileDTO> {
         return safeRequest {
             httpClient.get("/api/v1/user/profile")
         }
     }
 
-    override suspend fun updateUserProfile(request: UpdateUserProfileRequest): NetworkResponse<UserProfileDto> {
+    override suspend fun updateUserProfile(request: UpdateUserProfileRequestDTO): NetworkResponse<UserProfileDTO> {
         return safeRequest {
             httpClient.put("/api/v1/user/profile") {
                 contentType(ContentType.Application.Json)

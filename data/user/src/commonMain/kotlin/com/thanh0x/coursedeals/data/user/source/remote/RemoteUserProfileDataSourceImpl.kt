@@ -1,9 +1,9 @@
 package com.thanh0x.coursedeals.data.user.source.remote
 
 import com.thanh0x.coursedeals.core.common.AppResult
-import com.thanh0x.coursedeals.data.user.model.UpdateUserProfileRequest
-import com.thanh0x.coursedeals.data.user.model.toDomain
-import com.thanh0x.coursedeals.data.user.model.toDto
+import com.thanh0x.coursedeals.core.network.openapi.model.UpdateUserProfileRequestDTO
+import com.thanh0x.coursedeals.data.user.mapper.toDomain
+import com.thanh0x.coursedeals.data.user.mapper.toDto
 import com.thanh0x.coursedeals.domain.user.UserPreferences
 import com.thanh0x.coursedeals.domain.user.UserProfile
 import com.thanh0x.coursedeals.domain.user.source.RemoteUserProfileDataSource
@@ -64,7 +64,7 @@ class RemoteUserProfileDataSourceImpl(
         fcmToken: String?,
     ): AppResult<UserProfile> {
         return try {
-            val request = UpdateUserProfileRequest(
+            val request = UpdateUserProfileRequestDTO(
                 fullName = fullName,
                 avatarUrl = avatarUrl,
                 fcmToken = fcmToken,

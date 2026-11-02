@@ -1,14 +1,14 @@
 package com.thanh0x.coursedeals.data.user.source.remote
 
 import com.thanh0x.coursedeals.core.network.NetworkResponse
-import com.thanh0x.coursedeals.data.user.model.PostAuthenticationData
-import com.thanh0x.coursedeals.data.user.model.RefreshTokenRequest
-import com.thanh0x.coursedeals.data.user.model.RegisterRequest
-import com.thanh0x.coursedeals.data.user.model.RegisterResponseData
-import com.thanh0x.coursedeals.data.user.model.SendOtpRequest
-import com.thanh0x.coursedeals.data.user.model.SocialLoginRequest
-import com.thanh0x.coursedeals.data.user.model.TokenResponseData
-import com.thanh0x.coursedeals.data.user.model.VerifyOtpRequest
+import com.thanh0x.coursedeals.core.network.openapi.model.AuthResponseDTO
+import com.thanh0x.coursedeals.core.network.openapi.model.EmailLoginRequestDTO
+import com.thanh0x.coursedeals.core.network.openapi.model.RefreshTokenRequestDTO
+import com.thanh0x.coursedeals.core.network.openapi.model.RegisterRequestDTO
+import com.thanh0x.coursedeals.core.network.openapi.model.RegisterResponseDTO
+import com.thanh0x.coursedeals.core.network.openapi.model.SendOtpRequestDTO
+import com.thanh0x.coursedeals.core.network.openapi.model.SocialLoginRequestDTO
+import com.thanh0x.coursedeals.core.network.openapi.model.VerifyOtpRequestDTO
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -49,7 +49,7 @@ class UserAuthenticationServiceImpl(
         }
     }
 
-    override suspend fun login(postAuthenticationData: PostAuthenticationData): NetworkResponse<TokenResponseData> {
+    override suspend fun login(postAuthenticationData: EmailLoginRequestDTO): NetworkResponse<AuthResponseDTO> {
         return safeRequest {
             httpClient.post("/api/v1/auth/login") {
                 contentType(ContentType.Application.Json)
@@ -58,7 +58,7 @@ class UserAuthenticationServiceImpl(
         }
     }
 
-    override suspend fun socialLogin(request: SocialLoginRequest): NetworkResponse<TokenResponseData> {
+    override suspend fun socialLogin(request: SocialLoginRequestDTO): NetworkResponse<AuthResponseDTO> {
         return safeRequest {
             httpClient.post("/api/v1/auth/social/login") {
                 contentType(ContentType.Application.Json)
@@ -67,7 +67,7 @@ class UserAuthenticationServiceImpl(
         }
     }
 
-    override suspend fun register(request: RegisterRequest): NetworkResponse<RegisterResponseData> {
+    override suspend fun register(request: RegisterRequestDTO): NetworkResponse<RegisterResponseDTO> {
         return safeRequest {
             httpClient.post("/api/v1/auth/register") {
                 contentType(ContentType.Application.Json)
@@ -76,7 +76,7 @@ class UserAuthenticationServiceImpl(
         }
     }
 
-    override suspend fun sendOtp(request: SendOtpRequest): NetworkResponse<RegisterResponseData> {
+    override suspend fun sendOtp(request: SendOtpRequestDTO): NetworkResponse<RegisterResponseDTO> {
         return safeRequest {
             httpClient.post("/api/v1/auth/send-otp") {
                 contentType(ContentType.Application.Json)
@@ -85,7 +85,7 @@ class UserAuthenticationServiceImpl(
         }
     }
 
-    override suspend fun verifyOtp(request: VerifyOtpRequest): NetworkResponse<TokenResponseData> {
+    override suspend fun verifyOtp(request: VerifyOtpRequestDTO): NetworkResponse<AuthResponseDTO> {
         return safeRequest {
             httpClient.post("/api/v1/auth/verify-otp") {
                 contentType(ContentType.Application.Json)
@@ -94,7 +94,7 @@ class UserAuthenticationServiceImpl(
         }
     }
 
-    override suspend fun refreshToken(request: RefreshTokenRequest): NetworkResponse<TokenResponseData> {
+    override suspend fun refreshToken(request: RefreshTokenRequestDTO): NetworkResponse<AuthResponseDTO> {
         return safeRequest {
             httpClient.post("/api/v1/auth/refresh") {
                 contentType(ContentType.Application.Json)
@@ -116,13 +116,13 @@ class UserAuthenticationServiceImpl(
         }
     }
 
-    override suspend fun requestFingerprintToken(): NetworkResponse<TokenResponseData> {
+    override suspend fun requestFingerprintToken(): NetworkResponse<AuthResponseDTO> {
         return safeRequest {
             httpClient.get("/api/v1/auth/fingerprint-token")
         }
     }
 
-    override suspend fun requestAccessToken(): NetworkResponse<TokenResponseData> {
+    override suspend fun requestAccessToken(): NetworkResponse<AuthResponseDTO> {
         return safeRequest {
             httpClient.get("/api/v1/auth/access-token")
         }

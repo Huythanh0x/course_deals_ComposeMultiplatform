@@ -4,11 +4,10 @@ import androidx.paging.PagingSource
 import com.thanh0x.coursedeals.core.common.AppResult
 import com.thanh0x.coursedeals.core.common.platformCurrentTimeMillis
 import com.thanh0x.coursedeals.core.network.NetworkResponse
+import com.thanh0x.coursedeals.core.network.openapi.model.CouponDetailDTO
+import com.thanh0x.coursedeals.core.network.openapi.model.CourseReportRequest
+import com.thanh0x.coursedeals.core.network.openapi.model.PagedCouponResponseDTO
 import com.thanh0x.coursedeals.data.coupons.model.Coupon as CouponEntity
-import com.thanh0x.coursedeals.data.coupons.model.CouponDto
-import com.thanh0x.coursedeals.data.coupons.model.CourseDealResponse
-import com.thanh0x.coursedeals.data.coupons.model.CourseReportRequest
-import com.thanh0x.coursedeals.data.coupons.model.ResponseStatusFromServer
 import com.thanh0x.coursedeals.data.coupons.source.LocalCouponDataSource
 import com.thanh0x.coursedeals.data.coupons.source.remote.CouponService
 import com.thanh0x.coursedeals.domain.coupons.Coupon
@@ -362,30 +361,30 @@ class CouponRepositoryImplTest {
             return reportResponse
         }
 
-        override suspend fun fetchAllCoupons(): NetworkResponse<CourseDealResponse> =
+        override suspend fun fetchAllCoupons(): NetworkResponse<PagedCouponResponseDTO> =
             throw UnsupportedOperationException()
 
         override suspend fun fetchPagedCoupons(
             pageIndex: Int,
             numberPerPage: Int,
-        ): NetworkResponse<CourseDealResponse> = throw UnsupportedOperationException()
+        ): NetworkResponse<PagedCouponResponseDTO> = throw UnsupportedOperationException()
 
-        override suspend fun fetchCouponDetail(courseId: Int): NetworkResponse<CouponDto> =
+        override suspend fun fetchCouponDetail(courseId: Int): NetworkResponse<CouponDetailDTO> =
             throw UnsupportedOperationException()
 
-        override suspend fun fetchEnhancedCouponDetail(courseId: Int): NetworkResponse<CouponDto> =
+        override suspend fun fetchEnhancedCouponDetail(courseId: Int): NetworkResponse<CouponDetailDTO> =
             throw UnsupportedOperationException()
 
         override suspend fun searchCourseCoupon(
             query: String,
             pageIndex: Int,
             numberPerPage: Int,
-        ): NetworkResponse<CourseDealResponse> = throw UnsupportedOperationException()
+        ): NetworkResponse<PagedCouponResponseDTO> = throw UnsupportedOperationException()
 
-        override suspend fun postCoupon(couponUrl: String): NetworkResponse<ResponseStatusFromServer> =
+        override suspend fun postCoupon(couponUrl: String): NetworkResponse<Unit> =
             throw UnsupportedOperationException()
 
-        override suspend fun deleteCoupon(couponUrl: String): NetworkResponse<ResponseStatusFromServer> =
+        override suspend fun deleteCoupon(couponUrl: String): NetworkResponse<Unit> =
             throw UnsupportedOperationException()
     }
 }
