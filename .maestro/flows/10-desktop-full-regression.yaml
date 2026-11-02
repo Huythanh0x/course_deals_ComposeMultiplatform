@@ -1,0 +1,205 @@
+appId: ${APP_ID}
+---
+# 1. Force Update Gate (version 100 < 105)
+- launchApp:
+    clearState: true
+    arguments:
+      override_version_code: "100"
+
+- extendedWaitUntil:
+    visible: "Update Required"
+    timeout: 10000
+
+- assertVisible: "Update Required"
+- assertVisible: "Update Now"
+- takeScreenshot: desktop_full_01_force_update_gate
+- tapOn: "Update Now"
+
+# 2. Nominal Launch (version 105 >= 105) -> Login Screen
+- launchApp:
+    clearState: true
+    stopApp: true
+    arguments:
+      override_version_code: "105"
+
+- extendedWaitUntil:
+    visible: "Continue with Email"
+    timeout: 10000
+
+- assertVisible: "Email"
+- assertVisible: "Continue with Email"
+- assertVisible: "Continue with Google"
+- assertVisible: "Access as Guest"
+- takeScreenshot: desktop_full_02_login_screen
+
+# 3. Email -> OTP Verification -> Terms & Privacy Consent
+- tapOn: "Email"
+- inputText: "fullregression@coursedeals.com"
+- tapOn: "Continue with Email"
+
+- extendedWaitUntil:
+    visible: "Verify Your Email"
+    timeout: 10000
+
+- assertVisible: "Verify Your Email"
+- assertVisible: "fullregression@coursedeals.com"
+- assertVisible: "6-digit OTP"
+- assertVisible: "Resend Code"
+- assertVisible: "Change Email"
+- takeScreenshot: desktop_full_03_otp_screen
+
+- tapOn: "6-digit OTP"
+- inputText: "000000"
+- tapOn: "Verify OTP"
+
+- extendedWaitUntil:
+    visible: "Terms of Service & Privacy Policy"
+    timeout: 10000
+
+- assertVisible: "Terms of Service & Privacy Policy"
+- assertVisible: "Agree & Continue"
+- assertVisible: "Decline"
+- takeScreenshot: desktop_full_04_terms_dialog
+
+- tapOn: "Agree & Continue"
+
+# 4. Home Feed -> Submit Deal -> Filter Bottom Sheet -> Search
+- extendedWaitUntil:
+    visible: "HOME"
+    timeout: 10000
+
+- extendedWaitUntil:
+    visible: "Complete Web Development Bootcamp 2026"
+    timeout: 10000
+
+- assertVisible: "HOME"
+- assertVisible: "COURSE"
+- assertVisible: "PROFILE"
+- takeScreenshot: desktop_full_05_home_feed
+
+- tapOn: "Submit"
+- extendedWaitUntil:
+    visible: "Submit a Deal"
+    timeout: 5000
+- assertVisible: "Course URL"
+- takeScreenshot: desktop_full_06_submit_deal_sheet
+- tapOn: "Cancel"
+
+- tapOn: "Filter"
+- extendedWaitUntil:
+    visible: "Minimum Rating"
+    timeout: 5000
+- tapOn: "Development"
+- tapOn: "English"
+- tapOn: "Rating"
+- takeScreenshot: desktop_full_07_filter_sheet
+- tapOn: "Reset"
+- tapOn: "Apply"
+
+- tapOn: "Search courses"
+- inputText: "Procurement"
+- extendedWaitUntil:
+    visible: "Professional Diploma in Procurement Management"
+    timeout: 5000
+- assertVisible: "Professional Diploma in Procurement Management"
+- takeScreenshot: desktop_full_08_search_results
+- tapOn: "Clear"
+
+# 5. Course Detail -> Report Sheet -> Enroll Embedded Browser
+- extendedWaitUntil:
+    visible: "Complete Web Development Bootcamp 2026"
+    timeout: 5000
+- tapOn: "Complete Web Development Bootcamp 2026"
+
+- extendedWaitUntil:
+    visible: "Enroll Now"
+    timeout: 5000
+- assertVisible: "Enroll Now"
+- assertVisible: "Report"
+- assertVisible: "DESCRIPTION"
+- takeScreenshot: desktop_full_09_course_detail
+
+- tapOn: "Report"
+- extendedWaitUntil:
+    visible: "Report this deal"
+    timeout: 5000
+- tapOn: "Expired deal"
+- takeScreenshot: desktop_full_10_report_sheet
+- tapOn: "Submit"
+
+- extendedWaitUntil:
+    visible: "Report Submitted"
+    timeout: 5000
+- tapOn: "OK"
+
+- tapOn: "Enroll Now"
+- extendedWaitUntil:
+    visible: "udemy.com"
+    timeout: 5000
+- assertVisible: "Enroll Now"
+- takeScreenshot: desktop_full_11_enroll_browser
+- tapOn: "Cancel"
+
+- extendedWaitUntil:
+    visible: "Enroll Now"
+    timeout: 5000
+- tapOn: "Back"
+
+# 6. Course Tab Embedded Browser
+- extendedWaitUntil:
+    visible: "COURSE"
+    timeout: 5000
+- tapOn: "COURSE"
+- extendedWaitUntil:
+    visible: "udemy.com"
+    timeout: 5000
+- takeScreenshot: desktop_full_12_course_browser
+
+# 7. Profile Tab -> Categories -> Dark Mode -> Diagnostic Logs -> Delete Account -> Log Out
+- tapOn: "PROFILE"
+- extendedWaitUntil:
+    visible: "fullregression@coursedeals.com"
+    timeout: 5000
+- assertVisible: "Favorite Categories"
+- assertVisible: "Favorite Keywords"
+- assertVisible: "Dark Mode"
+- assertVisible: "Notifications"
+- takeScreenshot: desktop_full_13_profile_authenticated
+
+- tapOn: "Add Category"
+- extendedWaitUntil:
+    visible: "Done"
+    timeout: 5000
+- tapOn: "Design"
+- tapOn: "Business"
+- takeScreenshot: desktop_full_14_category_picker
+- tapOn: "Done"
+
+- tapOn: "Dark Mode"
+- takeScreenshot: desktop_full_15_profile_dark_mode
+
+- tapOn: "Diagnostic Logs"
+- extendedWaitUntil:
+    visible: "Copy Logs"
+    timeout: 5000
+- tapOn: "DEBUG"
+- tapOn: "INFO"
+- tapOn: "WARN"
+- tapOn: "ERROR"
+- tapOn: "ALL"
+- takeScreenshot: desktop_full_16_diagnostic_logs_sheet
+- tapOn: "Close"
+
+- tapOn: "Delete Account"
+- extendedWaitUntil:
+    visible: "Delete"
+    timeout: 5000
+- takeScreenshot: desktop_full_17_delete_account_dialog
+- tapOn: "Cancel"
+
+- tapOn: "Log Out"
+- extendedWaitUntil:
+    visible: "Continue with Email"
+    timeout: 5000
+- assertVisible: "Continue with Email"
+- takeScreenshot: desktop_full_18_logged_out_login
