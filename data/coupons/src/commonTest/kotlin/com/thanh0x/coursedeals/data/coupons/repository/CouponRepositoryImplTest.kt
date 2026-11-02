@@ -7,6 +7,7 @@ import com.thanh0x.coursedeals.core.network.NetworkResponse
 import com.thanh0x.coursedeals.data.coupons.model.Coupon as CouponEntity
 import com.thanh0x.coursedeals.data.coupons.model.CouponDto
 import com.thanh0x.coursedeals.data.coupons.model.CourseDealResponse
+import com.thanh0x.coursedeals.data.coupons.model.CourseReportRequest
 import com.thanh0x.coursedeals.data.coupons.model.ResponseStatusFromServer
 import com.thanh0x.coursedeals.data.coupons.source.LocalCouponDataSource
 import com.thanh0x.coursedeals.data.coupons.source.remote.CouponService
@@ -204,6 +205,66 @@ class CouponRepositoryImplTest {
         assertEquals("Not Found", result.message)
     }
 
+    @Test
+    fun reportCourse_whenSuccessful_returnsSuccess() = runTest {
+        val fakeCouponService = FakeCouponService().apply {
+            reportResponse = NetworkResponse.success(Unit)
+        }
+        val customRepo = CouponRepositoryImpl(
+            localCouponDataSource = fakeLocalCouponDataSource,
+            remoteCouponDataSource = fakeRemoteCouponDataSource,
+            localSettingsDataSource = fakeLocalSettingsDataSource,
+            couponService = fakeCouponService,
+            searchRepository = fakeSearchRepository,
+        )
+
+        val result = customRepo.reportCourse(505, "NOT_FREE", "Price is $19.99")
+
+        assertTrue(result is AppResult.Success)
+        assertEquals(505, fakeCouponService.lastReportCourseId)
+        assertEquals("NOT_FREE", fakeCouponService.lastReportRequest?.reason)
+        assertEquals("Price is $19.99", fakeCouponService.lastReportRequest?.details)
+    }
+
+    @Test
+    fun reportCourse_whenServerError_returnsError() = runTest {
+        val fakeCouponService = FakeCouponService().apply {
+            reportResponse = NetworkResponse.error(500, "Internal Server Error")
+        }
+        val customRepo = CouponRepositoryImpl(
+            localCouponDataSource = fakeLocalCouponDataSource,
+            remoteCouponDataSource = fakeRemoteCouponDataSource,
+            localSettingsDataSource = fakeLocalSettingsDataSource,
+            couponService = fakeCouponService,
+            searchRepository = fakeSearchRepository,
+        )
+
+        val result = customRepo.reportCourse(505, "OTHER", "Something wrong")
+
+        assertTrue(result is AppResult.Error)
+        assertEquals("Internal Server Error", result.message)
+        assertEquals(500, result.code)
+    }
+
+    @Test
+    fun reportCourse_whenExceptionThrown_returnsError() = runTest {
+        val fakeCouponService = FakeCouponService().apply {
+            shouldThrowOnReport = true
+        }
+        val customRepo = CouponRepositoryImpl(
+            localCouponDataSource = fakeLocalCouponDataSource,
+            remoteCouponDataSource = fakeRemoteCouponDataSource,
+            localSettingsDataSource = fakeLocalSettingsDataSource,
+            couponService = fakeCouponService,
+            searchRepository = fakeSearchRepository,
+        )
+
+        val result = customRepo.reportCourse(505, "EXPIRED")
+
+        assertTrue(result is AppResult.Error)
+        assertEquals("Network timeout", result.message)
+    }
+
     private class FakeLocalCouponDataSource : LocalCouponDataSource {
         private val storage = mutableMapOf<Int, CouponEntity>()
 
@@ -286,6 +347,21 @@ class CouponRepositoryImplTest {
     }
 
     private class FakeCouponService : CouponService {
+        var reportResponse: NetworkResponse<Unit> = NetworkResponse.success(Unit)
+        var lastReportRequest: CourseReportRequest? = null
+        var lastReportCourseId: Int? = null
+        var shouldThrowOnReport: Boolean = false
+
+        override suspend fun reportCourse(
+            courseId: Int,
+            request: CourseReportRequest,
+        ): NetworkResponse<Unit> {
+            if (shouldThrowOnReport) throw RuntimeException("Network timeout")
+            lastReportCourseId = courseId
+            lastReportRequest = request
+            return reportResponse
+        }
+
         override suspend fun fetchAllCoupons(): NetworkResponse<CourseDealResponse> =
             throw UnsupportedOperationException()
 

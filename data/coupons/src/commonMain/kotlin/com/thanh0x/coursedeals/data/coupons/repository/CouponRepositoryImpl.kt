@@ -9,6 +9,7 @@ import com.thanh0x.coursedeals.core.common.Constant
 import com.thanh0x.coursedeals.core.common.platformCurrentTimeMillis
 import com.thanh0x.coursedeals.data.coupons.mapper.toDomain
 import com.thanh0x.coursedeals.data.coupons.mapper.toEntity
+import com.thanh0x.coursedeals.data.coupons.model.CourseReportRequest
 import com.thanh0x.coursedeals.data.coupons.source.LocalCouponDataSource
 import com.thanh0x.coursedeals.data.coupons.source.remote.CouponService
 import com.thanh0x.coursedeals.domain.coupons.Coupon
@@ -123,6 +124,26 @@ class CouponRepositoryImpl(
         }
 
         return remoteResult
+    }
+
+    override suspend fun reportCourse(
+        courseId: Int,
+        reason: String,
+        details: String?,
+    ): AppResult<Unit> {
+        return try {
+            val response = couponService.reportCourse(
+                courseId = courseId,
+                request = CourseReportRequest(reason = reason, details = details),
+            )
+            if (response.isSuccessful) {
+                AppResult.Success(Unit)
+            } else {
+                AppResult.Error(response.message, response.code)
+            }
+        } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+            AppResult.Error(e.message ?: "Failed to report course")
+        }
     }
 
     companion object {
