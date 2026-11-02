@@ -112,7 +112,7 @@ class UserAuthenticationServiceImpl(
                 NetworkResponse.error(response.status.value, response.status.description)
             }
         } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
-            NetworkResponse.error(-1, e.message ?: "Unknown Error")
+            NetworkResponse.error(UNKNOWN_HTTP_STATUS_CODE, e.message ?: "Unknown Error")
         }
     }
 
@@ -126,5 +126,9 @@ class UserAuthenticationServiceImpl(
         return safeRequest {
             httpClient.get("/api/v1/auth/access-token")
         }
+    }
+
+    companion object {
+        private const val UNKNOWN_HTTP_STATUS_CODE = -1
     }
 }
