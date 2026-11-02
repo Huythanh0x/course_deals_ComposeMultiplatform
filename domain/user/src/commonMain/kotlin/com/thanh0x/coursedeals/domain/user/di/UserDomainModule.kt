@@ -1,5 +1,6 @@
 package com.thanh0x.coursedeals.domain.user.di
 
+import com.thanh0x.coursedeals.domain.user.usecase.AcceptTermsUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.CheckIfTokenExpiredUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.ClearCachedUserProfileUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.ClearLocalRefreshTokenUseCase
@@ -30,6 +31,7 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
 val userDomainModule = module {
+    factoryOf(::AcceptTermsUseCase)
     factoryOf(::CheckIfTokenExpiredUseCase)
     factoryOf(::ClearCachedUserProfileUseCase)
     factoryOf(::ClearLocalRefreshTokenUseCase)

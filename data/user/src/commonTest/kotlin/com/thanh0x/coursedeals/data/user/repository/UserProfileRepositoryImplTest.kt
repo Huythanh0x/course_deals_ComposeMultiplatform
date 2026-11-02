@@ -139,6 +139,25 @@ class UserProfileRepositoryImplTest {
         assertEquals("refresh-123", fakeAuthDataSource.getLocalRefreshToken())
     }
 
+    @Test
+    fun acceptTerms_delegatesToRemoteDataSource() = runTest {
+        fakeRemoteDataSource.acceptTermsResult = AppResult.Success(Unit)
+
+        val result = repository.acceptTerms()
+
+        assertTrue(result is AppResult.Success)
+    }
+
+    @Test
+    fun acceptTerms_whenRemoteFails_returnsError() = runTest {
+        fakeRemoteDataSource.acceptTermsResult = AppResult.Error("HTTP 500", 500)
+
+        val result = repository.acceptTerms()
+
+        assertTrue(result is AppResult.Error)
+        assertEquals("HTTP 500", result.message)
+    }
+
     private class FakeLocalUserProfileDataSource : LocalUserProfileDataSource {
         private var darkMode: Boolean? = null
         private var fingerprint: Boolean? = null
@@ -194,8 +213,11 @@ class UserProfileRepositoryImplTest {
         ): AppResult<UserProfile> = updateResult
 
         var deleteAccountResult: AppResult<Unit> = AppResult.Error("Not configured")
+        var acceptTermsResult: AppResult<Unit> = AppResult.Success(Unit)
 
         override suspend fun deleteAccount(): AppResult<Unit> = deleteAccountResult
+
+        override suspend fun acceptTerms(): AppResult<Unit> = acceptTermsResult
     }
 
     private class FakeLocalAuthenticationDataSource : LocalAuthenticationDataSource {

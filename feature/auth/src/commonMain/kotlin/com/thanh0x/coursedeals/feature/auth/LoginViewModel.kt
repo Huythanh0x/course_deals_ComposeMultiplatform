@@ -6,6 +6,7 @@ import com.thanh0x.coursedeals.core.ui.UiEvent
 import com.thanh0x.coursedeals.core.ui.ViewModel
 import com.thanh0x.coursedeals.core.ui.util.NetworkUtil
 import com.thanh0x.coursedeals.domain.user.TokenData
+import com.thanh0x.coursedeals.domain.user.usecase.AcceptTermsUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.ClearCachedUserProfileUseCase
 import com.thanh0x.coursedeals.core.common.BuildConfig
 import com.thanh0x.coursedeals.domain.user.usecase.ClearLocalTokenUseCase
@@ -46,6 +47,7 @@ class LoginViewModel(
     private val requestAccessTokenUseCase: RequestAccessTokenUseCase,
     private val settingUserProfileUseCase: SettingUserProfileUseCase,
     private val networkUtil: NetworkUtil,
+    private val acceptTermsUseCase: AcceptTermsUseCase? = null,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : ViewModel() {
 
@@ -267,9 +269,27 @@ class LoginViewModel(
         val pending = _uiState.value.pendingTokenData
         if (pending != null) {
             viewModelScope.launch(ioDispatcher) {
+                _uiState.update { it.copy(isLoading = true, error = null) }
                 saveTokens(pending)
-                _uiState.update { it.copy(showTermsDialog = false, pendingTokenData = null) }
-                _uiEvent.emit(UiEvent.Navigate("Main"))
+                val termsResult = acceptTermsUseCase?.invoke() ?: AppResult.Success(Unit)
+                _uiState.update { it.copy(isLoading = false) }
+                when (termsResult) {
+                    is AppResult.Success -> {
+                        _uiState.update { it.copy(showTermsDialog = false, pendingTokenData = null) }
+                        _uiEvent.emit(UiEvent.Navigate("Main"))
+                    }
+                    is AppResult.Error -> {
+                        clearLocalTokenUseCase()
+                        _uiState.update {
+                            it.copy(
+                                error = termsResult.message.ifBlank {
+                                    "Failed to accept Terms of Service. Please try again."
+                                }
+                            )
+                        }
+                    }
+                    is AppResult.Loading -> {}
+                }
             }
         } else {
             _uiState.update { it.copy(showTermsDialog = false) }

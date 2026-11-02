@@ -15,4 +15,6 @@ interface UserProfileService {
     suspend fun updateUserProfile(request: UpdateUserProfileRequest): NetworkResponse<UserProfileDto>
 
     suspend fun deleteAccount(): NetworkResponse<Unit>
+
+    suspend fun acceptTerms(): NetworkResponse<Unit>
 }

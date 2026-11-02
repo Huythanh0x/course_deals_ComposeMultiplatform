@@ -94,3 +94,34 @@ appId: com.thanh0x.coursedeals
 - assertVisible: "Agree & Continue"
 - takeScreenshot: .maestro/screenshots/155-relogin-after-delete-new-user-terms
 - tapOn: "Decline"
+
+# 7. Dismiss Decline error notice and immediately sign in a 2nd time -> Terms dialog MUST STILL appear (not bypassed!)
+- extendedWaitUntil:
+    visible: "OK"
+    timeout: 10000
+    optional: true
+- tapOn:
+    text: "OK"
+    optional: true
+- tapOn: "Change Email"
+- extendedWaitUntil:
+    visible: "Continue with Email"
+    timeout: 15000
+- tapOn: "Email"
+- inputText: "delete-e2e@coursedeals.com"
+- tapOn: "Continue with Email"
+
+- extendedWaitUntil:
+    visible: "Verify Your Email"
+    timeout: 15000
+- tapOn: "6-digit OTP"
+- inputText: "000000"
+- tapOn: "Verify OTP"
+
+- extendedWaitUntil:
+    visible: "Terms of Service & Privacy Policy"
+    timeout: 15000
+- assertVisible: "Terms of Service & Privacy Policy"
+- assertVisible: "Agree & Continue"
+- tapOn: "Decline"
+

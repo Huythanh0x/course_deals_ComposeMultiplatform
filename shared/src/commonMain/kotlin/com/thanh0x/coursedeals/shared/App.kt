@@ -237,6 +237,7 @@ fun App(
                     val err = loginUiState.error
                     if (!err.isNullOrBlank()) {
                         showAlertDialog("Authentication Error", err, DialogType.ERROR)
+                        loginViewModel.clearError()
                     }
                 }
 

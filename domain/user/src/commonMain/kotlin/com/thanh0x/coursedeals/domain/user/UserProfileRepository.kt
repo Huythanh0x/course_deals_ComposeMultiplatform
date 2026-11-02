@@ -28,4 +28,5 @@ interface UserProfileRepository {
     suspend fun getCachedUserProfile(): UserProfile
     suspend fun clearCachedUserProfile()
     suspend fun deleteAccount(): AppResult<Unit>
+    suspend fun acceptTerms(): AppResult<Unit>
 }

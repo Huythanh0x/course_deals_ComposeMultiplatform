@@ -20,6 +20,7 @@ val authModule = module {
             requestAccessTokenUseCase = get(),
             settingUserProfileUseCase = get(),
             networkUtil = get(),
+            acceptTermsUseCase = get(),
         )
     }
 }

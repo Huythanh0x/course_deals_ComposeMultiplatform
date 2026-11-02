@@ -51,5 +51,6 @@ class GetUserProfileUseCaseTest {
         override suspend fun getCachedUserProfile(): UserProfile = UserProfile()
         override suspend fun clearCachedUserProfile() {}
         override suspend fun deleteAccount(): AppResult<Unit> = AppResult.Success(Unit)
+        override suspend fun acceptTerms(): AppResult<Unit> = AppResult.Success(Unit)
     }
 }

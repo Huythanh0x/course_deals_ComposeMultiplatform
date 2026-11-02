@@ -10,4 +10,5 @@ interface RemoteUserProfileDataSource {
     suspend fun getUserProfile(): AppResult<UserProfile>
     suspend fun updateUserProfile(fullName: String?, avatarUrl: String?, fcmToken: String?): AppResult<UserProfile>
     suspend fun deleteAccount(): AppResult<Unit>
+    suspend fun acceptTerms(): AppResult<Unit>
 }

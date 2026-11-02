@@ -241,6 +241,7 @@ class ProfileViewModelTest {
         override suspend fun clearCachedUserProfile() { cachedProfile = UserProfile() }
         var deleteAccountResult: AppResult<Unit> = AppResult.Success(Unit)
         override suspend fun deleteAccount(): AppResult<Unit> = deleteAccountResult
+        override suspend fun acceptTerms(): AppResult<Unit> = AppResult.Success(Unit)
         override suspend fun syncPreferences(): AppResult<UserPreferences> = AppResult.Success(cachedProfile.preferences ?: UserPreferences())
         override suspend fun getFavoriteCategories(): Set<String> = savedCategories
         override suspend fun saveFavoriteCategories(categories: Set<String>): AppResult<UserPreferences> {

@@ -152,4 +152,8 @@ class UserProfileRepositoryImpl(
         }
         return result
     }
+
+    override suspend fun acceptTerms(): AppResult<Unit> {
+        return remoteUserProfileDataSource.acceptTerms()
+    }
 }
