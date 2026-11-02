@@ -1,6 +1,8 @@
 package com.thanh0x.coursedeals.feature.profile
 
 import com.thanh0x.coursedeals.core.common.AppResult
+import com.thanh0x.coursedeals.core.common.notification.NotificationTopic
+import com.thanh0x.coursedeals.core.common.notification.PushNotificationManager
 import com.thanh0x.coursedeals.core.ui.util.NetworkUtil
 import com.thanh0x.coursedeals.domain.user.AuthCredentials
 import com.thanh0x.coursedeals.domain.user.TokenData
@@ -22,6 +24,10 @@ import com.thanh0x.coursedeals.domain.user.usecase.SettingFingerprintUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -42,6 +48,7 @@ class ProfileViewModelTest {
     private lateinit var fakeUserProfileRepository: FakeUserProfileRepository
     private lateinit var fakeAuthRepository: FakeUserAuthenticationRepository
     private lateinit var fakeNetworkUtil: FakeNetworkUtil
+    private lateinit var fakePushNotificationManager: FakePushNotificationManager
     private lateinit var viewModel: ProfileViewModel
 
     @BeforeTest
@@ -50,6 +57,7 @@ class ProfileViewModelTest {
         fakeUserProfileRepository = FakeUserProfileRepository()
         fakeAuthRepository = FakeUserAuthenticationRepository()
         fakeNetworkUtil = FakeNetworkUtil()
+        fakePushNotificationManager = FakePushNotificationManager()
     }
 
     @AfterTest
@@ -84,6 +92,7 @@ class ProfileViewModelTest {
             getLocalTokenUseCase = getLocalTokenUseCase,
             deleteAccountUseCase = deleteAccountUseCase,
             networkUtil = fakeNetworkUtil,
+            pushNotificationManager = fakePushNotificationManager,
             ioDispatcher = testDispatcher,
         )
     }
@@ -239,6 +248,65 @@ class ProfileViewModelTest {
         assertEquals(com.thanh0x.coursedeals.core.logging.LogLevel.ERROR, viewModel.uiState.value.logFilterLevel)
     }
 
+    @Test
+    fun init_subscribesToDefaultTopics_whenNotificationsEnabled() = runTest {
+        fakeUserProfileRepository.savedNotifications = true
+        viewModel = createViewModel(token = "valid_token")
+        testScheduler.advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertTrue(state.isNotificationsEnabled)
+        assertTrue(state.subscribedTopics.contains(NotificationTopic.TOPIC_DEALS_ALL))
+    }
+
+    @Test
+    fun toggleTopic_subscribesOrUnsubscribesTopic() = runTest {
+        viewModel = createViewModel(token = "valid_token")
+        testScheduler.advanceUntilIdle()
+
+        viewModel.toggleTopic(NotificationTopic.TOPIC_DEALS_DEVELOPMENT, true)
+        testScheduler.advanceUntilIdle()
+
+        assertTrue(viewModel.uiState.value.subscribedTopics.contains(NotificationTopic.TOPIC_DEALS_DEVELOPMENT))
+        assertTrue(fakePushNotificationManager.subscribedList.contains(NotificationTopic.TOPIC_DEALS_DEVELOPMENT))
+
+        viewModel.toggleTopic(NotificationTopic.TOPIC_DEALS_DEVELOPMENT, false)
+        testScheduler.advanceUntilIdle()
+
+        assertFalse(viewModel.uiState.value.subscribedTopics.contains(NotificationTopic.TOPIC_DEALS_DEVELOPMENT))
+        assertTrue(fakePushNotificationManager.unsubscribedList.contains(NotificationTopic.TOPIC_DEALS_DEVELOPMENT))
+    }
+
+    @Test
+    fun updateNotificationsEnabled_whenTurnedOff_mutesTopics() = runTest {
+        viewModel = createViewModel(token = "valid_token")
+        testScheduler.advanceUntilIdle()
+
+        viewModel.toggleTopic(NotificationTopic.TOPIC_DEALS_DESIGN, true)
+        testScheduler.advanceUntilIdle()
+
+        viewModel.updateNotificationsEnabled(false)
+        testScheduler.advanceUntilIdle()
+
+        assertFalse(viewModel.uiState.value.isNotificationsEnabled)
+        assertTrue(fakePushNotificationManager.unsubscribedList.contains(NotificationTopic.TOPIC_DEALS_DESIGN))
+    }
+
+    @Test
+    fun updateNotificationsEnabled_whenTurnedOn_restoresTopics() = runTest {
+        viewModel = createViewModel(token = "valid_token")
+        testScheduler.advanceUntilIdle()
+
+        viewModel.updateNotificationsEnabled(false)
+        testScheduler.advanceUntilIdle()
+
+        viewModel.updateNotificationsEnabled(true)
+        testScheduler.advanceUntilIdle()
+
+        assertTrue(viewModel.uiState.value.isNotificationsEnabled)
+        assertTrue(fakePushNotificationManager.subscribedList.contains(NotificationTopic.TOPIC_DEALS_ALL))
+    }
+
     private class FakeUserAuthenticationRepository : UserAuthenticationRepository {
         var localToken: String? = null
         var cipherText: String? = null
@@ -303,5 +371,34 @@ class ProfileViewModelTest {
     private class FakeNetworkUtil : NetworkUtil(null) {
         var isAvailable: Boolean = true
         override fun isInternetAvailable(): Boolean = isAvailable
+    }
+
+    private class FakePushNotificationManager : PushNotificationManager {
+        val subscribedTopicsFlow = MutableStateFlow<Set<String>>(emptySet())
+        val subscribedList = mutableSetOf<String>()
+        val unsubscribedList = mutableSetOf<String>()
+        private val _currentToken = MutableStateFlow<String?>("test-fcm-token")
+        override val currentToken: StateFlow<String?> = _currentToken
+
+        override suspend fun registerDeviceToken(token: String): Result<Unit> {
+            _currentToken.value = token
+            return Result.success(Unit)
+        }
+
+        override suspend fun subscribeToTopic(topic: String): Result<Unit> {
+            subscribedList.add(topic)
+            unsubscribedList.remove(topic)
+            subscribedTopicsFlow.update { it + topic }
+            return Result.success(Unit)
+        }
+
+        override suspend fun unsubscribeFromTopic(topic: String): Result<Unit> {
+            unsubscribedList.add(topic)
+            subscribedList.remove(topic)
+            subscribedTopicsFlow.update { it - topic }
+            return Result.success(Unit)
+        }
+
+        override fun getSubscribedTopics(): Flow<Set<String>> = subscribedTopicsFlow
     }
 }

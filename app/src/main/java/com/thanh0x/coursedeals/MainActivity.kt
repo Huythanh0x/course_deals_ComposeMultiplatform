@@ -6,17 +6,17 @@ import androidx.activity.compose.setContent
 import com.thanh0x.coursedeals.core.common.BundleKey
 import com.thanh0x.coursedeals.core.ui.BaseActivity
 import com.thanh0x.coursedeals.core.ui.theme.CourseDealsTheme
-import com.thanh0x.coursedeals.domain.coupons.Coupon
 import com.thanh0x.coursedeals.navigation.MainAppScaffold
 
 class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        handleDeepLink(intent)
         setContent {
             CourseDealsTheme {
                 MainAppScaffold(
-                    onCouponClick = { coupon -> navigateToDetail(coupon) },
+                    onCouponClick = { coupon -> navigateToDetail(coupon.courseId) },
                     onNavigateToLogin = { navigateToLogin() },
                     showAlertDialog = { title, message, type ->
                         showAlertDialog(title = title, message = message, type = type)
@@ -26,10 +26,31 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private fun navigateToDetail(coupon: Coupon) {
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleDeepLink(intent)
+    }
+
+    private fun handleDeepLink(intent: Intent?) {
+        val data = intent?.data
+        if (data != null && data.scheme == "coursedeals" && data.host == "courses") {
+            val courseId = data.lastPathSegment?.toIntOrNull()
+            if (courseId != null) {
+                navigateToDetail(courseId)
+                return
+            }
+        }
+        val extraCourseId = intent?.getIntExtra(BundleKey.TO_DETAIL_ACTIVITY, -1)?.takeIf { it > 0 }
+        if (extraCourseId != null) {
+            navigateToDetail(extraCourseId)
+        }
+    }
+
+    private fun navigateToDetail(courseId: Int) {
         val detailIntent = Intent().apply {
             setClassName(packageName, "com.thanh0x.coursedeals.feature.detail.CouponDetailActivity")
-            putExtra(BundleKey.TO_DETAIL_ACTIVITY, coupon.courseId)
+            putExtra(BundleKey.TO_DETAIL_ACTIVITY, courseId)
         }
         startActivity(detailIntent)
     }

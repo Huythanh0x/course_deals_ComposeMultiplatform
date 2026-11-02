@@ -80,6 +80,7 @@ fun ProfileRoute(
             )
         },
         onNotificationsToggled = { isChecked -> viewModel.updateNotificationsEnabled(isChecked) },
+        onTopicToggled = { topic, enabled -> viewModel.toggleTopic(topic, enabled) },
         onLogoutClick = {
             viewModel.deleteLocalToken()
             onNavigateToLogin()

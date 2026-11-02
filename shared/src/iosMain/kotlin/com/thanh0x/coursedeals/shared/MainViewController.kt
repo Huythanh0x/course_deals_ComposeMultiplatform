@@ -91,12 +91,15 @@ fun MainViewController(): UIViewController {
     AppVersion.overrideVersionCode = versionOverride
 
     val isForceUpdate = args.any { it.contains("--screen=force-update") } || versionOverride != null
+    val deepLinkArg = args.firstOrNull { it.startsWith("--deeplink=") }?.substringAfter("--deeplink=")
+    val initialDetailCourseId = deepLinkArg?.let { parseCourseIdFromDeepLink(it) }
     val isOtp = args.any { it.contains("--screen=otp") }
     val isConsent = args.any { it.contains("--screen=consent") }
     val isHome = args.any { it.contains("--screen=home") }
     val isProfile = args.any { it.contains("--screen=profile") }
 
     val initialScreen = when {
+        initialDetailCourseId != null -> AppScreen.Detail(initialDetailCourseId)
         isForceUpdate -> AppScreen.Splash
         isHome || isProfile -> AppScreen.Main
         else -> AppScreen.Login
@@ -120,4 +123,17 @@ fun MainViewController(): UIViewController {
         )
     }
     return composeViewController
+}
+
+fun parseCourseIdFromDeepLink(url: String): Int? {
+    if (!url.startsWith("coursedeals://courses/")) return null
+    val pathPart = url.removePrefix("coursedeals://courses/").substringBefore("?").substringBefore("/")
+    return pathPart.toIntOrNull()
+}
+
+fun handleDeepLink(url: String) {
+    val courseId = parseCourseIdFromDeepLink(url)
+    if (courseId != null) {
+        PlatformActions.navigateToDetail(courseId)
+    }
 }

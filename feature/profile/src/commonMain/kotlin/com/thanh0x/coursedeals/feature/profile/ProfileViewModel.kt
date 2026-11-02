@@ -17,6 +17,8 @@ import com.thanh0x.coursedeals.domain.user.usecase.GetUserProfileUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.RequestFingerprintTokenUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.SaveJwtTokenUseCase
 import com.thanh0x.coursedeals.domain.user.usecase.SettingFingerprintUseCase
+import com.thanh0x.coursedeals.core.common.notification.NotificationTopic
+import com.thanh0x.coursedeals.core.common.notification.PushNotificationManager
 import com.thanh0x.coursedeals.core.ui.UiEvent
 import com.thanh0x.coursedeals.core.common.NetworkStatusCode
 import com.thanh0x.coursedeals.core.ui.util.NetworkUtil
@@ -27,6 +29,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -42,6 +45,7 @@ class ProfileViewModel(
     private val getLocalTokenUseCase: GetLocalTokenUseCase,
     private val deleteAccountUseCase: DeleteAccountUseCase? = null,
     private val networkUtil: NetworkUtil,
+    private val pushNotificationManager: PushNotificationManager? = null,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : ViewModel() {
 
@@ -65,6 +69,11 @@ class ProfileViewModel(
             val categories = userProfileRepository.getFavoriteCategories().toList()
             val keywords = userProfileRepository.getFavoriteKeywords().toList()
             val notifications = userProfileRepository.getNotificationsEnabled()
+            val initialTopics = if (notifications) {
+                setOf(NotificationTopic.TOPIC_DEALS_ALL)
+            } else {
+                emptySet()
+            }
 
             _uiState.update {
                 it.copy(
@@ -77,7 +86,18 @@ class ProfileViewModel(
                     favCategories = categories,
                     favKeywords = keywords,
                     isNotificationsEnabled = notifications,
+                    subscribedTopics = it.subscribedTopics.ifEmpty { initialTopics },
                 )
+            }
+
+            pushNotificationManager?.let { manager ->
+                launch {
+                    manager.getSubscribedTopics().collectLatest { topics ->
+                        if (_uiState.value.isNotificationsEnabled && topics.isNotEmpty()) {
+                            _uiState.update { it.copy(subscribedTopics = topics) }
+                        }
+                    }
+                }
             }
             if (!isGuest) {
                 checkIfTokenExpired()
@@ -204,6 +224,40 @@ class ProfileViewModel(
         _uiState.update { it.copy(isNotificationsEnabled = enabled) }
         viewModelScope.launch(ioDispatcher) {
             userProfileRepository.saveNotificationsEnabled(enabled)
+            if (!enabled) {
+                val topicsToMute = _uiState.value.subscribedTopics
+                topicsToMute.forEach { topic ->
+                    pushNotificationManager?.unsubscribeFromTopic(topic)
+                }
+            } else {
+                val topicsToRestore = if (_uiState.value.subscribedTopics.isEmpty()) {
+                    setOf(NotificationTopic.TOPIC_DEALS_ALL)
+                } else {
+                    _uiState.value.subscribedTopics
+                }
+                _uiState.update { it.copy(subscribedTopics = topicsToRestore) }
+                topicsToRestore.forEach { topic ->
+                    pushNotificationManager?.subscribeToTopic(topic)
+                }
+            }
+        }
+    }
+
+    fun toggleTopic(topicId: String, enabled: Boolean) {
+        val currentTopics = _uiState.value.subscribedTopics.toMutableSet()
+        if (enabled) {
+            currentTopics.add(topicId)
+        } else {
+            currentTopics.remove(topicId)
+        }
+        _uiState.update { it.copy(subscribedTopics = currentTopics) }
+
+        viewModelScope.launch(ioDispatcher) {
+            if (enabled) {
+                pushNotificationManager?.subscribeToTopic(topicId)
+            } else {
+                pushNotificationManager?.unsubscribeFromTopic(topicId)
+            }
         }
     }
 
