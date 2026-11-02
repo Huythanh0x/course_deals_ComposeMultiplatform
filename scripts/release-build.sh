@@ -189,27 +189,28 @@ build_ipa() {
 }
 
 # ------------------------------------------------------------------------------
-# 3. macOS DMG Build (Scaffold Hook)
+# 3. macOS DMG & Standalone App Build
 # ------------------------------------------------------------------------------
 build_dmg() {
   echo ""
-  echo "==> [3/5] Checking macOS DMG Target..."
-  # Check if desktop packaging task is configured in Gradle
-  if ./gradlew tasks --all 2>/dev/null | grep -q "packageDmg"; then
-    echo "Running ./gradlew packageDmg..."
-    ./gradlew packageDmg
-    local dmg_file
-    dmg_file=$(find "${REPO_ROOT}" -name "*.dmg" | head -n 1)
-    if [[ -n "${dmg_file}" && -f "${dmg_file}" ]]; then
-      local target_dmg="${OUTPUT_DIR}/CourseDeals-${CLEAN_VERSION}-macos.dmg"
-      cp -v "${dmg_file}" "${target_dmg}"
-      echo "✔ macOS DMG created: ${target_dmg}"
-      return 0
-    fi
+  echo "==> [3/5] Building macOS Native App & DMG..."
+  ./gradlew :desktopApp:packageDmg
+
+  local dmg_file
+  dmg_file=$(find "${REPO_ROOT}/desktopApp/build/compose/binaries" -name "*.dmg" | head -n 1)
+  if [[ -n "${dmg_file}" && -f "${dmg_file}" ]]; then
+    local target_dmg="${OUTPUT_DIR}/CourseDeals-${CLEAN_VERSION}-macos.dmg"
+    cp -v "${dmg_file}" "${target_dmg}"
+    echo "✔ macOS DMG installer created: ${target_dmg}"
   fi
 
-  echo "ℹ️  macOS DMG scaffold hook ready: Compose Desktop packaging not yet enabled in build.gradle."
-  echo "    To enable: add compose.desktop.application to build.gradle and configure nativeDistributions.macOS."
+  local app_dir="${REPO_ROOT}/desktopApp/build/compose/binaries/main/app/CourseDeals.app"
+  if [[ -d "${app_dir}" ]]; then
+    local target_zip="${OUTPUT_DIR}/CourseDeals-${CLEAN_VERSION}-macos-app.zip"
+    echo "Creating compressed macOS .app bundle: ${target_zip}..."
+    (cd "$(dirname "${app_dir}")" && zip -r -q "${target_zip}" "$(basename "${app_dir}")")
+    echo "✔ macOS standalone .app bundle created: ${target_zip}"
+  fi
 }
 
 # ------------------------------------------------------------------------------
