@@ -1,0 +1,43 @@
+appId: ${APP_ID}
+---
+# 1. Outdated client version (100 < 105) triggers unskippable Force Update gate on iOS
+- launchApp:
+    clearState: false
+    arguments:
+      override_version_code: "100"
+
+- extendedWaitUntil:
+    visible: "Update Required"
+    timeout: 15000
+
+- assertVisible: "Update Required"
+- assertVisible: "A new version of Course Deals is required to continue. Please update the app to get the latest deals and improvements."
+- assertVisible: "Update Now"
+- assertNotVisible: "Continue with Email"
+- assertNotVisible: "HOME"
+
+- takeScreenshot: ios_01_force_update_gate
+
+# 2. Supported client version (105 >= 105) passes gate and navigates to Login / Home on iOS
+- launchApp:
+    clearState: false
+    arguments:
+      override_version_code: "105"
+
+- runFlow:
+    when:
+      visible: "Access as Guest"
+    commands:
+      - takeScreenshot: ios_02_nominal_login_after_splash
+      - tapOn: "Access as Guest"
+
+- extendedWaitUntil:
+    visible: "HOME"
+    timeout: 15000
+
+- assertVisible: "HOME"
+- assertVisible: "COURSE"
+- assertVisible: "PROFILE"
+- assertNotVisible: "Update Required"
+
+- takeScreenshot: ios_03_nominal_home_after_gate

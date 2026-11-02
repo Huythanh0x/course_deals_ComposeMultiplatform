@@ -6,17 +6,21 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
 import com.thanh0x.coursedeals.core.common.Constant
+import com.thanh0x.coursedeals.data.user.FeatureFlagManagerImpl
 import com.thanh0x.coursedeals.data.user.repository.UserAuthenticationRepositoryImpl
 import com.thanh0x.coursedeals.data.user.repository.UserProfileRepositoryImpl
 import com.thanh0x.coursedeals.data.user.source.datastore.LocalAuthenticationDataSourceImpl
 import com.thanh0x.coursedeals.data.user.source.datastore.LocalSettingsDataSourceImpl
 import com.thanh0x.coursedeals.data.user.source.datastore.LocalUserProfileDataSourceImpl
+import com.thanh0x.coursedeals.data.user.source.remote.AppConfigService
+import com.thanh0x.coursedeals.data.user.source.remote.AppConfigServiceImpl
 import com.thanh0x.coursedeals.data.user.source.remote.RemoteAuthenticationDataSourceImpl
 import com.thanh0x.coursedeals.data.user.source.remote.RemoteUserProfileDataSourceImpl
 import com.thanh0x.coursedeals.data.user.source.remote.UserAuthenticationService
 import com.thanh0x.coursedeals.data.user.source.remote.UserAuthenticationServiceImpl
 import com.thanh0x.coursedeals.data.user.source.remote.UserProfileService
 import com.thanh0x.coursedeals.data.user.source.remote.UserProfileServiceImpl
+import com.thanh0x.coursedeals.domain.user.FeatureFlagManager
 import com.thanh0x.coursedeals.domain.user.UserAuthenticationRepository
 import com.thanh0x.coursedeals.domain.user.UserProfileRepository
 import com.thanh0x.coursedeals.domain.user.source.LocalAuthenticationDataSource
@@ -44,10 +48,19 @@ val userDataModule = module {
 
     single<UserAuthenticationService> { UserAuthenticationServiceImpl(httpClient = get()) }
     single<UserProfileService> { UserProfileServiceImpl(httpClient = get()) }
+    single<AppConfigService> { AppConfigServiceImpl(httpClient = get()) }
 
     single<LocalAuthenticationDataSource> { LocalAuthenticationDataSourceImpl(datastore = get()) }
     single<LocalUserProfileDataSource> { LocalUserProfileDataSourceImpl(datastore = get()) }
     single<LocalSettingsDataSource> { LocalSettingsDataSourceImpl(dataStore = get()) }
+
+    single<FeatureFlagManager> {
+        FeatureFlagManagerImpl(
+            dataStore = get(),
+            appConfigService = get(),
+            localAuthenticationDataSource = get(),
+        )
+    }
 
     single<RemoteAuthenticationDataSource> { RemoteAuthenticationDataSourceImpl(userAuthenticationService = get()) }
     single<RemoteUserProfileDataSource> { RemoteUserProfileDataSourceImpl(userProfileService = get()) }

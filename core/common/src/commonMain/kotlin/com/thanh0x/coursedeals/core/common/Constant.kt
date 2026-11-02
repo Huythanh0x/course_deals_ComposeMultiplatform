@@ -19,6 +19,10 @@ object Constant {
     const val PREFERENCES_USER_NAME = "user_name"
     const val PREFERENCES_USER_EMAIL = "user_email"
     const val PREFERENCES_USER_AVATAR = "user_avatar"
+    const val PREFERENCES_APP_CONFIG_SNAPSHOT = "app_config_snapshot_json"
+
+    const val DEFAULT_FORCE_UPDATE_URL =
+        "https://play.google.com/store/apps/details?id=com.thanh0x.coursedeals"
 
     const val NETWORK_AUTHORIZATION_HEADER = "Authorization"
     const val NETWORK_BEARER_PREFIX = "Bearer"

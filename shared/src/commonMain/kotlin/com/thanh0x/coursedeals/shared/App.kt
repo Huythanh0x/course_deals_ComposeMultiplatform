@@ -10,18 +10,21 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.thanh0x.coursedeals.core.common.AppVersion
 import com.thanh0x.coursedeals.core.network.di.coreNetworkModule
 import com.thanh0x.coursedeals.core.ui.DialogType
 import com.thanh0x.coursedeals.core.ui.UiEvent
 import com.thanh0x.coursedeals.core.ui.di.coreUiModule
 import com.thanh0x.coursedeals.core.ui.koinViewModel
 import com.thanh0x.coursedeals.core.ui.theme.CourseDealsTheme
-import com.thanh0x.coursedeals. core.ui.util.PlatformActions
+import com.thanh0x.coursedeals.core.ui.util.PlatformActions
 import com.thanh0x.coursedeals.data.coupons.di.couponDataModule
 import com.thanh0x.coursedeals.data.user.di.userDataModule
 import com.thanh0x.coursedeals.domain.coupons.di.couponDomainModule
+import com.thanh0x.coursedeals.domain.user.FeatureFlagManager
 import com.thanh0x.coursedeals.domain.user.UserProfileRepository
 import com.thanh0x.coursedeals.domain.user.di.userDomainModule
+import com.thanh0x.coursedeals.domain.user.model.AppConfig
 import com.thanh0x.coursedeals.feature.auth.AuthMode
 import com.thanh0x.coursedeals.feature.auth.LoginScreen
 import com.thanh0x.coursedeals.feature.auth.LoginViewModel
@@ -34,6 +37,11 @@ import com.thanh0x.coursedeals.feature.detail.di.detailModule
 import com.thanh0x.coursedeals.feature.enroll.CouponEnrollRoute
 import com.thanh0x.coursedeals.feature.home.di.homeModule
 import com.thanh0x.coursedeals.feature.profile.di.profileModule
+import com.thanh0x.coursedeals.feature.splash.SplashNavigationTarget
+import com.thanh0x.coursedeals.feature.splash.SplashScreen
+import com.thanh0x.coursedeals.feature.splash.SplashUiState
+import com.thanh0x.coursedeals.feature.splash.SplashViewModel
+import com.thanh0x.coursedeals.feature.splash.di.splashModule
 import com.thanh0x.coursedeals.navigation.MainAppScaffold
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.core.context.startKoin
@@ -51,6 +59,7 @@ val sharedKoinModules = listOf(
     profileModule,
     detailModule,
     authModule,
+    splashModule,
 )
 
 fun initSharedKoin() {
@@ -62,6 +71,7 @@ fun initSharedKoin() {
 }
 
 sealed interface AppScreen {
+    data object Splash : AppScreen
     data object Main : AppScreen
     data object Login : AppScreen
     data class Detail(val courseId: Int) : AppScreen
@@ -113,11 +123,43 @@ fun App(
         dialogState = DialogState(title = title, message = message, type = type)
     }
 
+    val featureFlagManager = remember {
+        KoinPlatformTools.defaultContext().getOrNull()?.getOrNull<FeatureFlagManager>()
+    }
+    val appConfig = featureFlagManager?.configFlow?.collectAsStateWithLifecycle()?.value ?: AppConfig()
+    val isGlobalForceUpdate = AppVersion.currentVersionCode() < appConfig.minSupportedVersionCode
+
     CourseDealsTheme(
         darkTheme = darkThemeOverride ?: false,
         dynamicColor = false,
     ) {
+        if (isGlobalForceUpdate && currentScreen !is AppScreen.Splash) {
+            SplashScreen(
+                uiState = SplashUiState(
+                    isLoading = false,
+                    isForceUpdateRequired = true,
+                    forceUpdateUrl = appConfig.forceUpdateUrl,
+                ),
+            )
+            return@CourseDealsTheme
+        }
+
         when (val screen = currentScreen) {
+            is AppScreen.Splash -> {
+                val splashViewModel: SplashViewModel = koinViewModel(key = "splash_vm")
+                val splashUiState by splashViewModel.uiState.collectAsStateWithLifecycle()
+                LaunchedEffect(splashUiState.isForceUpdateRequired, splashUiState.navigationTarget) {
+                    if (!splashUiState.isForceUpdateRequired) {
+                        when (splashUiState.navigationTarget) {
+                            SplashNavigationTarget.MAIN -> currentScreen = AppScreen.Main
+                            SplashNavigationTarget.LOGIN -> currentScreen = AppScreen.Login
+                            null -> {}
+                        }
+                    }
+                }
+                SplashScreen(uiState = splashUiState)
+            }
+
             is AppScreen.Main -> {
                 MainAppScaffold(
                     initialRoute = initialRoute,

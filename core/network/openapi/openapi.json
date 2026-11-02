@@ -1,6 +1,29 @@
 {
   "components" : {
     "schemas" : {
+      "AppConfigResponseDTO" : {
+        "properties" : {
+          "featureFlags" : {
+            "additionalProperties" : {
+              "type" : "string"
+            },
+            "type" : "object"
+          },
+          "forceUpdateUrl" : {
+            "type" : "string"
+          },
+          "latestVersionCode" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "minSupportedVersionCode" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "featureFlags", "forceUpdateUrl", "latestVersionCode", "minSupportedVersionCode" ],
+        "type" : "object"
+      },
       "AuthResponseDTO" : {
         "properties" : {
           "accessToken" : {
@@ -1055,6 +1078,26 @@
   },
   "openapi" : "3.1.0",
   "paths" : {
+    "/api/v1/app/config" : {
+      "get" : {
+        "description" : "Returns remote app version requirements and feature flags.",
+        "operationId" : "getAppConfig",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AppConfigResponseDTO"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "summary" : "Get remote application configuration",
+        "tags" : [ "App Config" ]
+      }
+    },
     "/api/courses/{courseId}/reports" : {
       "post" : {
         "description" : "Submits a user report for a course coupon deal.",
