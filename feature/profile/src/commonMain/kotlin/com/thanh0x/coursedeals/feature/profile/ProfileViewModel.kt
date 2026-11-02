@@ -101,7 +101,8 @@ class ProfileViewModel(
                             avatarUrl = profile.avatarUrl ?: state.avatarUrl,
                             favCategories = profile.preferences?.categories ?: state.favCategories,
                             favKeywords = profile.preferences?.keywords ?: state.favKeywords,
-                            isNotificationsEnabled = profile.preferences?.notificationsEnabled ?: state.isNotificationsEnabled,
+                            isNotificationsEnabled = profile.preferences?.notificationsEnabled
+                                ?: state.isNotificationsEnabled,
                             isLoading = false,
                             errorMessage = null,
                         )

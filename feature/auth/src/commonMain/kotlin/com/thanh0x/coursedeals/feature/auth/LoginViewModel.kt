@@ -1,7 +1,6 @@
 package com.thanh0x.coursedeals.feature.auth
 
 import com.thanh0x.coursedeals.core.common.AppResult
-import com.thanh0x.coursedeals.core.common.Constant
 import com.thanh0x.coursedeals.core.ui.UiEvent
 import com.thanh0x.coursedeals.core.ui.ViewModel
 import com.thanh0x.coursedeals.core.ui.util.NetworkUtil

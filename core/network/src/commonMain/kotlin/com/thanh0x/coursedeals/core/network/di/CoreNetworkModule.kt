@@ -39,28 +39,35 @@ private suspend fun tryRefreshAccessToken(
     localAuthenticationDataSource: LocalAuthenticationDataSource,
     remoteAuthenticationDataSource: RemoteAuthenticationDataSource
 ): String? {
-    return try {
-        val refreshToken = localAuthenticationDataSource.getLocalRefreshToken()
-        if (refreshToken.isNullOrBlank()) {
-            clearTokensSafely(localAuthenticationDataSource)
-            null
-        } else {
-            when (val result = remoteAuthenticationDataSource.refreshToken(refreshToken)) {
-                is AppResult.Success -> {
-                    val newAccessToken = result.data.accessToken
-                    localAuthenticationDataSource.saveLocalToken(newAccessToken)
-                    result.data.refreshToken?.takeIf { it.isNotBlank() }?.let { newRefreshToken ->
-                        localAuthenticationDataSource.saveLocalRefreshToken(newRefreshToken)
-                    }
-                    newAccessToken
-                }
-                else -> {
-                    clearTokensSafely(localAuthenticationDataSource)
-                    null
-                }
-            }
+    val refreshToken = runCatching {
+        localAuthenticationDataSource.getLocalRefreshToken()
+    }.getOrNull()
+    if (refreshToken.isNullOrBlank()) {
+        clearTokensSafely(localAuthenticationDataSource)
+        return null
+    }
+
+    val result = runCatching {
+        remoteAuthenticationDataSource.refreshToken(refreshToken)
+    }.getOrElse {
+        clearTokensSafely(localAuthenticationDataSource)
+        return null
+    }
+
+    if (result !is AppResult.Success) {
+        clearTokensSafely(localAuthenticationDataSource)
+        return null
+    }
+
+    return runCatching {
+        val newAccessToken = result.data.accessToken
+        localAuthenticationDataSource.saveLocalToken(newAccessToken)
+        val newRefreshToken = result.data.refreshToken
+        if (!newRefreshToken.isNullOrBlank()) {
+            localAuthenticationDataSource.saveLocalRefreshToken(newRefreshToken)
         }
-    } catch (@Suppress("TooGenericExceptionCaught") exception: Exception) {
+        newAccessToken
+    }.getOrElse {
         clearTokensSafely(localAuthenticationDataSource)
         null
     }
