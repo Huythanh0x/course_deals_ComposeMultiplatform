@@ -30,6 +30,8 @@ class KmpLibraryConventionPlugin : Plugin<Project> {
 
                 iosArm64()
                 iosSimulatorArm64()
+                watchosArm64()
+                watchosSimulatorArm64()
             }
 
             extensions.configure<DetektExtension> {
@@ -42,6 +44,7 @@ class KmpLibraryConventionPlugin : Plugin<Project> {
                         "src/commonMain/kotlin",
                         "src/jvmMain/kotlin",
                         "src/iosMain/kotlin",
+                        "src/watchosMain/kotlin",
                         "src/androidMain/kotlin",
                         "src/main/java",
                         "src/main/kotlin",
