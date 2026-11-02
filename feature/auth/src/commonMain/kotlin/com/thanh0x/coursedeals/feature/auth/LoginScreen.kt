@@ -22,8 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.thanh0x.coursedeals.core.ui.resources.Res
-import com.thanh0x.coursedeals.core.ui.resources.stringResource
 
 @Suppress("LongParameterList")
 @Composable
@@ -39,7 +37,8 @@ fun LoginScreen(
     onAcceptTermsClick: () -> Unit = {},
     onDeclineTermsClick: () -> Unit = {},
     onLoginClick: (email: String, password: String) -> Unit = { email, _ -> onSendOtpClick(email) },
-    onRegisterClick: (email: String, password: String, fullName: String) -> Unit = { email, _, _ -> onSendOtpClick(email) },
+    onRegisterClick: (email: String, password: String, fullName: String) -> Unit =
+        { email, _, _ -> onSendOtpClick(email) },
     onToggleAuthMode: () -> Unit = onBackToEmailClick,
 ) {
     val handleSendOtp: (String) -> Unit = { email ->

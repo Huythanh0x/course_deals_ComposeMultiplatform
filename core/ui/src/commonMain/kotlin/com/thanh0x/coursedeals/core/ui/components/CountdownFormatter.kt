@@ -1,7 +1,5 @@
 package com.thanh0x.coursedeals.core.ui.components
 
-import androidx.compose.ui.graphics.Color
-import com.thanh0x.coursedeals.core.common.Constant
 import com.thanh0x.coursedeals.core.common.SystemTimeProvider
 import com.thanh0x.coursedeals.core.common.TimeProvider
 import com.thanh0x.coursedeals.core.ui.resources.Res

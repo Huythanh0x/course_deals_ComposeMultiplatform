@@ -19,7 +19,10 @@ val SystemTimeProvider: TimeProvider = TimeProvider { platformCurrentTimeMillis(
 
 object TimeLeft {
     private const val MILLIS_THRESHOLD = 10_000_000_000L
+    private const val MILLIS_PER_SECOND = 1_000L
     private const val MILLIS_PER_MINUTE = 60_000L
+    private const val UNKNOWN_DURATION_SENTINEL = -1L
+    private const val EXPIRED_DURATION_SENTINEL = -2L
 
     sealed interface ExpiryDuration {
         object Unknown : ExpiryDuration
@@ -32,11 +35,11 @@ object TimeLeft {
         timeProvider: TimeProvider = SystemTimeProvider,
     ): ExpiryDuration {
         if (expiredDate == null || expiredDate <= 0L) return ExpiryDuration.Unknown
-        return try {
+        return runCatching {
             val inputMillis = if (expiredDate > MILLIS_THRESHOLD) {
                 expiredDate
             } else {
-                expiredDate * 1000L
+                expiredDate * MILLIS_PER_SECOND
             }
             val nowMillis = timeProvider.currentTimeMillis()
             if (inputMillis < nowMillis) {
@@ -45,15 +48,13 @@ object TimeLeft {
                 val minutes = (inputMillis - nowMillis) / MILLIS_PER_MINUTE
                 ExpiryDuration.Active(if (minutes <= 0L) 1L else minutes)
             }
-        } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
-            ExpiryDuration.Unknown
-        }
+        }.getOrDefault(ExpiryDuration.Unknown)
     }
 
     fun getDurationFromNow(expiredDate: Long?): Long {
         return when (val expiry = getExpiryDuration(expiredDate)) {
-            is ExpiryDuration.Unknown -> -1L
-            is ExpiryDuration.Expired -> -2L
+            is ExpiryDuration.Unknown -> UNKNOWN_DURATION_SENTINEL
+            is ExpiryDuration.Expired -> EXPIRED_DURATION_SENTINEL
             is ExpiryDuration.Active -> expiry.minutesLeft
         }
     }
@@ -62,21 +63,19 @@ object TimeLeft {
         timestamp: Long?,
         timeProvider: TimeProvider = SystemTimeProvider,
     ): Long {
-        if (timestamp == null || timestamp <= 0L) return -1L
-        return try {
+        if (timestamp == null || timestamp <= 0L) return UNKNOWN_DURATION_SENTINEL
+        return runCatching {
             val inputMillis = if (timestamp > MILLIS_THRESHOLD) {
                 timestamp
             } else {
-                timestamp * 1000L
+                timestamp * MILLIS_PER_SECOND
             }
             val nowMillis = timeProvider.currentTimeMillis()
             if (inputMillis > nowMillis) {
-                -1L
+                UNKNOWN_DURATION_SENTINEL
             } else {
                 (nowMillis - inputMillis) / MILLIS_PER_MINUTE
             }
-        } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
-            -1L
-        }
+        }.getOrDefault(UNKNOWN_DURATION_SENTINEL)
     }
 }

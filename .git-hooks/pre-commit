@@ -2,7 +2,7 @@
 
 echo "Running Detekt check..."
 
-./gradlew :app:detekt
+./gradlew detekt
 
 RESULT=$?
 
