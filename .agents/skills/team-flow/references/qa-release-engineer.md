@@ -46,7 +46,7 @@ If `course_deals_ComposeMultiplatform` (or `./course_deals_ComposeMultiplatform`
 Read `course_deals_ComposeMultiplatform/.agents/skills/capture-evidence/SKILL.md` (or `.agents/skills/capture-evidence/SKILL.md` inside KMP repo) and `.maestro/flows/` in full.
 The declarative Maestro test flows **must embed `- takeScreenshot: <step_name>` checkpoints** at each significant transition of the user journey.
 
-Run the automated Maestro E2E test suite covering the ticket's Use Cases on **BOTH platforms**:
+Run the automated Maestro E2E test suite covering the ticket's Use Cases across **ALL THREE platforms** (Android + iOS + Desktop):
 
 ```bash
 # Android Emulator (emulator-5554)
@@ -54,6 +54,9 @@ Run the automated Maestro E2E test suite covering the ticket's Use Cases on **BO
 
 # iOS Simulator (booted iPhone Simulator)
 ~/.maestro/bin/maestro --device booted test -e APP_ID=com.thanh0x.coursedeals.iosApp .maestro/flows/<feature-flow>.yaml
+
+# Compose Desktop (:desktopApp Maestro Flow Runner)
+./gradlew :desktopApp:runMaestroFlow -Pflow=.maestro/flows/<feature-flow>.yaml -PscreenshotDir=/tmp/desktop-e2e
 ```
 If platform-specific flows exist (e.g. `<flow>.yaml` and `<flow>-ios.yaml`), execute each on its respective target device.
 (Alternatively or supplementally, capture step screenshots directly via `adb exec-out screencap -p > ...` and `xcrun simctl io booted screenshot ...`).
@@ -79,13 +82,13 @@ Compile an explicit **Feature-Rich Step-by-Step Side-by-Side Comparison Matrix**
 ```markdown
 ## Screenshots
 
-| Step | Android Evidence (`emulator-5554`) | iOS Evidence (`iPhone Simulator`) |
-| :--- | :---: | :---: |
-| **1. Unauthenticated Login Screen**<br>• Clean email input<br>• "Continue with Email" CTA<br>• Social & Guest auth options | <img src="<android_r2_url>" width="300" /> | <img src="<ios_r2_url>" width="300" /> |
-| **2. OTP Verification Screen**<br>• Sent-to email recipient notification<br>• 6-digit OTP input & "Verify OTP"<br>• "Change Email" and "Resend Code" | <img src="<android_r2_url>" width="300" /> | <img src="<ios_r2_url>" width="300" /> |
-| **3. Terms & Privacy Consent Dialog**<br>• Triggered for new user onboarding (`isNewUser=true`)<br>• "Agree & Continue" & "Decline" actions<br>• Native Compose modal overlay | <img src="<android_r2_url>" width="300" /> | <img src="<ios_r2_url>" width="300" /> |
-| **4. Authenticated Home Screen**<br>• Successfully navigated upon consent<br>• Active deals served live from backend port 8081 | <img src="<android_r2_url>" width="300" /> | <img src="<ios_r2_url>" width="300" /> |
-| **5. Profile & Settings**<br>• Displays new user email<br>• Feature flags respected (Fingerprint hidden)<br>• Dark / Light mode parity | <img src="<android_r2_url>" width="300" /> | <img src="<ios_r2_url>" width="300" /> |
+| Step | Android Evidence (`emulator-5554`) | iOS Evidence (`iPhone Simulator`) | Desktop Evidence (`:desktopApp`) |
+| :--- | :---: | :---: | :---: |
+| **1. Unauthenticated Login Screen**<br>• Clean email input<br>• "Continue with Email" CTA<br>• Social & Guest auth options | <img src="<android_r2_url>" width="250" /> | <img src="<ios_r2_url>" width="250" /> | <img src="<desktop_r2_url>" width="250" /> |
+| **2. OTP Verification Screen**<br>• Sent-to email recipient notification<br>• 6-digit OTP input & "Verify OTP"<br>• "Change Email" and "Resend Code" | <img src="<android_r2_url>" width="250" /> | <img src="<ios_r2_url>" width="250" /> | <img src="<desktop_r2_url>" width="250" /> |
+| **3. Terms & Privacy Consent Dialog**<br>• Triggered for new user onboarding (`isNewUser=true`)<br>• "Agree & Continue" & "Decline" actions<br>• Native Compose modal overlay | <img src="<android_r2_url>" width="250" /> | <img src="<ios_r2_url>" width="250" /> | <img src="<desktop_r2_url>" width="250" /> |
+| **4. Authenticated Home Screen**<br>• Successfully navigated upon consent<br>• Active deals served live from backend port 8081 | <img src="<android_r2_url>" width="250" /> | <img src="<ios_r2_url>" width="250" /> | <img src="<desktop_r2_url>" width="250" /> |
+| **5. Profile & Settings**<br>• Displays new user email<br>• Feature flags respected (Fingerprint hidden)<br>• Dark / Light mode parity | <img src="<android_r2_url>" width="250" /> | <img src="<ios_r2_url>" width="250" /> | <img src="<desktop_r2_url>" width="250" /> |
 ```
 
 - **Parity Audit Verdict**: Explicitly confirm whether Android and iOS exhibit 100% visual and behavioral parity.

@@ -42,15 +42,16 @@ When the user gives a general or raw requirement (e.g. "Add Course Reports", "Of
 
 ---
 
-## The 5 Specialized Agent Roles
+## The 6 Specialized Agent Roles
 
 | Role | Agent Type / Name | Scope & Responsibility | Reference Prompt |
 |---|---|---|---|
-| **1. PM & Solutions Architect** | Main Agent + `research` subagents | Scans code in parallel; defines cross-repo REST/DTO contract; specifies **4-quadrant test scenarios** (Happy, Failed, Error, Related Changes), structured **Use Cases**, and **GUI framework test specification** (Maestro); creates GitHub parent/sub-issues, stamps active sprint & initializes `NOTES.md`. | Built into this `SKILL.md` |
+| **1. PM & Solutions Architect** | Main Agent + `research` subagents | Scans code in parallel; defines cross-repo REST/DTO contract; specifies **4-quadrant test scenarios** (Happy, Failed, Error, Related Changes), structured **Use Cases**, and **GUI framework test specification** (Maestro / Compose UI Test); creates GitHub parent/sub-issues, stamps active sprint & initializes `NOTES.md`. | Built into this `SKILL.md` |
 | **2. Backend Engineer** | `backend-engineer` | Implements Spring Boot / Kotlin / Flyway / JobRunr changes & unit/integration tests (covering happy, failed, and error paths) in `course_deals_backend`, runs `./gradlew ktlintCheck detekt test`, commits locally. | [references/backend-engineer.md](references/backend-engineer.md) |
-| **3. Android / KMP Engineer** | `android-engineer` | Implements Clean Architecture in `course_deals_ComposeMultiplatform` across shared KMP/Android/Desktop (`:desktopApp`)/iOS modules, exposes UI testability (semantic tags/labels for Maestro and Desktop CLI flags), handles multi-state UI (empty/success/error), runs `:app:detekt`, `:desktopApp:detekt`, lint, and unit tests, commits locally. | [references/android-engineer.md](references/android-engineer.md) |
-| **4. Security & Arch Reviewer** | `security-arch-reviewer` | Read-only auditor (runs in parallel with QA): verifies Backend↔Client DTO JSON contract parity, Android Intent security (`intent-security-review`), KMP readiness (`kmp-readiness`), ADR criteria (`adr`), and verifies 4-quadrant test coverage. | [references/security-arch-reviewer.md](references/security-arch-reviewer.md) |
-| **5. QA & Release Engineer** | `qa-release-engineer` | Runs live E2E verification: Backend `curl -i` / test script locally ➔ **Cross-platform Kotlin Multiplatform (Android + iOS) GUI framework tests (`maestro`)** ➔ visual pixel inspection (`read_file`) ➔ Cloudflare R2 uploads ➔ **Explicit Side-by-Side Comparison Matrix (Android vs. iOS)** ➔ opens labeled PRs (`ship-pr`). | [references/qa-release-engineer.md](references/qa-release-engineer.md) |
+| **3. Android / KMP Engineer** | `android-engineer` | Implements Clean Architecture in `course_deals_ComposeMultiplatform` across shared KMP/Android/iOS modules, exposes UI testability (semantic tags/labels for Maestro), handles multi-state UI (empty/success/error), runs `:app:detekt`, lint, and unit tests, commits locally. | [references/android-engineer.md](references/android-engineer.md) |
+| **4. Desktop CMP Engineer** | `desktop-engineer` | Implements Compose Multiplatform Desktop (`:desktopApp` & `jvmMain`) features: Window State & native menus/shortcuts, Swing/JavaFX interop (`SwingPanel`/`JFXPanel`), Skia `GraphicsLayer` screenshot sync, and **Compose Desktop UI Framework Tests (`runComposeUiTest` / `createComposeRule`)**; runs `:desktopApp:detekt` & `:desktopApp:test`, commits locally. | [references/desktop-engineer.md](references/desktop-engineer.md) |
+| **5. Security & Arch Reviewer** | `security-arch-reviewer` | Read-only auditor (runs in parallel with QA): verifies Backend↔Client DTO JSON contract parity, Android Intent & Desktop URI/clipboard security (`intent-security-review`), KMP readiness (`kmp-readiness`), ADR criteria (`adr`), and verifies 4-quadrant test coverage. | [references/security-arch-reviewer.md](references/security-arch-reviewer.md) |
+| **6. QA & Release Engineer** | `qa-release-engineer` | Runs live E2E verification: Backend `curl -i` / test script locally ➔ **Cross-platform Kotlin Multiplatform (Android + iOS `maestro` & Desktop `:desktopApp:run`)** ➔ visual pixel inspection (`read_file`) ➔ Cloudflare R2 uploads ➔ **Explicit Side-by-Side Comparison Matrix** ➔ opens labeled PRs (`ship-pr`). | [references/qa-release-engineer.md](references/qa-release-engineer.md) |
 
 ---
 
@@ -90,7 +91,7 @@ Phase 4: Parallel Review & Backend QA
 ## Phase 1: PM & Architect Discovery (Main Agent)
 
 1. **Determine Repository Scope & Task Type**:
-   - Scope: Backend-only, Android/KMP/Desktop-only (`area: android`, `area: desktop`), or Full-Stack (Cross-Repo).
+   - Scope: Backend-only, Android/KMP-only (`area: android` / `area: desktop`), or Full-Stack (Cross-Repo).
    - Task Type: **Bug** vs. **Feature / Chore**.
 
 2. **Differentiated Discovery Protocol**:
@@ -312,13 +313,16 @@ If `course_deals_ComposeMultiplatform` was modified:
    - Backend local server is running and verified locally via committed test script (ready for live API integration on port 8081).
 2. **Execute Automated GUI Framework Tests with Embedded Screenshot Capture (Maestro)**:
    - The declarative Maestro test flow (`.maestro/flows/<flow>.yaml`) **MUST declare step-by-step `- takeScreenshot: <step_name>` checkpoints** for every significant interaction and screen state transition along the user journey.
-   - Run the automated suite on **BOTH platforms**:
+   - Run the automated suite across **ALL THREE platforms** (Android + iOS + Desktop):
      ```bash
      # Android Emulator (emulator-5554)
      ~/.maestro/bin/maestro --device emulator-5554 test -e APP_ID=com.thanh0x.coursedeals .maestro/flows/<flow>.yaml
 
      # iOS Simulator (booted iPhone Simulator)
      ~/.maestro/bin/maestro --device booted test -e APP_ID=com.thanh0x.coursedeals.iosApp .maestro/flows/<flow>.yaml
+
+     # Compose Desktop (:desktopApp Maestro Flow Runner)
+     ./gradlew :desktopApp:runMaestroFlow -Pflow=.maestro/flows/<flow>.yaml -PscreenshotDir=/tmp/desktop-e2e
      ```
    - (Or capture step screenshots directly via `adb exec-out screencap` and `xcrun simctl io booted screenshot` if augmenting the automated runner).
 3. **Mandatory Visual Pixel Inspection (`read_file`)**:
@@ -330,17 +334,17 @@ If `course_deals_ComposeMultiplatform` was modified:
    - Upload each step screenshot to Cloudflare R2 worker (`https://r2-image-worker.huythanh0x.workers.dev/upload`), verify HTTP 200, and construct public URLs.
 5. **Feature-Rich Step-by-Step Flow Evidence in GitHub PR**:
    - The GitHub PR **MUST NOT** contain a few isolated or unstructured screenshots.
-   - It **MUST** present a **feature-rich, step-by-step user journey walkthrough** comparing Android and iOS side-by-side using `<img src="..." width="300" />` (or markdown image links):
+   - It **MUST** present a **feature-rich, step-by-step user journey walkthrough** comparing Android, iOS, and Desktop side-by-side using `<img src="..." width="250" />` (or markdown image links):
      ```markdown
      ## Screenshots
 
-     | Step | Android Evidence (`emulator-5554`) | iOS Evidence (`iPhone Simulator`) |
-     | :--- | :---: | :---: |
-     | **1. Unauthenticated Login Screen**<br>• Clean email input<br>• "Continue with Email" CTA<br>• Social & Guest auth options | <img src="<android_url>" width="300" /> | <img src="<ios_url>" width="300" /> |
-     | **2. OTP Verification Screen**<br>• Sent-to email recipient notification<br>• 6-digit code input & "Verify OTP"<br>• "Change Email" and "Resend Code" | <img src="<android_url>" width="300" /> | <img src="<ios_url>" width="300" /> |
-     | **3. Terms & Privacy Consent Dialog**<br>• Triggered for new user onboarding<br>• "Agree & Continue" & "Decline" actions<br>• Native Compose overlay | <img src="<android_url>" width="300" /> | <img src="<ios_url>" width="300" /> |
-     | **4. Authenticated Home Screen**<br>• Navigated upon consent<br>• Live deals served from backend port 8081 | <img src="<android_url>" width="300" /> | <img src="<ios_url>" width="300" /> |
-     | **5. Profile & Settings**<br>• Verified email displayed<br>• Feature flags respected (Fingerprint hidden)<br>• Dark / Light mode parity | <img src="<android_url>" width="300" /> | <img src="<ios_url>" width="300" /> |
+     | Step | Android Evidence (`emulator-5554`) | iOS Evidence (`iPhone Simulator`) | Desktop Evidence (`:desktopApp`) |
+     | :--- | :---: | :---: | :---: |
+     | **1. Unauthenticated Login Screen**<br>• Clean email input<br>• "Continue with Email" CTA<br>• Social & Guest auth options | <img src="<android_url>" width="250" /> | <img src="<ios_url>" width="250" /> | <img src="<desktop_url>" width="250" /> |
+     | **2. OTP Verification Screen**<br>• Sent-to email recipient notification<br>• 6-digit code input & "Verify OTP"<br>• "Change Email" and "Resend Code" | <img src="<android_url>" width="250" /> | <img src="<ios_url>" width="250" /> | <img src="<desktop_url>" width="250" /> |
+     | **3. Terms & Privacy Consent Dialog**<br>• Triggered for new user onboarding<br>• "Agree & Continue" & "Decline" actions<br>• Native Compose overlay | <img src="<android_url>" width="250" /> | <img src="<ios_url>" width="250" /> | <img src="<desktop_url>" width="250" /> |
+     | **4. Authenticated Home Screen**<br>• Navigated upon consent<br>• Live deals served from backend port 8081 | <img src="<android_url>" width="250" /> | <img src="<ios_url>" width="250" /> | <img src="<desktop_url>" width="250" /> |
+     | **5. Profile & Settings**<br>• Verified email displayed<br>• Feature flags respected (Fingerprint hidden)<br>• Dark / Light mode parity | <img src="<android_url>" width="250" /> | <img src="<ios_url>" width="250" /> | <img src="<desktop_url>" width="250" /> |
      ```
    - Actively audits for discrepancies (insets clipping, dialog differences, theme discrepancies). If any defect is found, logs it and routes back to `android-engineer` for resolution before shipping.
 6. **Ship Android/KMP PR**:
