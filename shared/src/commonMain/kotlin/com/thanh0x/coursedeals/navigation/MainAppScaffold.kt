@@ -3,6 +3,8 @@ package com.thanh0x.coursedeals.navigation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -11,6 +13,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.thanh0x.coursedeals.core.ui.DialogType
 import com.thanh0x.coursedeals.core.ui.koinViewModel
 import com.thanh0x.coursedeals.domain.coupons.Coupon
@@ -28,11 +32,16 @@ fun MainAppScaffold(
     showAlertDialog: (String, String, DialogType) -> Unit,
     modifier: Modifier = Modifier,
     initialRoute: String = TopLevelDestination.HOME.route,
+    currentRouteOverride: String? = null,
+    onRouteChange: ((String) -> Unit)? = null,
+    homeViewModel: HomeViewModel = koinViewModel(key = "home_vm"),
+    courseViewModel: CourseViewModel = koinViewModel(key = "course_vm"),
+    profileViewModel: ProfileViewModel = koinViewModel(key = "profile_vm"),
+    homePagingItems: LazyPagingItems<Coupon> = homeViewModel.items.collectAsLazyPagingItems(),
+    homeGridState: LazyGridState = rememberLazyGridState(),
 ) {
-    var currentRoute by rememberSaveable { mutableStateOf(initialRoute) }
-    val homeViewModel: HomeViewModel = koinViewModel(key = "home_vm")
-    val courseViewModel: CourseViewModel = koinViewModel(key = "course_vm")
-    val profileViewModel: ProfileViewModel = koinViewModel(key = "profile_vm")
+    var internalRoute by rememberSaveable { mutableStateOf(initialRoute) }
+    val currentRoute = currentRouteOverride ?: internalRoute
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -41,7 +50,11 @@ fun MainAppScaffold(
                 destinations = TopLevelDestination.entries,
                 currentDestinationRoute = currentRoute,
                 onNavigateToDestination = { destination ->
-                    currentRoute = destination.route
+                    if (onRouteChange != null) {
+                        onRouteChange(destination.route)
+                    } else {
+                        internalRoute = destination.route
+                    }
                 },
             )
         },
@@ -55,6 +68,8 @@ fun MainAppScaffold(
                 TopLevelDestination.HOME.route -> {
                     HomeRoute(
                         viewModel = homeViewModel,
+                        pagingItems = homePagingItems,
+                        gridState = homeGridState,
                         onCouponClick = onCouponClick,
                         showAlertDialog = showAlertDialog,
                     )

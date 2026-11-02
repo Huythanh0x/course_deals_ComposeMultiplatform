@@ -17,7 +17,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -82,6 +84,7 @@ fun HomeScreen(
     onRefresh: () -> Unit,
     onCouponClick: (Coupon) -> Unit,
     modifier: Modifier = Modifier,
+    gridState: LazyGridState = rememberLazyGridState(),
 ) {
     val mapper = remember { MapperToView() }
     val focusManager = LocalFocusManager.current
@@ -361,6 +364,7 @@ fun HomeScreen(
                 } else {
                     // Course grid
                     LazyVerticalGrid(
+                        state = gridState,
                         columns = GridCells.Fixed(2),
                         contentPadding = PaddingValues(start = 6.dp, end = 6.dp, bottom = 16.dp),
                         modifier = Modifier.fillMaxSize(),

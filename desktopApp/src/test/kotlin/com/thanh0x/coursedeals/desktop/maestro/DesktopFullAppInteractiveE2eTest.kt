@@ -199,13 +199,21 @@ class DesktopFullAppInteractiveE2eTest {
             tapOn("Business")
             tapOn("Apply")
 
-            // Verify filtered results & top Clear Filters button
+            // Verify filtered results persist across Detail navigation & top Clear Filters button
             waitForVisible("Professional Diploma in Procurement Management")
             assertVisible("Matching 1/3 deals")
+            assertNotVisible("Complete Web Development Bootcamp 2026")
+            tapOn("Professional Diploma in Procurement Management")
+            waitForVisible("Enroll Now")
+            tapOn("Back")
+            waitForVisible("Professional Diploma in Procurement Management")
+            assertVisible("Matching 1/3 deals")
+            assertNotVisible("Complete Web Development Bootcamp 2026")
             tapOn("Clear")
             waitForVisible("3 deals")
+            assertVisible("Complete Web Development Bootcamp 2026")
 
-            // 4. Search input, empty state Reset Filters button, and Clear search button
+            // 4. Search input, empty state Reset Filters button, Detail back navigation, and Clear search button
             tapOn("Search courses")
             inputText("NonExistentCourseName999")
             waitForVisible("No courses matching your criteria")
@@ -217,8 +225,17 @@ class DesktopFullAppInteractiveE2eTest {
             tapOn("Search courses")
             inputText("Procurement")
             waitForVisible("Professional Diploma in Procurement Management")
+            assertVisible("Matching 1/3 deals")
+            assertNotVisible("Complete Web Development Bootcamp 2026")
+            tapOn("Professional Diploma in Procurement Management")
+            waitForVisible("Enroll Now")
+            tapOn("Back")
+            waitForVisible("Professional Diploma in Procurement Management")
+            assertVisible("Matching 1/3 deals")
+            assertNotVisible("Complete Web Development Bootcamp 2026")
             tapOn("Clear")
             waitForVisible("Complete Web Development Bootcamp 2026")
+            assertVisible("3 deals")
         }
     }
 

@@ -31,4 +31,14 @@ appId: ${APP_ID}
     visible: "Professional Diploma in Procurement Management"
     timeout: 15000
 - assertVisible: "Professional Diploma in Procurement Management"
+- tapOn: "Professional Diploma in Procurement Management"
+- extendedWaitUntil:
+    visible: "Enroll Now"
+    timeout: 10000
+- assertVisible: "Enroll Now"
+- tapOn: "Back"
+- extendedWaitUntil:
+    visible: "Professional Diploma in Procurement Management"
+    timeout: 10000
+- assertVisible: "Professional Diploma in Procurement Management"
 - tapOn: "Clear"
