@@ -59,6 +59,7 @@ create "priority: P3" "0E8A16" "Someday"
 
 # area (as many as apply)
 create "area: android" "006B75" "Android app"
+create "area: desktop" "008672" "Compose Multiplatform Desktop app"
 create "area: backend"  "5B0E86" "Spring Boot API/crawler"
 create "area: web"      "1B6E67" "Web/KMP frontend"
 create "area: design"   "F9D0C4" "Design system, UX"

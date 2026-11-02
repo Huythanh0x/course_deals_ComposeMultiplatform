@@ -27,6 +27,7 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Course Deals"
 include ':app'
+include ':desktopApp'
 include ':shared'
 include ':core:common'
 include ':core:logging'
