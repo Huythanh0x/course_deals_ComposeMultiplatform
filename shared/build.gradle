@@ -12,6 +12,7 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
+            transitiveExport = false
             export project(':core:common')
         }
     }
