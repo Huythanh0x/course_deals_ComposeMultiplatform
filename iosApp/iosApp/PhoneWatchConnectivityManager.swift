@@ -7,6 +7,8 @@ public class PhoneWatchConnectivityManager: NSObject, WCSessionDelegate, Observa
     @Published public var isWatchPaired: Bool = false
     @Published public var isWatchAppInstalled: Bool = false
 
+    private let apiEndpoint = URL(string: "http://127.0.0.1:8081/api/v1/coupons?page=0&size=5")!
+
     public override init() {
         super.init()
         if WCSession.isSupported() {
@@ -16,6 +18,53 @@ public class PhoneWatchConnectivityManager: NSObject, WCSessionDelegate, Observa
         }
     }
 
+    public func fetchLiveDealsFromAPI(completion: @escaping ([[String: Any]]) -> Void) {
+        var request = URLRequest(url: apiEndpoint)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 5.0
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print("[PhoneWatchConnectivity] Live API error: \(String(describing: error))")
+                completion([])
+                return
+            }
+
+            do {
+                if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                   let courses = json["courses"] as? [[String: Any]] {
+                    let mappedDeals: [[String: Any]] = courses.map { course in
+                        let idVal = "\(course["courseId"] ?? 0)"
+                        let title = course["title"] as? String ?? "Deal"
+                        let expiredTime = (course["expiredTime"] as? Double) ?? Date().addingTimeInterval(7200).timeIntervalSince1970
+                        let code = course["couponCode"] as? String ?? "LIVEAPI"
+                        let targetUrl = course["targetUrl"] as? String ?? "https://coursedeals.com"
+                        let rating = course["rating"] as? Double ?? 4.9
+                        let usesLeft = course["usesLeft"] as? Int ?? 15
+
+                        return [
+                            "id": idVal,
+                            "title": title,
+                            "platform": title.contains("Swift") ? "Udemy" : (title.contains("PyTorch") ? "Coursera" : "edX"),
+                            "expiresAtEpochSeconds": expiredTime,
+                            "couponCode": code,
+                            "targetUrl": targetUrl,
+                            "rating": rating,
+                            "usesLeft": usesLeft
+                        ]
+                    }
+                    completion(mappedDeals)
+                    return
+                }
+            } catch {
+                print("[PhoneWatchConnectivity] JSON parsing error: \(error)")
+            }
+            completion([])
+        }
+        task.resume()
+    }
+
     public func syncDealsToWatch(deals: [[String: Any]]) {
         guard WCSession.isSupported() else { return }
         let session = WCSession.default
@@ -23,7 +72,8 @@ public class PhoneWatchConnectivityManager: NSObject, WCSessionDelegate, Observa
 
         let payload: [String: Any] = [
             "deals": deals,
-            "timestamp": Date().timeIntervalSince1970
+            "timestamp": Date().timeIntervalSince1970,
+            "source": "iPhone 17 -> API :8081"
         ]
 
         // 1. Guaranteed background delivery via application context
@@ -37,6 +87,14 @@ public class PhoneWatchConnectivityManager: NSObject, WCSessionDelegate, Observa
         if session.isReachable {
             session.sendMessage(payload, replyHandler: nil) { error in
                 print("[PhoneWatchConnectivity] Send message failed: \(error)")
+            }
+        }
+    }
+
+    public func pushLatestDeals() {
+        fetchLiveDealsFromAPI { [weak self] liveDeals in
+            if !liveDeals.isEmpty {
+                self?.syncDealsToWatch(deals: liveDeals)
             }
         }
     }
@@ -58,42 +116,6 @@ public class PhoneWatchConnectivityManager: NSObject, WCSessionDelegate, Observa
         }
     }
 
-    public func pushLatestDeals() {
-        let liveDeals: [[String: Any]] = [
-            [
-                "id": "deal-live-1",
-                "title": "Full-Stack Kotlin Multiplatform & SwiftUI 2026",
-                "platform": "Udemy",
-                "expiresAtEpochSeconds": Date().addingTimeInterval(3600 * 2.5).timeIntervalSince1970,
-                "couponCode": "KMPWATCH26",
-                "targetUrl": "https://coursedeals.com/deal/live-1",
-                "rating": 4.95,
-                "usesLeft": 22
-            ],
-            [
-                "id": "deal-live-2",
-                "title": "Machine Learning & Deep Learning with PyTorch",
-                "platform": "Coursera",
-                "expiresAtEpochSeconds": Date().addingTimeInterval(3600 * 4.2).timeIntervalSince1970,
-                "couponCode": "FREEPYTORCH",
-                "targetUrl": "https://coursedeals.com/deal/live-2",
-                "rating": 4.88,
-                "usesLeft": 9
-            ],
-            [
-                "id": "deal-live-3",
-                "title": "Docker, Kubernetes & Cloud Native Architecture",
-                "platform": "edX",
-                "expiresAtEpochSeconds": Date().addingTimeInterval(3600 * 1.2).timeIntervalSince1970,
-                "couponCode": "CLOUDFREE",
-                "targetUrl": "https://coursedeals.com/deal/live-3",
-                "rating": 4.92,
-                "usesLeft": 5
-            ]
-        ]
-        syncDealsToWatch(deals: liveDeals)
-    }
-
     public func sessionDidBecomeInactive(_ session: WCSession) {}
 
     public func sessionDidDeactivate(_ session: WCSession) {
@@ -102,45 +124,21 @@ public class PhoneWatchConnectivityManager: NSObject, WCSessionDelegate, Observa
 
     public func session(_ session: WCSession, didReceiveMessage message: [String : Any], replyHandler: @escaping ([String : Any]) -> Void) {
         if message["request"] as? String == "fetchDeals" {
-            // Supply live deals from iPhone to Watch
-            let liveDeals: [[String: Any]] = [
-                [
-                    "id": "deal-live-1",
-                    "title": "Full-Stack Kotlin Multiplatform & SwiftUI 2026",
-                    "platform": "Udemy",
-                    "expiresAtEpochSeconds": Date().addingTimeInterval(3600 * 2.5).timeIntervalSince1970,
-                    "couponCode": "KMPWATCH26",
-                    "targetUrl": "https://coursedeals.com/deal/live-1",
-                    "rating": 4.95,
-                    "usesLeft": 22
-                ],
-                [
-                    "id": "deal-live-2",
-                    "title": "Machine Learning & Deep Learning with PyTorch",
-                    "platform": "Coursera",
-                    "expiresAtEpochSeconds": Date().addingTimeInterval(3600 * 4.2).timeIntervalSince1970,
-                    "couponCode": "FREEPYTORCH",
-                    "targetUrl": "https://coursedeals.com/deal/live-2",
-                    "rating": 4.88,
-                    "usesLeft": 9
-                ],
-                [
-                    "id": "deal-live-3",
-                    "title": "Docker, Kubernetes & Cloud Native Architecture",
-                    "platform": "edX",
-                    "expiresAtEpochSeconds": Date().addingTimeInterval(3600 * 1.2).timeIntervalSince1970,
-                    "couponCode": "CLOUDFREE",
-                    "targetUrl": "https://coursedeals.com/deal/live-3",
-                    "rating": 4.92,
-                    "usesLeft": 5
-                ]
-            ]
-
-            replyHandler([
-                "status": "success",
-                "deals": liveDeals,
-                "source": "iPhone 17 (Live)"
-            ])
+            fetchLiveDealsFromAPI { liveDeals in
+                if !liveDeals.isEmpty {
+                    replyHandler([
+                        "status": "success",
+                        "deals": liveDeals,
+                        "source": "API :8081 via iPhone 17"
+                    ])
+                } else {
+                    replyHandler([
+                        "status": "error",
+                        "deals": [],
+                        "source": "API Unreachable"
+                    ])
+                }
+            }
         }
     }
 }
