@@ -1,33 +1,18 @@
 package com.thanh0x.coursedeals.desktop
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.thanh0x.coursedeals.core.logging.LoggerFactory
 import com.thanh0x.coursedeals.core.logging.warn
 import com.thanh0x.coursedeals.core.ui.components.customNetworkImageRenderer
@@ -72,8 +57,13 @@ fun installDesktopPlatformActions() {
 
     PlatformActions.onOpenUrl = { url ->
         runCatching {
-            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-                Desktop.getDesktop().browse(URI(url))
+            if (isValidHttpUrl(url) &&
+                Desktop.isDesktopSupported() &&
+                Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)
+            ) {
+                Desktop.getDesktop().browse(URI(url.trim()))
+            } else {
+                desktopLogger.warn { "Skipped opening unsupported or invalid URL in system browser: $url" }
             }
         }.onFailure { throwable ->
             desktopLogger.warn(throwable) { "Failed to open URL in system browser: $url" }
@@ -113,12 +103,13 @@ fun installDesktopRenderers() {
         )
     }
 
-    customPlatformWebViewRenderer = { url, modifier, onPageStarted, onPageFinished, _ ->
-        DesktopWebViewFallback(
+    customPlatformWebViewRenderer = { url, modifier, onPageStarted, onPageFinished, onPageError ->
+        DesktopWebView(
             url = url,
             modifier = modifier,
             onPageStarted = onPageStarted,
             onPageFinished = onPageFinished,
+            onPageError = onPageError,
         )
     }
 }
@@ -173,59 +164,5 @@ private fun DesktopNetworkImage(
         )
     } else {
         Box(modifier = modifier)
-    }
-}
-
-@Composable
-private fun DesktopWebViewFallback(
-    url: String,
-    modifier: Modifier,
-    onPageStarted: () -> Unit,
-    onPageFinished: () -> Unit,
-) {
-    LaunchedEffect(url) {
-        onPageStarted()
-        onPageFinished()
-    }
-
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant,
-            ),
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-            ) {
-                Text(
-                    text = "Course Enrollment Link",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = url,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center,
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(
-                    onClick = { PlatformActions.openUrl(url) },
-                ) {
-                    Text(text = "Open in Browser")
-                }
-            }
-        }
     }
 }
