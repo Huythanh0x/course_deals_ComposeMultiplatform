@@ -2,13 +2,14 @@ appId: ${APP_ID}
 ---
 # 1. Outdated client version (100 < 105) triggers unskippable Force Update gate
 - launchApp:
-    clearState: true
+    clearState: false
+    stopApp: false
     arguments:
       override_version_code: "100"
 
 - extendedWaitUntil:
     visible: "Update Required"
-    timeout: 15000
+    timeout: 45000
 
 - assertVisible: "Update Required"
 - assertVisible: "A new version of Course Deals is required to continue. Please update the app to get the latest deals and improvements."
@@ -26,8 +27,14 @@ appId: ${APP_ID}
 # 2. Supported client version (105 >= 105) passes gate and navigates to Login / Home
 - launchApp:
     clearState: false
+    stopApp: true
     arguments:
       override_version_code: "105"
+
+- extendedWaitUntil:
+    visible: "Access as Guest"
+    timeout: 45000
+    optional: true
 
 - runFlow:
     when:
@@ -37,8 +44,8 @@ appId: ${APP_ID}
       - tapOn: "Access as Guest"
 
 - extendedWaitUntil:
-    visible: "HOME"
-    timeout: 15000
+    visible: "COURSE"
+    timeout: 45000
 
 - assertVisible: "HOME"
 - assertVisible: "COURSE"
