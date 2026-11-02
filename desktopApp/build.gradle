@@ -1,0 +1,75 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+    alias(libs.plugins.compose.multiplatform)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.detekt)
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
+    }
+}
+
+detekt {
+    buildUponDefaultConfig = true
+    allRules = false
+    config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
+    source.setFrom(
+        files(
+            "src/main/kotlin",
+            "src/test/kotlin",
+        )
+    )
+}
+
+dependencies {
+    implementation project(':shared')
+    implementation project(':core:common')
+    implementation project(':core:logging')
+    implementation project(':core:network')
+    implementation project(':core:ui')
+    implementation project(':domain:coupons')
+    implementation project(':domain:user')
+    implementation project(':data:coupons')
+    implementation project(':data:user')
+    implementation project(':feature:auth')
+    implementation project(':feature:home')
+    implementation project(':feature:course')
+    implementation project(':feature:detail')
+    implementation project(':feature:enroll')
+    implementation project(':feature:profile')
+    implementation project(':feature:splash')
+    implementation compose.desktop.currentOs
+    implementation compose.material3
+    implementation libs.kotlinx.coroutines.swing
+    implementation libs.ktor.client.core
+    implementation libs.ktor.client.okhttp
+    implementation libs.koin.core
+
+    testImplementation libs.junit
+}
+
+compose.desktop {
+    application {
+        mainClass = "com.thanh0x.coursedeals.desktop.MainKt"
+    }
+}
+
+tasks.withType(JavaExec).configureEach {
+    def sysArgsProp = providers.systemProperty("coursedeals.args").orNull
+    if (sysArgsProp != null && !sysArgsProp.trim().isEmpty()) {
+        systemProperty("coursedeals.args", sysArgsProp.trim())
+    }
+    def appArgsProp = providers.gradleProperty("appArgs").orNull
+    if (appArgsProp != null && !appArgsProp.trim().isEmpty()) {
+        args(appArgsProp.trim().split("\\s+").toList())
+    }
+}

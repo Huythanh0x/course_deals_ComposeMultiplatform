@@ -24,6 +24,7 @@ import org.koin.dsl.module
 
 private const val HEADER_REFRESH_ATTEMPTED = "X-Refresh-Attempted"
 private val PUBLIC_AUTH_PATHS = listOf(
+    "/api/v1/app/config",
     "/api/v1/auth/login",
     "/api/v1/auth/register",
     "/api/v1/auth/verify-otp",

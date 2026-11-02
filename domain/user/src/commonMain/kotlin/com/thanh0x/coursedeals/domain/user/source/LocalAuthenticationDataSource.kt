@@ -1,6 +1,10 @@
 package com.thanh0x.coursedeals.domain.user.source
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
+
 interface LocalAuthenticationDataSource {
+    fun observeLocalToken(): Flow<String?> = emptyFlow()
     suspend fun getLocalToken(): String?
     suspend fun saveLocalToken(newLoginToken: String)
     suspend fun clearLocalToken()

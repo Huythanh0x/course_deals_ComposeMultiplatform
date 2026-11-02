@@ -6,7 +6,10 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.thanh0x.coursedeals.domain.user.source.LocalAuthenticationDataSource
 import com.thanh0x.coursedeals.core.common.Constant
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 
 class LocalAuthenticationDataSourceImpl(private val datastore: DataStore<Preferences>) :
     LocalAuthenticationDataSource {
@@ -14,6 +17,12 @@ class LocalAuthenticationDataSourceImpl(private val datastore: DataStore<Prefere
         val userLoginToken = stringPreferencesKey(Constant.PREFERENCES_LOGIN_TOKEN)
         val refreshToken = stringPreferencesKey(Constant.PREFERENCES_REFRESH_TOKEN)
         val fingerprintToken = stringPreferencesKey(Constant.PREFERENCES_FINGERPRINT_TOKEN)
+    }
+
+    override fun observeLocalToken(): Flow<String?> {
+        return datastore.data
+            .map { preferences -> preferences[PreferenceKey.userLoginToken] }
+            .distinctUntilChanged()
     }
 
     override suspend fun getLocalToken(): String? {

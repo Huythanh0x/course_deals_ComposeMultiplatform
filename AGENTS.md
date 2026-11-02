@@ -6,13 +6,13 @@ follow the links into `/docs` rather than expecting it duplicated here.
 ## Project snapshot
 
 Kotlin Multiplatform (KMP) + Compose Multiplatform app (`:shared`, `:app` Android entry
-point, `iosApp` Xcode iOS entry point), Clean Architecture (domain/data/feature layers),
-package `com.thanh0x.coursedeals`.
+point, `:desktopApp` Compose Desktop entry point, `iosApp` Xcode iOS entry point), Clean
+Architecture (domain/data/feature layers), package `com.thanh0x.coursedeals`.
 
 - Kotlin 2.4.10, Compose Multiplatform 1.8.0, AGP 9.3.0, KSP 2.3.10, Gradle 9.5 (daemon
   pinned to JDK 21 — `gradle/gradle-daemon-jvm.properties`)
 - compileSdk 37 / minSdk 24 / targetSdk 37, Java 17 source/target compatibility
-- Targets: `jvm` (Android/JVM bytecode) + `iosArm64` + `iosSimulatorArm64`
+- Targets: `jvm` (Android/Desktop JVM bytecode) + `iosArm64` + `iosSimulatorArm64`
 - DI: Koin (`koin-core`, `koin-android`, `koin-androidx-compose`, `koin-compose`,
   `koin-compose-viewmodel`)
 - Networking: Ktor Client (`ktor-client-okhttp` on JVM/Android, `ktor-client-darwin` on
@@ -27,11 +27,12 @@ package `com.thanh0x.coursedeals`.
 
 ## Module map
 
-15 Gradle modules total (`settings.gradle`), plus `iosApp/` Xcode workspace:
+16 Gradle modules total (`settings.gradle`), plus `iosApp/` Xcode workspace:
 
 | Module | Plugin | Role |
 |---|---|---|
 | `app` | `com.android.application` | Android application entry point, wires Koin & `CourseDealsApp()` |
+| `desktopApp` | `org.jetbrains.kotlin.jvm` + Compose Multiplatform | Compose Desktop (`jvm`) entry point (`Main.kt`), CLI deep-linking (`--screen=...`), and headless/windowed screenshot runner |
 | `shared` | `coursedeals.kmp.library` + Compose Multiplatform | Shared KMP root (`CourseDealsApp`, `MainViewController` for iOS `ComposeApp.framework`) |
 | `core:common` | `coursedeals.kmp.library` | Shared KMP utilities, dispatchers, and base models |
 | `core:ui` | `coursedeals.kmp.library` + Compose Multiplatform | Shared Compose Multiplatform theme, components, and UI helpers |
@@ -89,7 +90,10 @@ General Flow/coroutines discipline to follow:
 ## Build & verify commands
 
 - Full build (mirrors CI): `./gradlew build`
-- Multi-module Detekt (all 15 modules): `./gradlew detekt`
+- Multi-module Detekt (all 16 modules): `./gradlew detekt`
+- Desktop app launch (fast local UI & API testing without Android Emulator):
+  - Interactive window: `./gradlew :desktopApp:run`
+  - Deep-link & automated screenshot capture: `./gradlew :desktopApp:run -Dcoursedeals.args="--screen=home --capture-screenshot=/tmp/desktop_home.png"`
 - iOS Simulator framework link gate (mirrors macOS CI job):
   `./gradlew :shared:linkDebugFrameworkIosSimulatorArm64`
 - Android debug APK assemble: `./gradlew :app:assembleLocalDebug`

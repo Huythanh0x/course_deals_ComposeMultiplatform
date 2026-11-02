@@ -43,7 +43,7 @@ tasks.register("syncOpenApiSpec") {
     group = "openapi"
     description = "Syncs openapi.json from course_deals_backend when available."
     doLast {
-        if (backendSpecFile.exists()) {
+        if (backendSpecFile.exists() && backendSpecFile.text.contains("/api/v1/app/config")) {
             openApiSpecFile.parentFile.mkdirs()
             openApiSpecFile.text = backendSpecFile.text
             logger.lifecycle("Synced OpenAPI spec from ${backendSpecFile.absolutePath} to ${openApiSpecFile.absolutePath}")
