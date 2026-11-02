@@ -12,6 +12,7 @@ plugins {
     alias(libs.plugins.navigation.safeargs) apply false
     alias(libs.plugins.detekt) apply false
     alias(libs.plugins.buildconfig) apply false
+    alias(libs.plugins.openapi.generator) apply false
 }
 
 tasks.register('installGitHooks', Copy) {

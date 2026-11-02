@@ -1,11 +1,10 @@
 package com.thanh0x.coursedeals.data.coupons.source.remote
 
 import com.thanh0x.coursedeals.core.network.NetworkResponse
-import com.thanh0x.coursedeals.data.coupons.model.CouponDto
-import com.thanh0x.coursedeals.data.coupons.model.CouponRequestDto
-import com.thanh0x.coursedeals.data.coupons.model.CourseDealResponse
-import com.thanh0x.coursedeals.data.coupons.model.CourseReportRequest
-import com.thanh0x.coursedeals.data.coupons.model.ResponseStatusFromServer
+import com.thanh0x.coursedeals.core.network.openapi.model.CouponDetailDTO
+import com.thanh0x.coursedeals.core.network.openapi.model.CouponRequestDTO
+import com.thanh0x.coursedeals.core.network.openapi.model.CourseReportRequest
+import com.thanh0x.coursedeals.core.network.openapi.model.PagedCouponResponseDTO
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.delete
@@ -53,7 +52,7 @@ class CouponServiceImpl(
         }
     }
 
-    override suspend fun fetchAllCoupons(): NetworkResponse<CourseDealResponse> {
+    override suspend fun fetchAllCoupons(): NetworkResponse<PagedCouponResponseDTO> {
         return safeRequest {
             httpClient.get("/api/v1/coupons")
         }
@@ -62,7 +61,7 @@ class CouponServiceImpl(
     override suspend fun fetchPagedCoupons(
         pageIndex: Int,
         numberPerPage: Int
-    ): NetworkResponse<CourseDealResponse> {
+    ): NetworkResponse<PagedCouponResponseDTO> {
         return safeRequest {
             httpClient.get("/api/v1/coupons") {
                 parameter("pageIndex", pageIndex)
@@ -71,13 +70,13 @@ class CouponServiceImpl(
         }
     }
 
-    override suspend fun fetchCouponDetail(courseId: Int): NetworkResponse<CouponDto> {
+    override suspend fun fetchCouponDetail(courseId: Int): NetworkResponse<CouponDetailDTO> {
         return safeRequest {
             httpClient.get("/api/v1/coupons/$courseId")
         }
     }
 
-    override suspend fun fetchEnhancedCouponDetail(courseId: Int): NetworkResponse<CouponDto> {
+    override suspend fun fetchEnhancedCouponDetail(courseId: Int): NetworkResponse<CouponDetailDTO> {
         return safeRequest {
             httpClient.get("/api/v1/coupons/$courseId/details")
         }
@@ -87,7 +86,7 @@ class CouponServiceImpl(
         query: String,
         pageIndex: Int,
         numberPerPage: Int
-    ): NetworkResponse<CourseDealResponse> {
+    ): NetworkResponse<PagedCouponResponseDTO> {
         return safeRequest {
             httpClient.get("/api/v1/coupons/search") {
                 parameter("query", query)
@@ -97,20 +96,20 @@ class CouponServiceImpl(
         }
     }
 
-    override suspend fun postCoupon(couponUrl: String): NetworkResponse<ResponseStatusFromServer> {
+    override suspend fun postCoupon(couponUrl: String): NetworkResponse<Unit> {
         return safeRequest {
             httpClient.post("/api/v1/coupons") {
                 contentType(ContentType.Application.Json)
-                setBody(CouponRequestDto(couponUrl = couponUrl))
+                setBody(CouponRequestDTO(couponUrl = couponUrl))
             }
         }
     }
 
-    override suspend fun deleteCoupon(couponUrl: String): NetworkResponse<ResponseStatusFromServer> {
+    override suspend fun deleteCoupon(couponUrl: String): NetworkResponse<Unit> {
         return safeRequest {
             httpClient.delete("/api/v1/coupons") {
                 contentType(ContentType.Application.Json)
-                setBody(CouponRequestDto(couponUrl = couponUrl))
+                setBody(CouponRequestDTO(couponUrl = couponUrl))
             }
         }
     }

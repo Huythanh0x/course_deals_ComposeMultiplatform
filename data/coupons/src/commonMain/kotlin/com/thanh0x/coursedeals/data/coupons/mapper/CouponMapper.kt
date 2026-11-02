@@ -1,10 +1,11 @@
 package com.thanh0x.coursedeals.data.coupons.mapper
 
+import com.thanh0x.coursedeals.core.network.openapi.model.CouponDetailDTO
+import com.thanh0x.coursedeals.core.network.openapi.model.CouponSummaryDTO
 import com.thanh0x.coursedeals.data.coupons.model.Coupon as CouponEntity
-import com.thanh0x.coursedeals.data.coupons.model.CouponDto
 import com.thanh0x.coursedeals.domain.coupons.Coupon as CouponDomain
 
-fun CouponDto.toDomain(): CouponDomain {
+fun CouponDetailDTO.toDomain(): CouponDomain {
     return CouponDomain(
         courseId = courseId,
         author = author,
@@ -16,10 +17,10 @@ fun CouponDto.toDomain(): CouponDomain {
         expiredTime = expiredTime,
         heading = heading,
         language = language,
-        level = level,
+        level = level?.value,
         previewImage = previewImage,
         previewVideo = previewVideo,
-        rating = rating,
+        rating = rating.toDouble(),
         reviews = reviews,
         students = students,
         subCategory = subCategory,
@@ -31,7 +32,7 @@ fun CouponDto.toDomain(): CouponDomain {
     )
 }
 
-fun CouponDto.toEntity(): CouponEntity {
+fun CouponDetailDTO.toEntity(): CouponEntity {
     return CouponEntity(
         courseId = courseId,
         author = author,
@@ -43,10 +44,10 @@ fun CouponDto.toEntity(): CouponEntity {
         expiredTime = expiredTime,
         heading = heading,
         language = language,
-        level = level,
+        level = level?.value,
         previewImage = previewImage,
         previewVideo = previewVideo,
-        rating = rating,
+        rating = rating.toDouble(),
         reviews = reviews,
         students = students,
         subCategory = subCategory,
@@ -55,6 +56,60 @@ fun CouponDto.toEntity(): CouponEntity {
         isNew = isNew,
         createdAt = createdAt,
         updatedAt = updatedAt,
+    )
+}
+
+fun CouponSummaryDTO.toDomain(): CouponDomain {
+    return CouponDomain(
+        courseId = courseId,
+        author = author,
+        category = category,
+        contentLength = null,
+        couponCode = null,
+        couponUrl = null,
+        description = null,
+        expiredTime = expiredTime,
+        heading = null,
+        language = language,
+        level = level?.value,
+        previewImage = previewImage,
+        previewVideo = null,
+        rating = rating.toDouble(),
+        reviews = reviews,
+        students = students,
+        subCategory = null,
+        title = title,
+        usesRemaining = null,
+        isNew = isNew,
+        createdAt = createdAt,
+        updatedAt = null,
+    )
+}
+
+fun CouponSummaryDTO.toEntity(): CouponEntity {
+    return CouponEntity(
+        courseId = courseId,
+        author = author,
+        category = category,
+        contentLength = null,
+        couponCode = null,
+        couponUrl = null,
+        description = null,
+        expiredTime = expiredTime,
+        heading = null,
+        language = language,
+        level = level?.value,
+        previewImage = previewImage,
+        previewVideo = null,
+        rating = rating.toDouble(),
+        reviews = reviews,
+        students = students,
+        subCategory = null,
+        title = title,
+        usesRemaining = null,
+        isNew = isNew,
+        createdAt = createdAt,
+        updatedAt = null,
     )
 }
 

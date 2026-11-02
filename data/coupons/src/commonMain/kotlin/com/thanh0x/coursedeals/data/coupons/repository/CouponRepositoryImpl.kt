@@ -7,9 +7,9 @@ import androidx.paging.map
 import com.thanh0x.coursedeals.core.common.AppResult
 import com.thanh0x.coursedeals.core.common.Constant
 import com.thanh0x.coursedeals.core.common.platformCurrentTimeMillis
+import com.thanh0x.coursedeals.core.network.openapi.model.CourseReportRequest
 import com.thanh0x.coursedeals.data.coupons.mapper.toDomain
 import com.thanh0x.coursedeals.data.coupons.mapper.toEntity
-import com.thanh0x.coursedeals.data.coupons.model.CourseReportRequest
 import com.thanh0x.coursedeals.data.coupons.source.LocalCouponDataSource
 import com.thanh0x.coursedeals.data.coupons.source.remote.CouponService
 import com.thanh0x.coursedeals.domain.coupons.Coupon
@@ -61,14 +61,15 @@ class CouponRepositoryImpl(
             val response = couponService.fetchAllCoupons()
             val body = response.body()
             if ((response.isSuccessful) && (body != null)) {
+                val courses = body.courses.orEmpty()
                 localCouponDataSource.clearALlCoupons()
-                localCouponDataSource.insertCoupons(body.courses.map { it.toEntity() })
+                localCouponDataSource.insertCoupons(courses.map { it.toEntity() })
                 searchRepository.rebuildKeywordCache()
                 lastSyncTimestamp = currentTime
                 _metadataFlow.emit(
                     CouponMetadata(
-                        totalCoupon = body.totalCoupon,
-                        lastFetchTime = body.lastFetchTime,
+                        totalCoupon = body.totalCoupon ?: courses.size.toLong(),
+                        lastFetchTime = body.lastFetchTime ?: currentTime,
                         localFetchTime = currentTime,
                     ),
                 )

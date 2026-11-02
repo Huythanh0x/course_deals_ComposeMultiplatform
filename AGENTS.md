@@ -96,7 +96,10 @@ General Flow/coroutines discipline to follow:
 - Lint is flavor-qualified because of the `local`/`prod` split:
   - `app` module: `./gradlew :app:lintLocalDebug` (plain `:app:lintDebug` is ambiguous
     and fails)
-- Unit tests: `./gradlew testLocalDebugUnitTest` (or `jvmTest` in KMP modules)
+- Unit tests: `./gradlew testLocalDebugUnitTest` (or `jvmTest` in KMP modules, e.g. `./gradlew :data:coupons:jvmTest :data:user:jvmTest`)
+- OpenAPI Ktor & DTO Codegen: `./gradlew generateCourseDealsApi`
+  - Syncs `../course_deals_backend/openapi/openapi.json` into `core/network/openapi/openapi.json` (when the sibling backend repo is present) and runs OpenAPI Generator (`kotlin` + `library = "multiplatform"`, `dateLibrary = "kotlinx-datetime"`) into `core/network/src/commonMain/gen/com/thanh0x/coursedeals/core/network/openapi/`.
+  - `core/network/openapi/openapi.json` is committed to version control as the single source of truth, while `core/network/src/commonMain/gen/` is gitignored and generated automatically during build before `:core:network` compiles.
 - `git commit` messages are enforced by the `commit-msg` hook (Conventional Commits
   regex) and `pre-commit` runs `./gradlew detekt` across all modules — both installed via
   `./gradlew installGitHooks`, run once per clone if hooks aren't already installed.
