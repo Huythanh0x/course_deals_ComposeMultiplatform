@@ -1,15 +1,25 @@
 appId: ${APP_ID}
 ---
 - launchApp:
-    clearState: false
+    clearState: true
 - extendedWaitUntil:
-    visible: "Sign In"
+    visible: "Access as Guest"
     timeout: 15000
 - tapOn: "Access as Guest"
 - extendedWaitUntil:
     visible: "HOME"
     timeout: 15000
 - tapOn: "HOME"
+- extendedWaitUntil:
+    visible: "Search courses"
+    timeout: 10000
+# Reset filter to show all courses
+- tapOn: "Filter"
+- extendedWaitUntil:
+    visible: "Reset"
+    timeout: 5000
+- tapOn: "Reset"
+- tapOn: "Apply"
 - extendedWaitUntil:
     visible: "Search courses"
     timeout: 10000
@@ -33,10 +43,17 @@ appId: ${APP_ID}
     visible: "Report this deal"
     timeout: 5000
 - assertVisible: "Report this deal"
-# Cancel report dialog
-- tapOn: "Cancel"
+# Select reason 'Expired deal'
+- tapOn: "Expired deal"
+# Submit report
+- tapOn: "Submit"
+# Verify bottom sheet dismisses & success feedback displays
+- extendedWaitUntil:
+    visible: "Report submitted successfully"
+    timeout: 5000
+- assertVisible: "Report submitted successfully"
 # Back navigation
-- tapOn: "Back"
+- back
 - extendedWaitUntil:
     visible: "HOME"
     timeout: 10000
