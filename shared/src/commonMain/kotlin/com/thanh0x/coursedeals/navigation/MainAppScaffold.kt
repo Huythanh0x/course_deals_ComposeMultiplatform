@@ -4,15 +4,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.LazyGridState
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.thanh0x.coursedeals.core.ui.DialogType
@@ -38,10 +39,15 @@ fun MainAppScaffold(
     courseViewModel: CourseViewModel = koinViewModel(key = "course_vm"),
     profileViewModel: ProfileViewModel = koinViewModel(key = "profile_vm"),
     homePagingItems: LazyPagingItems<Coupon> = homeViewModel.items.collectAsLazyPagingItems(),
-    homeGridState: LazyGridState = rememberLazyGridState(),
+    homeGridState: LazyGridState? = null,
 ) {
     var internalRoute by rememberSaveable { mutableStateOf(initialRoute) }
     val currentRoute = currentRouteOverride ?: internalRoute
+    val homeUiState by homeViewModel.uiState.collectAsStateWithLifecycle()
+    val defaultHomeGridState = remember(homeUiState.query, homeUiState.filter) {
+        LazyGridState()
+    }
+    val resolvedHomeGridState = homeGridState ?: defaultHomeGridState
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -69,7 +75,7 @@ fun MainAppScaffold(
                     HomeRoute(
                         viewModel = homeViewModel,
                         pagingItems = homePagingItems,
-                        gridState = homeGridState,
+                        gridState = resolvedHomeGridState,
                         onCouponClick = onCouponClick,
                         showAlertDialog = showAlertDialog,
                     )

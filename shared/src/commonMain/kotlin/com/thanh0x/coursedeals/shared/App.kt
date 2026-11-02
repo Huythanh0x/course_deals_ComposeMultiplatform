@@ -165,8 +165,11 @@ fun App(
             val homeViewModel: HomeViewModel = koinViewModel(key = "home_vm_$sessionEpoch")
             val courseViewModel: CourseViewModel = koinViewModel(key = "course_vm_$sessionEpoch")
             val profileViewModel: ProfileViewModel = koinViewModel(key = "profile_vm_$sessionEpoch")
+            val homeUiState by homeViewModel.uiState.collectAsStateWithLifecycle()
             val homePagingItems = homeViewModel.items.collectAsLazyPagingItems()
-            val homeGridState = remember(sessionEpoch) { LazyGridState() }
+            val homeGridState = remember(sessionEpoch, homeUiState.query, homeUiState.filter) {
+                LazyGridState()
+            }
 
             DisposableEffect(homeViewModel, courseViewModel, profileViewModel) {
                 onDispose {

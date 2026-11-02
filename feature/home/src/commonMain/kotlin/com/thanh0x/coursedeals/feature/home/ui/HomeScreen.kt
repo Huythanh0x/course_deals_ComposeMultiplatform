@@ -363,6 +363,9 @@ fun HomeScreen(
                     }
                 } else {
                     // Course grid
+                    val firstId = if (pagingItems.itemCount > 0) pagingItems.peek(0)?.courseId else null
+                    val listSignature =
+                        "${uiState.query}_${uiState.filter.hashCode()}_${pagingItems.itemCount}_$firstId"
                     LazyVerticalGrid(
                         state = gridState,
                         columns = GridCells.Fixed(2),
@@ -371,7 +374,7 @@ fun HomeScreen(
                     ) {
                         items(
                             count = pagingItems.itemCount,
-                            key = pagingItems.itemKey { it.courseId },
+                            key = pagingItems.itemKey { "${listSignature}_${it.courseId}" },
                         ) { index ->
                             val item = pagingItems[index]
                             if (item != null) {
