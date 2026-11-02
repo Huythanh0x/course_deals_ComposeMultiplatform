@@ -9,6 +9,7 @@ const val DEFAULT_CAPTURE_DELAY_MS = 3500L
 const val MIN_CAPTURE_DELAY_MS = 100L
 const val MAX_CAPTURE_DELAY_MS = 60_000L
 const val DEFAULT_TEST_OTP_EMAIL = "brandnewuser@test.com"
+const val DEFAULT_TEST_ENROLL_URL = "https://www.udemy.com/course/kotlin-for-java-developers/"
 
 data class DesktopLaunchConfig(
     val initialScreen: AppScreen = AppScreen.Login,
@@ -47,12 +48,21 @@ fun parseDesktopArgs(args: List<String>): DesktopLaunchConfig {
     val isHome = screenArg == "home"
     val isCourse = screenArg == "course"
     val isProfile = screenArg == "profile"
+    val isEnroll = screenArg == "enroll"
+
+    val enrollUrl = args
+        .firstOrNull { it.startsWith("--enroll-url=") }
+        ?.substringAfter("--enroll-url=")
+        ?.trim()
+        ?.takeIf { it.isNotEmpty() }
+        ?: DEFAULT_TEST_ENROLL_URL
 
     val explicitVersionOverride = parseExplicitVersionOverride(args)
     val versionOverride = explicitVersionOverride ?: if (isForceUpdate) OUTDATED_TEST_VERSION_CODE else null
 
     val initialScreen = when {
         isForceUpdate || isSplash || versionOverride != null -> AppScreen.Splash
+        isEnroll -> AppScreen.Enroll(couponUrl = enrollUrl, previousCourseId = null)
         isHome || isCourse || isProfile -> AppScreen.Main
         else -> AppScreen.Login
     }

@@ -1,3 +1,4 @@
+import java.util.Locale
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -6,6 +7,14 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.detekt)
 }
+
+def osName = System.getProperty("os.name").toLowerCase(Locale.ROOT)
+def osArch = System.getProperty("os.arch").toLowerCase(Locale.ROOT)
+def isArm64 = osArch.contains("aarch64") || osArch.contains("arm64")
+def javafxPlatform = osName.contains("mac") ? (isArm64 ? "mac-aarch64" : "mac")
+    : osName.contains("win") ? "win"
+    : (isArm64 ? "linux-aarch64" : "linux")
+def javafxVersion = libs.versions.javafx.get()
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -49,12 +58,21 @@ dependencies {
     implementation project(':feature:splash')
     implementation compose.desktop.currentOs
     implementation compose.material3
+    implementation compose.materialIconsExtended
     implementation libs.kotlinx.coroutines.swing
     implementation libs.ktor.client.core
     implementation libs.ktor.client.okhttp
     implementation libs.koin.core
+    implementation "org.openjfx:javafx-base:${javafxVersion}:${javafxPlatform}"
+    implementation "org.openjfx:javafx-graphics:${javafxVersion}:${javafxPlatform}"
+    implementation "org.openjfx:javafx-controls:${javafxVersion}:${javafxPlatform}"
+    implementation "org.openjfx:javafx-media:${javafxVersion}:${javafxPlatform}"
+    implementation "org.openjfx:javafx-swing:${javafxVersion}:${javafxPlatform}"
+    implementation "org.openjfx:javafx-web:${javafxVersion}:${javafxPlatform}"
 
     testImplementation libs.junit
+    testImplementation compose.desktop.uiTestJUnit4
+    testImplementation compose.desktop.currentOs
 }
 
 compose.desktop {

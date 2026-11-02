@@ -32,6 +32,7 @@ compose-multiplatform = "1.8.0"
 buildconfig = "5.5.1"
 openapiGenerator = "7.12.0"
 kotlinxDatetime = "0.6.2"
+javafx = "21.0.5"
 
 [libraries]
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }

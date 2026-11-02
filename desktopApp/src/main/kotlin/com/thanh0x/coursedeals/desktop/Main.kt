@@ -17,6 +17,7 @@ import androidx.compose.ui.window.application
 import com.thanh0x.coursedeals.core.common.AppVersion
 import com.thanh0x.coursedeals.core.logging.LogFileManager
 import com.thanh0x.coursedeals.core.logging.LoggerFactory
+import com.thanh0x.coursedeals.core.logging.PlatformConsoleLogWriter
 import com.thanh0x.coursedeals.core.logging.debug
 import com.thanh0x.coursedeals.core.logging.warn
 import com.thanh0x.coursedeals.shared.App
@@ -31,6 +32,7 @@ private const val WINDOW_HEIGHT_DP = 880
 
 fun main(args: Array<String>) {
     LogFileManager.init(null)
+    LoggerFactory.install(PlatformConsoleLogWriter())
     val logger = LoggerFactory.getLogger("CourseDealsDesktop")
 
     val combinedArgs = resolveCombinedDesktopArgs(args.toList())

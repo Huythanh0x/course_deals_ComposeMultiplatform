@@ -37,6 +37,19 @@ class DesktopLaunchConfigTest {
         val profileConfig = parseDesktopArgs(listOf("--screen=profile"))
         assertEquals(AppScreen.Main, profileConfig.initialScreen)
         assertEquals("profile", profileConfig.initialRoute)
+
+        val enrollDefaultConfig = parseDesktopArgs(listOf("--screen=enroll"))
+        assertEquals(
+            AppScreen.Enroll(couponUrl = DEFAULT_TEST_ENROLL_URL, previousCourseId = null),
+            enrollDefaultConfig.initialScreen,
+        )
+
+        val customEnrollUrl = "https://www.udemy.com/course/compose-multiplatform/?couponCode=FREE100"
+        val enrollCustomConfig = parseDesktopArgs(listOf("--screen=enroll", "--enroll-url=$customEnrollUrl"))
+        assertEquals(
+            AppScreen.Enroll(couponUrl = customEnrollUrl, previousCourseId = null),
+            enrollCustomConfig.initialScreen,
+        )
     }
 
     @Test
