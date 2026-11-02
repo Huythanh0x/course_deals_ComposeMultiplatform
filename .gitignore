@@ -37,3 +37,7 @@ DerivedData/
 docs/product/screenshots/
 /screenshots/
 
+# Auto-generated OpenAPI Ktor sources (regenerated at build time from core/network/openapi/openapi.json)
+core/network/src/commonMain/gen/
+
+

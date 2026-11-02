@@ -79,6 +79,8 @@ tasks.register("generateCourseDealsApi") {
     group = "openapi"
     description = "Generates KMP Ktor API clients and @Serializable DTOs from openapi.json into src/commonMain/gen."
     dependsOn("openApiGenerate")
+    inputs.file(openApiSpecFile)
+    outputs.dir(openApiGenSrcDir)
     def buildGenDir = openApiBuildDir
     def targetGenDir = openApiGenSrcDir
     doLast {
@@ -103,5 +105,11 @@ tasks.register("generateCourseDealsApi") {
         }
         logger.lifecycle("Generated KMP OpenAPI sources in ${targetGenDir.absolutePath}")
     }
+}
+
+tasks.matching {
+    (it.name.startsWith("compile") && it.name.contains("Kotlin")) || it.name.endsWith("SourcesJar")
+}.configureEach {
+    dependsOn("generateCourseDealsApi")
 }
 

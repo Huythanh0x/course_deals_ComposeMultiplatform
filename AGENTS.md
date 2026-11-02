@@ -108,7 +108,7 @@ filters or not). Treat this as the current, real security surface, not a hypothe
 - Unit tests: `./gradlew testLocalDebugUnitTest` (or `test<Variant>UnitTest` per module), plus KMP JVM unit tests (`./gradlew :data:coupons:jvmTest :data:user:jvmTest`)
 - OpenAPI Ktor & DTO Codegen: `./gradlew generateCourseDealsApi`
   - Syncs `../course_deals_backend/openapi/openapi.json` into `core/network/openapi/openapi.json` (when the sibling backend repo is present) and runs OpenAPI Generator (`kotlin` + `library = "multiplatform"`, `dateLibrary = "kotlinx-datetime"`) into `core/network/src/commonMain/gen/com/thanh0x/coursedeals/core/network/openapi/`.
-  - Both `core/network/openapi/openapi.json` and `core/network/src/commonMain/gen/**` are committed to version control for offline CI reproducibility and zero-drift network DTO contracts across `:data:coupons` and `:data:user`.
+  - `core/network/openapi/openapi.json` is committed to version control as the single source of truth, while `core/network/src/commonMain/gen/` is gitignored and generated automatically during build before `:core:network` compiles.
 - `git commit` messages are enforced by the `commit-msg` hook (Conventional Commits
   regex) and `pre-commit` runs `:app:detekt` — both installed via
   `./gradlew installGitHooks`, run once per clone if hooks aren't already installed.
