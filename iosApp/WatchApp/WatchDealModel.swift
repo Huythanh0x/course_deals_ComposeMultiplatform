@@ -16,6 +16,8 @@ public struct WatchDealModel: Identifiable, Hashable, Codable {
     public let usesRemaining: Int?
     public let platform: WatchCoursePlatform
     public var isBookmarked: Bool
+    public let students: Int?
+    public let isHot: Bool
 
     public init(
         id: Int,
@@ -30,7 +32,9 @@ public struct WatchDealModel: Identifiable, Hashable, Codable {
         reviews: Int? = nil,
         usesRemaining: Int? = nil,
         platform: WatchCoursePlatform = .udemy,
-        isBookmarked: Bool = false
+        isBookmarked: Bool = false,
+        students: Int? = nil,
+        isHot: Bool = true
     ) {
         self.id = id
         self.title = title
@@ -45,6 +49,8 @@ public struct WatchDealModel: Identifiable, Hashable, Codable {
         self.usesRemaining = usesRemaining
         self.platform = platform
         self.isBookmarked = isBookmarked
+        self.students = students
+        self.isHot = isHot
     }
 
     public var discountBadgeText: String {
@@ -56,6 +62,19 @@ public struct WatchDealModel: Identifiable, Hashable, Codable {
             return String(format: "★ %.1f", rating)
         }
         return "★ 4.8"
+    }
+
+    public var formattedStudents: String {
+        guard let students = students, students > 0 else { return "" }
+        if students >= 1_000_000 {
+            let mVal = Double(students) / 1_000_000.0
+            return String(format: "%.1fM students", mVal)
+        } else if students >= 1_000 {
+            let kVal = Int((Double(students) / 1_000.0).rounded())
+            return "\(kVal)k students"
+        } else {
+            return "\(students) students"
+        }
     }
 
     public func isExpired(now: Date = Date()) -> Bool {
@@ -130,7 +149,9 @@ extension WatchDealModel {
                 reviews: 1420,
                 usesRemaining: 14,
                 platform: .udemy,
-                isBookmarked: false
+                isBookmarked: false,
+                students: 45200,
+                isHot: true
             ),
             WatchDealModel(
                 id: 102,
@@ -145,7 +166,9 @@ extension WatchDealModel {
                 reviews: 890,
                 usesRemaining: 8,
                 platform: .coursera,
-                isBookmarked: true
+                isBookmarked: true,
+                students: 31500,
+                isHot: true
             ),
             WatchDealModel(
                 id: 103,
@@ -160,7 +183,9 @@ extension WatchDealModel {
                 reviews: 2150,
                 usesRemaining: 23,
                 platform: .udemy,
-                isBookmarked: false
+                isBookmarked: false,
+                students: 28900,
+                isHot: true
             ),
             WatchDealModel(
                 id: 104,
@@ -175,7 +200,9 @@ extension WatchDealModel {
                 reviews: 640,
                 usesRemaining: 5,
                 platform: .coursera,
-                isBookmarked: false
+                isBookmarked: false,
+                students: 19400,
+                isHot: true
             ),
             WatchDealModel(
                 id: 105,
@@ -190,7 +217,9 @@ extension WatchDealModel {
                 reviews: 1820,
                 usesRemaining: 31,
                 platform: .udemy,
-                isBookmarked: false
+                isBookmarked: false,
+                students: 16800,
+                isHot: true
             )
         ]
     }
