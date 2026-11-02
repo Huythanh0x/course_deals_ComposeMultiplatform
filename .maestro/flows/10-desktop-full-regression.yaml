@@ -102,7 +102,21 @@ appId: ${APP_ID}
     visible: "Professional Diploma in Procurement Management"
     timeout: 5000
 - assertVisible: "Professional Diploma in Procurement Management"
+- assertVisible: "Matching 1/3 deals"
+- assertNotVisible: "Complete Web Development Bootcamp 2026"
 - takeScreenshot: desktop_full_08_search_results
+- tapOn: "Professional Diploma in Procurement Management"
+- extendedWaitUntil:
+    visible: "Enroll Now"
+    timeout: 5000
+- assertVisible: "Enroll Now"
+- tapOn: "Back"
+- extendedWaitUntil:
+    visible: "Professional Diploma in Procurement Management"
+    timeout: 5000
+- assertVisible: "Professional Diploma in Procurement Management"
+- assertVisible: "Matching 1/3 deals"
+- assertNotVisible: "Complete Web Development Bootcamp 2026"
 - tapOn: "Clear"
 
 # 5. Course Detail -> Report Sheet -> Enroll Embedded Browser

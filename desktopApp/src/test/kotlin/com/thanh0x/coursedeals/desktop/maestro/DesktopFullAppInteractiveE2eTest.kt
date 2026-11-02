@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithText
 import com.thanh0x.coursedeals.core.common.AppVersion
 import com.thanh0x.coursedeals.desktop.TAG_WEBVIEW_ADDRESS_BAR
 import com.thanh0x.coursedeals.desktop.TAG_WEBVIEW_OPEN_EXTERNAL_BUTTON
@@ -166,6 +167,8 @@ class DesktopFullAppInteractiveE2eTest {
             assertVisible("Professional Diploma in Procurement Management")
             assertVisible("Kotlin Multiplatform & Compose Desktop Masterclass")
             assertVisible("3 deals")
+            val initialWebDevTop = nodeTop("Complete Web Development Bootcamp 2026")
+            val initialKmpTop = nodeTop("Kotlin Multiplatform & Compose Desktop Masterclass")
 
             // 1. Toggle timestamp display (Updated <-> Fetched)
             tapOn("Updated")
@@ -199,13 +202,23 @@ class DesktopFullAppInteractiveE2eTest {
             tapOn("Business")
             tapOn("Apply")
 
-            // Verify filtered results & top Clear Filters button
+            // Verify filtered results persist across Detail navigation & top Clear Filters button
             waitForVisible("Professional Diploma in Procurement Management")
             assertVisible("Matching 1/3 deals")
+            assertNotVisible("Complete Web Development Bootcamp 2026")
+            tapOn("Professional Diploma in Procurement Management")
+            waitForVisible("Enroll Now")
+            tapOn("Back")
+            waitForVisible("Professional Diploma in Procurement Management")
+            assertVisible("Matching 1/3 deals")
+            assertNotVisible("Complete Web Development Bootcamp 2026")
             tapOn("Clear")
             waitForVisible("3 deals")
+            assertVisible("Complete Web Development Bootcamp 2026")
+            assertVisible("Kotlin Multiplatform & Compose Desktop Masterclass")
+            assertTopCourseRowAt(initialWebDevTop, initialKmpTop)
 
-            // 4. Search input, empty state Reset Filters button, and Clear search button
+            // 4. Search input, empty state Reset Filters button, Detail back navigation, and Clear search button
             tapOn("Search courses")
             inputText("NonExistentCourseName999")
             waitForVisible("No courses matching your criteria")
@@ -217,9 +230,31 @@ class DesktopFullAppInteractiveE2eTest {
             tapOn("Search courses")
             inputText("Procurement")
             waitForVisible("Professional Diploma in Procurement Management")
+            assertVisible("Matching 1/3 deals")
+            assertNotVisible("Complete Web Development Bootcamp 2026")
+            tapOn("Professional Diploma in Procurement Management")
+            waitForVisible("Enroll Now")
+            tapOn("Back")
+            waitForVisible("Professional Diploma in Procurement Management")
+            assertVisible("Matching 1/3 deals")
+            assertNotVisible("Complete Web Development Bootcamp 2026")
             tapOn("Clear")
             waitForVisible("Complete Web Development Bootcamp 2026")
+            assertVisible("Kotlin Multiplatform & Compose Desktop Masterclass")
+            assertVisible("3 deals")
+            assertTopCourseRowAt(initialWebDevTop, initialKmpTop)
         }
+    }
+
+    private fun nodeTop(text: String): Float = composeTestRule
+        .onNodeWithText(text, useUnmergedTree = true)
+        .fetchSemanticsNode()
+        .boundsInRoot
+        .top
+
+    private fun assertTopCourseRowAt(expectedWebDevTop: Float, expectedKmpTop: Float) {
+        assertEquals(expectedWebDevTop, nodeTop("Complete Web Development Bootcamp 2026"), 0.5f)
+        assertEquals(expectedKmpTop, nodeTop("Kotlin Multiplatform & Compose Desktop Masterclass"), 0.5f)
     }
 
     @Test

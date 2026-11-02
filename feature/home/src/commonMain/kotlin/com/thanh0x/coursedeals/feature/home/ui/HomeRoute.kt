@@ -1,5 +1,7 @@
 package com.thanh0x.coursedeals.feature.home.ui
 
+import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -10,6 +12,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.thanh0x.coursedeals.core.ui.DialogType
 import com.thanh0x.coursedeals.domain.coupons.Coupon
@@ -22,9 +25,10 @@ fun HomeRoute(
     modifier: Modifier = Modifier,
     onCouponClick: (Coupon) -> Unit,
     showAlertDialog: (String, String, DialogType) -> Unit = { _, _, _ -> },
+    pagingItems: LazyPagingItems<Coupon> = viewModel.items.collectAsLazyPagingItems(),
+    gridState: LazyGridState = rememberLazyGridState(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val pagingItems = viewModel.items.collectAsLazyPagingItems()
 
     var showFilterSheet by remember { mutableStateOf(false) }
     var showSubmitDealSheet by remember { mutableStateOf(false) }
@@ -49,6 +53,7 @@ fun HomeRoute(
     HomeScreen(
         uiState = uiState,
         pagingItems = pagingItems,
+        gridState = gridState,
         modifier = modifier,
         onQueryChange = { query ->
             viewModel.updateQuery(query)

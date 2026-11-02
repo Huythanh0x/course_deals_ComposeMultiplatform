@@ -195,6 +195,7 @@ class HomeViewModel(
     }
 
     fun updateQuery(query: String) {
+        _queryTrigger.value = query
         _uiState.update { it.copy(query = query) }
     }
 
