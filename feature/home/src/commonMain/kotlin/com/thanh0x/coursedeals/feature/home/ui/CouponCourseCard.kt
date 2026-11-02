@@ -35,6 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.thanh0x.coursedeals.core.common.platformCurrentTimeMillis
+import com.thanh0x.coursedeals.core.ui.components.CountdownTicker
 import com.thanh0x.coursedeals.core.ui.components.NetworkImage
 import com.thanh0x.coursedeals.core.ui.resources.Res
 import com.thanh0x.coursedeals.core.ui.resources.painterResource
@@ -79,9 +80,6 @@ private fun CouponCardImageHeader(
     expiredTime: Long?,
     modifier: Modifier = Modifier,
 ) {
-    val mapper = remember { MapperToView() }
-    val timeLeftText = mapper.mapTimeLeft(expiredTime)
-
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -97,25 +95,13 @@ private fun CouponCardImageHeader(
             modifier = Modifier.matchParentSize(),
         )
 
-        if (timeLeftText.isNotEmpty()) {
-            Box(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(top = 4.dp, end = 4.dp)
-                    .background(
-                        color = MaterialTheme.colorScheme.errorContainer,
-                        shape = RoundedCornerShape(8.dp),
-                    )
-                    .padding(horizontal = 6.dp, vertical = 2.dp),
-            ) {
-                Text(
-                    text = timeLeftText,
-                    color = MaterialTheme.colorScheme.onErrorContainer,
-                    fontSize = 10.sp,
-                    fontWeight = FontWeight.Bold,
-                )
-            }
-        }
+        CountdownTicker(
+            expiredDate = expiredTime,
+            fontSize = 10.sp,
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(top = 4.dp, end = 4.dp),
+        )
     }
 }
 
