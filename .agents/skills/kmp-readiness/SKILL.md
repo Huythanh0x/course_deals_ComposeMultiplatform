@@ -1,42 +1,36 @@
 ---
 name: kmp-readiness
-description: Audit a module or file for Android-only APIs that would block a future Kotlin Multiplatform commonMain move, per docs/adr/0001-kotlin-multiplatform-over-flutter.md. Use when the user asks whether code is KMP-ready, what's blocking the KMP migration, or wants a readiness check on domain/data modules before or during that initiative.
+description: Audit `course_deals_ComposeMultiplatform` modules (`:shared`, `:core:*`, `:domain:*`, `:data:*`, `:feature:*`, `:desktopApp`, `iosApp`, `watchApp`) for KMP target purity, platform boundary discipline, and multiplatform build health.
 ---
 
-# KMP readiness check
+# KMP & Multiplatform Architecture Audit (`kmp-readiness`)
 
-Audits code against the KMP migration recorded (Accepted, not yet implemented) in
-`docs/adr/0001-kotlin-multiplatform-over-flutter.md`. That ADR's plan is to share the
-domain/data layer with a new Compose Multiplatform Web UI while native Android UI stays
-untouched — so this check only ever concerns `domain:*` / `data:*` (and any future
-shared module), never `feature:*` or `app`.
+All 14 shared modules in `course_deals_ComposeMultiplatform` (`:shared`, `:core:common`, `:core:ui`, `:core:network`, `:domain:coupons`, `:domain:user`, `:data:coupons`, `:data:user`, and `:feature:home`, `profile`, `detail`, `auth`, `splash`, `course`, `enroll`) are Kotlin Multiplatform modules using `coursedeals.kmp.library` (`commonMain`, `jvmMain`, `iosMain`).
 
-## What to grep for
+Use this skill to audit changes for multiplatform purity and target safety.
 
-In the target module/file, look for these Android-only signals (see `AGENTS.md`'s KMP
-section for the current known state — as of now, all four of `domain:coupons`,
-`domain:user`, `data:coupons`, `data:user` have hits):
+## 1. Platform Boundary Rules
 
-| API | Where it typically shows up | What it needs for KMP |
+| Source Set / Module | Allowed Dependencies | Forbidden Leaks |
 |---|---|---|
-| `android.os.Parcelable` / `@Parcelize` | domain models passed between Android UI components | Usually droppable for the shared layer — Parcelable is an Android UI-navigation concern, not a domain concept; the shared model doesn't need it, only the Android-side UI wrapper would |
-| `android.content.Context` | Room/DataStore setup, resource access | Needs an `expect`/`actual` platform abstraction (e.g. a `expect class AppContext` or DI-injected platform accessor) |
-| `androidx.room.*` | `data:*` persistence | Room has an official KMP artifact — check the version in use supports it before assuming a rewrite is needed |
-| `androidx.datastore.*` | `data:user` preferences | DataStore also has KMP support as of recent versions — same caveat, check the version |
-| `android.security.keystore.*` (Android Keystore) | `domain:user`'s `CryptographyManagerUseCase` | **No cross-platform equivalent.** This is a genuine hard blocker — needs a real `expect`/`actual` with a different crypto approach per platform, and is worth its own ADR when tackled, not a quick fix |
-| `androidx.paging.*` | `domain:coupons`, `data:coupons` | Paging also has a KMP artifact — check version/support before assuming rewrite |
+| `src/commonMain/kotlin` (`:domain:*`, `:data:*`, `:core:*`, `:feature:*`, `:shared`) | Pure Kotlin, `kotlinx.coroutines`, `kotlinx.serialization`, `kotlinx-datetime`, Ktor `commonMain`, Koin `commonMain`, Compose Multiplatform | **NEVER** `import android.*`, `import java.awt.*`, `import javax.swing.*`, `import javafx.*`, or `import platform.UIKit.*` |
+| `src/jvmMain/kotlin` | JVM / Android / Desktop shared bytecode abstractions | Platform UI toolkits that break Android or Desktop |
+| `src/iosMain/kotlin` | Kotlin/Native `platform.Foundation.*`, `platform.UIKit.*`, Darwin Ktor engine | JVM/Android classes |
+| `:app` | Android entry point (`MainActivity`, `AndroidManifest.xml`, Android Koin bootstrap) | Desktop `compose.desktop.*` or JavaFX |
+| `:desktopApp` | JVM Desktop entry point (`Window`, `SwingPanel`, `JFXPanel`, `kotlinx-coroutines-swing`) | `android.*` imports |
+| `iosApp/` & `watchApp/` | Native SwiftUI host, `ComposeApp.framework` bridge, Keychain, WidgetKit, `WatchConnectivity` (`WCSession`) | Hardcoded secrets in `Info.plist` or `UserDefaults` |
 
-## Steps
+## 2. Audit Steps
 
-1. Grep the target module for `import android` (excluding `androidx` KMP-supported
-   libraries already flagged above) to catch anything not in the table.
-2. For each hit, classify it: droppable (no real reason it needs Android), needs
-   `expect`/`actual` (platform behavior genuinely differs), or hard blocker (no
-   cross-platform equivalent exists — Android Keystore is the only currently-known one).
-3. Report findings as a list per file, not a rewrite — this skill diagnoses, it doesn't
-   migrate. Actually moving a module to `commonMain`/KMP source sets is real
-   architectural work that should go through the `adr` skill first if it hasn't already
-   been decided, then its own tracked issue(s).
-4. Don't propose speculative `expect`/`actual` scaffolding for code that isn't actually
-   being migrated right now — per `AGENTS.md`, premature abstraction ahead of the real
-   KMP work is exactly what to avoid.
+1. **Grep `commonMain` for Platform Leaks:**
+   ```bash
+   grep -rnE "^import (android\.|java\.awt\.|javax\.swing\.|javafx\.)" core/ domain/ data/ feature/ shared/ --include="*.kt" | grep "/commonMain/"
+   ```
+2. **Verify Abstraction Mechanism:**
+   - Stateless fact/helper → `expect`/`actual`.
+   - Stateful service/repository → `interface` in `commonMain` (never `expect class` with divergent constructors).
+   - Swift-only Apple framework (`WidgetKit`, `ActivityKit`, `WCSession`) → Kotlin interface in `:shared` implemented in Swift inside `iosApp/`.
+3. **Verify Multiplatform Compilation Gates:**
+   - `./gradlew detekt`
+   - `./gradlew :shared:linkDebugFrameworkIosSimulatorArm64`
+   - `./gradlew :desktopApp:compileKotlin`

@@ -15,12 +15,13 @@ description: Implement the code change for a ticket, following this repo's AGENT
    an explicit plan (or recommend `/plan`) before writing code, even inside this flow — a
    checkpoint on *approach* is different from this skill's own step-level gate, and still
    worth it for a non-trivial change.
-4. Implement, following `AGENTS.md`'s conventions:
-   - Convention plugins for any new module (`new-module` skill)
-   - `MutableStateFlow`/`asStateFlow()` + `UiState` for any ViewModel state
-   - Intent/exported-component care if touching manifest components
-     (`intent-security-review` skill)
-   - Fakes-over-mocks if adding tests inline (see `testing-strategy`)
+4. Implement, following `AGENTS.md`'s conventions and `.agents/skills/team-flow/references/upstream/`:
+   - Convention plugins for any new module (`coursedeals.kmp.library` via `new-module` skill)
+   - `./gradlew generateCourseDealsApi` if backend OpenAPI schema changed
+   - `MutableStateFlow`/`asStateFlow()` + `_uiState.update { }` for ViewModel state in `commonMain`
+   - Semantic `Modifier.testTag("<tag>")` and `.accessibilityIdentifier("<tag>")` for Maestro/Compose UI testability
+   - Intent/exported-component care on Android (`intent-security-review` skill) and Keychain/Passkey safety on Apple (`swift-security`)
+   - Fakes-over-mocks + Ktor `MockEngine` for tests (see `testing-strategy`)
 5. Record any real implementation-level tradeoff in Decisions — not a restatement of
    the diff, but *why* one approach was chosen over another when it mattered.
 6. Append to Progress log after each meaningful chunk of work, not only once at the
