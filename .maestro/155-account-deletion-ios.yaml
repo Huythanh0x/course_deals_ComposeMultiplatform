@@ -1,0 +1,101 @@
+appId: com.thanh0x.coursedeals.iosApp
+---
+- launchApp:
+    clearState: true
+
+# 1. Sign in as a new user via Email OTP
+- extendedWaitUntil:
+    visible: "Continue with Email"
+    timeout: 30000
+- tapOn: "Email"
+- inputText: "delete-e2e-ios@coursedeals.com"
+- tapOn: "Continue with Email"
+
+- extendedWaitUntil:
+    visible: "Verify Your Email"
+    timeout: 15000
+- tapOn: "6-digit OTP"
+- inputText: "000000"
+- tapOn: "Verify OTP"
+
+# Accept Terms & Privacy for new user (or optional if user already existed from a prior aborted run)
+- extendedWaitUntil:
+    visible: "Agree & Continue"
+    timeout: 10000
+    optional: true
+- tapOn:
+    text: "Agree & Continue"
+    optional: true
+
+# 2. Navigate to Profile and verify authenticated session
+- extendedWaitUntil:
+    visible: "PROFILE"
+    timeout: 15000
+- tapOn: "PROFILE"
+- extendedWaitUntil:
+    visible: "delete-e2e-ios@coursedeals.com"
+    timeout: 10000
+- assertVisible: "delete-e2e-ios@coursedeals.com"
+
+# 3. Scroll to Delete Account and trigger deletion
+- scrollUntilVisible:
+    element:
+      text: "Delete Account"
+    direction: DOWN
+    timeout: 10000
+- tapOn: "Delete Account"
+- assertVisible: "Delete Account"
+- assertVisible: "Are you sure you want to permanently delete your account and all associated data? This action cannot be undone."
+- takeScreenshot: .maestro/screenshots/155-ios-delete-dialog-before-delete
+- tapOn: "Delete"
+
+# 4. Verify account deleted confirmation notice and redirect back to Login Screen
+- extendedWaitUntil:
+    visible: "Account deleted successfully"
+    timeout: 15000
+- assertVisible: "Account deleted successfully"
+- tapOn: "OK"
+- extendedWaitUntil:
+    visible: "Continue with Email"
+    timeout: 15000
+- assertVisible: "Continue with Email"
+- assertVisible: "Access as Guest"
+- takeScreenshot: .maestro/screenshots/155-ios-after-delete-redirect-login
+
+# 5. Verify local session & cached profile are purged (Guest Auth Gate on Profile)
+- tapOn: "Access as Guest"
+- extendedWaitUntil:
+    visible: "PROFILE"
+    timeout: 15000
+- tapOn: "PROFILE"
+- extendedWaitUntil:
+    visible: "Sign in to Access Settings"
+    timeout: 10000
+- assertVisible: "Sign in to Access Settings"
+- assertNotVisible: "delete-e2e-ios@coursedeals.com"
+- takeScreenshot: .maestro/screenshots/155-ios-post-delete-guest-gate
+
+# 6. Attempt Login again with the deleted email -> Backend must treat as brand-new user (isNewUser = true -> Terms Dialog required)
+- tapOn: "Sign In"
+- extendedWaitUntil:
+    visible: "Continue with Email"
+    timeout: 15000
+- tapOn: "Email"
+- inputText: "delete-e2e-ios@coursedeals.com"
+- tapOn: "Continue with Email"
+
+- extendedWaitUntil:
+    visible: "Verify Your Email"
+    timeout: 15000
+- tapOn: "6-digit OTP"
+- inputText: "000000"
+- tapOn: "Verify OTP"
+
+# Because the account was permanently deleted from the backend DB, re-authenticating with the same email MUST trigger the new-user Terms & Privacy consent dialog
+- extendedWaitUntil:
+    visible: "Terms of Service & Privacy Policy"
+    timeout: 15000
+- assertVisible: "Terms of Service & Privacy Policy"
+- assertVisible: "Agree & Continue"
+- takeScreenshot: .maestro/screenshots/155-ios-relogin-after-delete-new-user-terms
+- tapOn: "Decline"

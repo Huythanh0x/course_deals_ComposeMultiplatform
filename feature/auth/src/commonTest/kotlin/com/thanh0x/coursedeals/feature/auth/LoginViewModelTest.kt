@@ -345,5 +345,6 @@ class LoginViewModelTest {
             fcmToken: String?
         ): AppResult<UserProfile> = AppResult.Success(UserProfile())
         override suspend fun syncPreferences(): AppResult<UserPreferences> = AppResult.Success(UserPreferences())
+        override suspend fun deleteAccount(): AppResult<Unit> = AppResult.Success(Unit)
     }
 }
