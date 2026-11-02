@@ -122,7 +122,10 @@ object Res {
         val auth_toggle_back_to_login = StringResource("Back to Sign In")
         val auth_back_to_email = StringResource("Change Email")
         val auth_terms_dialog_title = StringResource("Terms of Service & Privacy Policy")
-        val auth_terms_dialog_message = StringResource("By continuing, you agree to Course Deals' Terms of Service and acknowledge that you have read our Privacy Policy.")
+        val auth_terms_dialog_message = StringResource(
+            "By continuing, you agree to Course Deals' Terms of Service " +
+                "and acknowledge that you have read our Privacy Policy."
+        )
         val auth_terms_btn_agree = StringResource("Agree & Continue")
         val auth_terms_btn_decline = StringResource("Decline")
         val auth_btn_google = StringResource("Continue with Google")
@@ -179,25 +182,35 @@ object Res {
         val email_cannot_find_client_app = StringResource("Cannot find a suitable app for this request")
         val email_send_title = StringResource("Sending from Course Deals app")
         val course_internet_required_title = StringResource("Internet Connection Required")
-        val course_internet_required_message = StringResource("The Courses tab requires an active internet connection to load your online courses.")
+        val course_internet_required_message = StringResource(
+            "The Courses tab requires an active internet connection to load your online courses."
+        )
         val continue_as_guest = StringResource("Access as Guest")
         val guest_user_title = StringResource("Guest User")
         val guest_user_subtitle = StringResource("Sign in to save preferences & sync across devices")
         val sign_in_cta = StringResource("Sign In")
         val guest_profile_auth_gate_title = StringResource("Sign in to Access Settings")
-        val guest_profile_auth_gate_message = StringResource("Sign in to customize settings, set up notifications, and save your deal preferences.")
+        val guest_profile_auth_gate_message = StringResource(
+            "Sign in to customize settings, set up notifications, and save your deal preferences."
+        )
         val guest_biometric_unavailable = StringResource("Sign in to enable fingerprint authentication")
         val cache_banner_text = StringResource("Viewing cached details from %1\$s")
         val cache_banner_refresh = StringResource("Refresh")
         val login_dev_mode_title = StringResource("Google Sign-In (Dev Mode)")
-        val login_dev_mode_message = StringResource("Google Web Client ID is not configured yet. Sign in with a Mock Google Developer account for local testing?")
+        val login_dev_mode_message = StringResource(
+            "Google Web Client ID is not configured yet. " +
+                "Sign in with a Mock Google Developer account for local testing?"
+        )
         val login_dev_mode_positive = StringResource("Sign In")
         val login_error_unexpected_credential = StringResource("Unexpected credential received from Google.")
         val login_error_google_failed = StringResource("Failed to sign in with Google.")
         val retry_button_text = StringResource("Retry")
         val delete_account_button_text = StringResource("Delete Account")
         val delete_account_dialog_title = StringResource("Delete Account")
-        val delete_account_dialog_message = StringResource("Are you sure you want to permanently delete your account and all associated data? This action cannot be undone.")
+        val delete_account_dialog_message = StringResource(
+            "Are you sure you want to permanently delete your account " +
+                "and all associated data? This action cannot be undone."
+        )
         val delete_account_confirm = StringResource("Delete")
         val countdown_days_left = StringResource("%d days left")
         val countdown_one_day_left = StringResource("1 day left")

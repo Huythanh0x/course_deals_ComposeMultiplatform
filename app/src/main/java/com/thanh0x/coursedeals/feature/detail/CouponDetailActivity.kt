@@ -11,7 +11,8 @@ import com.thanh0x.coursedeals.core.ui.BaseActivity
 import com.thanh0x.coursedeals.core.ui.theme.CourseDealsTheme
 import com.thanh0x.coursedeals.core.ui.util.NetworkUtil
 import org.koin.android.ext.android.inject
-import timber.log.Timber
+import com.thanh0x.coursedeals.core.logging.AppLogger
+import com.thanh0x.coursedeals.core.logging.error
 
 class CouponDetailActivity : BaseActivity() {
     private val couponDetailViewModel: CouponDetailViewModel by inject()
@@ -80,7 +81,7 @@ class CouponDetailActivity : BaseActivity() {
     }
 
     private fun showFetchingErrorDialog(cause: String) {
-        Timber.e("showFetchingErrorDialog: $cause")
+        AppLogger.error { "showFetchingErrorDialog: $cause" }
         showAlertDialog(
             title = getString(CoreR.string.coupon_detail_error_title),
             message = getString(CoreR.string.error_fetching_null_coupon),

@@ -6,6 +6,10 @@ import com.thanh0x.coursedeals.core.ui.resources.Res
 import com.thanh0x.coursedeals.core.ui.resources.formatMultiplatformString
 import kotlin.math.roundToInt
 
+private const val RATING_TENTHS_FACTOR = 10
+private const val UNKNOWN_TIME_AGO_MINUTES = -1L
+private const val MIN_PLURAL_MINUTES = 2L
+
 class MapperToView(val context: Any? = null) {
     fun mapTimeLeft(expiredDate: Long?): String {
         val minutesInHour = Constant.MINUTES_IN_HOUR
@@ -20,7 +24,7 @@ class MapperToView(val context: Any? = null) {
                 val durationInMinutes = expiry.minutesLeft
                 when (durationInMinutes) {
                     1L -> formatMultiplatformString(Res.string.few_minute_left.defaultText, 1)
-                    in 2..minutesInHour -> formatMultiplatformString(
+                    in MIN_PLURAL_MINUTES..minutesInHour -> formatMultiplatformString(
                         Res.string.lots_of_minutes_left.defaultText,
                         durationInMinutes,
                     )
@@ -47,9 +51,9 @@ class MapperToView(val context: Any? = null) {
         val minutesInDay = Constant.MINUTES_IN_HOUR * Constant.HOURS_IN_DAY
 
         return when (minutesAgo) {
-            -1L -> Res.string.unknown_time_ago.defaultText
+            UNKNOWN_TIME_AGO_MINUTES -> Res.string.unknown_time_ago.defaultText
             in 0..1 -> Res.string.few_minute_ago.defaultText
-            in 2..minutesInHour -> formatMultiplatformString(
+            in MIN_PLURAL_MINUTES..minutesInHour -> formatMultiplatformString(
                 Res.string.lots_of_minutes_ago.defaultText,
                 minutesAgo,
             )
@@ -108,8 +112,8 @@ class MapperToView(val context: Any? = null) {
 
     fun mapRatingValue(rating: Double?): String {
         val value = rating ?: 0.0
-        val tenths = (value * 10.0).roundToInt()
-        return "${tenths / 10}.${tenths % 10}"
+        val tenths = (value * RATING_TENTHS_FACTOR).roundToInt()
+        return "${tenths / RATING_TENTHS_FACTOR}.${tenths % RATING_TENTHS_FACTOR}"
     }
 
     fun mapNumberOfReview(numberOfReview: Int?): String {

@@ -34,7 +34,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
@@ -43,12 +42,9 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import com.thanh0x.coursedeals.core.common.BuildConfig
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -64,12 +60,12 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.thanh0x.coursedeals.core.ui.resources.Res
 import com.thanh0x.coursedeals.core.ui.resources.stringResource
 import com.thanh0x.coursedeals.core.ui.theme.CourseDealsTheme
@@ -93,6 +89,7 @@ fun ProfileScreen(
     onDevEmailClick: () -> Unit = {},
     onDevWebsiteClick: () -> Unit = {},
     onSignInClick: () -> Unit = {},
+    onDiagnosticLogsClick: () -> Unit = {},
 ) {
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -136,6 +133,7 @@ fun ProfileScreen(
                         onDeleteAccountClick = onDeleteAccountClick,
                         onDevEmailClick = onDevEmailClick,
                         onDevWebsiteClick = onDevWebsiteClick,
+                        onDiagnosticLogsClick = onDiagnosticLogsClick,
                     )
                 } else {
                     ProfileContentPortrait(
@@ -152,6 +150,7 @@ fun ProfileScreen(
                         onDeleteAccountClick = onDeleteAccountClick,
                         onDevEmailClick = onDevEmailClick,
                         onDevWebsiteClick = onDevWebsiteClick,
+                        onDiagnosticLogsClick = onDiagnosticLogsClick,
                     )
                 }
             }
@@ -203,6 +202,7 @@ private fun ProfileContentPortrait(
     onDeleteAccountClick: () -> Unit,
     onDevEmailClick: () -> Unit,
     onDevWebsiteClick: () -> Unit,
+    onDiagnosticLogsClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -239,6 +239,7 @@ private fun ProfileContentPortrait(
             onDarkModeToggled = onDarkModeToggled,
             onFingerprintToggled = onFingerprintToggled,
             onNotificationsToggled = onNotificationsToggled,
+            onDiagnosticLogsClick = onDiagnosticLogsClick,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -278,6 +279,7 @@ private fun ProfileContentLandscape(
     onDeleteAccountClick: () -> Unit,
     onDevEmailClick: () -> Unit,
     onDevWebsiteClick: () -> Unit,
+    onDiagnosticLogsClick: () -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -341,6 +343,7 @@ private fun ProfileContentLandscape(
                 onDarkModeToggled = onDarkModeToggled,
                 onFingerprintToggled = onFingerprintToggled,
                 onNotificationsToggled = onNotificationsToggled,
+                onDiagnosticLogsClick = onDiagnosticLogsClick,
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -602,6 +605,7 @@ private fun SettingsSection(
     onDarkModeToggled: (Boolean) -> Unit,
     onFingerprintToggled: (Boolean) -> Unit,
     onNotificationsToggled: (Boolean) -> Unit,
+    onDiagnosticLogsClick: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -654,6 +658,36 @@ private fun SettingsSection(
                 onCheckedChange = {}
             )
         }
+
+        // Diagnostic Logs Action Row
+        SettingActionRow(
+            title = "Diagnostic Logs",
+            onClick = onDiagnosticLogsClick,
+            modifier = Modifier.testTag("diagnostic_logs_row")
+        )
+    }
+}
+
+@Composable
+private fun SettingActionRow(
+    title: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(58.dp)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.onSurface
+        )
     }
 }
 
@@ -677,7 +711,11 @@ private fun SettingSwitchRow(
         Text(
             text = title,
             style = MaterialTheme.typography.titleSmall,
-            color = if (enabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+            color = if (enabled) {
+                MaterialTheme.colorScheme.onSurface
+            } else {
+                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+            }
         )
         Switch(
             checked = checked,

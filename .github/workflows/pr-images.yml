@@ -1,0 +1,40 @@
+name: PR Binary & Screenshot Guard
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  guard-binaries:
+    name: Guard Newly Added Binary Assets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for unauthorized binary/media files
+        run: |
+          set -euo pipefail
+          ADDED_FILES=$(git diff --diff-filter=A --name-only "origin/${{ github.base_ref }}...HEAD" || true)
+          VIOLATIONS=0
+          while IFS= read -r file; do
+            [ -z "$file" ] && continue
+            case "${file,,}" in
+              *.png|*.jpg|*.jpeg|*.webp|*.gif|*.mp4|*.mov)
+                if [[ ! "$file" =~ ^(.*/)?src/ ]] && [[ ! "$file" =~ ^docs/ ]]; then
+                  echo "::error file=$file::Unauthorized binary/media file '$file' added outside '*/src/*' or 'docs/'. Upload verification screenshots/recordings to Cloudflare R2 or GitHub PR attachments instead."
+                  VIOLATIONS=$((VIOLATIONS + 1))
+                fi
+                ;;
+            esac
+          done <<< "$ADDED_FILES"
+
+          if [ "$VIOLATIONS" -gt 0 ]; then
+            echo "Found $VIOLATIONS unauthorized binary/media file(s). Failing check."
+            exit 1
+          fi
+          echo "No unauthorized binary/media files found."

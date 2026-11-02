@@ -1,0 +1,69 @@
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: false
+
+- extendedWaitUntil:
+    visible: "Continue with Google"
+    timeout: 15000
+
+- tapOn: "Continue with Google"
+
+- extendedWaitUntil:
+    visible: "Sign In"
+    timeout: 10000
+
+- tapOn: "Sign In"
+
+- extendedWaitUntil:
+    visible: "Agree & Continue"
+    timeout: 10000
+    optional: true
+
+- tapOn:
+    text: "Agree & Continue"
+    optional: true
+
+- extendedWaitUntil:
+    visible: "PROFILE"
+    timeout: 15000
+
+- tapOn: "PROFILE"
+
+- extendedWaitUntil:
+    visible: "Dark Mode"
+    timeout: 15000
+
+- scrollUntilVisible:
+    element: "Diagnostic Logs"
+    direction: DOWN
+    timeout: 10000
+
+- assertVisible: "Diagnostic Logs"
+- takeScreenshot: "01_profile_settings_row_android"
+
+- tapOn: "Diagnostic Logs"
+
+- extendedWaitUntil:
+    visible: "Close"
+    timeout: 10000
+
+- assertVisible: "Diagnostic Logs"
+- assertVisible: "ALL"
+- assertVisible: "DEBUG"
+- assertVisible: "INFO"
+- assertVisible: "WARN"
+- assertVisible: "ERROR"
+- takeScreenshot: "02_diagnostic_logs_sheet_android"
+
+- tapOn: "INFO"
+- takeScreenshot: "03_diagnostic_logs_level_filter_android"
+
+- tapOn: "Copy Logs"
+- takeScreenshot: "04_diagnostic_logs_copied_shared_android"
+
+- tapOn: "Close"
+
+- extendedWaitUntil:
+    visible: "Diagnostic Logs"
+    timeout: 10000

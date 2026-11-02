@@ -104,7 +104,24 @@ fun ProfileRoute(
             PlatformActions.openUrl(getString(Res.string.dev_website))
         },
         onSignInClick = onNavigateToLogin,
+        onDiagnosticLogsClick = { viewModel.openDiagnosticLogs() },
     )
+
+    if (uiState.isDiagnosticLogsOpen) {
+        DiagnosticLogsBottomSheet(
+            logs = uiState.diagnosticLogs,
+            selectedFilter = uiState.logFilterLevel,
+            onFilterSelected = { level -> viewModel.filterLogs(level) },
+            onDismissRequest = { viewModel.dismissDiagnosticLogs() },
+            onCopyLogs = { logs ->
+                PlatformActions.copyToClipboard("Diagnostic Logs", logs)
+                PlatformActions.showToast("Logs copied to clipboard")
+            },
+            onShareLogs = { logs ->
+                PlatformActions.shareLink("Diagnostic Logs", logs)
+            },
+        )
+    }
 
     if (showCategoryPicker) {
         CategoryPickerBottomSheet(

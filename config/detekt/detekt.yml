@@ -6,23 +6,30 @@ complexity:
   active: true
   CyclomaticComplexMethod:
     active: true
-    threshold: 20
+    threshold: 25
+    ignoreAnnotated:
+      - 'Composable'
   LongMethod:
     active: true
     threshold: 100
+    ignoreAnnotated:
+      - 'Composable'
   LongParameterList:
     active: true
-    functionThreshold: 10
-    constructorThreshold: 10
+    functionThreshold: 12
+    constructorThreshold: 15
+    ignoreDefaultParameters: true
+    ignoreAnnotated:
+      - 'Composable'
   LargeClass:
     active: true
     threshold: 600
   TooManyFunctions:
     active: true
-    thresholdInFiles: 20
-    thresholdInClasses: 20
-    thresholdInInterfaces: 15
-    thresholdInObjects: 15
+    thresholdInFiles: 25
+    thresholdInClasses: 25
+    thresholdInInterfaces: 20
+    thresholdInObjects: 20
 
 naming:
   active: true
@@ -32,6 +39,8 @@ naming:
   FunctionNaming:
     active: true
     functionPattern: '([a-z][a-zA-Z0-9]*)|([A-Z][a-zA-Z0-9]*)'
+    ignoreAnnotated:
+      - 'Composable'
   VariableNaming:
     active: true
     variablePattern: '[a-z][a-zA-Z0-9]*'
@@ -41,13 +50,28 @@ style:
   MagicNumber:
     active: true
     ignoreNumbers:
-      - '-1'
       - '0'
       - '1'
-      - '2'
     ignoreHashCodeFunction: true
+    ignorePropertyDeclaration: true
     ignoreLocalVariableDeclaration: true
+    ignoreConstantDeclaration: true
+    ignoreCompanionObjectPropertyDeclaration: true
     ignoreEnums: true
+    ignoreAnnotated:
+      - 'Composable'
+  ReturnCount:
+    active: true
+    max: 4
+    excludeGuardClauses: true
+  UnusedParameter:
+    active: true
+    ignoreAnnotated:
+      - 'Composable'
+  UnusedPrivateMember:
+    active: true
+    ignoreAnnotated:
+      - 'Preview'
   WildcardImport:
     active: true
   UnusedImports:

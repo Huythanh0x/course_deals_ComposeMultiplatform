@@ -41,7 +41,7 @@ class LocalCouponDataSourceImpl : LocalCouponDataSource {
         return couponsState.value.values
             .mapNotNull { it.title }
             .filter { it.lowercase().contains(lower) }
-            .take(10)
+            .take(MAX_SEARCH_SUGGESTIONS)
     }
 
     override suspend fun getCouponById(courseId: Int): Coupon? = couponsState.value[courseId]
@@ -86,7 +86,7 @@ class LocalCouponDataSourceImpl : LocalCouponDataSource {
     override suspend fun getRecentSearches(): List<String> {
         return searchHistoryState.value.values
             .sortedByDescending { it.timestamp }
-            .take(5)
+            .take(MAX_RECENT_SEARCHES)
             .map { it.query }
     }
 
@@ -95,7 +95,7 @@ class LocalCouponDataSourceImpl : LocalCouponDataSource {
         return searchHistoryState.value.values
             .filter { it.query.lowercase().startsWith(lower) }
             .sortedByDescending { it.timestamp }
-            .take(5)
+            .take(MAX_RECENT_SEARCHES)
             .map { it.query }
     }
 
@@ -154,5 +154,10 @@ class LocalCouponDataSourceImpl : LocalCouponDataSource {
                 nextKey = nextKey,
             )
         }
+    }
+
+    companion object {
+        private const val MAX_SEARCH_SUGGESTIONS = 10
+        private const val MAX_RECENT_SEARCHES = 5
     }
 }
