@@ -123,9 +123,10 @@ here:
 - [`docs/adr-guide.md`](docs/adr-guide.md) — when a decision is ADR-worthy, template,
   status lifecycle
 
-The `team-flow` skill orchestrates a **5-agent specialized team** across `course_deals_backend`
-and `course_deals_ComposeMultiplatform` (**PM/Architect**, `backend-engineer`, `android-engineer`,
-`security-arch-reviewer`, and `qa-release-engineer`) with only **2 human-in-the-loop checkpoints**:
+The `team-flow` skill orchestrates a **7-role specialized team** across `course_deals_backend`
+and `course_deals_ComposeMultiplatform` (**PM/Architect**, `backend-engineer`, `kmp-engineer`,
+`apple-developer` [iOS & watchOS], `desktop-engineer`, `security-arch-reviewer`, and
+`qa-release-engineer`) with only **2 human-in-the-loop checkpoints**:
 1. **Spec, API Contract & Edge Cases approval** (before creating issues/branches and launching parallel engineering subagents)
 2. **Ready to Merge** (after coding, cross-repo DTO/security/KMP audit, live E2E & R2 screenshot capture, and PR creation)
 

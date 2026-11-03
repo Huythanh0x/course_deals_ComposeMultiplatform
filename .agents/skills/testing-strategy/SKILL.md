@@ -1,53 +1,31 @@
 ---
 name: testing-strategy
-description: Analyze this repo's current testing setup and recommend a concrete testing stack, following AGENTS.md's fakes-first philosophy. Use when the user asks to set up tests, add test coverage, choose testing libraries, or asks what testing approach this project should use.
+description: Testing architecture and conventions for `course_deals_ComposeMultiplatform` across KMP (`commonTest` / `jvmTest`), Android (`testLocalDebugUnitTest`), Compose Desktop (`runComposeUiTest`), iOS/watchOS (`Swift Testing` + `:shared:linkDebugFrameworkIosSimulatorArm64`), and Maestro E2E flows.
 ---
 
-# Testing strategy
+# Course Deals KMP & Multiplatform Testing Strategy (`testing-strategy`)
 
-This repo currently has **zero real test coverage** (only Android Studio's unmodified
-boilerplate `ExampleUnitTest`/`ExampleInstrumentedTest` in `app`) and no mocking/Flow-
-testing libraries in the catalog. Adapted from Google's own official Android
-testing-setup guidance and the NowInAndroid reference app's testing philosophy — both
-independently converge on the same approach. See `AGENTS.md`'s Testing section for the
-one-paragraph summary; this skill is the workflow for actually acting on it.
+Aligned to `course_deals_ComposeMultiplatform` (Kotlin Multiplatform + Compose Multiplatform across Android, iOS, watchOS, and Desktop).
 
-## Step 1 — re-confirm the current state (don't assume it's still accurate)
+## 1. Testing Pyramid Across Platforms
 
-- DI framework: Hilt (confirmed, every `coursedeals.android.library` module)
-- UI toolkit: XML views + Data Binding + Fragments (confirmed, no Compose)
-- Existing test libs: `junit`, `androidx-junit`, `androidx-espresso-core`,
-  `androidx-room-testing` — check `gradle/libs.versions.toml` again, this may have
-  changed since AGENTS.md was last updated
-- State pattern: `MutableStateFlow`/`asStateFlow()` + `UiState` in every ViewModel (see
-  AGENTS.md's State management section) — this is what needs testing
+| Layer | Target & Tooling | Command |
+|---|---|---|
+| **Domain & Data Unit Tests** | `commonTest` / `jvmTest` (`JUnit 4`, `kotlinx-coroutines-test`, Fakes behind `:domain:*` interfaces, Ktor `MockEngine`) | `./gradlew :data:coupons:jvmTest :data:user:jvmTest testLocalDebugUnitTest` |
+| **Feature ViewModel Tests** | `commonTest` / `jvmTest` asserting `StateFlow<FeatureUiState>` across all 4 quadrants (Happy, Failed, Error, Related) | `./gradlew testLocalDebugUnitTest` |
+| **Compose Desktop UI Framework Tests** | `desktopApp/src/test/kotlin` using `createComposeRule()` / `runComposeUiTest` on semantic `Modifier.testTag` nodes | `./gradlew :desktopApp:test` |
+| **iOS Framework Link & Native Tests** | Kotlin/Native iOS Simulator framework link + Xcode `Swift Testing` (`@Test`, `#expect`) for `iosApp` / `watchApp` | `./gradlew :shared:linkDebugFrameworkIosSimulatorArm64` |
+| **Cross-Platform E2E GUI Flows** | Declarative Maestro YAML flows (`.maestro/flows/*.yaml`) with `- takeScreenshot:` on Android (`emulator-5554`), iOS (`iPhone Simulator`), and Desktop (`:desktopApp:runMaestroFlow`) | See `capture-evidence` |
 
-## Step 2 — recommend, don't silently install
+## 2. Core KMP Testing Rules
 
-This is a real decision (per `docs/adr-guide.md`, worth its own ADR) — present the
-recommendation and get confirmation before touching `gradle/libs.versions.toml`:
-
-1. **Fakes over mocks as the default.** For a ViewModel's repository dependency,
-   prefer a hand-written `FakeCouponRepository : CouponRepository` (or whatever the
-   interface is) over mocking it — only reach for a mocking library when a real fake
-   isn't feasible (e.g. faking a final Android framework class with no seam).
-2. If domain/data interfaces don't already exist for the repositories a test needs to
-   fake, that's the actual prerequisite work — surface it rather than reaching for a
-   mocking library as a shortcut around missing abstractions.
-3. `Turbine` + `kotlinx-coroutines-test` for asserting `StateFlow`/`Flow` emissions from
-   ViewModels and Room/DataStore-backed repositories.
-4. `MockK` as the fallback mocking library when a fake genuinely isn't practical.
-5. `Robolectric` for Fragment/View-based UI tests that would otherwise require an
-   emulator — this repo has no Compose, so Compose Testing APIs don't apply.
-
-## Step 3 — land it properly
-
-- Add chosen libraries to `gradle/libs.versions.toml` (version catalog, not inline
-  versions in module `build.gradle`).
-- Wire test dependencies into the convention plugins
-  (`build-logic/convention/.../AndroidLibraryConventionPlugin.kt` /
-  `KotlinLibraryConventionPlugin.kt`) if every module should get them, not one module's
-  `build.gradle` — consistent with how this repo already centralizes config there.
-- Follow the `new-ticket`/`ship-pr` skills for the actual issue/PR — this is exactly
-  the kind of change `docs/project-management.md` says deserves its own tracked issue,
-  not a drive-by addition during unrelated work.
+1. **Fakes Over Mocks:**
+   - Implement hand-written fakes (`FakeCouponRepository`, `FakeUserRepository`, `InMemorySettingsStore`) behind `:domain:*` interfaces in `commonMain`/`commonTest`.
+2. **Test Ktor Repositories Through `MockEngine`:**
+   - Feed real JSON payloads (200 OK, 400 validation errors, 401 token refresh, 500 server failures, unknown enum values) into `HttpClient(MockEngine { ... })` configured with `:core:network`'s JSON serializer.
+3. **No Commas in Backticked Test Names:**
+   - Kotlin/Native (`iosSimulatorArm64Test`) rejects `,` in function names (`error: name contains illegal characters: ","`). Write `` fun `login with valid otp updates state to authenticated`() ``.
+4. **Keep `getString(Res.string.*)` Out of ViewModels:**
+   - Resolve Compose string resources in `@Composable` UI layers so pure JVM unit tests never fail with `MissingResourceException`.
+5. **4-Quadrant Scenario Coverage:**
+   - Every feature ticket must include unit tests covering **Happy Path**, **Failed Path (Domain Validation)**, **Error Path (Network/500)**, and **Related Changes/Regressions**.

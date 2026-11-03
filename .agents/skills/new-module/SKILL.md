@@ -1,66 +1,57 @@
 ---
 name: new-module
-description: Scaffold a new Gradle module (feature/domain/data/core) using this repo's build-logic convention plugins, matching the existing module patterns. Use when the user asks to create/add a new Gradle module, feature module, domain module, or data module in this repo.
+description: Scaffold a new Gradle module (`feature:*`, `domain:*`, `data:*`, `core:*`) in `course_deals_ComposeMultiplatform` using the `coursedeals.kmp.library` convention plugin, Koin DI, and Compose Multiplatform source sets (`src/commonMain/kotlin`).
 ---
 
-# New module
+# New KMP Module (`new-module`)
 
-Scaffolds a new module using one of the two existing convention plugins — never
-hand-roll `android {}`/`kotlin {}` blocks in a new module's `build.gradle`. See
-`AGENTS.md`'s module map for which plugin every existing module uses, and
-`build-logic/convention/src/main/kotlin/com/thanh0x/coursedeals/convention/` for the
-plugin source.
+Scaffolds a new module in `course_deals_ComposeMultiplatform` using the repository's convention plugins in `build-logic/convention/src/main/kotlin/com/thanh0x/coursedeals/convention/`. Never hand-roll `kotlin {}` targets or Detekt setup in module `build.gradle` files.
 
-## Which plugin
+## Which Convention Plugin to Use
 
-- **`coursedeals.android.library`** — for anything with Android dependencies (Context,
-  Fragment, Room, DataStore, Parcelable, etc.) or that ships resources/manifest. This is
-  what every existing module except `core:common` uses, including `domain:*` and
-  `data:*` today (see AGENTS.md's KMP section — this is a known, accepted state, not a
-  mistake to "fix" while adding a new module).
-- **`coursedeals.kotlin.library`** — only for a module that's genuinely pure
-  Kotlin/JVM with zero Android imports, matching `core:common`.
-
-If truly unsure, default to `coursedeals.android.library` — it's what every real
-(non-placeholder) module in the repo uses.
+- **`coursedeals.kmp.library`** (Default for all `core:*`, `domain:*`, `data:*`, `feature:*`, and `shared` modules):
+  - Configures Kotlin Multiplatform targets (`jvm` with `JvmTarget.JVM_17`, `iosArm64`, `iosSimulatorArm64`) + Detekt across `src/commonMain/kotlin`, `src/jvmMain/kotlin`, `src/iosMain/kotlin`.
+  - For UI modules (`feature:*`, `core:ui`, `shared`), also apply `org.jetbrains.kotlin.plugin.compose` and `org.jetbrains.compose`.
+- **`coursedeals.android.library`** / **`coursedeals.kotlin.library`**:
+  - Only for platform-specific JVM/Android helper modules when strictly required.
 
 ## Steps
 
-1. Create the directory structure matching a sibling module of the same kind, e.g. for
-   a new feature module mirror `feature:home`'s layout
-   (`src/main/java/...`, `src/main/res/...`, `AndroidManifest.xml` if it needs one).
-2. Write `build.gradle` (Groovy DSL, matching every existing module — this repo doesn't
-   use `.gradle.kts` in module build files):
+1. Create the KMP source set directory structure matching a sibling module (e.g. `feature/home`):
+   - `src/commonMain/kotlin/com/thanh0x/coursedeals/<layer>/<name>/`
+   - `src/commonTest/kotlin/com/thanh0x/coursedeals/<layer>/<name>/` (or `src/jvmTest/kotlin/...`)
+2. Write `build.gradle` matching existing modules:
    ```groovy
    plugins {
-       id 'coursedeals.android.library'   // or coursedeals.kotlin.library
-       id 'com.google.devtools.ksp'        // only if using Hilt/KSP-generated code
-       id 'dagger.hilt.android.plugin'     // only for Android library modules
+       id 'coursedeals.kmp.library'
+       // Include the two plugins below only for UI modules (feature:*, core:ui, shared):
+       id 'org.jetbrains.kotlin.plugin.compose'
+       id 'org.jetbrains.compose'
    }
 
-   android {
-       namespace 'com.thanh0x.coursedeals.<layer>.<name>'
-   }
-
-   dependencies {
-       implementation project(':core:common')
-       // add sibling module deps following the existing dependency direction:
-       // feature -> core:ui/core:common -> domain:* ; data:* -> core:network + domain:*
+   kotlin {
+       sourceSets {
+           commonMain.dependencies {
+               implementation project(':core:common')
+               // For feature modules:
+               // implementation project(':core:ui')
+               // implementation project(':domain:coupons')
+               // implementation libs.koin.core
+               // implementation libs.koin.compose.viewmodel
+           }
+           jvmTest.dependencies {
+               implementation libs.junit
+               implementation libs.kotlinx.coroutines.test
+           }
+       }
    }
    ```
-3. Add the module to `settings.gradle`:
+3. Register the module in `settings.gradle`:
    ```groovy
    include ':<layer>:<name>'
    ```
-4. Confirm the dependency direction matches the existing layering (feature modules
-   depend on `core:ui`/`domain:*`, never the reverse; `data:*` depends on
-   `core:network` + `domain:*`; nothing depends on `app`).
-5. Verify it builds: `./gradlew :<layer>:<name>:build` (or `:lintDebug` /
-   `:lintLocalDebug` if it's `app`).
-
-## Don't
-
-- Don't set `compileSdk`, `minSdk`, Java/Kotlin version compatibility, or KSP/Hilt
-  plugin versions by hand in the new module — those come from the convention plugin.
-  If the new module needs something the convention plugin doesn't provide, that's a
-  signal to extend the convention plugin, not to duplicate config locally.
+4. Wire Koin bindings in `:shared` (and `:app` / `:desktopApp` if needed), respecting Clean Architecture dependency direction (`feature:*` → `core:ui`/`domain:*`; `data:*` → `core:network` + `domain:*`).
+5. Verify compilation and Detekt across targets:
+   ```bash
+   ./gradlew :<layer>:<name>:compileKotlinJvm :<layer>:<name>:compileKotlinIosSimulatorArm64 :<layer>:<name>:detekt
+   ```
