@@ -8,7 +8,12 @@ import com.thanh0x.coursedeals.core.logging.LoggerFactory
 import com.thanh0x.coursedeals.core.logging.StartupTimeMonitor
 import com.thanh0x.coursedeals.core.logging.debug
 import com.thanh0x.coursedeals.core.ui.util.PlatformActions
+import com.thanh0x.coursedeals.domain.coupons.CouponRepository
 import com.thanh0x.coursedeals.feature.auth.AuthMode
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.koin.mp.KoinPlatformTools
 import platform.Foundation.NSProcessInfo
 import platform.Foundation.NSURL
 import platform.Foundation.NSUserDefaults
@@ -19,6 +24,14 @@ import platform.UIKit.UIViewController
 
 private const val OUTDATED_TEST_VERSION_CODE = 100
 private const val MAX_VALID_VERSION_CODE = 10_000
+private const val WATCH_BOOKMARKED_COURSE_IDS_KEY = "watch_bookmarked_course_ids"
+
+private val SUPPORTED_DEEP_LINK_PREFIXES = listOf(
+    "coursedeals://courses/",
+    "coursedeals://coupon/",
+    "https://coursedeals.com/deal/",
+    "https://coursedeals.com/courses/",
+)
 
 private fun parseIosVersionOverride(args: List<String>): Int? {
     if (args.any { it.contains("--screen=force-update") }) {
@@ -101,7 +114,7 @@ fun MainViewController(): UIViewController {
     }
 
     val isForceUpdate = args.any { it.contains("--screen=force-update") } || versionOverride != null
-    val deepLinkArg = args.firstOrNull { it.startsWith("--deeplink=") }?.substringAfter("--deeplink=")
+    val deepLinkArg = parseIosDeepLinkArg(args)
     val initialDetailCourseId = deepLinkArg?.let { parseCourseIdFromDeepLink(it) }
     val isOtp = args.any { it.contains("--screen=otp") }
     val isConsent = args.any { it.contains("--screen=consent") }
@@ -135,10 +148,32 @@ fun MainViewController(): UIViewController {
     return composeViewController
 }
 
+private fun parseIosDeepLinkArg(args: List<String>): String? {
+    val inlineArg = args.firstOrNull {
+        it.startsWith("--deeplink=") || it.startsWith("-deeplink=") || it.startsWith("deeplink=")
+    }?.substringAfter("=")?.takeIf { it.isNotBlank() }
+
+    val pairArg = args.zipWithNext().firstOrNull { (key, _) ->
+        key == "-deeplink" || key == "--deeplink" || key == "deeplink"
+    }?.second?.takeIf { it.isNotBlank() }
+
+    val defaultsArg = NSUserDefaults.standardUserDefaults
+        .stringForKey("deeplink")
+        ?.takeIf { it.isNotBlank() }
+
+    return inlineArg ?: pairArg ?: defaultsArg
+}
+
 fun parseCourseIdFromDeepLink(url: String): Int? {
-    if (!url.startsWith("coursedeals://courses/")) return null
-    val pathPart = url.removePrefix("coursedeals://courses/").substringBefore("?").substringBefore("/")
-    return pathPart.toIntOrNull()
+    val trimmed = url.trim()
+    val matchingPrefix = SUPPORTED_DEEP_LINK_PREFIXES.firstOrNull { trimmed.startsWith(it) }
+        ?: return null
+    val pathPart = trimmed
+        .removePrefix(matchingPrefix)
+        .substringBefore("?")
+        .substringBefore("#")
+        .substringBefore("/")
+    return pathPart.toIntOrNull()?.takeIf { it > 0 }
 }
 
 fun handleDeepLink(url: String) {
@@ -146,4 +181,48 @@ fun handleDeepLink(url: String) {
     if (courseId != null) {
         PlatformActions.navigateToDetail(courseId)
     }
+}
+
+fun handleHandoffCourse(courseId: Int) {
+    if (courseId > 0) {
+        PlatformActions.navigateToDetail(courseId)
+    }
+}
+
+fun syncWatchBookmark(courseId: Int, isBookmarked: Boolean) {
+    if (courseId <= 0) return
+    val defaults = NSUserDefaults.standardUserDefaults
+    val updatedIds = readWatchBookmarkedCourseIds(defaults)
+    if (isBookmarked) {
+        updatedIds.add(courseId)
+    } else {
+        updatedIds.remove(courseId)
+    }
+    defaults.setObject(updatedIds.sorted().joinToString(","), forKey = WATCH_BOOKMARKED_COURSE_IDS_KEY)
+
+    if (isBookmarked) {
+        CoroutineScope(Dispatchers.Default).launch {
+            val repo = KoinPlatformTools.defaultContext().getOrNull()?.getOrNull<CouponRepository>()
+            repo?.fetchCouponDetail(courseId)
+        }
+    }
+}
+
+fun isWatchCourseBookmarked(courseId: Int): Boolean {
+    if (courseId <= 0) return false
+    return courseId in readWatchBookmarkedCourseIds(NSUserDefaults.standardUserDefaults)
+}
+
+private fun readWatchBookmarkedCourseIds(defaults: NSUserDefaults): MutableSet<Int> {
+    val result = mutableSetOf<Int>()
+    defaults.stringForKey(WATCH_BOOKMARKED_COURSE_IDS_KEY)
+        ?.split(",")
+        ?.mapNotNull { it.trim().toIntOrNull() }
+        ?.filter { it > 0 }
+        ?.let { result.addAll(it) }
+    defaults.arrayForKey(WATCH_BOOKMARKED_COURSE_IDS_KEY)
+        ?.mapNotNull { it?.toString()?.trim()?.toIntOrNull() }
+        ?.filter { it > 0 }
+        ?.let { result.addAll(it) }
+    return result
 }
