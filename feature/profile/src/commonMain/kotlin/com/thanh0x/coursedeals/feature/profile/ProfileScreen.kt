@@ -67,6 +67,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.thanh0x.coursedeals.core.common.notification.NotificationTopic
+import com.thanh0x.coursedeals.core.ui.util.displayNameResource
 import com.thanh0x.coursedeals.core.ui.resources.Res
 import com.thanh0x.coursedeals.core.ui.resources.stringResource
 import com.thanh0x.coursedeals.core.ui.theme.CourseDealsTheme
@@ -655,46 +656,16 @@ private fun SettingsSection(
 
         // Notification Topic Switches (visible when master is ON)
         if (isNotificationsEnabled) {
-            SettingSubSwitchRow(
-                title = stringResource(Res.string.notif_topic_all),
-                checked = subscribedTopics.contains(NotificationTopic.TOPIC_DEALS_ALL),
-                onCheckedChange = { checked ->
-                    onTopicToggled(NotificationTopic.TOPIC_DEALS_ALL, checked)
-                },
-                switchModifier = Modifier.testTag("switch_topic_deals_all")
-            )
-            SettingSubSwitchRow(
-                title = stringResource(Res.string.notif_topic_development),
-                checked = subscribedTopics.contains(NotificationTopic.TOPIC_DEALS_DEVELOPMENT),
-                onCheckedChange = { checked ->
-                    onTopicToggled(NotificationTopic.TOPIC_DEALS_DEVELOPMENT, checked)
-                },
-                switchModifier = Modifier.testTag("switch_topic_deals_development")
-            )
-            SettingSubSwitchRow(
-                title = stringResource(Res.string.notif_topic_business),
-                checked = subscribedTopics.contains(NotificationTopic.TOPIC_DEALS_BUSINESS),
-                onCheckedChange = { checked ->
-                    onTopicToggled(NotificationTopic.TOPIC_DEALS_BUSINESS, checked)
-                },
-                switchModifier = Modifier.testTag("switch_topic_deals_business")
-            )
-            SettingSubSwitchRow(
-                title = stringResource(Res.string.notif_topic_design),
-                checked = subscribedTopics.contains(NotificationTopic.TOPIC_DEALS_DESIGN),
-                onCheckedChange = { checked ->
-                    onTopicToggled(NotificationTopic.TOPIC_DEALS_DESIGN, checked)
-                },
-                switchModifier = Modifier.testTag("switch_topic_deals_design")
-            )
-            SettingSubSwitchRow(
-                title = stringResource(Res.string.notif_topic_it_software),
-                checked = subscribedTopics.contains(NotificationTopic.TOPIC_DEALS_IT_SOFTWARE),
-                onCheckedChange = { checked ->
-                    onTopicToggled(NotificationTopic.TOPIC_DEALS_IT_SOFTWARE, checked)
-                },
-                switchModifier = Modifier.testTag("switch_topic_deals_it_software")
-            )
+            NotificationTopic.entries.forEach { topic ->
+                SettingSubSwitchRow(
+                    title = stringResource(topic.displayNameResource),
+                    checked = subscribedTopics.contains(topic.topicId),
+                    onCheckedChange = { checked ->
+                        onTopicToggled(topic.topicId, checked)
+                    },
+                    switchModifier = Modifier.testTag("switch_topic_${topic.topicId}")
+                )
+            }
         }
 
         // Diagnostic Logs Action Row
