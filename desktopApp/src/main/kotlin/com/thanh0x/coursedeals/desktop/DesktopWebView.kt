@@ -406,6 +406,7 @@ private fun DesktopChromiumContent(
             LaunchedEffect(loadingState) {
                 when (loadingState) {
                     is LoadingState.Loading -> {
+                        webViewLogger.debug { "WebView loading: progress=${loadingState.progress}" }
                         onUiStateChange(
                             uiState.copy(
                                 isLoading = true,
@@ -417,6 +418,7 @@ private fun DesktopChromiumContent(
                         onPageStarted()
                     }
                     is LoadingState.Finished -> {
+                        webViewLogger.debug { "WebView finished: title='${webViewState.pageTitle}', url='${webViewState.lastLoadedUrl}'" }
                         onUiStateChange(
                             uiState.copy(
                                 isLoading = false,
