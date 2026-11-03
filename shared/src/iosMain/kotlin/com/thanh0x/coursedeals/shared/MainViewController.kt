@@ -2,8 +2,10 @@ package com.thanh0x.coursedeals.shared
 
 import androidx.compose.ui.window.ComposeUIViewController
 import com.thanh0x.coursedeals.core.common.AppVersion
+import com.thanh0x.coursedeals.core.logging.CommonTracingInitializer
 import com.thanh0x.coursedeals.core.logging.IosLoggingConfigurator
 import com.thanh0x.coursedeals.core.logging.LoggerFactory
+import com.thanh0x.coursedeals.core.logging.StartupTimeMonitor
 import com.thanh0x.coursedeals.core.logging.debug
 import com.thanh0x.coursedeals.core.ui.util.PlatformActions
 import com.thanh0x.coursedeals.feature.auth.AuthMode
@@ -46,9 +48,21 @@ private fun parseIosVersionOverride(args: List<String>): Int? {
 }
 
 fun MainViewController(): UIViewController {
-    IosLoggingConfigurator.install()
+    StartupTimeMonitor.onAppStart()
+    val args = NSProcessInfo.processInfo.arguments.map { it.toString() }
+    val versionOverride = parseIosVersionOverride(args)
+    AppVersion.overrideVersionCode = versionOverride
+
+    StartupTimeMonitor.trackStep(StartupTimeMonitor.StepName.Logging) {
+        IosLoggingConfigurator.install()
+        CommonTracingInitializer.initialize(
+            distroChannel = "ios",
+            appVersion = "1.0.0 (${AppVersion.currentVersionCode()})",
+        )
+    }
     val logger = LoggerFactory.getLogger("CourseDeals")
     logger.debug { "iOS Application initialized" }
+    StartupTimeMonitor.startStep(StartupTimeMonitor.StepName.FirstFrame)
 
     lateinit var composeViewController: UIViewController
 
@@ -85,10 +99,6 @@ fun MainViewController(): UIViewController {
         )
         composeViewController.presentViewController(activityController, animated = true, completion = null)
     }
-
-    val args = NSProcessInfo.processInfo.arguments.map { it.toString() }
-    val versionOverride = parseIosVersionOverride(args)
-    AppVersion.overrideVersionCode = versionOverride
 
     val isForceUpdate = args.any { it.contains("--screen=force-update") } || versionOverride != null
     val deepLinkArg = args.firstOrNull { it.startsWith("--deeplink=") }?.substringAfter("--deeplink=")

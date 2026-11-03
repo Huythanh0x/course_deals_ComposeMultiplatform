@@ -16,7 +16,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.thanh0x.coursedeals.core.common.AppVersion
+import com.thanh0x.coursedeals.core.common.Constant
+import com.thanh0x.coursedeals.core.logging.CommonTracingInitializer
+import com.thanh0x.coursedeals.core.logging.DailyRollingFileLogWriter
 import com.thanh0x.coursedeals.core.logging.LogFileManager
+import com.thanh0x.coursedeals.core.logging.LoggerFactory
+import com.thanh0x.coursedeals.core.logging.StartupTimeMonitor
 import com.thanh0x.coursedeals.desktop.installDesktopPlatformActions
 import com.thanh0x.coursedeals.desktop.installDesktopRenderers
 import com.thanh0x.coursedeals.shared.App
@@ -27,6 +32,7 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
+import org.koin.core.context.stopKoin
 import java.io.File
 import java.nio.file.Files
 import javax.imageio.ImageIO
@@ -233,9 +239,27 @@ class DesktopMaestroFlowRunnerTest {
 
         val useLiveBackend = System.getProperty("maestro.useLiveBackend") == "true"
         if (useLiveBackend) {
-            LogFileManager.init(null)
+            val tmpDir = System.getProperty("java.io.tmpdir") ?: "."
+            File(tmpDir, "${Constant.DATA_STORE_NAME}.preferences_pb").delete()
+            StartupTimeMonitor.resetForTesting()
+            CommonTracingInitializer.resetForTesting()
+            StartupTimeMonitor.onAppStart()
+            StartupTimeMonitor.trackStep(StartupTimeMonitor.StepName.Logging) {
+                LogFileManager.init(null)
+                LoggerFactory.install(DailyRollingFileLogWriter())
+                CommonTracingInitializer.initialize(
+                    distroChannel = "desktop",
+                    appVersion = "1.0.0 (${AppVersion.currentVersionCode()})",
+                )
+            }
+            LoggerFactory.getLogger("CourseDealsDesktop").log(
+                com.thanh0x.coursedeals.core.logging.LogLevel.DEBUG,
+                "CourseDeals Desktop starting (screen=Login, route=home)",
+                null,
+            )
             installDesktopPlatformActions()
-            installDesktopRenderers()
+            installDesktopRenderers(enableNativeWebEngine = false)
+            runCatching { stopKoin() }
         } else {
             installFullAppDesktopTestKoin()
         }

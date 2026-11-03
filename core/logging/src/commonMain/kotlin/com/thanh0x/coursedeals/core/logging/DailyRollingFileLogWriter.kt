@@ -1,5 +1,3 @@
-@file:Suppress("MatchingDeclarationName")
-
 package com.thanh0x.coursedeals.core.logging
 
 class DailyRollingFileLogWriter : LogWriter {
@@ -11,7 +9,7 @@ class DailyRollingFileLogWriter : LogWriter {
             level = level,
             tag = tag,
             message = message,
-            throwableString = throwable?.let { throwableToStackTraceString(it) }
+            throwableString = throwable?.let { throwableToStackTraceString(it) },
         )
         LogFileManager.appendLog(entry)
     }
@@ -19,4 +17,8 @@ class DailyRollingFileLogWriter : LogWriter {
     override fun flush() {
         LogFileManager.flush()
     }
+
+    override fun equals(other: Any?): Boolean = other is DailyRollingFileLogWriter
+
+    override fun hashCode(): Int = DailyRollingFileLogWriter::class.hashCode()
 }

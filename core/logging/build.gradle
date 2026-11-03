@@ -2,11 +2,47 @@ plugins {
     id 'coursedeals.kmp.library'
 }
 
+def sentryCocoaVersion = "9.30.2"
+def sentryCocoaConfig = configurations.create("sentryCocoaFramework") {
+    canBeConsumed = false
+    transitive = false
+}
+
+dependencies {
+    sentryCocoaFramework("io.sentry.native:Sentry-Dynamic:${sentryCocoaVersion}@xcframework.zip")
+}
+
+def sentryCocoaDir = rootProject.layout.buildDirectory.dir("sentryCocoa/${sentryCocoaVersion}")
+
+def unpackSentryCocoa = tasks.register("unpackSentryCocoa", Exec) {
+    onlyIf { System.getProperty("os.name") == "Mac OS X" }
+    inputs.files(sentryCocoaConfig)
+    outputs.dir(sentryCocoaDir)
+    executable = "/usr/bin/ditto"
+    doFirst {
+        args("-x", "-k", sentryCocoaConfig.singleFile.absolutePath, sentryCocoaDir.get().asFile.absolutePath)
+    }
+}
+
 kotlin {
+    [
+        [target: iosArm64(), slice: "ios-arm64"],
+        [target: iosSimulatorArm64(), slice: "ios-arm64_x86_64-simulator"]
+    ].each { entry ->
+        def frameworkPath = new File(sentryCocoaDir.get().asFile, "Sentry-Dynamic.xcframework/${entry.slice}").absolutePath
+        entry.target.binaries.configureEach {
+            linkerOpts("-F${frameworkPath}", "-rpath", frameworkPath)
+            linkTaskProvider.configure {
+                dependsOn(unpackSentryCocoa)
+            }
+        }
+    }
+
     sourceSets {
         commonMain {
             dependencies {
                 implementation libs.kotlinx.coroutines.core
+                implementation libs.sentry.kotlin.multiplatform
             }
         }
         commonTest {

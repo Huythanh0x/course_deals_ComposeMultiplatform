@@ -32,19 +32,29 @@ class DesktopFullAppInteractiveE2eTest {
 
     private lateinit var env: DesktopFullAppTestEnvironment
     private lateinit var screenshotDir: File
+    private var deleteScreenshotDirOnTearDown: Boolean = true
 
     @Before
     fun setUp() {
         AppVersion.overrideVersionCode = null
         env = installFullAppDesktopTestKoin()
-        screenshotDir = Files.createTempDirectory("desktop-full-app-e2e-").toFile()
+        val configuredDir = System.getenv("DESKTOP_E2E_SCREENSHOT_DIR")?.trim().orEmpty()
+        if (configuredDir.isNotEmpty()) {
+            screenshotDir = File(configuredDir).apply { mkdirs() }
+            deleteScreenshotDirOnTearDown = false
+        } else {
+            screenshotDir = Files.createTempDirectory("desktop-full-app-e2e-").toFile()
+            deleteScreenshotDirOnTearDown = true
+        }
     }
 
     @After
     fun tearDown() {
         AppVersion.overrideVersionCode = null
         runCatching { stopKoin() }
-        screenshotDir.deleteRecursively()
+        if (deleteScreenshotDirOnTearDown) {
+            screenshotDir.deleteRecursively()
+        }
     }
 
     @Test
@@ -415,9 +425,14 @@ class DesktopFullAppInteractiveE2eTest {
             waitForVisible("Copy Logs")
             tapOnId("log_filter_debug")
             tapOnId("log_filter_info")
+            assertVisible("CommonTracingInitializer initialized")
+            assertVisible("ColdStart complete in")
+            takeScreenshot("e2e06_03_diagnostic_logs_info")
             tapOnId("log_filter_warn")
             tapOnId("log_filter_error")
             tapOnId("log_filter_all")
+            assertVisible("CommonTracingInitializer initialized")
+            assertVisible("ColdStart complete in")
             takeScreenshot("e2e06_03_diagnostic_logs_sheet")
 
             tapOnId("copy_logs_button")

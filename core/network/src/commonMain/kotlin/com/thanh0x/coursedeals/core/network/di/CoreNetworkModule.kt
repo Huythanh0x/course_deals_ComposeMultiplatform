@@ -3,6 +3,7 @@ package com.thanh0x.coursedeals.core.network.di
 import com.thanh0x.coursedeals.core.common.AppResult
 import com.thanh0x.coursedeals.core.common.Constant
 import com.thanh0x.coursedeals.core.common.NetworkStatusCode
+import com.thanh0x.coursedeals.core.logging.TracingReporter
 import com.thanh0x.coursedeals.domain.user.source.LocalAuthenticationDataSource
 import com.thanh0x.coursedeals.domain.user.source.RemoteAuthenticationDataSource
 import com.thanh0x.coursedeals.core.network.api.DeviceTokenApi
@@ -25,6 +26,8 @@ import kotlinx.serialization.json.Json
 import org.koin.dsl.module
 
 private const val HEADER_REFRESH_ATTEMPTED = "X-Refresh-Attempted"
+private const val SERVER_ERROR_MIN_CODE = 500
+private const val SERVER_ERROR_MAX_CODE = 599
 private val PUBLIC_AUTH_PATHS = listOf(
     "/api/v1/app/config",
     "/api/v1/auth/login",
@@ -129,6 +132,11 @@ fun provideMultiplatformHttpClient(
 
         val originalCall = execute(request)
         val statusCode = originalCall.response.status.value
+        reportIfServerError(
+            method = request.method.value,
+            encodedPath = encodedPath,
+            statusCode = statusCode,
+        )
         if (statusCode == NetworkStatusCode.HTTP_CODE_UNAUTHORIZED && !isPublicAuthPath) {
             if (request.headers[HEADER_REFRESH_ATTEMPTED] == null) {
                 val newAccessToken = refreshMutex.withLock {
@@ -144,7 +152,13 @@ fun provideMultiplatformHttpClient(
                         "${Constant.NETWORK_BEARER_PREFIX} $newAccessToken"
                     )
                     request.header(HEADER_REFRESH_ATTEMPTED, "true")
-                    return@intercept execute(request)
+                    val retriedCall = execute(request)
+                    reportIfServerError(
+                        method = request.method.value,
+                        encodedPath = encodedPath,
+                        statusCode = retriedCall.response.status.value,
+                    )
+                    return@intercept retriedCall
                 }
             } else {
                 clearTokensSafely(localAuthenticationDataSource)
@@ -156,6 +170,16 @@ fun provideMultiplatformHttpClient(
     }
 
     return client
+}
+
+internal fun reportIfServerError(method: String, encodedPath: String, statusCode: Int) {
+    if (statusCode in SERVER_ERROR_MIN_CODE..SERVER_ERROR_MAX_CODE) {
+        TracingReporter.captureHttpServerError(
+            method = method,
+            path = encodedPath,
+            statusCode = statusCode,
+        )
+    }
 }
 
 val coreNetworkModule = module {

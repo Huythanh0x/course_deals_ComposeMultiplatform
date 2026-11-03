@@ -132,7 +132,11 @@ tasks.register('runMaestroFlow', Test) {
     def screenshotDirProp = providers.gradleProperty("screenshotDir")
         .orElse(providers.systemProperty("maestro.screenshotDir"))
         .orElse("/tmp/desktop-maestro-screenshots")
+    def useLiveBackendProp = providers.gradleProperty("useLiveBackend")
+        .orElse(providers.systemProperty("maestro.useLiveBackend"))
+        .orElse("false")
     systemProperty("maestro.flow", flowProp.get())
     systemProperty("maestro.screenshotDir", screenshotDirProp.get())
+    systemProperty("maestro.useLiveBackend", useLiveBackendProp.get())
     outputs.upToDateWhen { false }
 }

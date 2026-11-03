@@ -198,9 +198,13 @@ appId: ${APP_ID}
     timeout: 5000
 - tapOn: "DEBUG"
 - tapOn: "INFO"
+- assertVisible: "CommonTracingInitializer initialized"
+- assertVisible: "ColdStart complete in"
 - tapOn: "WARN"
 - tapOn: "ERROR"
 - tapOn: "ALL"
+- assertVisible: "CommonTracingInitializer initialized"
+- assertVisible: "ColdStart complete in"
 - takeScreenshot: desktop_full_16_diagnostic_logs_sheet
 - tapOn: "Close"
 

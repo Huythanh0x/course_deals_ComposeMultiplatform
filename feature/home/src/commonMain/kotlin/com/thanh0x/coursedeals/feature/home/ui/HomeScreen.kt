@@ -205,7 +205,12 @@ fun HomeScreen(
                 // Filter Button with Badge
                 Box {
                     FilledTonalIconButton(
-                        onClick = onFilterClick,
+                        onClick = {
+                            focusManager.clearFocus()
+                            keyboardController?.hide()
+                            isSearchFocused = false
+                            onFilterClick()
+                        },
                         modifier = Modifier.size(48.dp),
                         colors = IconButtonDefaults.filledTonalIconButtonColors(
                             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,

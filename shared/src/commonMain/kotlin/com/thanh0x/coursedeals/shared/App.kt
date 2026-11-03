@@ -16,6 +16,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.thanh0x.coursedeals.core.common.AppVersion
+import com.thanh0x.coursedeals.core.logging.CommonTracingInitializer
+import com.thanh0x.coursedeals.core.logging.StartupTimeMonitor
 import com.thanh0x.coursedeals.core.network.di.coreNetworkModule
 import com.thanh0x.coursedeals.core.ui.DialogType
 import com.thanh0x.coursedeals.core.ui.UiEvent
@@ -74,9 +76,20 @@ val sharedKoinModules = listOf(
 )
 
 fun initSharedKoin() {
-    if (KoinPlatformTools.defaultContext().getOrNull() == null) {
-        startKoin {
-            modules(sharedKoinModules)
+    StartupTimeMonitor.onAppStart()
+    if (!CommonTracingInitializer.isInitialized) {
+        StartupTimeMonitor.trackStep(StartupTimeMonitor.StepName.Logging) {
+            CommonTracingInitializer.initialize(
+                distroChannel = "shared",
+                appVersion = "1.0.0 (${AppVersion.currentVersionCode()})",
+            )
+        }
+    }
+    StartupTimeMonitor.trackStep(StartupTimeMonitor.StepName.KoinModules) {
+        if (KoinPlatformTools.defaultContext().getOrNull() == null) {
+            startKoin {
+                modules(sharedKoinModules)
+            }
         }
     }
 }
@@ -128,10 +141,24 @@ fun App(
             currentScreen = AppScreen.Detail(courseId)
         }
         val repo = KoinPlatformTools.defaultContext().getOrNull()?.getOrNull<UserProfileRepository>()
-        val savedDarkMode = repo?.getEnableDarkMode()
+        val savedDarkMode = StartupTimeMonitor.trackStep(StartupTimeMonitor.StepName.AuthSession) {
+            repo?.getEnableDarkMode()
+        }
         if (savedDarkMode != null && darkThemeOverride == null) {
             darkThemeOverride = savedDarkMode
         }
+        StartupTimeMonitor.onFirstFrameRendered()
+    }
+
+    LaunchedEffect(currentScreen) {
+        val routeName = when (val screen = currentScreen) {
+            is AppScreen.Splash -> "splash"
+            is AppScreen.Login -> "login"
+            is AppScreen.Main -> "main"
+            is AppScreen.Detail -> "detail/${screen.courseId}"
+            is AppScreen.Enroll -> "enroll"
+        }
+        CommonTracingInitializer.setCurrentRoute(routeName)
     }
 
     val showAlertDialog: (String, String, DialogType) -> Unit = { title, message, type ->
@@ -166,6 +193,11 @@ fun App(
         if (isInMainSession) {
             var currentMainRoute by rememberSaveable(sessionEpoch) {
                 mutableStateOf(if (sessionEpoch == 0) initialRoute else TopLevelDestination.HOME.route)
+            }
+            LaunchedEffect(currentMainRoute, currentScreen) {
+                if (currentScreen is AppScreen.Main) {
+                    CommonTracingInitializer.setCurrentRoute(currentMainRoute)
+                }
             }
             val homeViewModel: HomeViewModel = koinViewModel(key = "home_vm_$sessionEpoch")
             val courseViewModel: CourseViewModel = koinViewModel(key = "course_vm_$sessionEpoch")

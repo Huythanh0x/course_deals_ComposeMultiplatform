@@ -1,0 +1,135 @@
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: false
+
+# 1. Ensure we test the Login -> Google Auth flow from Login Screen
+- extendedWaitUntil:
+    visible: "Continue with Google|PROFILE"
+    timeout: 25000
+- runFlow:
+    when:
+      visible: "PROFILE"
+    commands:
+      - tapOn: "PROFILE"
+      - runFlow:
+          when:
+            visible: "Sign in to Access Settings"
+          commands:
+            - tapOn: "Sign In"
+      - runFlow:
+          when:
+            visible: "Dark Mode|Favorite Categories"
+          commands:
+            - scrollUntilVisible:
+                element: "Log Out"
+                direction: DOWN
+                timeout: 15000
+            - tapOn: "Log Out"
+
+- extendedWaitUntil:
+    visible: "Continue with Google"
+    timeout: 15000
+- assertVisible: "Continue with Email"
+- assertVisible: "Continue with Google"
+- assertVisible: "Access as Guest"
+- takeScreenshot: 01_login_screen
+
+- tapOn: "Continue with Google"
+- runFlow:
+    when:
+      visible: "Sign In"
+    commands:
+      - tapOn: "Sign In"
+- runFlow:
+    when:
+      visible: "Agree & Continue"
+    commands:
+      - tapOn: "Agree & Continue"
+
+# 2. Home Feed
+- extendedWaitUntil:
+    visible: "HOME"
+    timeout: 20000
+- tapOn: "HOME"
+- extendedWaitUntil:
+    visible: "Search courses"
+    timeout: 15000
+- tapOn: "Filter"
+- extendedWaitUntil:
+    visible: "Reset"
+    timeout: 5000
+- tapOn: "Reset"
+- tapOn: "Apply"
+- extendedWaitUntil:
+    visible: "Search courses"
+    timeout: 10000
+- takeScreenshot: 02_home_feed
+
+# 3. Search & Filter
+- tapOn: "Search courses"
+- inputText: "Management"
+- tapOn: "Filter"
+- extendedWaitUntil:
+    visible: "Business"
+    timeout: 5000
+- tapOn: "Business"
+- tapOn: "Apply"
+- extendedWaitUntil:
+    visible: ".*Executive Diploma in Human Resources.*"
+    timeout: 15000
+- assertVisible: ".*Executive Diploma in Human Resources.*"
+- assertVisible: ".*Matching.*"
+- takeScreenshot: 03_search_and_filter
+
+# 4. Course Detail
+- tapOn: ".*Executive Diploma in Human Resources.*"
+- extendedWaitUntil:
+    visible: "Enroll Now"
+    timeout: 10000
+- assertVisible: "Enroll Now"
+- assertVisible: "Report"
+- takeScreenshot: 04_course_detail
+
+# 5. Enroll WebView & Return to Home
+- tapOn: "Enroll Now"
+- extendedWaitUntil:
+    visible: "Cancel"
+    timeout: 10000
+- takeScreenshot: 05_enroll_webview
+- tapOn: "Cancel"
+- extendedWaitUntil:
+    visible: "Enroll Now"
+    timeout: 10000
+- tapOn: "Back"
+- extendedWaitUntil:
+    visible: ".*Executive Diploma in Human Resources.*"
+    timeout: 10000
+- tapOn: "Clear"
+
+# 6. Profile Settings -> Diagnostic Logs Entry
+- tapOn: "PROFILE"
+- scrollUntilVisible:
+    element: "Diagnostic Logs"
+    direction: DOWN
+    timeout: 15000
+- swipe:
+    start: "50%,65%"
+    end: "50%,35%"
+- assertVisible: "Diagnostic Logs"
+- takeScreenshot: 06_profile_settings
+
+# 7. Diagnostic Logs Sheet (ALL Filter)
+- tapOn: "Diagnostic Logs"
+- extendedWaitUntil:
+    visible: "Copy Logs"
+    timeout: 10000
+- tapOn: "ALL"
+- assertVisible: ".*CommonTracingInitializer initialized[\\s\\S]*ColdStart complete in.*"
+- takeScreenshot: 07_diagnostic_logs_all
+
+# 8. Diagnostic Logs Sheet (INFO Filter)
+- tapOn: "INFO"
+- assertVisible: ".*CommonTracingInitializer initialized[\\s\\S]*ColdStart complete in.*"
+- takeScreenshot: 08_diagnostic_logs_info
+- tapOn: "Close"

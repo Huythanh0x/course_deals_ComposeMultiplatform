@@ -221,6 +221,7 @@ class DesktopMaestroFlowRunner(
     }
 
     private fun executeTakeScreenshot(command: MaestroCommand.TakeScreenshot) {
+        Thread.sleep(800)
         rule.waitForIdle()
         val finalName = screenshotNameTransform(command.name)
         val outputFile = File(screenshotDir, "$finalName.png")
@@ -329,13 +330,34 @@ class DesktopMaestroFlowRunner(
         }
 
         is MaestroSelector.ByText -> {
-            hasText(selector.text, substring = true) or
+            val normalizedText = selector.text.replace("\\\\", "\\")
+            val regex = runCatching {
+                if (normalizedText.contains("|") || normalizedText.contains(".*") || normalizedText.contains("[")) {
+                    Regex(normalizedText, setOf(RegexOption.DOT_MATCHES_ALL, RegexOption.IGNORE_CASE))
+                } else {
+                    null
+                }
+            }.getOrNull()
+            val regexMatcher = if (regex != null) {
+                SemanticsMatcher("matchesRegex(${selector.text})") { node ->
+                    val textList = node.config.getOrNull(SemanticsProperties.Text)?.map { it.text }.orEmpty()
+                    val editable = node.config.getOrNull(SemanticsProperties.EditableText)?.text
+                    val contentDesc = node.config.getOrNull(SemanticsProperties.ContentDescription).orEmpty()
+                    textList.any { regex.containsMatchIn(it) } ||
+                        (editable != null && regex.containsMatchIn(editable)) ||
+                        contentDesc.any { regex.containsMatchIn(it) }
+                }
+            } else {
+                null
+            }
+            val base = hasText(selector.text, substring = true) or
                 hasContentDescription(selector.text, substring = true) or
                 hasTestTag(selector.text) or
                 SemanticsMatcher("hasEditableText(${selector.text})") { node ->
                     val editable = node.config.getOrNull(SemanticsProperties.EditableText)
                     editable?.text?.contains(selector.text) == true
                 }
+            if (regexMatcher != null) base or regexMatcher else base
         }
     }
 
