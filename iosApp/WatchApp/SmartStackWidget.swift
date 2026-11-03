@@ -29,11 +29,13 @@ public struct SmartStackHotDealCardView: View {
             HStack(spacing: 4) {
                 HStack(spacing: 2) {
                     Image(systemName: "square.stack.3d.up.fill")
-                        .font(.system(size: 8, weight: .bold))
+                        .font(.system(size: 7.5, weight: .bold))
                     Text("SMART STACK")
-                        .font(.system(size: 8, weight: .heavy))
+                        .font(.system(size: 7.5, weight: .heavy))
+                        .lineLimit(1)
+                        .fixedSize(horizontal: true, vertical: false)
                 }
-                .padding(.horizontal, 5)
+                .padding(.horizontal, 4.5)
                 .padding(.vertical, 2)
                 .background(Color.blue.opacity(0.35))
                 .foregroundColor(.cyan)
@@ -41,19 +43,23 @@ public struct SmartStackHotDealCardView: View {
 
                 if let deal = deal {
                     Text(deal.platform.displayName)
-                        .font(.system(size: 8, weight: .bold))
-                        .padding(.horizontal, 5)
+                        .font(.system(size: 7.5, weight: .bold))
+                        .lineLimit(1)
+                        .fixedSize(horizontal: true, vertical: false)
+                        .padding(.horizontal, 4)
                         .padding(.vertical, 2)
                         .background(deal.platform.tagColor)
                         .foregroundColor(.white)
                         .cornerRadius(4)
                 }
 
-                Spacer()
+                Spacer(minLength: 2)
 
                 Text(deal?.discountBadgeText ?? "100% OFF")
-                    .font(.system(size: 8, weight: .heavy))
-                    .padding(.horizontal, 5)
+                    .font(.system(size: 7.5, weight: .heavy))
+                    .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
+                    .padding(.horizontal, 4)
                     .padding(.vertical, 2)
                     .background(Color.green)
                     .foregroundColor(.black)
@@ -190,30 +196,26 @@ public struct WatchComplicationsPreviewSheet: View {
 
     public var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 5) {
                 // Header
                 HStack {
                     Image(systemName: "applewatch.watchface")
                         .foregroundColor(.cyan)
-                        .font(.caption)
+                        .font(.system(size: 10))
                     Text("Watch Widgets")
-                        .font(.system(size: 12, weight: .bold))
+                        .font(.system(size: 11, weight: .bold))
                         .foregroundColor(.white)
                     Spacer()
                     Text("\(currentEntry.activeDealCount) Active")
-                        .font(.system(size: 9, weight: .semibold))
-                        .padding(.horizontal, 5)
-                        .padding(.vertical, 2)
+                        .font(.system(size: 8.5, weight: .semibold))
+                        .padding(.horizontal, 4)
+                        .padding(.vertical, 1.5)
                         .background(Color.orange.opacity(0.25))
                         .foregroundColor(.orange)
                         .cornerRadius(4)
                 }
 
                 // 1. watchOS 10+ Smart Stack Card
-                Text("WATCHOS 10+ SMART STACK")
-                    .font(.system(size: 8, weight: .heavy))
-                    .foregroundColor(.secondary)
-
                 Button(action: {
                     if let topDeal = currentEntry.topDeal {
                         dismiss()
@@ -230,32 +232,33 @@ public struct WatchComplicationsPreviewSheet: View {
                 .buttonStyle(.plain)
                 .accessibilityIdentifier("watch_smart_stack_card")
 
-                // 2. Watch Face Complications (.accessoryCircular + .accessoryCorner)
-                Text("WATCH FACE COMPLICATIONS")
-                    .font(.system(size: 8, weight: .heavy))
-                    .foregroundColor(.secondary)
+                // 2. Watch Face Complications (.accessoryCircular + .accessoryCorner + .accessoryInline)
+                HStack(spacing: 6) {
+                    CircularHotDealsComplicationView(activeDealCount: currentEntry.activeDealCount)
 
-                HStack(spacing: 10) {
-                    VStack(spacing: 3) {
-                        CircularHotDealsComplicationView(activeDealCount: currentEntry.activeDealCount)
-                        Text("Circular")
-                            .font(.system(size: 8))
-                            .foregroundColor(.secondary)
-                    }
-
-                    Spacer()
-
-                    VStack(alignment: .trailing, spacing: 6) {
-                        CornerHotDealsComplicationView(activeDealCount: currentEntry.activeDealCount)
-                            .padding(6)
-                            .background(Color.white.opacity(0.08))
-                            .cornerRadius(8)
-                        Text("Corner + Gauge")
-                            .font(.system(size: 8))
-                            .foregroundColor(.secondary)
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack(spacing: 4) {
+                            CornerHotDealsComplicationView(activeDealCount: currentEntry.activeDealCount)
+                                .padding(.horizontal, 5)
+                                .padding(.vertical, 2)
+                                .background(Color.white.opacity(0.08))
+                                .cornerRadius(5)
+                            Text("Corner")
+                                .font(.system(size: 7.5))
+                                .foregroundColor(.secondary)
+                        }
+                        InlineHotDealComplicationView(
+                            deal: currentEntry.topDeal,
+                            activeDealCount: currentEntry.activeDealCount,
+                            now: currentEntry.date
+                        )
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 3)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(Color.white.opacity(0.06))
+                        .cornerRadius(5)
                     }
                 }
-                .padding(.horizontal, 4)
 
                 // 3. Rectangular Complication (.accessoryRectangular)
                 Button(action: {
@@ -272,25 +275,9 @@ public struct WatchComplicationsPreviewSheet: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityIdentifier("watch_rectangular_complication")
-
-                // 4. Inline Complication (.accessoryInline)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("INLINE COMPLICATION")
-                        .font(.system(size: 8, weight: .heavy))
-                        .foregroundColor(.secondary)
-                    InlineHotDealComplicationView(
-                        deal: currentEntry.topDeal,
-                        activeDealCount: currentEntry.activeDealCount,
-                        now: currentEntry.date
-                    )
-                    .padding(5)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color.white.opacity(0.06))
-                    .cornerRadius(6)
-                }
             }
-            .padding(.horizontal, 4)
-            .padding(.vertical, 4)
+            .padding(.horizontal, 3)
+            .padding(.vertical, 2)
         }
         .accessibilityIdentifier("watch_complication_preview_sheet")
     }

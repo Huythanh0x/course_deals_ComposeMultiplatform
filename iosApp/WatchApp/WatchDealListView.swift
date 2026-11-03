@@ -54,6 +54,10 @@ public struct WatchDealListView: View {
             }
             .onAppear {
                 client.requestDealsFromPhone()
+                applyLaunchArgumentsIfNeeded()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+                    applyLaunchArgumentsIfNeeded()
+                }
             }
             .onReceive(countdownTimer) { currentTimestamp in
                 now = currentTimestamp
@@ -213,8 +217,36 @@ public struct WatchDealListView: View {
         )
     }
 
+    private func applyLaunchArgumentsIfNeeded() {
+        let args = CommandLine.arguments
+        if args.contains("--bookmark-top-deal"), let firstDeal = client.deals.first {
+            if !firstDeal.isBookmarked {
+                _ = client.toggleBookmark(for: firstDeal.id)
+            }
+        }
+        if args.contains("--show-widgets") {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                showComplicationsPreview = true
+            }
+        } else if args.contains("--open-top-deal"), !client.deals.isEmpty {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                selectedDealIndex = 0
+            }
+        }
+    }
+
     private func handleWatchDeepLink(_ url: URL) {
         let raw = url.absoluteString.trimmingCharacters(in: .whitespacesAndNewlines)
+        if raw.hasPrefix("coursedeals://widgets") || raw.hasPrefix("coursedeals://complications") {
+            selectedDealIndex = nil
+            showComplicationsPreview = true
+            return
+        }
+        if raw.hasPrefix("coursedeals://feed") {
+            showComplicationsPreview = false
+            selectedDealIndex = nil
+            return
+        }
         let prefixes = [
             "coursedeals://courses/",
             "coursedeals://coupon/",
@@ -230,6 +262,12 @@ public struct WatchDealListView: View {
         guard let targetId = Int(tail), targetId > 0 else {
             return
         }
+        if raw.contains("bookmark=1") {
+            if !(client.deals.first(where: { $0.id == targetId })?.isBookmarked ?? false) {
+                _ = client.toggleBookmark(for: targetId)
+            }
+        }
+        showComplicationsPreview = false
         if let index = client.deals.firstIndex(where: { $0.id == targetId }) {
             selectedDealIndex = index
         }
@@ -259,11 +297,13 @@ private struct WatchDealCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 5) {
             // Badges row
-            HStack(spacing: 4) {
+            HStack(spacing: 3) {
                 if deal.isHot {
                     Text("🔥 HOT")
-                        .font(.system(size: 9, weight: .heavy))
-                        .padding(.horizontal, 4)
+                        .font(.system(size: 8, weight: .heavy))
+                        .lineLimit(1)
+                        .fixedSize(horizontal: true, vertical: false)
+                        .padding(.horizontal, 3.5)
                         .padding(.vertical, 1.5)
                         .background(Color.red)
                         .foregroundColor(.white)
@@ -271,34 +311,40 @@ private struct WatchDealCard: View {
                 }
 
                 Text(deal.platform.displayName)
-                    .font(.system(size: 9, weight: .bold))
-                    .padding(.horizontal, 5)
+                    .font(.system(size: 8, weight: .bold))
+                    .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
+                    .padding(.horizontal, 4)
                     .padding(.vertical, 1.5)
                     .background(deal.platform.tagColor)
                     .foregroundColor(.white)
                     .cornerRadius(3)
 
                 Text(deal.discountBadgeText)
-                    .font(.system(size: 9, weight: .heavy))
-                    .padding(.horizontal, 4)
+                    .font(.system(size: 8, weight: .heavy))
+                    .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
+                    .padding(.horizontal, 3.5)
                     .padding(.vertical, 1.5)
                     .background(Color.green)
                     .foregroundColor(.black)
                     .cornerRadius(3)
 
-                Spacer()
+                Spacer(minLength: 2)
 
                 if deal.isBookmarked {
                     Image(systemName: "bookmark.fill")
-                        .font(.system(size: 9))
+                        .font(.system(size: 8))
                         .foregroundColor(.yellow)
                 }
 
-                HStack(spacing: 2) {
+                HStack(spacing: 1.5) {
                     Image(systemName: "clock")
-                        .font(.system(size: 8))
+                        .font(.system(size: 7.5))
                     Text(deal.formattedTimeLeft(now: now))
-                        .font(.system(size: 9, weight: .semibold, design: .monospaced))
+                        .font(.system(size: 8, weight: .semibold, design: .monospaced))
+                        .lineLimit(1)
+                        .fixedSize(horizontal: true, vertical: false)
                 }
                 .foregroundColor(.orange)
             }

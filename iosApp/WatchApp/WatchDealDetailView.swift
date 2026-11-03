@@ -38,142 +38,124 @@ public struct WatchDealDetailView: View {
 
     public var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 5) {
                 // Header: Platform Tag, HOT Badge & 100% OFF Badge
-                HStack(spacing: 5) {
+                HStack(spacing: 4) {
                     if deal.isHot {
                         Text("🔥 HOT")
-                            .font(.caption2.bold())
-                            .padding(.horizontal, 5)
-                            .padding(.vertical, 2)
+                            .font(.system(size: 8.5, weight: .heavy))
+                            .lineLimit(1)
+                            .fixedSize(horizontal: true, vertical: false)
+                            .padding(.horizontal, 4)
+                            .padding(.vertical, 1.5)
                             .background(Color.red)
                             .foregroundColor(.white)
-                            .cornerRadius(4)
+                            .cornerRadius(3)
                     }
 
                     Text(deal.platform.displayName)
-                        .font(.caption2.bold())
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
+                        .font(.system(size: 8.5, weight: .bold))
+                        .lineLimit(1)
+                        .fixedSize(horizontal: true, vertical: false)
+                        .padding(.horizontal, 4.5)
+                        .padding(.vertical, 1.5)
                         .background(deal.platform.tagColor)
                         .foregroundColor(.white)
-                        .cornerRadius(4)
+                        .cornerRadius(3)
 
-                    Spacer()
+                    Spacer(minLength: 2)
 
                     Text(deal.discountBadgeText)
-                        .font(.caption2.bold())
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
+                        .font(.system(size: 8.5, weight: .heavy))
+                        .lineLimit(1)
+                        .fixedSize(horizontal: true, vertical: false)
+                        .padding(.horizontal, 4.5)
+                        .padding(.vertical, 1.5)
                         .background(Color.green)
                         .foregroundColor(.black)
-                        .cornerRadius(4)
+                        .cornerRadius(3)
                 }
 
                 // Full Course Title
                 Text(deal.title)
-                    .font(.headline)
+                    .font(.system(size: 11.5, weight: .bold))
                     .foregroundColor(.primary)
-                    .lineLimit(nil)
+                    .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
 
-                // Subtitle / Author
-                if let author = deal.author {
-                    Text("By \(author)")
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
-                }
-
                 // Rating, Students & Expiry
-                HStack(spacing: 6) {
+                HStack(spacing: 4) {
                     Text(deal.formattedRating)
-                        .font(.caption2.bold())
+                        .font(.system(size: 9.5, weight: .bold))
                         .foregroundColor(.yellow)
 
                     if !deal.formattedStudents.isEmpty {
                         Text("• \(deal.formattedStudents)")
-                            .font(.caption2)
+                            .font(.system(size: 9))
                             .foregroundColor(.secondary)
+                            .lineLimit(1)
                     }
 
-                    if let remaining = deal.usesRemaining {
-                        Text("• \(remaining) left")
-                            .font(.caption2)
-                            .foregroundColor(.orange)
-                    }
+                    Spacer(minLength: 2)
 
-                    Spacer()
-
-                    HStack(spacing: 3) {
+                    HStack(spacing: 2) {
                         Image(systemName: "clock.fill")
-                            .font(.system(size: 10))
+                            .font(.system(size: 8.5))
                         Text(deal.formattedTimeLeft())
-                            .font(.caption2.monospacedDigit())
+                            .font(.system(size: 9, design: .monospaced))
                     }
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.orange)
                 }
-
-                Divider()
-                    .padding(.vertical, 2)
 
                 // Coupon Code Box with Haptic Feedback
-                VStack(spacing: 4) {
-                    Text("COUPON CODE")
-                        .font(.system(size: 9, weight: .bold))
-                        .foregroundColor(.secondary)
-
-                    Button(action: copyCouponCode) {
-                        HStack {
-                            Image(systemName: hasCopiedCode ? "checkmark.circle.fill" : "doc.on.doc.fill")
-                                .foregroundColor(hasCopiedCode ? .green : .accentColor)
-                            Text(deal.couponCode ?? "FREE-COUPON")
-                                .font(.system(size: 14, weight: .heavy, design: .monospaced))
-                                .foregroundColor(.primary)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 8)
-                        .background(Color.white.opacity(0.12))
-                        .cornerRadius(8)
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityIdentifier("watch_copy_coupon_button")
-
-                    if hasCopiedCode {
-                        Text("Code tapped! Ready to paste")
+                Button(action: copyCouponCode) {
+                    HStack(spacing: 5) {
+                        Image(systemName: hasCopiedCode ? "checkmark.circle.fill" : "doc.on.doc.fill")
                             .font(.system(size: 10))
-                            .foregroundColor(.green)
-                    }
-                }
-
-                // Primary CTA: Open on iPhone (Apple Handoff + WCSession instant relay)
-                Button(action: triggerHandoffToIPhone) {
-                    HStack {
-                        Image(systemName: "iphone.and.arrow.forward")
-                            .font(.headline)
-                        Text(hasTriggeredHandoff ? "Sent to iPhone" : "Open on iPhone")
-                            .font(.footnote.bold())
+                            .foregroundColor(hasCopiedCode ? .green : .cyan)
+                        Text("CODE: \(deal.couponCode ?? "FREE-COUPON")")
+                            .font(.system(size: 10.5, weight: .heavy, design: .monospaced))
+                            .foregroundColor(.primary)
+                            .lineLimit(1)
                     }
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 8)
+                    .padding(.vertical, 5)
+                    .background(Color.white.opacity(0.12))
+                    .cornerRadius(6)
+                }
+                .buttonStyle(.plain)
+                .accessibilityIdentifier("watch_copy_coupon_button")
+
+                // Primary CTA: Open on iPhone (Apple Handoff + WCSession instant relay)
+                Button(action: { triggerHandoffToIPhone() }) {
+                    HStack(spacing: 5) {
+                        Image(systemName: "iphone.and.arrow.forward")
+                            .font(.system(size: 11, weight: .bold))
+                        Text(hasTriggeredHandoff ? "Sent to iPhone" : "Open on iPhone")
+                            .font(.system(size: 11, weight: .bold))
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 6)
                     .background(hasTriggeredHandoff ? Color.green : Color.blue)
                     .foregroundColor(.white)
-                    .cornerRadius(8)
+                    .cornerRadius(7)
                 }
                 .buttonStyle(.plain)
                 .accessibilityIdentifier("watch_open_on_iphone_button")
 
                 // Save for Later Bookmark Toggle (two-way synced with iPhone & offline cache)
                 Button(action: toggleBookmark) {
-                    HStack {
+                    HStack(spacing: 5) {
                         Image(systemName: deal.isBookmarked ? "bookmark.fill" : "bookmark")
+                            .font(.system(size: 10.5))
                             .foregroundColor(deal.isBookmarked ? .yellow : .primary)
                         Text(deal.isBookmarked ? "Saved for Later" : "Save for Later")
-                            .font(.footnote)
+                            .font(.system(size: 10.5, weight: .semibold))
                     }
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 6)
-                    .background(Color.gray.opacity(0.2))
-                    .cornerRadius(8)
+                    .padding(.vertical, 5)
+                    .background(Color.gray.opacity(0.24))
+                    .cornerRadius(7)
                 }
                 .buttonStyle(.plain)
                 .accessibilityIdentifier("watch_bookmark_button")
@@ -185,6 +167,13 @@ public struct WatchDealDetailView: View {
         }
         .onAppear {
             setupHandoffActivity()
+            if CommandLine.arguments.contains("--trigger-handoff") {
+                if !deal.isBookmarked {
+                    let newState = WatchConnectivityClient.shared.toggleBookmark(for: deal.id)
+                    deal.isBookmarked = newState
+                }
+                triggerHandoffToIPhone(resetDelay: 12.0)
+            }
         }
     }
 
@@ -203,7 +192,7 @@ public struct WatchDealDetailView: View {
         deal.isBookmarked = newState
     }
 
-    private func triggerHandoffToIPhone() {
+    private func triggerHandoffToIPhone(resetDelay: TimeInterval = 2.5) {
         playHapticFeedback(.success)
         hasTriggeredHandoff = true
 
@@ -215,7 +204,7 @@ public struct WatchDealDetailView: View {
         // Simultaneously relay via WCSession so paired iPhone navigates immediately when active
         WatchConnectivityClient.shared.sendOpenOnPhoneRequest(for: deal)
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + resetDelay) {
             hasTriggeredHandoff = false
         }
     }
