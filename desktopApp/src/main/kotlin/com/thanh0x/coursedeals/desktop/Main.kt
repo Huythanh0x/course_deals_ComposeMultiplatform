@@ -15,9 +15,13 @@ import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 import com.thanh0x.coursedeals.core.common.AppVersion
+import com.thanh0x.coursedeals.core.logging.AndroidCrashHandler
+import com.thanh0x.coursedeals.core.logging.CommonTracingInitializer
+import com.thanh0x.coursedeals.core.logging.DailyRollingFileLogWriter
 import com.thanh0x.coursedeals.core.logging.LogFileManager
 import com.thanh0x.coursedeals.core.logging.LoggerFactory
 import com.thanh0x.coursedeals.core.logging.PlatformConsoleLogWriter
+import com.thanh0x.coursedeals.core.logging.StartupTimeMonitor
 import com.thanh0x.coursedeals.core.logging.debug
 import com.thanh0x.coursedeals.core.logging.warn
 import com.thanh0x.coursedeals.shared.App
@@ -31,13 +35,22 @@ private const val WINDOW_WIDTH_DP = 430
 private const val WINDOW_HEIGHT_DP = 880
 
 fun main(args: Array<String>) {
-    LogFileManager.init(null)
-    LoggerFactory.install(PlatformConsoleLogWriter())
-    val logger = LoggerFactory.getLogger("CourseDealsDesktop")
-
+    StartupTimeMonitor.onAppStart()
     val combinedArgs = resolveCombinedDesktopArgs(args.toList())
     val config = parseDesktopArgs(combinedArgs)
     AppVersion.overrideVersionCode = config.versionOverride
+
+    StartupTimeMonitor.trackStep(StartupTimeMonitor.StepName.Logging) {
+        LogFileManager.init(null)
+        LoggerFactory.install(PlatformConsoleLogWriter())
+        LoggerFactory.install(DailyRollingFileLogWriter())
+        AndroidCrashHandler.install()
+        CommonTracingInitializer.initialize(
+            distroChannel = "desktop",
+            appVersion = "1.0.0 (${AppVersion.currentVersionCode()})",
+        )
+    }
+    val logger = LoggerFactory.getLogger("CourseDealsDesktop")
 
     logger.debug {
         "CourseDeals Desktop starting (screen=${config.initialScreen}, route=${config.initialRoute}, " +
@@ -46,6 +59,7 @@ fun main(args: Array<String>) {
 
     installDesktopPlatformActions()
     installDesktopRenderers()
+    StartupTimeMonitor.startStep(StartupTimeMonitor.StepName.FirstFrame)
 
     application {
         val windowState = WindowState(

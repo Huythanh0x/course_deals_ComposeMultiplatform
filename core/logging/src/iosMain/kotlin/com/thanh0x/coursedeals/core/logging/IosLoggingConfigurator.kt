@@ -6,6 +6,7 @@ object IosLoggingConfigurator {
         LoggerFactory.install(DarwinLogWriter())
         LoggerFactory.install(DailyRollingFileLogWriter())
         LogFileManager.init()
+        PlatformTracingBridge.installCrashHandler()
     }
 
     fun flush() {

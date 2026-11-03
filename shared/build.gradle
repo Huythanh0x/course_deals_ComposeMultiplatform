@@ -14,6 +14,9 @@ kotlin {
             isStatic = true
             transitiveExport = false
             export project(':core:common')
+            linkTaskProvider.configure {
+                dependsOn(":core:logging:unpackSentryCocoa")
+            }
         }
     }
 

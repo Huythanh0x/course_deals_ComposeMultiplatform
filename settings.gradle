@@ -23,6 +23,20 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        exclusiveContent {
+            forRepository {
+                ivy {
+                    name = "sentryCocoaReleases"
+                    url = uri("https://github.com/getsentry/sentry-cocoa/releases/download")
+                    patternLayout { artifact("[revision]/[artifact].[ext]") }
+                    metadataSources { artifact() }
+                }
+            }
+            filter {
+                includeModule("io.sentry.native", "Sentry-Dynamic")
+                includeModule("io.sentry.native", "Sentry")
+            }
+        }
     }
 }
 rootProject.name = "Course Deals"

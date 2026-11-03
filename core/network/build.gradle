@@ -10,6 +10,7 @@ kotlin {
             kotlin.srcDir("src/commonMain/gen")
             dependencies {
                 implementation project(':core:common')
+                implementation project(':core:logging')
                 implementation project(':domain:user')
                 api libs.ktor.client.core
                 implementation libs.ktor.client.content.negotiation
@@ -19,6 +20,12 @@ kotlin {
                 api libs.kotlinx.datetime
                 implementation libs.kotlinx.coroutines.core
                 implementation libs.koin.core
+            }
+        }
+        commonTest {
+            dependencies {
+                implementation kotlin('test')
+                implementation libs.kotlinx.coroutines.test
             }
         }
         jvmMain {

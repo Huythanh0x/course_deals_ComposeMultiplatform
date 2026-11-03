@@ -9,6 +9,14 @@ object AndroidCrashHandler {
         val previousHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
             try {
+                TracingReporter.captureException(
+                    throwable = throwable,
+                    tags = mapOf(
+                        "mechanism" to "uncaught_thread",
+                        "thread" to thread.name,
+                    ),
+                    isFatal = true,
+                )
                 AppLogger.error(throwable) {
                     "FATAL UNCAUGHT EXCEPTION on thread ${thread.name}: ${throwable.message}"
                 }

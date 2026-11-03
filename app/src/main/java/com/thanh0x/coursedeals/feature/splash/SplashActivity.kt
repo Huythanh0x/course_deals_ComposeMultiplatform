@@ -5,11 +5,14 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.thanh0x.coursedeals.BuildConfig
 import com.thanh0x.coursedeals.core.common.AppVersion
 import com.thanh0x.coursedeals.core.common.Constant
+import com.thanh0x.coursedeals.core.logging.CommonTracingInitializer
+import com.thanh0x.coursedeals.core.logging.StartupTimeMonitor
 import com.thanh0x.coursedeals.core.ui.BaseActivity
 import com.thanh0x.coursedeals.core.ui.theme.CourseDealsTheme
 import kotlinx.coroutines.delay
@@ -43,6 +46,10 @@ class SplashActivity : BaseActivity() {
         splashViewModel.evaluateStartupGate()
 
         setContent {
+            LaunchedEffect(Unit) {
+                CommonTracingInitializer.setCurrentRoute("splash")
+                StartupTimeMonitor.onFirstFrameRendered()
+            }
             CourseDealsTheme {
                 val uiState by splashViewModel.uiState.collectAsStateWithLifecycle()
                 SplashScreen(uiState = uiState)

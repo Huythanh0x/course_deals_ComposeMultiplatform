@@ -3,7 +3,10 @@ package com.thanh0x.coursedeals
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.LaunchedEffect
 import com.thanh0x.coursedeals.core.common.BundleKey
+import com.thanh0x.coursedeals.core.logging.CommonTracingInitializer
+import com.thanh0x.coursedeals.core.logging.StartupTimeMonitor
 import com.thanh0x.coursedeals.core.ui.BaseActivity
 import com.thanh0x.coursedeals.core.ui.theme.CourseDealsTheme
 import com.thanh0x.coursedeals.navigation.MainAppScaffold
@@ -14,6 +17,10 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         handleDeepLink(intent)
         setContent {
+            LaunchedEffect(Unit) {
+                CommonTracingInitializer.setCurrentRoute("main")
+                StartupTimeMonitor.onFirstFrameRendered()
+            }
             CourseDealsTheme {
                 MainAppScaffold(
                     onCouponClick = { coupon -> navigateToDetail(coupon.courseId) },

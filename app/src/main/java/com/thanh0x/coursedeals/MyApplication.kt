@@ -28,7 +28,9 @@ import com.thanh0x.coursedeals.domain.user.UserProfileRepository
 import com.thanh0x.coursedeals.sync.PeriodicCouponSyncWorker
 import kotlinx.coroutines.runBlocking
 import com.thanh0x.coursedeals.core.logging.AndroidLogger
+import com.thanh0x.coursedeals.core.logging.CommonTracingInitializer
 import com.thanh0x.coursedeals.core.logging.LogLevel
+import com.thanh0x.coursedeals.core.logging.StartupTimeMonitor
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -41,16 +43,28 @@ class MyApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        StartupTimeMonitor.onAppStart()
         val minLevel = if (BuildConfig.DEBUG) LogLevel.DEBUG else LogLevel.INFO
-        AndroidLogger.install(filesDir.resolve("logs"), minLevel = minLevel)
+        StartupTimeMonitor.trackStep(StartupTimeMonitor.StepName.Logging) {
+            AndroidLogger.install(filesDir.resolve("logs"), minLevel = minLevel)
+            CommonTracingInitializer.initialize(
+                distroChannel = BuildConfig.FLAVOR,
+                appVersion = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
+            )
+        }
         setupMultiplatformRenderers()
         setupPlatformActions()
-        startKoin {
-            androidLogger(Level.ERROR)
-            androidContext(this@MyApplication)
-            modules(appModules)
+        StartupTimeMonitor.trackStep(StartupTimeMonitor.StepName.KoinModules) {
+            startKoin {
+                androidLogger(Level.ERROR)
+                androidContext(this@MyApplication)
+                modules(appModules)
+            }
         }
-        applyPersistedDarkMode()
+        StartupTimeMonitor.trackStep(StartupTimeMonitor.StepName.AuthSession) {
+            applyPersistedDarkMode()
+        }
+        StartupTimeMonitor.startStep(StartupTimeMonitor.StepName.FirstFrame)
         PeriodicCouponSyncWorker.schedule(this)
     }
 

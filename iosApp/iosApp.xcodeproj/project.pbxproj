@@ -160,6 +160,7 @@
 		};
 		A7000002 /* Embed Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
@@ -174,7 +175,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "";
+			shellScript = "if [ \"$PLATFORM_NAME\" = \"iphonesimulator\" ]; then\n  SENTRY_SLICE=\"ios-arm64_x86_64-simulator\"\nelse\n  SENTRY_SLICE=\"ios-arm64\"\nfi\nSENTRY_FW=\"$SRCROOT/../build/sentryCocoa/9.30.2/Sentry-Dynamic.xcframework/$SENTRY_SLICE/Sentry.framework\"\nif [ -d \"$SENTRY_FW\" ]; then\n  mkdir -p \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH\"\n  rm -rf \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/Sentry.framework\"\n  cp -R \"$SENTRY_FW\" \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/Sentry.framework\"\n  codesign --force --sign \"${EXPANDED_CODE_SIGN_IDENTITY:--}\" \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/Sentry.framework\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -250,6 +251,13 @@
 					"$(BUILT_PRODUCTS_DIR)",
 					"$(SRCROOT)/../shared/build/bin/iosSimulatorArm64/debugFramework",
 					"$(SRCROOT)/../shared/build/bin/iosArm64/debugFramework",
+					"$(SRCROOT)/../build/sentryCocoa/9.30.2/Sentry-Dynamic.xcframework/ios-arm64_x86_64-simulator",
+					"$(SRCROOT)/../build/sentryCocoa/9.30.2/Sentry-Dynamic.xcframework/ios-arm64",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					"Sentry",
 				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
@@ -281,6 +289,13 @@
 					"$(BUILT_PRODUCTS_DIR)",
 					"$(SRCROOT)/../shared/build/bin/iosSimulatorArm64/releaseFramework",
 					"$(SRCROOT)/../shared/build/bin/iosArm64/releaseFramework",
+					"$(SRCROOT)/../build/sentryCocoa/9.30.2/Sentry-Dynamic.xcframework/ios-arm64_x86_64-simulator",
+					"$(SRCROOT)/../build/sentryCocoa/9.30.2/Sentry-Dynamic.xcframework/ios-arm64",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					"Sentry",
 				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;

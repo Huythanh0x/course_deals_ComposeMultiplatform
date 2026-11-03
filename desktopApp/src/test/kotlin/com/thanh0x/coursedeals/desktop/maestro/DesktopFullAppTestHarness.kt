@@ -2,8 +2,11 @@ package com.thanh0x.coursedeals.desktop.maestro
 
 import androidx.paging.PagingData
 import com.thanh0x.coursedeals.core.common.AppResult
+import com.thanh0x.coursedeals.core.logging.CommonTracingInitializer
+import com.thanh0x.coursedeals.core.logging.DailyRollingFileLogWriter
 import com.thanh0x.coursedeals.core.logging.LogFileManager
 import com.thanh0x.coursedeals.core.logging.LoggerFactory
+import com.thanh0x.coursedeals.core.logging.StartupTimeMonitor
 import com.thanh0x.coursedeals.core.logging.debug
 import com.thanh0x.coursedeals.core.logging.error
 import com.thanh0x.coursedeals.core.logging.info
@@ -55,7 +58,17 @@ class DesktopFullAppTestEnvironment {
 }
 
 fun installFullAppDesktopTestKoin(): DesktopFullAppTestEnvironment {
-    LogFileManager.init(null)
+    StartupTimeMonitor.resetForTesting()
+    CommonTracingInitializer.resetForTesting()
+    StartupTimeMonitor.onAppStart()
+    StartupTimeMonitor.trackStep(StartupTimeMonitor.StepName.Logging) {
+        LogFileManager.init(null)
+        LoggerFactory.install(DailyRollingFileLogWriter())
+        CommonTracingInitializer.initialize(
+            distroChannel = "desktop-test",
+            appVersion = "1.0.0 (105)",
+        )
+    }
     val logger = LoggerFactory.getLogger("DesktopE2eHarness")
     logger.debug { "Desktop E2E debug log entry initialized" }
     logger.info { "Desktop E2E info log entry initialized" }

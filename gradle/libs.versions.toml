@@ -34,6 +34,7 @@ openapiGenerator = "7.12.0"
 kotlinxDatetime = "0.6.2"
 javafx = "21.0.5"
 firebase-bom = "33.9.0"
+sentryKmp = "0.29.0"
 
 [libraries]
 compose-material-icons-core = { group = "org.jetbrains.compose.material", name = "material-icons-core", version = "1.7.3" }
@@ -109,6 +110,7 @@ coil-network-ktor3 = { group = "io.coil-kt.coil3", name = "coil-network-ktor3", 
 androidx-lifecycle-viewmodel-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel-compose", version = "2.8.4" }
 androidx-lifecycle-runtime-compose-multiplatform = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version = "2.8.4" }
 androidx-navigation-compose-multiplatform = { group = "org.jetbrains.androidx.navigation", name = "navigation-compose", version = "2.8.0-alpha10" }
+sentry-kotlin-multiplatform = { group = "io.sentry", name = "sentry-kotlin-multiplatform", version.ref = "sentryKmp" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

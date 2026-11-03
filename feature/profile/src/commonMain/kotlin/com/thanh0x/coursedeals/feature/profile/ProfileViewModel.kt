@@ -2,6 +2,7 @@ package com.thanh0x.coursedeals.feature.profile
 
 import com.thanh0x.coursedeals.domain.user.CiphertextWrapper
 import com.thanh0x.coursedeals.core.common.AppResult
+import com.thanh0x.coursedeals.core.logging.CommonTracingInitializer
 import com.thanh0x.coursedeals.core.logging.LogFileManager
 import com.thanh0x.coursedeals.core.logging.LogLevel
 import com.thanh0x.coursedeals.core.ui.DialogType
@@ -100,9 +101,12 @@ class ProfileViewModel(
                 }
             }
             if (!isGuest) {
+                CommonTracingInitializer.setUserId(cachedProfile.id.toString())
                 checkIfTokenExpired()
                 fetchUserProfile()
                 syncPreferences()
+            } else {
+                CommonTracingInitializer.setUserId(null)
             }
         }
     }
@@ -265,6 +269,7 @@ class ProfileViewModel(
         viewModelScope.launch(ioDispatcher) {
             clearLocalTokenUseCase()
             userProfileRepository.clearCachedUserProfile()
+            CommonTracingInitializer.setUserId(null)
             _uiEvent.emit(UiEvent.Navigate("Login"))
         }
     }
@@ -313,6 +318,7 @@ class ProfileViewModel(
                 is AppResult.Success -> {
                     clearLocalTokenUseCase()
                     userProfileRepository.clearCachedUserProfile()
+                    CommonTracingInitializer.setUserId(null)
                     _uiState.update {
                         it.copy(
                             isDeletingAccount = false,

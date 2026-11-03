@@ -185,6 +185,7 @@ private class DesktopWebEngineController {
     }
 
     fun dispose() {
+        if (webView == null) return
         runOnFxThread {
             webView?.engine?.load("about:blank")
             webView = null

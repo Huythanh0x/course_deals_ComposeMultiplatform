@@ -9,6 +9,7 @@ kotlin {
         commonMain {
             dependencies {
                 api project(':core:common')
+                api project(':core:logging')
                 api project(':domain:coupons')
                 api compose.runtime
                 api compose.foundation
@@ -24,6 +25,7 @@ kotlin {
         commonTest {
             dependencies {
                 implementation kotlin('test')
+                implementation libs.kotlinx.coroutines.test
             }
         }
         jvmMain {
