@@ -1,6 +1,6 @@
-# Course Deals - 1-Week Sprint Lifecycle Guide (Android / KMP)
+# Course Deals - 1-Week Sprint Lifecycle Guide (Multiplatform Client)
 
-This guide documents the weekly engineering sprint cadence for Course Deals Compose Multiplatform / Android development, optimized for a solo full-stack developer paired with Antigravity multi-agent orchestration.
+This guide documents the weekly engineering sprint cadence for Course Deals Compose Multiplatform & Kotlin Multiplatform development (**Android**, **iOS**, **watchOS**, and **Desktop**), optimized for a solo full-stack developer paired with Antigravity multi-agent orchestration.
 
 ---
 
@@ -8,9 +8,9 @@ This guide documents the weekly engineering sprint cadence for Course Deals Comp
 
 | Window | Focus | Key Actions |
 |---|---|---|
-| **Sunday (Stop & Plan)** | **Retro & Planning** | • Run `sprint-flow retro` to tally completed story points & UI/tech debt.<br>• Run `sprint-flow plan` to select backlog items and set Iteration scope on GitHub Project.<br>• Review cross-repo REST / DTO contracts against Retrofit client models. |
-| **Mon - Fri (Build & Test)** | **Execution (`team-flow`)** | • Pick highest-priority issue from GitHub Sprint iteration.<br>• Run `team-flow` to implement Clean Architecture layers (data/domain/presentation).<br>• Automated static analysis & unit testing. |
-| **Saturday (Release & Hardening)** | **Verification & Staging** | • Full live emulator E2E smoke tests on `emulator-5554`.<br>• Verify end-to-end integration against running local backend.<br>• Upload verification screenshots to Cloudflare R2.<br>• Cut alpha/beta internal test release build. |
+| **Sunday (Stop & Plan)** | **Retro & Planning** | • Run `sprint-flow retro` to tally completed story points & UI/tech debt.<br>• Run `sprint-flow plan` to select backlog items and set Iteration scope on GitHub Project.<br>• Review cross-repo OpenAPI / Ktor DTO contracts (`./gradlew generateCourseDealsApi`). |
+| **Mon - Fri (Build & Test)** | **Execution (`team-flow`)** | • Pick highest-priority issue from GitHub Sprint iteration.<br>• Run `team-flow` to implement Clean Architecture layers (`kmp-engineer`, `apple-developer`, `desktop-engineer`).<br>• Automated static analysis (`detekt`, `lintLocalDebug`) & unit/UI testing. |
+| **Saturday (Release & Hardening)** | **Verification & Staging** | • Full live cross-platform E2E smoke tests (`emulator-5554`, `iPhone Simulator`, `:desktopApp`, and `Apple Watch Simulator`).<br>• Verify end-to-end integration against running `mobile-local` backend (port `8081`).<br>• Upload side-by-step verification screenshots to Cloudflare R2.<br>• Cut multi-platform release artifacts (`scripts/release-build.sh`). |
 
 ---
 
@@ -22,29 +22,28 @@ This guide documents the weekly engineering sprint cadence for Course Deals Comp
 - **Labeling Conventions**:
   - `type: feat` | `type: fix` | `type: chore` | `type: docs`
   - `priority: P0` (Blocker) | `priority: P1` (This Sprint) | `priority: P2` (Next Sprint) | `priority: P3` (Backlog)
-  - `area: android` | `area: kmp`
+  - `area: android` | `area: kmp` | `area: desktop`
   - `size: 1` (~1-2h), `size: 2` (~half day), `size: 3` (~1 day), `size: 5` (~2-3 days), `size: 8` (split required).
 
 ---
 
-## 3. Mobile / KMP Definition of Done (DoD)
+## 3. Multiplatform Definition of Done (DoD)
 
-An Android/KMP ticket is considered **Done** when:
-1. **Contract Locked**: Retrofit API services and DTO models match the locked backend schema.
-2. **Clean Architecture**:
-   - Presentation layer (`ViewModel` + `StateFlow`) decoupled from network/DB layers.
+A client ticket is considered **Done** when:
+1. **Contract Locked**: OpenAPI spec synced and Ktor API services/DTOs generated (`./gradlew generateCourseDealsApi`).
+2. **Clean Architecture & Platform Safety**:
+   - Presentation layer (`ViewModel` + `StateFlow` in `commonMain`) decoupled from network/DB layers.
    - Domain layer handles business logic cleanly.
-   - Intent filters and exported activities pass security audit (`intent-security-review`).
+   - Android Intent filters pass security audit (`intent-security-review`) and iOS/watchOS bridges follow Keychain/concurrency rules (`swift-security`).
 3. **Automated Quality Checks**:
    ```bash
-   ./gradlew :app:detekt testDebugUnitTest
+   ./gradlew detekt :app:lintLocalDebug testLocalDebugUnitTest :shared:linkDebugFrameworkIosSimulatorArm64
    ```
    All tests pass with zero detekt violations.
-4. **Live Verification & Evidence**:
-   - App installed and launched on local `emulator-5554` against local/staging backend.
-   - Core user flow visually verified.
-   - Screencaps / screenshots uploaded to Cloudflare R2 and linked in the PR description.
-5. **Release PR**:
-   - Pull Request opened with labeled tags (`area: android`, linked issue `#N`).
-   - CI build green.
-   - Squash-merged to `main`.
+4. **Live Cross-Platform Verification & Evidence**:
+   - Verified via Maestro E2E flows across Android (`emulator-5554`), iOS (`iPhone Simulator`), and Desktop (`:desktopApp:runMaestroFlow`) against local backend (`localhost:8081`).
+   - Every captured screenshot visually inspected via `read_file` and uploaded to Cloudflare R2 in a side-by-side comparison table.
+5. **Release PR & Resource Cleanup**:
+   - Pull Request opened with mirrored issue labels and `Closes #<N>`.
+   - Host RAM/CPU reclaimed via `release-resource` (`./gradlew --stop`).
+   - CI build green and squash-merged to `main`.

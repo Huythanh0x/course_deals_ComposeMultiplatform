@@ -12,16 +12,16 @@ flowchart TD
     OpenAuth([Open Auth Screen]) --> AuthOptions{Select Auth Method}
 
     AuthOptions -->|Google Sign-In| GoogleAuth[Trigger Google One-Tap / OAuth]
-    GoogleAuth --> BackendGoogle[POST /api/v1/auth/google { idToken }]
+    GoogleAuth --> BackendGoogle[POST /api/v1/auth/social/login { provider, idToken }]
     BackendGoogle --> AuthSuccess[Save Session & Return]
 
     AuthOptions -->|Email OTP| EnterEmail[Input Email Address]
     EnterEmail --> TapSend[Tap 'Continue']
-    TapSend --> RequestOTP[POST /api/v1/auth/otp/request]
+    TapSend --> RequestOTP[POST /api/v1/auth/send-otp]
     
     RequestOTP --> ShowOTP[Display 6-Digit OTP Input & Countdown]
     ShowOTP --> EnterCode[User Enters Code]
-    EnterCode --> VerifyOTP[POST /api/v1/auth/otp/verify]
+    EnterCode --> VerifyOTP[POST /api/v1/auth/verify-otp]
 
     VerifyOTP -->|Success| AuthSuccess
     VerifyOTP -->|Invalid Code| ShowError[Display 'Incorrect Code' Inline Error]
@@ -39,13 +39,13 @@ flowchart TD
 ---
 
 ## 4. Backend Contracts
-* `POST /api/v1/auth/otp/request`
+* `POST /api/v1/auth/send-otp`
   ```json
   { "email": "user@example.com" }
   ```
-* `POST /api/v1/auth/otp/verify`
+* `POST /api/v1/auth/verify-otp`
   ```json
-  { "email": "user@example.com", "code": "123456" }
+  { "email": "user@example.com", "otp": "123456" }
   ```
   * **Response (200 OK)**:
     ```json

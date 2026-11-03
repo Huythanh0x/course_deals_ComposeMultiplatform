@@ -6,37 +6,39 @@ follow the links into `/docs` rather than expecting it duplicated here.
 ## Project snapshot
 
 Kotlin Multiplatform (KMP) + Compose Multiplatform app (`:shared`, `:app` Android entry
-point, `:desktopApp` Compose Desktop entry point, `iosApp` Xcode iOS entry point), Clean
+point, `:desktopApp` Compose Desktop entry point, `iosApp` Xcode iOS entry point + `iosApp/WatchApp` native SwiftUI Apple Watch companion), Clean
 Architecture (domain/data/feature layers), package `com.thanh0x.coursedeals`.
 
 - Kotlin 2.4.10, Compose Multiplatform 1.8.0, AGP 9.3.0, KSP 2.3.10, Gradle 9.5 (daemon
   pinned to JDK 21 — `gradle/gradle-daemon-jvm.properties`)
 - compileSdk 37 / minSdk 24 / targetSdk 37, Java 17 source/target compatibility
-- Targets: `jvm` (Android/Desktop JVM bytecode) + `iosArm64` + `iosSimulatorArm64`
+- Targets: `jvm` (Android/Desktop JVM bytecode) + `iosArm64` + `iosSimulatorArm64` (+ native SwiftUI `WatchApp` in Xcode)
 - DI: Koin (`koin-core`, `koin-android`, `koin-androidx-compose`, `koin-compose`,
   `koin-compose-viewmodel`)
 - Networking: Ktor Client (`ktor-client-okhttp` on JVM/Android, `ktor-client-darwin` on
-  iOS) + `kotlinx.serialization`
-- Persistence: KMP `SettingsStore` (`DataStore` on Android, `NSUserDefaults` on iOS), Room
+  iOS) + OpenAPI Generator (`org.openapi.generator` 7.12.0) + `kotlinx.serialization`
+- Observability & Logging: Sentry KMP (`io.sentry:sentry-kotlin-multiplatform` 0.29.0), `StartupTimeMonitor`, and `DailyRollingFileLogWriter` (`:core:logging`)
+- Persistence: KMP `SettingsStore` (`DataStore` on Android/JVM, `NSUserDefaults` on iOS), Room
   + Paging
 - Images: Coil 3 (`coil-compose`, `coil-network-okhttp`, `coil-network-ktor3`)
 - UI: Compose Multiplatform in `src/commonMain/kotlin` across `:shared`, `:core:ui`, and
-  all `:feature:*` modules.
+  all `:feature:*` modules; native SwiftUI in `iosApp/WatchApp/` for watchOS.
 - Two Android build flavors: `local` and `prod` — this is why lint/assemble task names are
   flavor-qualified for `app` (see Build commands).
 
 ## Module map
 
-16 Gradle modules total (`settings.gradle`), plus `iosApp/` Xcode workspace:
+17 Gradle modules total (`settings.gradle`), plus `iosApp/` Xcode workspace (`iosApp` + `WatchApp`):
 
 | Module | Plugin | Role |
 |---|---|---|
 | `app` | `com.android.application` | Android application entry point, wires Koin & `CourseDealsApp()` |
-| `desktopApp` | `org.jetbrains.kotlin.jvm` + Compose Multiplatform | Compose Desktop (`jvm`) entry point (`Main.kt`), CLI deep-linking (`--screen=...`), and headless/windowed screenshot runner |
+| `desktopApp` | `org.jetbrains.kotlin.jvm` + Compose Multiplatform | Compose Desktop (`jvm`) entry point (`Main.kt`), CLI deep-linking (`--screen=...`), and Maestro E2E flow runner (`runMaestroFlow`) |
 | `shared` | `coursedeals.kmp.library` + Compose Multiplatform | Shared KMP root (`CourseDealsApp`, `MainViewController` for iOS `ComposeApp.framework`) |
-| `core:common` | `coursedeals.kmp.library` | Shared KMP utilities, dispatchers, and base models |
-| `core:ui` | `coursedeals.kmp.library` + Compose Multiplatform | Shared Compose Multiplatform theme, components, and UI helpers |
-| `core:network` | `coursedeals.kmp.library` | Ktor `HttpClient` setup, auth/refresh interceptors, BuildConfig flavor wiring |
+| `core:common` | `coursedeals.kmp.library` | Shared KMP utilities, dispatchers, `PlatformTime`, and base models |
+| `core:logging` | `coursedeals.kmp.library` | Sentry KMP tracing (`CommonTracingInitializer`), `StartupTimeMonitor`, and rolling file logs (`DailyRollingFileLogWriter`) |
+| `core:ui` | `coursedeals.kmp.library` + Compose Multiplatform | Shared Compose Multiplatform theme, dedicated vector icons, `ViewModel` error boundary, and `PlatformWebView` |
+| `core:network` | `coursedeals.kmp.library` | Ktor `HttpClient` setup, OpenAPI-generated client/DTOs (`generateCourseDealsApi`), auth/refresh & server error interceptors |
 | `domain:coupons` | `coursedeals.kmp.library` | Coupon domain models, repository interfaces, and use cases (`commonMain`) |
 | `domain:user` | `coursedeals.kmp.library` | User/Auth domain models, repository interfaces, and use cases (`commonMain`) |
 | `data:coupons` | `coursedeals.kmp.library` | Coupon repository implementation and Ktor remote data sources (`commonMain`) |
@@ -90,7 +92,7 @@ General Flow/coroutines discipline to follow:
 ## Build & verify commands
 
 - Full build (mirrors CI): `./gradlew build`
-- Multi-module Detekt (all 16 modules): `./gradlew detekt`
+- Multi-module Detekt (all 17 modules): `./gradlew detekt`
 - Desktop app launch (fast local UI & API testing without Android Emulator):
   - Interactive window: `./gradlew :desktopApp:run`
   - Deep-link & automated screenshot capture: `./gradlew :desktopApp:run -Dcoursedeals.args="--screen=home --capture-screenshot=/tmp/desktop_home.png"`
@@ -99,6 +101,8 @@ General Flow/coroutines discipline to follow:
 - iOS Simulator framework link gate (mirrors macOS CI job):
   `./gradlew :shared:linkDebugFrameworkIosSimulatorArm64`
 - Android debug APK assemble: `./gradlew :app:assembleLocalDebug`
+- Multi-platform release packaging (APK, IPA/xcarchive, Desktop DMG/App with SHA256 checksums):
+  `bash scripts/release-build.sh --version 1.0.0 --platform all`
 - Lint is flavor-qualified because of the `local`/`prod` split:
   - `app` module: `./gradlew :app:lintLocalDebug` (plain `:app:lintDebug` is ambiguous
     and fails)
@@ -138,8 +142,6 @@ The `sprint-flow` skill manages the **1-week solo developer sprint rhythm** (Mon
 ## Known gaps (state as fact — surface opportunistically, e.g. via a spawned task, don't
 silently fix mid-task on unrelated work)
 
-- Unit test coverage across KMP modules is still minimal; lead with **fakes behind
-  interfaces, not mocking libraries** + `kotlinx-coroutines-test` when adding tests in
-  `commonTest`.
-- `README.md`'s SDK version mentions (24-33) are stale versus `libs.versions.toml`
-  (compileSdk/targetSdk now 37).
+- Unit test coverage across KMP modules is still growing; lead with **fakes behind
+  interfaces, not mocking libraries** + `kotlinx-coroutines-test` and Ktor `MockEngine`
+  when adding tests in `commonTest` / `jvmTest`.

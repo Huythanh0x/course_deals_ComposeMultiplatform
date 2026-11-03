@@ -1,9 +1,9 @@
 # Project Management Standard
 
 This repo's slice of a shared personal-project standard that also covers
-`course_deals_backend` (Spring Boot API/crawler + Next.js frontend). Each repo
+`course_deals_backend` (Spring Boot API & crawler services). Each repo
 carries its own tailored copy of this doc set — this one is scoped to what's actually true
-here (native Android, Gradle, Kotlin).
+here (Kotlin Multiplatform & Compose Multiplatform across Android, iOS, watchOS, and Desktop).
 
 ## Where things live
 
@@ -85,9 +85,8 @@ This doc set describes the target process. Implementation status as of 2026-08-2
 
 - [x] Docs (`README.md` index + `/docs/*`) in place
 - [x] Issue/PR templates in place (`.github/`)
-- [x] CI workflow in place (`.github/workflows/ci.yml`)
+- [x] CI & Release CD workflows in place (`.github/workflows/ci.yml`, `.github/workflows/release-cd.yml`)
 - [x] Labels created on GitHub — run [`scripts/gh-setup-labels.sh`](../scripts/gh-setup-labels.sh)
 - [x] Branch protection on `main` — run [`scripts/gh-setup-branch-protection.sh`](../scripts/gh-setup-branch-protection.sh)
 - [x] Shared GitHub Projects board (this repo + `course_deals_backend`) — see [`scripts/gh-setup-project-board.sh`](../scripts/gh-setup-project-board.sh)
 - [x] Same doc set forked/tailored into `course_deals_backend`
-- [ ] Crawler fix (Udemy API change) — tracked in the server repo, unrelated to this setup

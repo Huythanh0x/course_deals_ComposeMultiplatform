@@ -23,7 +23,7 @@ Inspect the issue labels (`type: bug` vs `type: feat` / `type: chore`):
    - Capture the failure state: exception stacktrace in `adb logcat`, or screenshot of corrupted UI state.
    - If the bug cannot be replicated, STOP. Report device/OS version discrepancy to the user rather than guessing a fix.
 2. **Root Cause Analysis (RCA)**:
-   - Identify the exact component: ViewModel state emission, Room query, Retrofit deserialization, or XML/Compose lifecycle flaw.
+   - Identify the exact component: ViewModel state emission, DataStore/Room query, Ktor/`kotlinx.serialization` deserialization, or Compose Multiplatform/SwiftUI lifecycle flaw.
    - Post an RCA comment on the GitHub issue detailing:
      - Root cause explanation.
      - Reproduction steps and error logs / UI evidence.
@@ -37,7 +37,7 @@ Inspect the issue labels (`type: bug` vs `type: feat` / `type: chore`):
    - Perform web search for standard UX patterns in modern Android/Compose apps (e.g. material 3 design specs, optimistic UI updates, snackbar undo flows).
 3. **Architecture Spike & Clean Architecture RFC**:
    - Document data/domain/presentation layer responsibilities.
-   - Verify Retrofit DTO parity with backend REST contract.
+   - Verify OpenAPI / Ktor DTO parity (`./gradlew generateCourseDealsApi`) with backend REST contract.
    - Define immutable UI state (`StateFlow<UiState>`) and one-shot navigation events (`Channel`/`SharedFlow`).
 
 ---

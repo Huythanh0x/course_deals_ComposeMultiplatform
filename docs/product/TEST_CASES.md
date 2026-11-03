@@ -4,13 +4,17 @@ This document defines exhaustive, branch-complete use case stories across all ap
 
 ## Automated Maestro E2E Test Suite
 
-Declarative cross-platform Maestro E2E test flows are maintained in [`.maestro/flows/`](file:///.maestro/flows/):
-- [`01-splash.yaml`](file:///.maestro/flows/01-splash.yaml): Covers `SPLASH-*` (Cold launch, Bottom navigation destinations: HOME, COURSE, PROFILE).
-- [`02-auth.yaml`](file:///.maestro/flows/02-auth.yaml): Covers `AUTH-*` (Sign In <-> Register toggle, input field validation, Guest mode bypass).
-- [`03-home-feed.yaml`](file:///.maestro/flows/03-home-feed.yaml): Covers `HOME-*` (Filter bottom sheet, live search query, keyword filtering, clear query).
-- [`04-detail.yaml`](file:///.maestro/flows/04-detail.yaml): Covers `DETAIL-*` (Course detail header, action bar, report deal bottom sheet, report dialog dismissal).
-- [`05-enroll.yaml`](file:///.maestro/flows/05-enroll.yaml): Covers `ENROLL-*` (Enroll CTA dispatch, in-app WebView rendering, cancel navigation).
-- [`06-profile.yaml`](file:///.maestro/flows/06-profile.yaml): Covers `PROF-*` (Guest access gate, Google authentication sign-in, Dark Mode toggling, secure logout).
+Declarative cross-platform Maestro E2E test flows are maintained in [`.maestro/flows/`](../../.maestro/flows/):
+- [`01-splash.yaml`](../../.maestro/flows/01-splash.yaml): Covers `SPLASH-*` (Cold launch, Bottom navigation destinations: HOME, COURSE, PROFILE).
+- [`02-auth.yaml`](../../.maestro/flows/02-auth.yaml): Covers `AUTH-*` (Sign In <-> Register toggle, input field validation, Guest mode bypass).
+- [`03-home-feed.yaml`](../../.maestro/flows/03-home-feed.yaml): Covers `HOME-*` (Filter bottom sheet, live search query, keyword filtering, clear query).
+- [`04-detail.yaml`](../../.maestro/flows/04-detail.yaml): Covers `DETAIL-*` (Course detail header, action bar, report deal bottom sheet, report dialog dismissal).
+- [`05-enroll.yaml`](../../.maestro/flows/05-enroll.yaml): Covers `ENROLL-*` (Enroll CTA dispatch, in-app WebView rendering, cancel navigation).
+- [`06-profile.yaml`](../../.maestro/flows/06-profile.yaml): Covers `PROF-*` (Guest access gate, Google authentication sign-in, Dark Mode toggling, secure logout).
+- [`07-auth-e2e-evidence.yaml`](../../.maestro/flows/07-auth-e2e-evidence.yaml) & [`07-auth-e2e-evidence-ios.yaml`](../../.maestro/flows/07-auth-e2e-evidence-ios.yaml): End-to-end OTP onboarding, Terms consent dialog, and authenticated profile verification.
+- [`10-desktop-full-regression.yaml`](../../.maestro/flows/10-desktop-full-regression.yaml): Full Desktop E2E regression flow.
+- [`11-observability-diagnostic-logs.yaml`](../../.maestro/flows/11-observability-diagnostic-logs.yaml): Sentry & rolling diagnostic log export verification.
+- [`156-force-update-gate.yaml`](../../.maestro/flows/156-force-update-gate.yaml) & [`156-force-update-gate-ios.yaml`](../../.maestro/flows/156-force-update-gate-ios.yaml): Remote config Force Update gate verification.
 
 ### Executing the Suite
 
@@ -18,8 +22,11 @@ Declarative cross-platform Maestro E2E test flows are maintained in [`.maestro/f
 # Android Emulator (e.g. Medium_Phone / emulator-5554)
 ~/.maestro/bin/maestro --device emulator-5554 test -e APP_ID=com.thanh0x.coursedeals .maestro/flows/<flow>.yaml
 
-# iOS Simulator (e.g. iPhone 17 Pro / UDID)
-~/.maestro/bin/maestro --device <IOS_UDID> test -e APP_ID=com.thanh0x.coursedeals.iosApp .maestro/flows/<flow>.yaml
+# iOS Simulator (e.g. iPhone 17 Pro / booted)
+~/.maestro/bin/maestro --device booted test -e APP_ID=com.thanh0x.coursedeals.iosApp .maestro/flows/<flow>.yaml
+
+# Compose Desktop (:desktopApp Maestro Flow Runner)
+./gradlew :desktopApp:runMaestroFlow -Pflow=.maestro/flows/<flow>.yaml -PscreenshotDir=/tmp/desktop-e2e
 ```
 
 ---
@@ -64,7 +71,7 @@ Declarative cross-platform Maestro E2E test flows are maintained in [`.maestro/f
 | **AUTH-01** | Email Validation Guard | `LoginScreen` in `LOGIN` mode | Type "invalid-email" and tap Continue | Continue button disabled or shows inline validation error: "Invalid email format". |
 | **AUTH-02** | Request OTP Success | Valid email "user@example.com" | Tap Continue | `isLoading = true` -> Backend returns 200 -> State changes to `AuthMode.VERIFY_OTP`, `pendingEmail = "user@example.com"`, countdown timer starts. |
 | **AUTH-03** | Request OTP Rate Limited | Same email submitted 3 times within 1 min | Tap Continue | Backend returns 429 -> Displays error banner: "Too many attempts. Please wait 60s." -> Does not switch to OTP screen. |
-| **AUTH-04** | Verify OTP Success (Existing User) | On `VERIFY_OTP` screen | Enter correct 6-digit code "123456" | Calls `POST /auth/otp/verify` -> Returns 200 with tokens, `isNewUser = false` -> Stores tokens -> Navigates back / Home. |
+| **AUTH-04** | Verify OTP Success (Existing User) | On `VERIFY_OTP` screen | Enter correct 6-digit code "123456" | Calls `POST /api/v1/auth/verify-otp` -> Returns 200 with tokens, `isNewUser = false` -> Stores tokens -> Navigates back / Home. |
 | **AUTH-05** | Verify OTP Success (New User Onboarding) | On `VERIFY_OTP` screen | Enter correct code for brand new email | Returns 200 with `isNewUser = true` -> Stores tokens -> Shows welcome toast / navigates to profile interests setup. |
 | **AUTH-06** | Verify OTP Incorrect Code | On `VERIFY_OTP` screen | Enter wrong code "999999" | Returns 400 `INVALID_OTP` -> Clears OTP input field -> Displays inline error: "Incorrect verification code. Try again." |
 | **AUTH-07** | OTP Resend Cooldown | On `VERIFY_OTP` screen | Tap "Resend Code" while timer > 0s | Button is disabled and displays seconds remaining (`00:42`). |
@@ -116,7 +123,7 @@ Declarative cross-platform Maestro E2E test flows are maintained in [`.maestro/f
 | **DETAIL-04** | Bookmark Toggle (Authenticated) | User logged in | Tap Heart / Bookmark icon | Icon changes to filled heart -> Optimistically saves to Room -> Fires `PUT /users/me/bookmarks/:id`. |
 | **DETAIL-05** | Bookmark Toggle (Guest User) | User unauthenticated | Tap Heart / Bookmark icon | Saves to local Room database -> Shows Toast: "Saved locally. Sign in anytime to sync across devices." |
 | **DETAIL-06** | Native Share Invocation | Any detail screen | Tap Share icon | Launches Android/iOS system Share Sheet containing formatted text: "[Course Title] is 100% FREE! [Link]". |
-| **DETAIL-07** | Report Expired Deal Modal | Active deal that expired early on Udemy | Tap "Report Broken / Expired" | Opens report dialog -> Select "Coupon is expired" -> Sends `POST /coupons/:id/report` -> Shows "Thank you for reporting!". |
+| **DETAIL-07** | Report Expired Deal Modal | Active deal that expired early on Udemy | Tap "Report Broken / Expired" | Opens report dialog -> Select "Coupon is expired" -> Sends `POST /api/courses/:courseId/reports` -> Shows "Thank you for reporting!". |
 
 ---
 
@@ -150,7 +157,7 @@ Declarative cross-platform Maestro E2E test flows are maintained in [`.maestro/f
 | **PROF-01** | Guest State View | Unauthenticated session | Open Profile tab | Displays Hero card: "Sign In or Register to sync bookmarks and customize deal alerts" with Sign In CTA. |
 | **PROF-02** | Authenticated Member View | Logged in user "test@example.com" | Open Profile tab | Shows user email, avatar placeholder, "Saved Bookmarks" count, and "Sign Out" button. |
 | **PROF-03** | Dark Mode Toggle | App in Light theme | Toggle "Dark Theme" switch | App theme instantly flips to Compose DarkColorScheme without Activity recreate or state loss. |
-| **PROF-04** | Topic Alert Toggle | Push permission granted | Toggle "Development Deals" switch OFF | Updates local preference -> Fires `PUT /users/me/notification-preferences` -> FCM un-subscribes from `deals_development`. |
+| **PROF-04** | Topic Alert Toggle | Push permission granted | Toggle "Development Deals" switch OFF | Updates local preference -> Fires `PUT /api/v1/preferences` -> FCM un-subscribes from `deals_development`. |
 | **PROF-05** | Logout Cancellation | Logged in user | Tap "Sign Out" -> Tap "Cancel" in confirmation dialog | Dialog closes -> User remains logged in. |
 | **PROF-06** | Logout Confirmation | Logged in user | Tap "Sign Out" -> Tap "Confirm Sign Out" | Clears DataStore tokens -> Drops user bookmarks from Room -> Screen smoothly transitions to Guest profile view. |
 | **PROF-07** | Account Deletion (GDPR/Store Gate) | Logged in user | Tap "Delete Account" -> Enter confirmation word "DELETE" | Calls `DELETE /api/v1/users/me` -> Backend cascades deletion -> App clears all local data -> Toast: "Account deleted permanently". |

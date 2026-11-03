@@ -41,7 +41,7 @@ sequenceDiagram
         User->>User: Complete enrollment on Udemy
     else Coupon Expired Early on Provider
         User->>App: Return to App & Click "Report Expired"
-        App->>BE: POST /api/v1/coupons/{id}/report-expired
+        App->>BE: POST /api/courses/{courseId}/reports
         BE-->>App: 200 OK (Thank you for reporting)
         BE->>Scraper: Queue immediate re-check task
         Scraper->>BE: Update status to EXPIRED if verification fails
