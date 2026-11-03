@@ -402,9 +402,9 @@ class DesktopFullAppInteractiveE2eTest {
             tapOn("Dark Mode")
             assertFalse(env.userProfileRepository.darkModeEnabled)
 
-            assertVisible("Favorite category")
-            assertVisible("Favorite keyword")
-            assertVisible("Hot deals")
+            assertVisible("All Deals")
+            assertVisible("Hot Deals")
+            assertVisible("Development")
             tapOn("Notifications")
             assertFalse(env.userProfileRepository.notificationsEnabled)
             tapOn("Notifications")
