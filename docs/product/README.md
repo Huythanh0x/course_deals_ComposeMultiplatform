@@ -1,7 +1,7 @@
 # Course Deals — Product Overview & Navigation Architecture
 
 ## 1. Product Vision
-**Course Deals** is a multiplatform application (Android / Compose Multiplatform & Spring Boot backend) designed to aggregate, curate, and distribute verified 100% free and heavily discounted online course coupons (Udemy, Coursera, etc.) in real time.
+**Course Deals** is a multiplatform application (**Android**, **iOS**, **watchOS**, **Compose Desktop**, and **Spring Boot** backend) designed to aggregate, curate, and distribute verified 100% free and heavily discounted online course coupons (Udemy, Coursera, etc.) in real time.
 
 ---
 

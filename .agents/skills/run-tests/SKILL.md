@@ -7,7 +7,7 @@ description: Run multi-module detekt, JVM/Android unit tests, Compose Desktop UI
 
 1. Identify affected modules from `.agents/tickets/<issue-number>-<slug>/NOTES.md` (or `git diff --stat`).
 2. Run the verification suite per `AGENTS.md`:
-   - **Multi-module Detekt (all 16 modules)**:
+   - **Multi-module Detekt (all 17 modules)**:
      `./gradlew detekt`
    - **Unit Tests (JVM & Android localDebug)**:
      `./gradlew testLocalDebugUnitTest :data:coupons:jvmTest :data:user:jvmTest`

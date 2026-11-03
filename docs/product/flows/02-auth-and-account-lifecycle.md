@@ -41,14 +41,14 @@ sequenceDiagram
     participant Mail as Email / Mail Service
 
     User->>App: Enter email (user@example.com) & tap "Continue"
-    App->>IS: POST /api/v1/auth/otp/request { "email": "user@example.com" }
+    App->>IS: POST /api/v1/auth/send-otp { "email": "user@example.com" }
     IS->>Mail: Generate 6-digit OTP & send email
     Mail-->>User: Receive OTP code
     IS-->>App: 200 OK { "expiresInSeconds": 300 }
     App-->>User: Show OTP input screen with countdown
 
     User->>App: Input 6-digit OTP code
-    App->>IS: POST /api/v1/auth/otp/verify { "email": "user@example.com", "code": "849201" }
+    App->>IS: POST /api/v1/auth/verify-otp { "email": "user@example.com", "otp": "849201" }
     
     alt Valid OTP
         IS-->>App: 200 OK { "accessToken": "...", "refreshToken": "...", "isNewUser": true }

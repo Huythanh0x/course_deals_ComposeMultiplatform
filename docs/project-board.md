@@ -21,7 +21,7 @@ Backlog → Ready → In Progress → In Review → Done
   second backlog.
 - **Multi-repo**: a single GitHub Projects (v2) board ("Course Deals",
   `https://github.com/users/Huythanh0x/projects/4`) pulls issues from both this repo
-  (`AndroidUdemyCoupon` / `course_deals_ComposeMultiplatform`) and `course_deals_backend`
+  (`course_deals_ComposeMultiplatform`) and `course_deals_backend`
   — one board, not one per repo, so "what's next" has a single answer instead of two.
   Set up via [`scripts/gh-setup-project-board.sh`](../scripts/gh-setup-project-board.sh)
   (run once from each repo to add it as a source — already done for both as of

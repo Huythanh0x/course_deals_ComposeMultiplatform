@@ -78,8 +78,8 @@ type, or turn an optional field into a required one inside the same major versio
 **Worked example:** `getProfile(tenantId)` shipped at app `1.1.0`. At app `1.2.0` we
 need to add `userRole`.
 
-- If `userRole` is **optional**, this needs nothing special. Ship it in `v1`. Gson
-  (this repo's converter) ignores response fields it doesn't recognize, and simply
+- If `userRole` is **optional**, this needs nothing special. Ship it in `v1`. `kotlinx.serialization`
+  (configured with `ignoreUnknownKeys = true` in `:core:network`) ignores response fields it doesn't recognize, and simply
   never receives request fields an old client doesn't send. An app still on `1.1.0`
   keeps working against the updated backend with no code on either side treating
   "missing `userRole`" as an error — it's a permanently legitimate value, not a
@@ -113,8 +113,8 @@ different situation.
 
 ## Sending app version to the backend
 
-Every backend request carries an `X-App-Version: <BuildConfig.VERSION_NAME>` header,
-wired via a Hilt-qualified interceptor in `core:network`'s `CoreNetworkModule`.
+Every backend request carries an `X-App-Version: <NetworkBuildConfig.VERSION_NAME>` header,
+wired via Ktor's `defaultRequest` block in `core:network`'s `CoreNetworkModule` (provided via Koin).
 
 This is a client-version **signal**, not an API version **selector** — it never changes
 which API version is served. Its purposes:

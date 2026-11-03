@@ -23,7 +23,7 @@ Examples:
 ```
 feature/42-add-coupon-search-filter
 fix/51-null-category-crash-in-detail-screen
-chore/60-bump-hilt-version
+chore/60-bump-koin-version
 docs/63-add-adr-for-kmp
 refactor/70-extract-course-repository-paging-source
 ```
