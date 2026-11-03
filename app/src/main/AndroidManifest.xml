@@ -22,7 +22,24 @@
             android:name=".MainActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustPan"
-            android:screenOrientation="fullSensor"/>
+            android:screenOrientation="fullSensor">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="coursedeals"
+                    android:host="courses" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name="com.thanh0x.coursedeals.fcm.CourseDealsFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
         <activity
             android:name="com.thanh0x.coursedeals.feature.enroll.CouponEnrollActivity"
             android:exported="false" />

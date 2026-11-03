@@ -1,10 +1,27 @@
 package com.thanh0x.coursedeals.core.ui.util
 
+import com.thanh0x.coursedeals.core.common.notification.NotificationTopic
 import com.thanh0x.coursedeals.core.ui.resources.Res
 import com.thanh0x.coursedeals.core.ui.resources.StringResource
 import com.thanh0x.coursedeals.domain.coupons.CourseCategory
 import com.thanh0x.coursedeals.domain.coupons.CourseLanguage
 import com.thanh0x.coursedeals.domain.coupons.SortOption
+
+val NotificationTopic.displayNameResource: StringResource
+    get() = when (this) {
+        NotificationTopic.ALL -> Res.string.notif_topic_all
+        NotificationTopic.HOT_DEALS -> Res.string.notif_topic_hot
+        NotificationTopic.DEVELOPMENT -> Res.string.notif_topic_development
+        NotificationTopic.DESIGN -> Res.string.notif_topic_design
+        NotificationTopic.BUSINESS -> Res.string.notif_topic_business
+        NotificationTopic.IT_SOFTWARE -> Res.string.notif_topic_it_software
+        NotificationTopic.MARKETING -> Res.string.notif_topic_marketing
+        NotificationTopic.PERSONAL_DEVELOPMENT -> Res.string.notif_topic_personal_development
+        NotificationTopic.PHOTOGRAPHY -> Res.string.notif_topic_photography
+        NotificationTopic.MUSIC -> Res.string.notif_topic_music
+        NotificationTopic.HEALTH_FITNESS -> Res.string.notif_topic_health_fitness
+        NotificationTopic.FINANCE -> Res.string.notif_topic_finance
+    }
 
 val CourseCategory.categoryResource: StringResource
     get() = when (this) {
