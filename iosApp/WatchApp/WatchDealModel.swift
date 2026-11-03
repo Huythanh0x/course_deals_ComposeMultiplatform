@@ -16,6 +16,8 @@ public struct WatchDealModel: Identifiable, Hashable, Codable {
     public let usesRemaining: Int?
     public let platform: WatchCoursePlatform
     public var isBookmarked: Bool
+    public let students: Int?
+    public let isHot: Bool
 
     public init(
         id: Int,
@@ -30,7 +32,9 @@ public struct WatchDealModel: Identifiable, Hashable, Codable {
         reviews: Int? = nil,
         usesRemaining: Int? = nil,
         platform: WatchCoursePlatform = .udemy,
-        isBookmarked: Bool = false
+        isBookmarked: Bool = false,
+        students: Int? = nil,
+        isHot: Bool = true
     ) {
         self.id = id
         self.title = title
@@ -45,6 +49,8 @@ public struct WatchDealModel: Identifiable, Hashable, Codable {
         self.usesRemaining = usesRemaining
         self.platform = platform
         self.isBookmarked = isBookmarked
+        self.students = students
+        self.isHot = isHot
     }
 
     public var discountBadgeText: String {
@@ -56,6 +62,19 @@ public struct WatchDealModel: Identifiable, Hashable, Codable {
             return String(format: "★ %.1f", rating)
         }
         return "★ 4.8"
+    }
+
+    public var formattedStudents: String {
+        guard let students = students, students > 0 else { return "" }
+        if students >= 1_000_000 {
+            let mVal = Double(students) / 1_000_000.0
+            return String(format: "%.1fM students", mVal)
+        } else if students >= 1_000 {
+            let kVal = Int((Double(students) / 1_000.0).rounded())
+            return "\(kVal)k students"
+        } else {
+            return "\(students) students"
+        }
     }
 
     public func isExpired(now: Date = Date()) -> Bool {
@@ -107,91 +126,5 @@ public enum WatchCoursePlatform: String, Codable, CaseIterable {
         case .edx:
             return Color(red: 0.85, green: 0.15, blue: 0.15)
         }
-    }
-}
-
-extension WatchDealModel {
-    /// Sample flash deals for watchOS glanceable UI demonstration.
-    public static var sampleDeals: [WatchDealModel] {
-        let now = Date().timeIntervalSince1970 * 1000
-        let oneHourMillis: Double = 3600 * 1000
-
-        return [
-            WatchDealModel(
-                id: 101,
-                title: "The Complete Kotlin & KMP Masterclass 2026",
-                heading: "Build multiplatform mobile & desktop apps with Compose",
-                author: "Alex Rivers",
-                category: "Development",
-                couponCode: "KMP100FREE",
-                couponUrl: "https://www.udemy.com/course/kotlin-multiplatform-masterclass/?couponCode=KMP100FREE",
-                expiredTime: Int64(now + (0.7 * oneHourMillis)),
-                rating: 4.9,
-                reviews: 1420,
-                usesRemaining: 14,
-                platform: .udemy,
-                isBookmarked: false
-            ),
-            WatchDealModel(
-                id: 102,
-                title: "Machine Learning with Python & PyTorch",
-                heading: "Hands-on deep neural network training from scratch",
-                author: "Dr. Elena Rostova",
-                category: "Data Science",
-                couponCode: "MLDEAL100",
-                couponUrl: "https://www.coursera.org/learn/machine-learning-pytorch?couponCode=MLDEAL100",
-                expiredTime: Int64(now + (1.25 * oneHourMillis)),
-                rating: 4.8,
-                reviews: 890,
-                usesRemaining: 8,
-                platform: .coursera,
-                isBookmarked: true
-            ),
-            WatchDealModel(
-                id: 103,
-                title: "iOS 18 & SwiftUI Architecture Deep Dive",
-                heading: "Modern SwiftUI state management, navigation, and testing",
-                author: "Marcus Chen",
-                category: "Mobile",
-                couponCode: "SWIFTUI2026",
-                couponUrl: "https://www.udemy.com/course/swiftui-mastery-ios18/?couponCode=SWIFTUI2026",
-                expiredTime: Int64(now + (2.5 * oneHourMillis)),
-                rating: 4.9,
-                reviews: 2150,
-                usesRemaining: 23,
-                platform: .udemy,
-                isBookmarked: false
-            ),
-            WatchDealModel(
-                id: 104,
-                title: "Distributed Systems & Cloud Architecture",
-                heading: "Scalable backend patterns with Kafka, Redis, and Go",
-                author: "Sarah Jenkins",
-                category: "Cloud",
-                couponCode: "SCALENOW",
-                couponUrl: "https://www.coursera.org/learn/cloud-distributed-systems?couponCode=SCALENOW",
-                expiredTime: Int64(now + (4.0 * oneHourMillis)),
-                rating: 4.7,
-                reviews: 640,
-                usesRemaining: 5,
-                platform: .coursera,
-                isBookmarked: false
-            ),
-            WatchDealModel(
-                id: 105,
-                title: "Clean Architecture in Android & KMP",
-                heading: "Domain-driven layered design with MVI & Coroutines",
-                author: "David Thorne",
-                category: "Architecture",
-                couponCode: "CLEANKMP100",
-                couponUrl: "https://www.udemy.com/course/clean-architecture-android-kmp/?couponCode=CLEANKMP100",
-                expiredTime: Int64(now + (6.0 * oneHourMillis)),
-                rating: 4.9,
-                reviews: 1820,
-                usesRemaining: 31,
-                platform: .udemy,
-                isBookmarked: false
-            )
-        ]
     }
 }

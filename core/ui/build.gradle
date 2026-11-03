@@ -13,7 +13,7 @@ kotlin {
                 api compose.runtime
                 api compose.foundation
                 api compose.material3
-                api compose.materialIconsExtended
+                api libs.compose.material.icons.core
                 api compose.ui
                 api libs.androidx.paging.common
                 api libs.koin.core

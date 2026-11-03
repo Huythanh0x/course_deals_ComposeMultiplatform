@@ -39,13 +39,9 @@ flowchart TD
 ---
 
 ## 4. Backend Contracts
-* `GET /api/v1/users/me`
-* `GET /api/v1/users/me/bookmarks`
-* `PUT /api/v1/users/me/notification-preferences`
-  * **Payload**:
-    ```json
-    {
-      "enabledCategories": ["DEVELOPMENT", "DESIGN"],
-      "instantAlerts": true
-    }
-    ```
+* `GET /api/v1/user/profile` & `GET /api/v1/users/me`
+* `GET /api/v1/preferences` & `PUT /api/v1/preferences`
+* `POST /api/v1/users/device-token` (FCM device token registration & topic subscription)
+* `POST /api/v1/users/me/accept-terms` (Terms & Privacy consent recording)
+* `DELETE /api/v1/users/me` (Account & data deletion)
+* `POST /api/v1/auth/logout` & `POST /api/v1/auth/logout-all`

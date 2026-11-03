@@ -100,6 +100,7 @@ tasks.register("generateCourseDealsApi") {
                 String sanitized = content
                     .replace("io.ktor.client.features.", "io.ktor.client.plugins.")
                     .replace("kotlinx.serialization.internal.", "kotlinx.serialization.builtins.")
+                    .replace("kotlin.collections.Map<kotlin.String, kotlin.Any>", "kotlin.collections.Map<kotlin.String, @Contextual kotlin.Any>")
                 destFile.setText(sanitized, "UTF-8")
             }
         }

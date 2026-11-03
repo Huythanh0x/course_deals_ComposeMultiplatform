@@ -1,6 +1,6 @@
 # CourseDeals KMP — Cross-Platform QA Verification Report
 
-**Product Specification & Test Plan Reference**: [PRODUCT_SPEC_AND_TEST_PLAN.md](file:///Users/thanh0x/StudioProjects/CourseDeals/course_deals_ComposeMultiplatform/docs/product/PRODUCT_SPEC_AND_TEST_PLAN.md)
+**Product Specification & Test Plan Reference**: [README.md](README.md) & [TEST_CASES.md](TEST_CASES.md)
 **Screenshots Directory**: [docs/product/screenshots/](file:///Users/thanh0x/StudioProjects/CourseDeals/course_deals_ComposeMultiplatform/docs/product/screenshots/)
 
 ---

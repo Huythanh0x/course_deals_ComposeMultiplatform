@@ -21,8 +21,18 @@ public struct WatchDealDetailView: View {
     public var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 10) {
-                // Header: Platform Tag & 100% OFF Badge
-                HStack {
+                // Header: Platform Tag, HOT Badge & 100% OFF Badge
+                HStack(spacing: 5) {
+                    if deal.isHot {
+                        Text("🔥 HOT")
+                            .font(.caption2.bold())
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 2)
+                            .background(Color.red)
+                            .foregroundColor(.white)
+                            .cornerRadius(4)
+                    }
+
                     Text(deal.platform.displayName)
                         .font(.caption2.bold())
                         .padding(.horizontal, 6)
@@ -56,11 +66,17 @@ public struct WatchDealDetailView: View {
                         .foregroundColor(.secondary)
                 }
 
-                // Rating & Expiry
-                HStack(spacing: 8) {
+                // Rating, Students & Expiry
+                HStack(spacing: 6) {
                     Text(deal.formattedRating)
                         .font(.caption2.bold())
                         .foregroundColor(.yellow)
+
+                    if !deal.formattedStudents.isEmpty {
+                        Text("• \(deal.formattedStudents)")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
 
                     if let remaining = deal.usesRemaining {
                         Text("• \(remaining) left")

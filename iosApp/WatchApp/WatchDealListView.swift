@@ -31,7 +31,7 @@ public struct WatchDealListView: View {
                     dealListContent
                 }
             }
-            .navigationTitle("Flash Deals")
+            .navigationTitle("Hot Deals")
             .navigationBarTitleDisplayMode(.inline)
             .sheet(item: selectedDealBinding) { _ in
                 if let index = selectedDealIndex, client.deals.indices.contains(index) {
@@ -115,7 +115,7 @@ public struct WatchDealListView: View {
             ProgressView()
                 .progressViewStyle(.circular)
                 .tint(.blue)
-            Text("Finding Free Deals...")
+            Text("Finding Hot Deals...")
                 .font(.footnote)
                 .foregroundColor(.secondary)
         }
@@ -124,14 +124,14 @@ public struct WatchDealListView: View {
 
     private var emptyView: some View {
         VStack(spacing: 8) {
-            Image(systemName: "ticket")
+            Image(systemName: "flame.fill")
                 .font(.title2)
-                .foregroundColor(.secondary)
+                .foregroundColor(.orange)
 
-            Text("No Flash Deals")
+            Text("No Hot Deals")
                 .font(.headline)
 
-            Text("All 100% coupons are currently claimed. Check back shortly!")
+            Text("No 4.7+ rated deals active right now. Check back shortly!")
                 .font(.caption2)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
@@ -189,6 +189,16 @@ private struct WatchDealCard: View {
         VStack(alignment: .leading, spacing: 5) {
             // Badges row
             HStack(spacing: 4) {
+                if deal.isHot {
+                    Text("🔥 HOT")
+                        .font(.system(size: 9, weight: .heavy))
+                        .padding(.horizontal, 4)
+                        .padding(.vertical, 1.5)
+                        .background(Color.red)
+                        .foregroundColor(.white)
+                        .cornerRadius(3)
+                }
+
                 Text(deal.platform.displayName)
                     .font(.system(size: 9, weight: .bold))
                     .padding(.horizontal, 5)
@@ -229,14 +239,21 @@ private struct WatchDealCard: View {
                 .lineLimit(2)
                 .multilineTextAlignment(.leading)
 
-            // Rating & Remaining
-            HStack(spacing: 6) {
+            // Rating & Students & Remaining
+            HStack(spacing: 5) {
                 Text(deal.formattedRating)
                     .font(.system(size: 10, weight: .bold))
                     .foregroundColor(.yellow)
 
+                if !deal.formattedStudents.isEmpty {
+                    Text("• \(deal.formattedStudents)")
+                        .font(.system(size: 9, weight: .medium))
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+                }
+
                 if let remaining = deal.usesRemaining {
-                    Text("\(remaining) uses left")
+                    Text("• \(remaining) left")
                         .font(.system(size: 9))
                         .foregroundColor(.secondary)
                 }

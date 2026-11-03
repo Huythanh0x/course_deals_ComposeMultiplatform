@@ -29,8 +29,8 @@
 ## Scope
 
 Free text, kept short — the module or area affected. For this repo that's usually one of
-the Gradle module names or a cross-cutting concern: `app`, `auth`, `home`, `course`,
-`detail`, `enroll`, `profile`, `splash`, `network`, `ui`, `common`, `ci`. Omit the scope
+the Gradle module names or a cross-cutting concern: `app`, `desktop`, `watch`, `shared`, `auth`, `home`, `course`,
+`detail`, `enroll`, `profile`, `splash`, `network`, `logging`, `ui`, `common`, `ci`, `cd`. Omit the scope
 entirely if the change is broad enough that no single scope fits (`chore: update all
 dependencies`).
 
@@ -39,8 +39,8 @@ dependencies`).
 ```
 feat(course): add category filter to course list
 fix(detail): handle null category without crashing
-docs(adr): record decision to use Compose Multiplatform for web
-chore(deps): bump Hilt to 2.52
+docs(adr): record decision to use native SwiftUI for watchOS companion
+chore(deps): bump Koin to 4.0.2
 refactor(course): extract paging source from repository
 test(auth): add coverage for expired token refresh
 ci(actions): cache gradle dependencies between runs
