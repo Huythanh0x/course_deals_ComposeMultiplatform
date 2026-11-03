@@ -45,10 +45,11 @@ Coordinate closely with `kmp-engineer` (who owns `:shared`, `:core:*`, `:domain:
    - Support desktop keyboard navigation (`Modifier.onKeyEvent`, `KeyShortcut`, `Enter` to submit, `Escape` to dismiss/back, `Cmd/Ctrl+R` to reload webviews) where appropriate.
    - Guard all `java.awt.Desktop` (`BROWSE`, `MAIL`) and `Toolkit.getDefaultToolkit().systemClipboard` calls with `Desktop.isDesktopSupported()`, `isSupported(...)`, and `runCatching` so headless CI environments never crash.
 
-5. **Swing / JavaFX Interoperability (`SwingPanel` & `JFXPanel`) & Skia Screenshot Sync**:
-   - When embedding heavyweight AWT/Swing/JavaFX components (such as JavaFX `WebView` via `SwingPanel` + `JFXPanel`), always set `Platform.setImplicitExit(false)` so closing a panel or tab does not terminate the JavaFX toolkit.
-   - Mutate Swing states on the EDT (`SwingUtilities.invokeLater`) and JavaFX states on the JavaFX Application Thread (`Platform.runLater`).
-   - **Skia Screenshot Synchronization**: Because `SwingPanel` renders on a heavyweight native peer above the Skia Metal/OpenGL layer, `rememberGraphicsLayer().toImageBitmap()` alone does not capture `SwingPanel` pixels. Always synchronize a `webView.snapshot(null, null)` -> `SwingFXUtils.fromFXImage(...)` -> `toComposeImageBitmap()` fallback layer underneath/inside the Compose tree so `--capture-screenshot` captures the live rendered content.
+5. **Embedded Chromium WebView (`compose-webview-multiplatform` & KCEF)**:
+   - For in-app web rendering on Desktop Preview, use `io.github.kevinnzou:compose-webview-multiplatform` with KCEF (Chromium Embedded Framework).
+   - Ensure `--add-opens java.desktop/sun.awt=ALL-UNNAMED` and macOS lwawt flags are provided in `desktopApp/build.gradle` `jvmArgs`.
+   - Provide graceful asynchronous KCEF initialization with progress indicators and immediate fallback to the system browser (`PlatformActions.openUrl`).
+   - For headless automated UI tests, support disabling native engine rendering (`enableNativeWebEngine = false`) so tests execute deterministically without display server dependencies.
 
 6. **Compose Desktop UI Framework Testing (`runComposeUiTest` / `createComposeRule`)**:
    - Every Desktop UI feature or component MUST include automated **Compose UI Framework Tests** under `desktopApp/src/test/kotlin/` using `org.jetbrains.compose.ui.test.junit4.createComposeRule` or `@OptIn(ExperimentalTestApi::class) runComposeUiTest`:

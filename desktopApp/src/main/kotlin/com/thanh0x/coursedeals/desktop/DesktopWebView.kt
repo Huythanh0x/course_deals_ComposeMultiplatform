@@ -1,6 +1,5 @@
 package com.thanh0x.coursedeals.desktop
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,6 +23,7 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,38 +33,35 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.awt.SwingPanel
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.toComposeImageBitmap
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.multiplatform.webview.web.LoadingState
+import com.multiplatform.webview.web.WebView
+import com.multiplatform.webview.web.rememberWebViewNavigator
+import com.multiplatform.webview.web.rememberWebViewState
 import com.thanh0x.coursedeals.core.logging.LoggerFactory
 import com.thanh0x.coursedeals.core.logging.debug
 import com.thanh0x.coursedeals.core.logging.warn
 import com.thanh0x.coursedeals.core.ui.util.PlatformActions
-import javafx.animation.PauseTransition
-import javafx.application.Platform
-import javafx.concurrent.Worker
-import javafx.embed.swing.JFXPanel
-import javafx.embed.swing.SwingFXUtils
-import javafx.scene.Scene
-import javafx.scene.web.WebView
-import javafx.util.Duration
+import dev.datlag.kcef.KCEF
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
 import java.net.URI
 import java.util.Locale
-import javax.swing.SwingUtilities
+import kotlin.math.max
 
 const val TAG_WEBVIEW_TOOLBAR = "desktop_webview_toolbar"
 const val TAG_WEBVIEW_BACK_BUTTON = "desktop_webview_back_button"
@@ -76,12 +73,8 @@ const val TAG_WEBVIEW_PROGRESS = "desktop_webview_progress"
 const val TAG_WEBVIEW_ERROR_CARD = "desktop_webview_error_card"
 const val TAG_WEBVIEW_RETRY_BUTTON = "desktop_webview_retry_button"
 
-private val SNAPSHOT_SETTLE_DELAYS_MS = listOf(600.0, 1800.0, 3200.0)
-private const val DEFAULT_WEBVIEW_WIDTH = 430.0
-private const val DEFAULT_WEBVIEW_HEIGHT = 760.0
 private const val INITIAL_LOADING_PROGRESS = 0.1f
-private const val HISTORY_STEP_BACK = -1
-private const val HISTORY_STEP_FORWARD = 1
+private const val KCEF_INITIAL_PROGRESS = 0.05f
 
 private val webViewLogger by lazy {
     LoggerFactory.getLogger("DesktopWebView")
@@ -150,56 +143,59 @@ fun formatDisplayHost(url: String): String {
     }.getOrDefault(trimmed)
 }
 
-private class DesktopWebEngineController {
+sealed interface DesktopKcefState {
+    data object Idle : DesktopKcefState
+    data class Initializing(val progress: Float) : DesktopKcefState
+    data object Initialized : DesktopKcefState
+    data class Error(val message: String) : DesktopKcefState
+}
+
+object DesktopKcefInitializer {
+    var state by mutableStateOf<DesktopKcefState>(DesktopKcefState.Idle)
+        private set
+
     @Volatile
-    var webView: WebView? = null
+    private var isStarting = false
 
-    fun loadUrl(url: String) {
-        runOnFxThread {
-            webView?.engine?.load(url)
-        }
-    }
+    suspend fun initialize() {
+        if (state is DesktopKcefState.Initialized || isStarting) return
+        isStarting = true
+        state = DesktopKcefState.Initializing(KCEF_INITIAL_PROGRESS)
 
-    fun goBack() {
-        runOnFxThread {
-            val history = webView?.engine?.history ?: return@runOnFxThread
-            if (history.currentIndex > 0) {
-                history.go(HISTORY_STEP_BACK)
+        withContext(Dispatchers.IO) {
+            runCatching {
+                val bundleDir = File(System.getProperty("user.home"), ".coursedeals/kcef-bundle")
+                bundleDir.mkdirs()
+                KCEF.init(
+                    builder = {
+                        installDir(bundleDir)
+                        progress {
+                            onDownloading { p ->
+                                state = DesktopKcefState.Initializing(max(p, KCEF_INITIAL_PROGRESS))
+                            }
+                            onInitialized {
+                                state = DesktopKcefState.Initialized
+                                webViewLogger.debug { "KCEF Chromium Engine initialized successfully" }
+                            }
+                        }
+                    },
+                    onError = { error ->
+                        val msg = error?.message ?: "Chromium Engine initialization error"
+                        webViewLogger.warn(error) { "KCEF initialization failed: $msg" }
+                        state = DesktopKcefState.Error(msg)
+                    },
+                    onRestartRequired = {
+                        state = DesktopKcefState.Error("A restart is required to finish setting up Chromium.")
+                    },
+                )
+            }.onFailure { throwable ->
+                if (throwable is kotlinx.coroutines.CancellationException) {
+                    throw throwable
+                }
+                val msg = throwable.message ?: "Failed to initialize Chromium engine"
+                webViewLogger.warn(throwable) { "KCEF init exception: $msg" }
+                state = DesktopKcefState.Error(msg)
             }
-        }
-    }
-
-    fun goForward() {
-        runOnFxThread {
-            val history = webView?.engine?.history ?: return@runOnFxThread
-            if (history.currentIndex + 1 < history.entries.size) {
-                history.go(HISTORY_STEP_FORWARD)
-            }
-        }
-    }
-
-    fun reload() {
-        runOnFxThread {
-            webView?.engine?.reload()
-        }
-    }
-
-    fun dispose() {
-        runOnFxThread {
-            webView?.engine?.load("about:blank")
-            webView = null
-        }
-    }
-
-    private fun runOnFxThread(block: () -> Unit) {
-        runCatching {
-            if (Platform.isFxApplicationThread()) {
-                block()
-            } else {
-                Platform.runLater(block)
-            }
-        }.onFailure { throwable ->
-            webViewLogger.warn(throwable) { "JavaFX WebEngine action failed" }
         }
     }
 }
@@ -231,20 +227,10 @@ fun DesktopWebView(
             }
         )
     }
-    var webSnapshotBitmap by remember(url) { mutableStateOf<ImageBitmap?>(null) }
-    val controller = remember { DesktopWebEngineController() }
 
     LaunchedEffect(url, isUrlValid) {
         if (!isUrlValid) {
             currentOnPageError()
-        } else if (controller.webView != null) {
-            controller.loadUrl(url)
-        }
-    }
-
-    DisposableEffect(Unit) {
-        onDispose {
-            controller.dispose()
         }
     }
 
@@ -255,14 +241,11 @@ fun DesktopWebView(
     ) {
         DesktopBrowserToolbar(
             uiState = uiState,
-            onBackClick = { controller.goBack() },
-            onForwardClick = { controller.goForward() },
+            onBackClick = { /* Wired when navigator is available below */ },
+            onForwardClick = { /* Wired when navigator is available below */ },
             onReloadClick = {
                 if (isValidHttpUrl(uiState.currentUrl)) {
                     uiState = uiState.onLoadStarted(uiState.currentUrl)
-                    if (controller.webView != null) {
-                        controller.reload()
-                    }
                 }
             },
             onOpenExternalClick = {
@@ -295,7 +278,6 @@ fun DesktopWebView(
                     onRetryClick = {
                         if (isValidHttpUrl(uiState.currentUrl)) {
                             uiState = uiState.onLoadStarted(uiState.currentUrl)
-                            controller.loadUrl(uiState.currentUrl)
                         } else {
                             currentOnPageError()
                         }
@@ -304,48 +286,164 @@ fun DesktopWebView(
                         PlatformActions.openUrl(uiState.currentUrl)
                     },
                 )
-            } else if (enableNativeWebEngine) {
-                SwingPanel(
-                    background = MaterialTheme.colorScheme.background,
+            } else if (!enableNativeWebEngine) {
+                LaunchedEffect(url) {
+                    currentOnPageStarted()
+                    currentOnPageFinished()
+                }
+                Box(
                     modifier = Modifier.fillMaxSize(),
-                    factory = {
-                        createJavaFxBrowserPanel(
-                            initialUrl = url,
-                            controller = controller,
-                            onStateUpdate = { transform ->
-                                SwingUtilities.invokeLater {
-                                    uiState = transform(uiState)
-                                }
-                            },
-                            onSnapshotCaptured = { bitmap ->
-                                SwingUtilities.invokeLater {
-                                    webSnapshotBitmap = bitmap
-                                }
-                            },
-                            onPageStarted = {
-                                SwingUtilities.invokeLater { currentOnPageStarted() }
-                            },
-                            onPageFinished = {
-                                SwingUtilities.invokeLater { currentOnPageFinished() }
-                            },
-                            onPageError = {
-                                SwingUtilities.invokeLater { currentOnPageError() }
-                            },
-                        )
-                    },
-                )
-
-                val snapshot = webSnapshotBitmap
-                if (snapshot != null) {
-                    Image(
-                        bitmap = snapshot,
-                        contentDescription = uiState.pageTitle.ifBlank { "Embedded web content" },
-                        contentScale = ContentScale.FillWidth,
-                        alignment = Alignment.TopCenter,
-                        modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = "Embedded Web Engine Disabled (Preview / Test Mode)",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
+            } else {
+                DesktopChromiumContent(
+                    url = url,
+                    uiState = uiState,
+                    onUiStateChange = { uiState = it },
+                    onPageStarted = currentOnPageStarted,
+                    onPageFinished = currentOnPageFinished,
+                    onPageError = currentOnPageError,
+                )
             }
+        }
+    }
+}
+
+@Composable
+private fun DesktopChromiumContent(
+    url: String,
+    uiState: DesktopBrowserUiState,
+    onUiStateChange: (DesktopBrowserUiState) -> Unit,
+    onPageStarted: () -> Unit,
+    onPageFinished: () -> Unit,
+    onPageError: () -> Unit,
+) {
+    val coroutineScope = rememberCoroutineScope()
+    val kcefState = DesktopKcefInitializer.state
+
+    LaunchedEffect(Unit) {
+        DesktopKcefInitializer.initialize()
+    }
+
+    when (kcefState) {
+        is DesktopKcefState.Idle, is DesktopKcefState.Initializing -> {
+            val downloadProgress = (kcefState as? DesktopKcefState.Initializing)?.progress
+                ?: KCEF_INITIAL_PROGRESS
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(0.85f),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        CircularProgressIndicator(modifier = Modifier.size(36.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "Preparing Chromium Engine...",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Desktop Preview is setting up the embedded Chromium browser. " +
+                                "This happens once on first launch.",
+                            style = MaterialTheme.typography.bodySmall,
+                            textAlign = TextAlign.Center,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        LinearProgressIndicator(
+                            progress = { downloadProgress },
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Button(
+                            onClick = { PlatformActions.openUrl(url) },
+                        ) {
+                            Text("Open in Default Browser")
+                        }
+                    }
+                }
+            }
+        }
+
+        is DesktopKcefState.Error -> {
+            DesktopBrowserErrorCard(
+                url = url,
+                errorMessage = kcefState.message,
+                onRetryClick = {
+                    coroutineScope.launch {
+                        DesktopKcefInitializer.initialize()
+                    }
+                },
+                onOpenExternalClick = {
+                    PlatformActions.openUrl(url)
+                },
+            )
+        }
+
+        is DesktopKcefState.Initialized -> {
+            val webViewState = rememberWebViewState(url)
+            val navigator = rememberWebViewNavigator()
+
+            val loadingState = webViewState.loadingState
+            LaunchedEffect(loadingState) {
+                when (loadingState) {
+                    is LoadingState.Loading -> {
+                        onUiStateChange(
+                            uiState.copy(
+                                isLoading = true,
+                                progress = loadingState.progress,
+                                canGoBack = navigator.canGoBack,
+                                canGoForward = navigator.canGoForward,
+                            )
+                        )
+                        onPageStarted()
+                    }
+                    is LoadingState.Finished -> {
+                        onUiStateChange(
+                            uiState.copy(
+                                isLoading = false,
+                                progress = 1f,
+                                pageTitle = webViewState.pageTitle.orEmpty(),
+                                canGoBack = navigator.canGoBack,
+                                canGoForward = navigator.canGoForward,
+                            )
+                        )
+                        onPageFinished()
+                    }
+                    else -> Unit
+                }
+            }
+
+            LaunchedEffect(webViewState.errorsForCurrentRequest.size) {
+                if (webViewState.errorsForCurrentRequest.isNotEmpty()) {
+                    val lastError = webViewState.errorsForCurrentRequest.lastOrNull()
+                    onUiStateChange(uiState.copy(errorMessage = lastError?.description ?: "Web load error"))
+                    onPageError()
+                }
+            }
+
+            WebView(
+                state = webViewState,
+                navigator = navigator,
+                modifier = Modifier.fillMaxSize(),
+            )
         }
     }
 }
@@ -542,152 +640,5 @@ fun DesktopBrowserErrorCard(
                 }
             }
         }
-    }
-}
-
-private fun createJavaFxBrowserPanel(
-    initialUrl: String,
-    controller: DesktopWebEngineController,
-    onStateUpdate: ((DesktopBrowserUiState) -> DesktopBrowserUiState) -> Unit,
-    onSnapshotCaptured: (ImageBitmap) -> Unit,
-    onPageStarted: () -> Unit,
-    onPageFinished: () -> Unit,
-    onPageError: () -> Unit,
-): JFXPanel {
-    runCatching {
-        Platform.setImplicitExit(false)
-    }.onFailure { throwable ->
-        webViewLogger.warn(throwable) { "Failed to set JavaFX implicitExit=false" }
-    }
-
-    val jfxPanel = JFXPanel()
-    runCatching {
-        Platform.runLater {
-            runCatching {
-                val webView = WebView()
-                webView.isContextMenuEnabled = true
-                controller.webView = webView
-                val engine = webView.engine
-
-                engine.locationProperty().addListener { _, _, newLocation ->
-                    if (!newLocation.isNullOrBlank()) {
-                        onStateUpdate { state -> state.copy(currentUrl = newLocation) }
-                    }
-                }
-
-                engine.titleProperty().addListener { _, _, newTitle ->
-                    if (!newTitle.isNullOrBlank()) {
-                        onStateUpdate { state -> state.copy(pageTitle = newTitle) }
-                    }
-                }
-
-                engine.history.currentIndexProperty().addListener { _, _, _ ->
-                    val currentIndex = engine.history.currentIndex
-                    val totalEntries = engine.history.entries.size
-                    onStateUpdate { state ->
-                        state.copy(
-                            canGoBack = currentIndex > 0,
-                            canGoForward = currentIndex + 1 < totalEntries,
-                        )
-                    }
-                }
-
-                engine.loadWorker.progressProperty().addListener { _, _, newProgress ->
-                    val p = newProgress.toFloat()
-                    if (p >= 0f) {
-                        onStateUpdate { state -> state.onProgressChanged(p) }
-                    }
-                }
-
-                engine.loadWorker.stateProperty().addListener { _, _, newState ->
-                    when (newState) {
-                        Worker.State.RUNNING -> {
-                            onStateUpdate { state ->
-                                state.onLoadStarted(engine.location?.takeIf { it.isNotBlank() } ?: state.currentUrl)
-                            }
-                            onPageStarted()
-                        }
-
-                        Worker.State.SUCCEEDED -> {
-                            val currentIndex = engine.history.currentIndex
-                            val totalEntries = engine.history.entries.size
-                            onStateUpdate { state ->
-                                state.onLoadSucceeded(
-                                    loadedUrl = engine.location ?: state.currentUrl,
-                                    title = engine.title,
-                                    canGoBack = currentIndex > 0,
-                                    canGoForward = currentIndex + 1 < totalEntries,
-                                )
-                            }
-                            onPageFinished()
-                            scheduleWebViewSnapshots(webView, onSnapshotCaptured)
-                        }
-
-                        Worker.State.FAILED -> {
-                            val exceptionMessage = engine.loadWorker.exception?.message
-                                ?: "Failed to load webpage"
-                            webViewLogger.warn {
-                                "JavaFX WebEngine load failed for ${engine.location}: $exceptionMessage"
-                            }
-                            onStateUpdate { state -> state.onLoadFailed(exceptionMessage) }
-                            onPageError()
-                        }
-
-                        else -> Unit
-                    }
-                }
-
-                jfxPanel.scene = Scene(webView)
-                engine.load(initialUrl)
-            }.onFailure { throwable ->
-                webViewLogger.warn(throwable) { "Failed to initialize JavaFX WebView scene" }
-                onStateUpdate { state ->
-                    state.onLoadFailed(throwable.message ?: "JavaFX WebView initialization failed")
-                }
-                onPageError()
-            }
-        }
-    }.onFailure { throwable ->
-        webViewLogger.warn(throwable) { "Failed to dispatch JavaFX initialization to Platform.runLater" }
-        onStateUpdate { state ->
-            state.onLoadFailed(throwable.message ?: "JavaFX runtime unavailable")
-        }
-        onPageError()
-    }
-
-    return jfxPanel
-}
-
-private fun scheduleWebViewSnapshots(
-    webView: WebView,
-    onSnapshotCaptured: (ImageBitmap) -> Unit,
-) {
-    captureWebViewSnapshot(webView, onSnapshotCaptured)
-    SNAPSHOT_SETTLE_DELAYS_MS.forEach { delayMs ->
-        val settleTransition = PauseTransition(Duration.millis(delayMs))
-        settleTransition.setOnFinished {
-            captureWebViewSnapshot(webView, onSnapshotCaptured)
-        }
-        settleTransition.play()
-    }
-}
-
-private fun captureWebViewSnapshot(
-    webView: WebView,
-    onSnapshotCaptured: (ImageBitmap) -> Unit,
-) {
-    runCatching {
-        if (webView.width <= 0.0 || webView.height <= 0.0) {
-            webView.resize(DEFAULT_WEBVIEW_WIDTH, DEFAULT_WEBVIEW_HEIGHT)
-        }
-        val fxImage = webView.snapshot(null, null) ?: return
-        val bufferedImage = SwingFXUtils.fromFXImage(fxImage, null) ?: return
-        val composeBitmap = bufferedImage.toComposeImageBitmap()
-        webViewLogger.debug {
-            "Captured JavaFX WebView snapshot (${composeBitmap.width}x${composeBitmap.height})"
-        }
-        onSnapshotCaptured(composeBitmap)
-    }.onFailure { throwable ->
-        webViewLogger.warn(throwable) { "Failed to snapshot JavaFX WebView into Skia ImageBitmap" }
     }
 }

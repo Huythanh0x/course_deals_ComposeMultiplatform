@@ -4,7 +4,7 @@
 ![Compose Multiplatform](https://img.shields.io/badge/Compose%20Multiplatform-1.8.0-brightgreen)
 ![Android](https://img.shields.io/badge/Android-SDK%2024--37-3DDC84)
 ![iOS & watchOS](https://img.shields.io/badge/Apple-iOS%20%26%20watchOS-000000)
-![Desktop](https://img.shields.io/badge/Desktop-JVM%2017-orange)
+![Desktop Preview](https://img.shields.io/badge/Desktop-Preview%20%26%20Dev%20Test-blue)
 
 A production-grade **Compose Multiplatform (CMP)** and **Kotlin Multiplatform (KMP)** application that aggregates and curates verified 100% free online course deals and discount coupons (Udemy, Coursera, etc.) in real time.
 
@@ -65,7 +65,7 @@ flowchart TD
 | Module | Plugin | Role |
 |---|---|---|
 | `:app` | `com.android.application` | Android entry point (`local` & `prod` flavors), R8 minification, wires Koin & `CourseDealsApp()` |
-| `:desktopApp` | `org.jetbrains.kotlin.jvm` + CMP | Compose Desktop (`jvm`) entry point (`Main.kt`), CLI deep-linking (`--screen=...`), and Maestro E2E YAML flow runner (`runMaestroFlow`) |
+| `:desktopApp` | `org.jetbrains.kotlin.jvm` + CMP | Compose Desktop (`jvm`) Developer Preview & Dev-Test target (`Main.kt`), embedded Chromium browser (`compose-webview-multiplatform`), CLI deep-linking (`--screen=...`), and Maestro E2E YAML flow runner (`runMaestroFlow`) |
 | `iosApp/` & `iosApp/WatchApp/` | Xcode Project (`iosApp.xcodeproj`) | iOS host app embedding `:shared` (`ComposeApp.framework`) + native SwiftUI Apple Watch companion (`WatchApp`) with `/hot-deals` sync & Apple Handoff |
 | `:shared` | `coursedeals.kmp.library` + CMP | Shared KMP root (`CourseDealsApp`, `MainAppScaffold`, `MainViewController` for iOS) |
 | `:core:common` | `coursedeals.kmp.library` | Shared KMP utilities, dispatchers, `PlatformTime`, and base models |
