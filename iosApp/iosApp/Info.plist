@@ -51,6 +51,11 @@
 			</array>
 		</dict>
 	</array>
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>com.thanh0x.coursedeals.courseDetail</string>
+		<string>com.coursedeals.deal.open</string>
+	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

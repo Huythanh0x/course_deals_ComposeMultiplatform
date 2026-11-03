@@ -7,6 +7,12 @@ struct iOSApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .onContinueUserActivity(PhoneWatchConnectivityManager.handoffActivityType) { activity in
+                    watchConnectivity.handleUserActivity(activity)
+                }
+                .onContinueUserActivity(PhoneWatchConnectivityManager.legacyHandoffActivityType) { activity in
+                    watchConnectivity.handleUserActivity(activity)
+                }
         }
     }
 }

@@ -1,8 +1,13 @@
 import Foundation
 import SwiftUI
+#if canImport(WatchConnectivity)
 import WatchConnectivity
+#endif
+#if canImport(WidgetKit)
+import WidgetKit
+#endif
 
-public class WatchConnectivityClient: NSObject, WCSessionDelegate, ObservableObject {
+public class WatchConnectivityClient: NSObject, ObservableObject {
     public static let shared = WatchConnectivityClient()
 
     @Published public var deals: [WatchDealModel] = []
@@ -11,14 +16,27 @@ public class WatchConnectivityClient: NSObject, WCSessionDelegate, ObservableObj
     @Published public var isLoading: Bool = false
     @Published public var userPreference: String? = nil
 
-    public override init() {
+    public let cacheStore: WatchDealCacheStore
+
+    public init(cacheStore: WatchDealCacheStore = .shared) {
+        self.cacheStore = cacheStore
         super.init()
+
+        // 1. Instant offline hydration from App Group / UserDefaults cache before WCSession handshake
+        let cachedDeals = cacheStore.loadDeals()
+        if !cachedDeals.isEmpty {
+            self.deals = cachedDeals
+            self.syncSource = "📦 Offline Cache"
+            self.isLoading = false
+        }
+
+        #if canImport(WatchConnectivity)
         if WCSession.isSupported() {
             let session = WCSession.default
             session.delegate = self
             session.activate()
         }
-        self.deals = []
+        #endif
         requestDealsFromPhone()
     }
 
@@ -41,9 +59,12 @@ public class WatchConnectivityClient: NSObject, WCSessionDelegate, ObservableObj
         if let pref = preference {
             self.userPreference = pref
         }
-        self.isLoading = true
-        self.syncSource = "Fetching Hot Deals..."
+        if self.deals.isEmpty {
+            self.isLoading = true
+            self.syncSource = "Fetching Hot Deals..."
+        }
 
+        #if canImport(WatchConnectivity)
         let session = WCSession.default
         var message: [String: Any] = ["request": "fetchDeals"]
         if let pref = preference ?? userPreference, !pref.isEmpty {
@@ -63,17 +84,22 @@ public class WatchConnectivityClient: NSObject, WCSessionDelegate, ObservableObj
             }
         } else {
             // Check application context or fetch directly from API
-            if let pref = session.receivedApplicationContext["preference"] as? String {
-                self.userPreference = pref
+            if WCSession.isSupported() {
+                if let pref = session.receivedApplicationContext["preference"] as? String {
+                    self.userPreference = pref
+                }
+                let remoteBookmarks = extractBookmarkedIds(from: session.receivedApplicationContext)
+                if let contextDeals = session.receivedApplicationContext["deals"] as? [[String: Any]], !contextDeals.isEmpty {
+                    let parsed = self.parseDeals(from: contextDeals)
+                    self.applyAndPersistDeals(parsed, remoteBookmarkedIds: remoteBookmarks, sourceLabel: "⚡ Synced via iPhone Context")
+                    return
+                }
             }
-            if let contextDeals = session.receivedApplicationContext["deals"] as? [[String: Any]], !contextDeals.isEmpty {
-                self.deals = self.parseDeals(from: contextDeals)
-                self.syncSource = "⚡ Synced via iPhone Context"
-                self.isLoading = false
-            } else {
-                fetchDirectlyFromApi(preference: preference)
-            }
+            fetchDirectlyFromApi(preference: preference)
         }
+        #else
+        fetchDirectlyFromApi(preference: preference)
+        #endif
     }
 
     public func fetchDirectlyFromApi(preference: String? = nil) {
@@ -85,10 +111,19 @@ public class WatchConnectivityClient: NSObject, WCSessionDelegate, ObservableObj
 
         let task = URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
             DispatchQueue.main.async {
-                self?.isLoading = false
+                guard let self = self else { return }
+                self.isLoading = false
                 guard let data = data, error == nil else {
-                    if self?.deals.isEmpty ?? true {
-                        self?.syncSource = "Offline (API Unreachable)"
+                    if self.deals.isEmpty {
+                        let fallbackCached = self.cacheStore.loadDeals()
+                        if !fallbackCached.isEmpty {
+                            self.deals = fallbackCached
+                            self.syncSource = "📦 Cached (Offline)"
+                        } else {
+                            self.syncSource = "Offline (API Unreachable)"
+                        }
+                    } else {
+                        self.syncSource = "📦 Cached (Offline)"
                     }
                     return
                 }
@@ -96,15 +131,15 @@ public class WatchConnectivityClient: NSObject, WCSessionDelegate, ObservableObj
                 do {
                     if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
                        let courses = json["courses"] as? [[String: Any]], !courses.isEmpty {
-                        self?.deals = self?.parseApiCourses(from: courses) ?? []
-                        self?.syncSource = "🔥 Hot Deals :8081"
+                        let parsed = self.parseApiCourses(from: courses)
+                        self.applyAndPersistDeals(parsed, remoteBookmarkedIds: [], sourceLabel: "🔥 Hot Deals :8081")
                         return
-                    } else if (self?.deals.isEmpty ?? true) {
-                        self?.syncSource = "No Hot Deals Found"
+                    } else if self.deals.isEmpty {
+                        self.syncSource = "No Hot Deals Found"
                     }
                 } catch {
-                    if (self?.deals.isEmpty ?? true) {
-                        self?.syncSource = "API Parse Error"
+                    if self.deals.isEmpty {
+                        self.syncSource = "API Parse Error"
                     }
                 }
             }
@@ -112,21 +147,110 @@ public class WatchConnectivityClient: NSObject, WCSessionDelegate, ObservableObj
         task.resume()
     }
 
-    private func handlePhoneReply(_ reply: [String: Any]) {
+    // MARK: - Bookmark & Handoff Actions
+
+    @discardableResult
+    public func toggleBookmark(for dealId: Int) -> Bool {
+        let currentlyBookmarked = deals.first(where: { $0.id == dealId })?.isBookmarked
+            ?? cacheStore.loadBookmarkedIds().contains(dealId)
+        let newState = !currentlyBookmarked
+
+        cacheStore.setBookmarked(dealId: dealId, isBookmarked: newState)
+        for index in deals.indices where deals[index].id == dealId {
+            deals[index].isBookmarked = newState
+        }
+        cacheStore.saveDeals(deals)
+        reloadWidgetTimelines()
+
+        let payload: [String: Any] = [
+            "action": "bookmarkDeal",
+            "request": "bookmarkDeal",
+            "courseId": dealId,
+            "isBookmarked": newState,
+            "timestamp": Date().timeIntervalSince1970
+        ]
+        sendPayloadToPhone(payload)
+        return newState
+    }
+
+    public func sendOpenOnPhoneRequest(for deal: WatchDealModel) {
+        let payload: [String: Any] = [
+            "action": "openCourseOnPhone",
+            "request": "openCourseOnPhone",
+            "courseId": deal.id,
+            "dealId": deal.id,
+            "deepLink": deal.deepLinkUrl.absoluteString,
+            "title": deal.title,
+            "platform": deal.platform.displayName,
+            "timestamp": Date().timeIntervalSince1970
+        ]
+        sendPayloadToPhone(payload)
+    }
+
+    private func sendPayloadToPhone(_ payload: [String: Any]) {
+        #if canImport(WatchConnectivity)
+        guard WCSession.isSupported() else { return }
+        let session = WCSession.default
+        guard session.activationState == .activated else { return }
+
+        if session.isReachable {
+            session.sendMessage(payload, replyHandler: nil) { _ in
+                session.transferUserInfo(payload)
+            }
+        } else {
+            session.transferUserInfo(payload)
+        }
+        #endif
+    }
+
+    internal func applyAndPersistDeals(
+        _ incomingDeals: [WatchDealModel],
+        remoteBookmarkedIds: Set<Int>,
+        sourceLabel: String
+    ) {
+        let merged = cacheStore.mergeDealsWithBookmarks(
+            incomingDeals,
+            extraBookmarkedIds: remoteBookmarkedIds
+        )
+        self.deals = merged
+        self.syncSource = sourceLabel
+        self.isLoading = false
+        cacheStore.saveDeals(merged)
+        reloadWidgetTimelines()
+    }
+
+    private func reloadWidgetTimelines() {
+        #if canImport(WidgetKit)
+        WidgetCenter.shared.reloadAllTimelines()
+        #endif
+    }
+
+    internal func extractBookmarkedIds(from payload: [String: Any]) -> Set<Int> {
+        if let intArray = payload["bookmarkedIds"] as? [Int] {
+            return Set(intArray.filter { $0 > 0 })
+        }
+        if let numArray = payload["bookmarkedIds"] as? [NSNumber] {
+            return Set(numArray.map { $0.intValue }.filter { $0 > 0 })
+        }
+        return []
+    }
+
+    internal func handlePhoneReply(_ reply: [String: Any]) {
         self.isLoading = false
         if let pref = reply["preference"] as? String {
             self.userPreference = pref
         }
+        let remoteBookmarks = extractBookmarkedIds(from: reply)
         if let dealsData = reply["deals"] as? [[String: Any]], !dealsData.isEmpty {
-            self.deals = parseDeals(from: dealsData)
+            let parsed = parseDeals(from: dealsData)
             let source = reply["source"] as? String ?? "iPhone 17"
-            self.syncSource = "⚡ \(source)"
+            applyAndPersistDeals(parsed, remoteBookmarkedIds: remoteBookmarks, sourceLabel: "⚡ \(source)")
         } else {
             fetchDirectlyFromApi(preference: self.userPreference)
         }
     }
 
-    private func parseApiCourses(from courses: [[String: Any]]) -> [WatchDealModel] {
+    internal func parseApiCourses(from courses: [[String: Any]]) -> [WatchDealModel] {
         return courses.compactMap { dict -> WatchDealModel? in
             guard let title = dict["title"] as? String else {
                 return nil
@@ -178,7 +302,7 @@ public class WatchConnectivityClient: NSObject, WCSessionDelegate, ObservableObj
         }
     }
 
-    private func parseDeals(from data: [[String: Any]]) -> [WatchDealModel] {
+    internal func parseDeals(from data: [[String: Any]]) -> [WatchDealModel] {
         return data.compactMap { (dict: [String: Any]) -> WatchDealModel? in
             guard let title = dict["title"] as? String else {
                 return nil
@@ -206,6 +330,7 @@ public class WatchConnectivityClient: NSObject, WCSessionDelegate, ObservableObj
             let reviews = (dict["reviews"] as? Int) ?? (dict["reviews"] as? NSNumber)?.intValue ?? 120
             let students = (dict["students"] as? Int) ?? (dict["students"] as? NSNumber)?.intValue
             let isHot = (dict["isHot"] as? Bool) ?? true
+            let isBookmarked = (dict["isBookmarked"] as? Bool) ?? false
 
             return WatchDealModel(
                 id: idInt,
@@ -220,14 +345,16 @@ public class WatchConnectivityClient: NSObject, WCSessionDelegate, ObservableObj
                 reviews: reviews,
                 usesRemaining: dict["usesLeft"] as? Int ?? max(5, reviews / 20),
                 platform: platform,
-                isBookmarked: false,
+                isBookmarked: isBookmarked,
                 students: students,
                 isHot: isHot
             )
         }
     }
+}
 
-    // MARK: - WCSessionDelegate
+#if canImport(WatchConnectivity)
+extension WatchConnectivityClient: WCSessionDelegate {
     public func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
         DispatchQueue.main.async {
             self.isConnectedToPhone = session.isReachable
@@ -251,10 +378,11 @@ public class WatchConnectivityClient: NSObject, WCSessionDelegate, ObservableObj
             if let pref = applicationContext["preference"] as? String {
                 self.userPreference = pref
             }
+            let remoteBookmarks = self.extractBookmarkedIds(from: applicationContext)
             if let dealsData = applicationContext["deals"] as? [[String: Any]], !dealsData.isEmpty {
-                self.deals = self.parseDeals(from: dealsData)
+                let parsed = self.parseDeals(from: dealsData)
                 let source = applicationContext["source"] as? String ?? "iPhone Context"
-                self.syncSource = "⚡ \(source)"
+                self.applyAndPersistDeals(parsed, remoteBookmarkedIds: remoteBookmarks, sourceLabel: "⚡ \(source)")
             }
         }
     }
@@ -264,11 +392,13 @@ public class WatchConnectivityClient: NSObject, WCSessionDelegate, ObservableObj
             if let pref = message["preference"] as? String {
                 self.userPreference = pref
             }
+            let remoteBookmarks = self.extractBookmarkedIds(from: message)
             if let dealsData = message["deals"] as? [[String: Any]], !dealsData.isEmpty {
-                self.deals = self.parseDeals(from: dealsData)
+                let parsed = self.parseDeals(from: dealsData)
                 let source = message["source"] as? String ?? "iPhone Push"
-                self.syncSource = "⚡ \(source)"
+                self.applyAndPersistDeals(parsed, remoteBookmarkedIds: remoteBookmarks, sourceLabel: "⚡ \(source)")
             }
         }
     }
 }
+#endif

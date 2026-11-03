@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 #if canImport(WatchKit)
 import WatchKit
 #endif
@@ -8,6 +9,7 @@ import WatchKit
 public struct WatchDealListView: View {
     @ObservedObject private var client = WatchConnectivityClient.shared
     @State private var selectedDealIndex: Int? = nil
+    @State private var showComplicationsPreview: Bool = false
     @State private var crownScrollPosition: CGFloat = 0.0
     @State private var now: Date = Date()
 
@@ -38,6 +40,18 @@ public struct WatchDealListView: View {
                     WatchDealDetailView(deal: $client.deals[index])
                 }
             }
+            .sheet(isPresented: $showComplicationsPreview) {
+                WatchComplicationsPreviewSheet { selectedDeal in
+                    if let idx = client.deals.firstIndex(where: { $0.id == selectedDeal.id }) {
+                        selectedDealIndex = idx
+                    } else if !client.deals.isEmpty {
+                        selectedDealIndex = 0
+                    }
+                }
+            }
+            .onOpenURL { url in
+                handleWatchDeepLink(url)
+            }
             .onAppear {
                 client.requestDealsFromPhone()
             }
@@ -50,16 +64,38 @@ public struct WatchDealListView: View {
     private var dealListContent: some View {
         ScrollView {
             LazyVStack(spacing: 8) {
-                // Flash summary pill & iPhone Sync Status
-                HStack {
+                // Flash summary pill, iPhone Sync Status & Smart Stack / Complications Preview trigger
+                HStack(spacing: 4) {
                     Image(systemName: "iphone.gen3")
                         .foregroundColor(.blue)
                         .font(.caption2)
                     Text(client.syncSource)
-                        .font(.system(size: 10, weight: .semibold))
+                        .font(.system(size: 9, weight: .semibold))
                         .foregroundColor(.cyan)
                         .lineLimit(1)
+                        .accessibilityIdentifier("watch_sync_status_label")
+
                     Spacer()
+
+                    Button(action: {
+                        playHapticFeedback(.click)
+                        showComplicationsPreview = true
+                    }) {
+                        HStack(spacing: 2) {
+                            Image(systemName: "square.stack.3d.up.fill")
+                                .font(.system(size: 8))
+                            Text("Widgets")
+                                .font(.system(size: 8, weight: .bold))
+                        }
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 2)
+                        .background(Color.blue.opacity(0.28))
+                        .foregroundColor(.cyan)
+                        .cornerRadius(4)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier("watch_complications_button")
+
                     Button(action: {
                         playHapticFeedback(.click)
                         client.requestDealsFromPhone()
@@ -81,6 +117,7 @@ public struct WatchDealListView: View {
                         WatchDealCard(deal: deal, now: now)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityIdentifier("watch_deal_card_\(deal.id)")
                 }
 
                 // Bottom refresh prompt
@@ -98,6 +135,7 @@ public struct WatchDealListView: View {
             }
             .padding(.horizontal, 2)
         }
+        .accessibilityIdentifier("watch_deal_list")
         .focusable()
         .digitalCrownRotation(
             $crownScrollPosition,
@@ -137,12 +175,23 @@ public struct WatchDealListView: View {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 6)
 
-            Button(action: loadDeals) {
-                Text("Check Again")
-                    .font(.caption2.bold())
+            HStack(spacing: 6) {
+                Button(action: loadDeals) {
+                    Text("Check Again")
+                        .font(.caption2.bold())
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.blue)
+
+                Button(action: {
+                    showComplicationsPreview = true
+                }) {
+                    Text("Widgets")
+                        .font(.caption2.bold())
+                }
+                .buttonStyle(.bordered)
+                .accessibilityIdentifier("watch_complications_button")
             }
-            .buttonStyle(.borderedProminent)
-            .tint(.blue)
             .padding(.top, 4)
         }
         .padding(.horizontal, 6)
@@ -162,6 +211,28 @@ public struct WatchDealListView: View {
                 }
             }
         )
+    }
+
+    private func handleWatchDeepLink(_ url: URL) {
+        let raw = url.absoluteString.trimmingCharacters(in: .whitespacesAndNewlines)
+        let prefixes = [
+            "coursedeals://courses/",
+            "coursedeals://coupon/",
+            "https://coursedeals.com/deal/",
+            "https://coursedeals.com/courses/"
+        ]
+        guard let prefix = prefixes.first(where: { raw.hasPrefix($0) }) else {
+            return
+        }
+        let tail = String(raw.dropFirst(prefix.count))
+            .components(separatedBy: CharacterSet(charactersIn: "?#/"))
+            .first ?? ""
+        guard let targetId = Int(tail), targetId > 0 else {
+            return
+        }
+        if let index = client.deals.firstIndex(where: { $0.id == targetId }) {
+            selectedDealIndex = index
+        }
     }
 
     private func loadDeals() {

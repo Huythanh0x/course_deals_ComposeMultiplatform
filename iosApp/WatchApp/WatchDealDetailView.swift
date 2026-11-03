@@ -12,10 +12,28 @@ public struct WatchDealDetailView: View {
     @State private var hasTriggeredHandoff: Bool = false
     @State private var activeUserActivity: NSUserActivity?
 
-    public static let handoffActivityType = "com.coursedeals.deal.open"
+    public static let handoffActivityType = "com.thanh0x.coursedeals.courseDetail"
+    public static let legacyHandoffActivityType = "com.coursedeals.deal.open"
 
     public init(deal: Binding<WatchDealModel>) {
         self._deal = deal
+    }
+
+    public static func buildHandoffUserInfo(for deal: WatchDealModel) -> [String: Any] {
+        var userInfo: [String: Any] = [
+            "courseId": deal.id,
+            "dealId": deal.id,
+            "deepLink": deal.deepLinkUrl.absoluteString,
+            "title": deal.title,
+            "platform": deal.platform.displayName
+        ]
+        if let code = deal.couponCode {
+            userInfo["couponCode"] = code
+        }
+        if let url = deal.couponUrl {
+            userInfo["couponUrl"] = url
+        }
+        return userInfo
     }
 
     public var body: some View {
@@ -118,6 +136,7 @@ public struct WatchDealDetailView: View {
                         .cornerRadius(8)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityIdentifier("watch_copy_coupon_button")
 
                     if hasCopiedCode {
                         Text("Code tapped! Ready to paste")
@@ -126,7 +145,7 @@ public struct WatchDealDetailView: View {
                     }
                 }
 
-                // Primary CTA: Open on iPhone (Apple Handoff)
+                // Primary CTA: Open on iPhone (Apple Handoff + WCSession instant relay)
                 Button(action: triggerHandoffToIPhone) {
                     HStack {
                         Image(systemName: "iphone.and.arrow.forward")
@@ -141,8 +160,9 @@ public struct WatchDealDetailView: View {
                     .cornerRadius(8)
                 }
                 .buttonStyle(.plain)
+                .accessibilityIdentifier("watch_open_on_iphone_button")
 
-                // Save for Later Bookmark Toggle
+                // Save for Later Bookmark Toggle (two-way synced with iPhone & offline cache)
                 Button(action: toggleBookmark) {
                     HStack {
                         Image(systemName: deal.isBookmarked ? "bookmark.fill" : "bookmark")
@@ -156,6 +176,7 @@ public struct WatchDealDetailView: View {
                     .cornerRadius(8)
                 }
                 .buttonStyle(.plain)
+                .accessibilityIdentifier("watch_bookmark_button")
             }
             .padding(.horizontal, 4)
         }
@@ -178,7 +199,8 @@ public struct WatchDealDetailView: View {
 
     private func toggleBookmark() {
         playHapticFeedback(.click)
-        deal.isBookmarked.toggle()
+        let newState = WatchConnectivityClient.shared.toggleBookmark(for: deal.id)
+        deal.isBookmarked = newState
     }
 
     private func triggerHandoffToIPhone() {
@@ -189,6 +211,9 @@ public struct WatchDealDetailView: View {
         configureUserActivity(activity)
         activity.becomeCurrent()
         activeUserActivity = activity
+
+        // Simultaneously relay via WCSession so paired iPhone navigates immediately when active
+        WatchConnectivityClient.shared.sendOpenOnPhoneRequest(for: deal)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
             hasTriggeredHandoff = false
@@ -209,20 +234,11 @@ public struct WatchDealDetailView: View {
 
         if let targetUrlString = deal.couponUrl, let targetUrl = URL(string: targetUrlString) {
             activity.webpageURL = targetUrl
+        } else {
+            activity.webpageURL = URL(string: "https://coursedeals.com/deal/\(deal.id)")
         }
 
-        var userInfo: [String: Any] = [
-            "dealId": deal.id,
-            "title": deal.title,
-            "platform": deal.platform.displayName
-        ]
-        if let code = deal.couponCode {
-            userInfo["couponCode"] = code
-        }
-        if let url = deal.couponUrl {
-            userInfo["couponUrl"] = url
-        }
-        activity.userInfo = userInfo
+        activity.userInfo = Self.buildHandoffUserInfo(for: deal)
     }
 
     private func playHapticFeedback(_ type: WatchHapticType) {
