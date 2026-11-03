@@ -33,6 +33,7 @@ buildconfig = "5.5.1"
 openapiGenerator = "7.12.0"
 kotlinxDatetime = "0.6.2"
 javafx = "21.0.5"
+compose-webview = "2.0.3"
 firebase-bom = "33.9.0"
 
 [libraries]
@@ -109,6 +110,7 @@ coil-network-ktor3 = { group = "io.coil-kt.coil3", name = "coil-network-ktor3", 
 androidx-lifecycle-viewmodel-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel-compose", version = "2.8.4" }
 androidx-lifecycle-runtime-compose-multiplatform = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version = "2.8.4" }
 androidx-navigation-compose-multiplatform = { group = "org.jetbrains.androidx.navigation", name = "navigation-compose", version = "2.8.0-alpha10" }
+compose-webview-multiplatform = { module = "io.github.kevinnzou:compose-webview-multiplatform", version.ref = "compose-webview" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

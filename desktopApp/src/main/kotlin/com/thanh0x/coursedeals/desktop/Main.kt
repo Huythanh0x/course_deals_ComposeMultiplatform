@@ -40,8 +40,8 @@ fun main(args: Array<String>) {
     AppVersion.overrideVersionCode = config.versionOverride
 
     logger.debug {
-        "CourseDeals Desktop starting (screen=${config.initialScreen}, route=${config.initialRoute}, " +
-            "versionOverride=${config.versionOverride})"
+        "CourseDeals Desktop [Preview & Dev Test] starting (screen=${config.initialScreen}, " +
+            "route=${config.initialRoute}, versionOverride=${config.versionOverride})"
     }
 
     installDesktopPlatformActions()
@@ -57,7 +57,7 @@ fun main(args: Array<String>) {
         Window(
             onCloseRequest = ::exitApplication,
             state = windowState,
-            title = "Course Deals",
+            title = "Course Deals (Desktop Preview & Dev Test)",
         ) {
             val graphicsLayer = rememberGraphicsLayer()
 
