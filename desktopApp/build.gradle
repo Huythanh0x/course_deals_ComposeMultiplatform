@@ -64,6 +64,12 @@ dependencies {
 compose.desktop {
     application {
         mainClass = "com.thanh0x.coursedeals.desktop.MainKt"
+        jvmArgs.addAll([
+            "--add-opens=java.desktop/sun.awt=ALL-UNNAMED",
+            "--add-opens=java.desktop/java.awt.peer=ALL-UNNAMED",
+            "--add-opens=java.desktop/sun.lwawt=ALL-UNNAMED",
+            "--add-opens=java.desktop/sun.lwawt.macosx=ALL-UNNAMED",
+        ])
         nativeDistributions {
             targetFormats(org.jetbrains.compose.desktop.application.dsl.TargetFormat.Dmg)
             packageName = "CourseDeals"
@@ -94,13 +100,10 @@ compose.desktop {
 }
 
 tasks.withType(JavaExec).configureEach {
-    jvmArgs("--add-opens", "java.desktop/sun.awt=ALL-UNNAMED")
-    jvmArgs("--add-opens", "java.desktop/java.awt.peer=ALL-UNNAMED")
-    def os = System.getProperty("os.name", "").toLowerCase(java.util.Locale.ROOT)
-    if (os.contains("mac")) {
-        jvmArgs("--add-opens", "java.desktop/sun.lwawt=ALL-UNNAMED")
-        jvmArgs("--add-opens", "java.desktop/sun.lwawt.macosx=ALL-UNNAMED")
-    }
+    jvmArgs("--add-opens=java.desktop/sun.awt=ALL-UNNAMED")
+    jvmArgs("--add-opens=java.desktop/java.awt.peer=ALL-UNNAMED")
+    jvmArgs("--add-opens=java.desktop/sun.lwawt=ALL-UNNAMED")
+    jvmArgs("--add-opens=java.desktop/sun.lwawt.macosx=ALL-UNNAMED")
     def sysArgsProp = providers.systemProperty("coursedeals.args").orNull
     if (sysArgsProp != null && !sysArgsProp.trim().isEmpty()) {
         systemProperty("coursedeals.args", sysArgsProp.trim())

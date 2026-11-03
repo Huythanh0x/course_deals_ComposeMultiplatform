@@ -74,6 +74,7 @@ const val TAG_WEBVIEW_ERROR_CARD = "desktop_webview_error_card"
 const val TAG_WEBVIEW_RETRY_BUTTON = "desktop_webview_retry_button"
 
 private const val INITIAL_LOADING_PROGRESS = 0.1f
+
 private const val KCEF_INITIAL_PROGRESS = 0.05f
 
 private val webViewLogger by lazy {
@@ -432,9 +433,9 @@ private fun DesktopChromiumContent(
             }
 
             LaunchedEffect(webViewState.errorsForCurrentRequest.size) {
-                if (webViewState.errorsForCurrentRequest.isNotEmpty()) {
-                    val lastError = webViewState.errorsForCurrentRequest.lastOrNull()
-                    onUiStateChange(uiState.copy(errorMessage = lastError?.description ?: "Web load error"))
+                val mainFrameError = webViewState.errorsForCurrentRequest.lastOrNull { it.isFromMainFrame }
+                if (mainFrameError != null) {
+                    onUiStateChange(uiState.copy(errorMessage = mainFrameError.description))
                     onPageError()
                 }
             }
