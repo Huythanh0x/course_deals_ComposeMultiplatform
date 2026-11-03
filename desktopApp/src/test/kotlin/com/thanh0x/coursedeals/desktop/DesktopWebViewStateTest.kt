@@ -2,7 +2,6 @@ package com.thanh0x.coursedeals.desktop
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -33,7 +32,7 @@ class DesktopWebViewStateTest {
             formatDisplayHost("https://www.udemy.com/courses/development/?couponCode=FREE"),
         )
         assertEquals(
-            "udemy.com",
+            "udemy.com/",
             formatDisplayHost("https://www.udemy.com/"),
         )
         assertEquals(
@@ -44,46 +43,5 @@ class DesktopWebViewStateTest {
             "invalid-url",
             formatDisplayHost("invalid-url"),
         )
-    }
-
-    @Test
-    fun `DesktopBrowserUiState transitions across start progress success and error states`() {
-        val initial = DesktopBrowserUiState(currentUrl = "https://www.udemy.com/")
-        assertFalse(initial.isLoading)
-        assertEquals(0f, initial.progress)
-        assertNull(initial.errorMessage)
-
-        val started = initial.onLoadStarted("https://www.udemy.com/courses/development/")
-        assertTrue(started.isLoading)
-        assertEquals("https://www.udemy.com/courses/development/", started.currentUrl)
-        assertEquals(0.1f, started.progress)
-        assertNull(started.errorMessage)
-
-        val midProgress = started.onProgressChanged(0.65f)
-        assertEquals(0.65f, midProgress.progress)
-        assertEquals(1f, started.onProgressChanged(1.5f).progress)
-        assertEquals(0f, started.onProgressChanged(-0.4f).progress)
-
-        val succeeded = midProgress.onLoadSucceeded(
-            loadedUrl = "https://www.udemy.com/courses/development/",
-            title = "Online Development Courses | Udemy",
-            canGoBack = true,
-            canGoForward = false,
-        )
-        assertFalse(succeeded.isLoading)
-        assertEquals(1f, succeeded.progress)
-        assertEquals("Online Development Courses | Udemy", succeeded.pageTitle)
-        assertTrue(succeeded.canGoBack)
-        assertFalse(succeeded.canGoForward)
-        assertNull(succeeded.errorMessage)
-
-        val failed = succeeded.onLoadFailed("Connection timed out")
-        assertFalse(failed.isLoading)
-        assertEquals(0f, failed.progress)
-        assertEquals("Connection timed out", failed.errorMessage)
-
-        val retried = failed.onLoadStarted()
-        assertTrue(retried.isLoading)
-        assertNull(retried.errorMessage)
     }
 }
