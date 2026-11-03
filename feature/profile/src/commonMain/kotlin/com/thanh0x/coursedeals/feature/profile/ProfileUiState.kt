@@ -13,6 +13,7 @@ data class ProfileUiState(
     val favCategories: List<String> = emptyList(),
     val favKeywords: List<String> = emptyList(),
     val isNotificationsEnabled: Boolean = true,
+    val subscribedTopics: Set<String> = emptySet(),
     val isSyncing: Boolean = false,
     val isGuestMode: Boolean = false,
     val isDeleteAccountDialogOpen: Boolean = false,

@@ -5,6 +5,8 @@ import com.thanh0x.coursedeals.core.common.Constant
 import com.thanh0x.coursedeals.core.common.NetworkStatusCode
 import com.thanh0x.coursedeals.domain.user.source.LocalAuthenticationDataSource
 import com.thanh0x.coursedeals.domain.user.source.RemoteAuthenticationDataSource
+import com.thanh0x.coursedeals.core.network.api.DeviceTokenApi
+import com.thanh0x.coursedeals.core.network.api.DeviceTokenApiImpl
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.plugins.HttpSend
@@ -163,4 +165,5 @@ val coreNetworkModule = module {
             remoteAuthenticationDataSourceProvider = { get() }
         )
     }
+    single<DeviceTokenApi> { DeviceTokenApiImpl(httpClient = get()) }
 }

@@ -23,6 +23,8 @@ object Constant {
 
     const val DEFAULT_FORCE_UPDATE_URL =
         "https://play.google.com/store/apps/details?id=com.thanh0x.coursedeals"
+    const val PREFERENCES_DEVICE_TOKEN = "device_token"
+    const val PREFERENCES_SUBSCRIBED_TOPICS = "subscribed_topics"
 
     const val NETWORK_AUTHORIZATION_HEADER = "Authorization"
     const val NETWORK_BEARER_PREFIX = "Bearer"

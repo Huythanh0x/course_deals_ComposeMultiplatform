@@ -52,6 +52,7 @@ import com.thanh0x.coursedeals.feature.splash.SplashViewModel
 import com.thanh0x.coursedeals.feature.splash.di.splashModule
 import com.thanh0x.coursedeals.navigation.MainAppScaffold
 import com.thanh0x.coursedeals.navigation.TopLevelDestination
+import com.thanh0x.coursedeals.shared.di.platformPushModule
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.core.context.startKoin
 import org.koin.mp.KoinPlatformTools
@@ -69,6 +70,7 @@ val sharedKoinModules = listOf(
     detailModule,
     authModule,
     splashModule,
+    platformPushModule,
 )
 
 fun initSharedKoin() {
@@ -121,6 +123,9 @@ fun App(
                 message = message,
                 type = DialogType.INFO,
             )
+        }
+        PlatformActions.onNavigateToDetail = { courseId ->
+            currentScreen = AppScreen.Detail(courseId)
         }
         val repo = KoinPlatformTools.defaultContext().getOrNull()?.getOrNull<UserProfileRepository>()
         val savedDarkMode = repo?.getEnableDarkMode()

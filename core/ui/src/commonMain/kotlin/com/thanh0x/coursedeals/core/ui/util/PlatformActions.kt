@@ -7,6 +7,7 @@ object PlatformActions {
     var onShareLink: ((title: String, url: String) -> Unit)? = null
     var onApplyDarkMode: ((Boolean) -> Unit)? = null
     var onShowToast: ((String) -> Unit)? = null
+    var onNavigateToDetail: ((Int) -> Unit)? = null
 
     fun copyToClipboard(text: String) {
         onCopyToClipboard?.invoke(text)
@@ -35,5 +36,9 @@ object PlatformActions {
 
     fun showToast(message: String) {
         onShowToast?.invoke(message)
+    }
+
+    fun navigateToDetail(courseId: Int) {
+        onNavigateToDetail?.invoke(courseId)
     }
 }

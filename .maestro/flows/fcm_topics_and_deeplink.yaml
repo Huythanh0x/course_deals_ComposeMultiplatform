@@ -1,0 +1,53 @@
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: false
+- extendedWaitUntil:
+    visible: "Sign In"
+    timeout: 15000
+- tapOn: "Access as Guest"
+- extendedWaitUntil:
+    visible: "PROFILE"
+    timeout: 15000
+- tapOn: "PROFILE"
+# Sign in with Google dev mode to unlock profile settings if on guest mode
+- extendedWaitUntil:
+    visible: "Sign In"
+    timeout: 10000
+- tapOn: "Sign In"
+- extendedWaitUntil:
+    visible: "Continue with Google"
+    timeout: 10000
+- tapOn: "Continue with Google"
+- tapOn:
+    text: "Sign In"
+    optional: true
+- extendedWaitUntil:
+    visible: "HOME"
+    timeout: 15000
+- tapOn: "PROFILE"
+# Verify Master Notification switch
+- extendedWaitUntil:
+    visible: "Notifications"
+    timeout: 15000
+- assertVisible: "Notifications"
+- assertVisible:
+    id: "switch_notif_master"
+- takeScreenshot: 01_profile_settings.png
+# Verify topic switch visible and toggle it
+- scrollUntilVisible:
+    element: "All Deals"
+    direction: DOWN
+- assertVisible: "All Deals"
+- assertVisible:
+    id: "switch_topic_deals_all"
+- tapOn:
+    id: "switch_topic_deals_all"
+- takeScreenshot: 02_topics_toggled.png
+# Deep link navigation to course 1
+- openLink: "coursedeals://courses/1"
+- extendedWaitUntil:
+    visible: "Enroll Now"
+    timeout: 15000
+- assertVisible: "Enroll Now"
+- takeScreenshot: 03_deeplink_detail.png

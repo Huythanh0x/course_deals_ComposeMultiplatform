@@ -66,6 +66,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.thanh0x.coursedeals.core.common.notification.NotificationTopic
+import com.thanh0x.coursedeals.core.ui.util.displayNameResource
 import com.thanh0x.coursedeals.core.ui.resources.Res
 import com.thanh0x.coursedeals.core.ui.resources.stringResource
 import com.thanh0x.coursedeals.core.ui.theme.CourseDealsTheme
@@ -82,6 +84,7 @@ fun ProfileScreen(
     onDarkModeToggled: (Boolean) -> Unit = {},
     onFingerprintToggled: (Boolean) -> Unit = {},
     onNotificationsToggled: (Boolean) -> Unit = {},
+    onTopicToggled: (String, Boolean) -> Unit = { _, _ -> },
     onLogoutClick: () -> Unit = {},
     onDeleteAccountClick: () -> Unit = {},
     onConfirmDeleteAccount: () -> Unit = {},
@@ -129,6 +132,7 @@ fun ProfileScreen(
                         onDarkModeToggled = onDarkModeToggled,
                         onFingerprintToggled = onFingerprintToggled,
                         onNotificationsToggled = onNotificationsToggled,
+                        onTopicToggled = onTopicToggled,
                         onLogoutClick = onLogoutClick,
                         onDeleteAccountClick = onDeleteAccountClick,
                         onDevEmailClick = onDevEmailClick,
@@ -146,6 +150,7 @@ fun ProfileScreen(
                         onDarkModeToggled = onDarkModeToggled,
                         onFingerprintToggled = onFingerprintToggled,
                         onNotificationsToggled = onNotificationsToggled,
+                        onTopicToggled = onTopicToggled,
                         onLogoutClick = onLogoutClick,
                         onDeleteAccountClick = onDeleteAccountClick,
                         onDevEmailClick = onDevEmailClick,
@@ -198,6 +203,7 @@ private fun ProfileContentPortrait(
     onDarkModeToggled: (Boolean) -> Unit,
     onFingerprintToggled: (Boolean) -> Unit,
     onNotificationsToggled: (Boolean) -> Unit,
+    onTopicToggled: (String, Boolean) -> Unit,
     onLogoutClick: () -> Unit,
     onDeleteAccountClick: () -> Unit,
     onDevEmailClick: () -> Unit,
@@ -235,10 +241,12 @@ private fun ProfileContentPortrait(
             isDarkModeEnabled = uiState.isDarkModeEnabled,
             isFingerprintEnabled = uiState.isFingerprintEnabled,
             isNotificationsEnabled = uiState.isNotificationsEnabled,
+            subscribedTopics = uiState.subscribedTopics,
             isGuestMode = uiState.isGuestMode,
             onDarkModeToggled = onDarkModeToggled,
             onFingerprintToggled = onFingerprintToggled,
             onNotificationsToggled = onNotificationsToggled,
+            onTopicToggled = onTopicToggled,
             onDiagnosticLogsClick = onDiagnosticLogsClick,
             modifier = Modifier.fillMaxWidth()
         )
@@ -275,6 +283,7 @@ private fun ProfileContentLandscape(
     onDarkModeToggled: (Boolean) -> Unit,
     onFingerprintToggled: (Boolean) -> Unit,
     onNotificationsToggled: (Boolean) -> Unit,
+    onTopicToggled: (String, Boolean) -> Unit,
     onLogoutClick: () -> Unit,
     onDeleteAccountClick: () -> Unit,
     onDevEmailClick: () -> Unit,
@@ -339,10 +348,12 @@ private fun ProfileContentLandscape(
                 isDarkModeEnabled = uiState.isDarkModeEnabled,
                 isFingerprintEnabled = uiState.isFingerprintEnabled,
                 isNotificationsEnabled = uiState.isNotificationsEnabled,
+                subscribedTopics = uiState.subscribedTopics,
                 isGuestMode = uiState.isGuestMode,
                 onDarkModeToggled = onDarkModeToggled,
                 onFingerprintToggled = onFingerprintToggled,
                 onNotificationsToggled = onNotificationsToggled,
+                onTopicToggled = onTopicToggled,
                 onDiagnosticLogsClick = onDiagnosticLogsClick,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -601,10 +612,12 @@ private fun SettingsSection(
     isDarkModeEnabled: Boolean,
     isFingerprintEnabled: Boolean,
     isNotificationsEnabled: Boolean,
+    subscribedTopics: Set<String>,
     isGuestMode: Boolean,
     onDarkModeToggled: (Boolean) -> Unit,
     onFingerprintToggled: (Boolean) -> Unit,
     onNotificationsToggled: (Boolean) -> Unit,
+    onTopicToggled: (String, Boolean) -> Unit,
     onDiagnosticLogsClick: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
@@ -637,26 +650,22 @@ private fun SettingsSection(
         SettingSwitchRow(
             title = stringResource(Res.string.notif_master),
             checked = isNotificationsEnabled,
-            onCheckedChange = onNotificationsToggled
+            onCheckedChange = onNotificationsToggled,
+            switchModifier = Modifier.testTag("switch_notif_master")
         )
 
-        // Notification Sub-toggles
+        // Notification Topic Switches (visible when master is ON)
         if (isNotificationsEnabled) {
-            SettingSubSwitchRow(
-                title = stringResource(Res.string.notif_cat),
-                checked = true,
-                onCheckedChange = {}
-            )
-            SettingSubSwitchRow(
-                title = stringResource(Res.string.notif_kw),
-                checked = true,
-                onCheckedChange = {}
-            )
-            SettingSubSwitchRow(
-                title = stringResource(Res.string.notif_hot),
-                checked = true,
-                onCheckedChange = {}
-            )
+            NotificationTopic.entries.forEach { topic ->
+                SettingSubSwitchRow(
+                    title = stringResource(topic.displayNameResource),
+                    checked = subscribedTopics.contains(topic.topicId),
+                    onCheckedChange = { checked ->
+                        onTopicToggled(topic.topicId, checked)
+                    },
+                    switchModifier = Modifier.testTag("switch_topic_${topic.topicId}")
+                )
+            }
         }
 
         // Diagnostic Logs Action Row
@@ -697,6 +706,7 @@ private fun SettingSwitchRow(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    switchModifier: Modifier = Modifier,
     enabled: Boolean = true,
 ) {
     Row(
@@ -720,7 +730,8 @@ private fun SettingSwitchRow(
         Switch(
             checked = checked,
             onCheckedChange = onCheckedChange,
-            enabled = enabled
+            enabled = enabled,
+            modifier = switchModifier
         )
     }
 }
@@ -731,11 +742,13 @@ private fun SettingSubSwitchRow(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    switchModifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .height(48.dp)
+            .clickable { onCheckedChange(!checked) }
             .padding(start = 32.dp, end = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
@@ -747,7 +760,8 @@ private fun SettingSubSwitchRow(
         )
         Switch(
             checked = checked,
-            onCheckedChange = onCheckedChange
+            onCheckedChange = onCheckedChange,
+            modifier = switchModifier
         )
     }
 }
