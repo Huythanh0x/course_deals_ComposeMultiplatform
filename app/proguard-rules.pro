@@ -1,21 +1,35 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# Keep line numbers for crash reporting
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# Kotlinx Serialization
+-keepattributes *Annotation*,InnerClasses
+-dontnote kotlinx.serialization.SerializationKt
+-keepclassmembers class * {
+    @kotlinx.serialization.Serializable <fields>;
+}
+-keepclassmembers class * {
+    *** Companion;
+}
+-keepclassmembers class * {
+    kotlinx.serialization.KSerializer serializer(...);
+}
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# Domain & Data DTO Models
+-keep class com.thanh0x.coursedeals.domain.** { *; }
+-keep class com.thanh0x.coursedeals.data.** { *; }
+-keep class com.thanh0x.coursedeals.core.network.** { *; }
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# Ktor Client
+-keep class io.ktor.** { *; }
+-dontwarn io.ktor.**
+
+# Koin DI
+-keep class org.koin.** { *; }
+-dontwarn org.koin.**
+
+# Coil Image Loader
+-keep class coil.** { *; }
+-keep class coil3.** { *; }
+-dontwarn coil.**
+-dontwarn coil3.**
