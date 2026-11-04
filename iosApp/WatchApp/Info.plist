@@ -28,6 +28,8 @@
 	</array>
 	<key>WKCompanionAppBundleIdentifier</key>
 	<string>com.thanh0x.coursedeals.iosApp</string>
+	<key>WKRunsIndependentlyOfCompanionApp</key>
+	<true/>
 	<key>WKApplication</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
