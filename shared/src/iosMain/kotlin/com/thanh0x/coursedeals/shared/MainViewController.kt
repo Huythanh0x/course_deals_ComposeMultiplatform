@@ -10,6 +10,7 @@ import com.thanh0x.coursedeals.core.logging.debug
 import com.thanh0x.coursedeals.core.ui.util.PlatformActions
 import com.thanh0x.coursedeals.domain.coupons.CouponRepository
 import com.thanh0x.coursedeals.feature.auth.AuthMode
+import com.thanh0x.coursedeals.shared.watch.WatchDealJsonCodec
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -211,6 +212,21 @@ fun syncWatchBookmark(courseId: Int, isBookmarked: Boolean) {
 fun isWatchCourseBookmarked(courseId: Int): Boolean {
     if (courseId <= 0) return false
     return courseId in readWatchBookmarkedCourseIds(NSUserDefaults.standardUserDefaults)
+}
+
+fun buildWatchHotDealsUrl(preference: String?): String =
+    WatchDealJsonCodec.buildHotDealsUrl(preference = preference)
+
+fun mapHotDealsJsonForWatch(apiJson: String, bookmarkedIdsCsv: String): String {
+    val bookmarkedIds = bookmarkedIdsCsv
+        .split(",")
+        .mapNotNull { it.trim().toIntOrNull() }
+        .filter { it > 0 }
+        .toSet() + readWatchBookmarkedCourseIds(NSUserDefaults.standardUserDefaults)
+    return WatchDealJsonCodec.mapHotDealsApiJsonToWatchDealsJson(
+        apiJson = apiJson,
+        bookmarkedIds = bookmarkedIds,
+    )
 }
 
 private fun readWatchBookmarkedCourseIds(defaults: NSUserDefaults): MutableSet<Int> {
