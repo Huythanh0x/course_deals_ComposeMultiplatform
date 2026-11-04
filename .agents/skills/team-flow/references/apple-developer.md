@@ -57,9 +57,11 @@ Coordinate closely with `kmp-engineer` whenever shared KMP contracts (`:shared`,
      - Always guard `WCSession.isSupported()` before activating `WCSession.default` on both iOS (`iosApp`) and watchOS (`watchApp`).
      - Use `updateApplicationContext(_:)` for latest state sync (auth status, top bookmarked deals, user profile summary), `transferUserInfo(_:)` for queued event delivery, and `sendMessage(_:replyHandler:errorHandler:)` only when `WCSession.default.isReachable` is `true` for immediate foreground actions.
      - Dispatch all `WCSessionDelegate` callbacks onto `@MainActor` before mutating `@Observable` UI state.
-   - **Watch Complications & WidgetKit (`widgetkit`)**:
-     - Support watchOS & iOS Lock Screen accessory families (`.accessoryCircular`, `.accessoryRectangular`, `.accessoryInline`, `.accessoryCorner`) alongside iOS Home Screen families (`.systemSmall`, `.systemMedium`).
-     - Share cached data between `iosApp`, `watchApp`, and Widget Extensions via **App Groups** (`UserDefaults(suiteName: "group.com.thanh0x.coursedeals")` or shared container URL).
+   - **Watch Complications & WidgetKit (`widgetkit`) — `[BLOCKING RULE]`**:
+     - Support watchOS & iOS Lock Screen accessory families (`.accessoryCircular`, `.accessoryRectangular`, `.accessoryInline`, `.accessoryCorner`) alongside watchOS 10+ Smart Stack (`SmartStackHotDealWidget`) and `.containerBackground(for: .widget)`.
+     - **Never create fake in-app "Widgets" preview buttons/sheets** to mimic complications. Always package a real WidgetKit extension (`WatchApp.app/PlugIns/WatchWidgetsExtension.appex`) compiled with `-application-extension -DWIDGET_EXTENSION -Xlinker -e -Xlinker _NSExtensionMain` (see `iosApp/WatchApp/build_watch_app.sh` and `WatchWidgetsInfo.plist`).
+     - **`WatchApp/Info.plist` Companion + Independent Launch Rule**: Always include both `<key>WKCompanionAppBundleIdentifier</key><string>com.thanh0x.coursedeals.iosApp</string>` AND `<key>WKRunsIndependentlyOfCompanionApp</key><true/>` in `WatchApp/Info.plist`. Without `WKRunsIndependentlyOfCompanionApp = true`, watchOS Simulator's `appconduitd` blocks `xcrun simctl launch` with `FBSOpenApplicationServiceErrorDomain Code=4 (_AppCounterpartIsInstalledOnPhoneForWatchBundleID)`.
+     - Share cached data between `iosApp`, `watchApp`, and `WatchWidgetsExtension.appex` (`chronod`) via **App Groups** (`UserDefaults(suiteName: "group.com.thanh0x.coursedeals")`) plus shared simulator JSON file mirroring (`/tmp/coursedeals_watch_shared_cache_v1.json` and `/tmp/coursedeals_watch_to_phone_event.json`) so complications and live Watch-to-iPhone handoff work deterministically on paired simulators.
 
 5. **Apple Security, Keychain & App Store Connect Hygiene (`swift-security` & `kmp-ios-build`)**:
    - **Never store tokens, secrets, or refresh tokens in `UserDefaults` or `Info.plist`**: Always use Keychain Services (`SecItemAdd` / `SecItemUpdate` with `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly`) off the main thread, and check every `OSStatus` (`errSecSuccess`, `errSecDuplicateItem`, `errSecItemNotFound`).
@@ -67,11 +69,16 @@ Coordinate closely with `kmp-engineer` whenever shared KMP contracts (`:shared`,
    - **Entitlements & Privacy**: Keep Debug (`aps-environment = development`) and Release (`aps-environment = production`) entitlements separate, maintain `UILaunchScreen` in `Info.plist`, and keep `PrivacyInfo.xcprivacy` required-reason API declarations accurate.
 
 6. **Verification & Quality Gate**:
+   - **Link Shared KMP watchOS Framework (`CourseDealsWatch.framework` — `[BLOCKING RULE]`)**:
+     - `WatchApp` and `WatchWidgetsExtension` import `CourseDealsWatch` directly from `:domain:coupons` (`watchosArm64()` and `watchosSimulatorArm64()`), sharing `WatchDealDto`, `WatchCoursePlatform`, `WatchDealJsonCodec`, and `Coupon` with zero Swift model duplication.
+     - Always run `./gradlew :domain:coupons:linkDebugFrameworkWatchosSimulatorArm64` before compiling `WatchApp` (note: `bash iosApp/WatchApp/build_watch_app.sh` runs this automatically).
    - Verify KMP iOS framework compilation & linking:
      `./gradlew :shared:linkDebugFrameworkIosSimulatorArm64`
+   - Verify watchOS app + WidgetKit `.appex` build & signing:
+     `bash iosApp/WatchApp/build_watch_app.sh`
    - Verify Xcode build for `iosApp` (and `watchApp` / widget schemes if present) targeting simulator:
      `xcodebuild -project iosApp/iosApp.xcodeproj -scheme iosApp -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build`
-   - Write and run Swift tests using modern **Swift Testing** (`import Testing`, `@Test`, `#expect(...)`, `#require(...)`) or XCTest when `iosAppTests`/`watchAppTests` are touched.
+   - Write and run Swift tests using modern **Swift Testing** (`import Testing`, `@Test`, `#expect(...)`, `#require(...)`) or `WatchEnhancementsVerification.swift` when `iosApp`/`WatchApp` are touched.
 
 7. **Hard Boundaries & Commit Discipline**:
    - Do **not** call `ask_question`, `git push`, or `gh pr create`.

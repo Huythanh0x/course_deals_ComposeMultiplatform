@@ -29,6 +29,11 @@ static def getLocalIP() {
 }
 
 def getLocalApiUrl() {
+    def propUrl = providers.gradleProperty("localApiUrl").orNull?.trim()
+    if (propUrl) return propUrl
+    def envUrl = providers.environmentVariable("LOCAL_API_URL").orNull?.trim()
+    if (envUrl) return envUrl
+    def port = providers.gradleProperty("localApiPort").orNull?.trim() ?: "8081"
     Properties properties = new Properties()
     def localPropertiesFile = project.rootProject.file('local.properties')
     if (localPropertiesFile.exists()) {
@@ -36,9 +41,9 @@ def getLocalApiUrl() {
     }
     def overrideIp = properties.getProperty("local.api.ip")
     if (overrideIp != null && !overrideIp.isEmpty()) {
-        return "http://${overrideIp}:8080"
+        return "http://${overrideIp}:${port}"
     }
-    return "http://${getLocalIP()}:8080"
+    return "http://${getLocalIP()}:${port}"
 }
 
 plugins {

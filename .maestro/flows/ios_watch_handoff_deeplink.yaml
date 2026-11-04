@@ -1,0 +1,16 @@
+appId: ${APP_ID}
+---
+# Verify Apple Watch Handoff & Deep-Link continuation directly into Course Detail (Course ID 4917622)
+- launchApp:
+    clearState: false
+    arguments:
+      deeplink: "coursedeals://courses/4917622"
+      "--deeplink=coursedeals://courses/4917622": "true"
+
+- extendedWaitUntil:
+    visible: "Enroll Now"
+    timeout: 15000
+
+- assertVisible: "Enroll Now"
+- assertVisible: "Report"
+- takeScreenshot: 01_ios_handoff_course_detail

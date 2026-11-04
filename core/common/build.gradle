@@ -3,15 +3,58 @@ plugins {
     alias(libs.plugins.buildconfig)
 }
 
+static def detectHostLanIp() {
+    try {
+        def en = java.net.NetworkInterface.getNetworkInterfaces()
+        def candidate = null
+        while (en.hasMoreElements()) {
+            def interFace = en.nextElement()
+            if (!interFace.isUp() || interFace.isLoopback() || interFace.isVirtual()) continue
+            def enumIpAddress = interFace.getInetAddresses()
+            while (enumIpAddress.hasMoreElements()) {
+                def inetAddress = enumIpAddress.nextElement()
+                if (inetAddress instanceof java.net.Inet4Address) {
+                    String name = interFace.getName().toLowerCase()
+                    if (name.startsWith("en") || name.startsWith("eth") || name.startsWith("wlan")) {
+                        return inetAddress.getHostAddress()
+                    }
+                    candidate = inetAddress.getHostAddress()
+                }
+            }
+        }
+        if (candidate != null) return candidate
+    } catch (Exception ignored) {
+    }
+    return "127.0.0.1"
+}
+
+def resolveLocalApiBaseUrl() {
+    def propUrl = providers.gradleProperty("localApiUrl").orNull?.trim()
+    if (propUrl) return propUrl
+    def envUrl = providers.environmentVariable("LOCAL_API_URL").orNull?.trim()
+    if (envUrl) return envUrl
+    def physicalLocal = providers.gradleProperty("physicalDeviceLocal").orNull?.toBoolean() ?: false
+    if (physicalLocal) {
+        def port = providers.gradleProperty("localApiPort").orNull?.trim() ?: "8081"
+        return "http://${detectHostLanIp()}:${port}"
+    }
+    return ""
+}
+
 buildConfig {
     packageName("com.thanh0x.coursedeals.core.common")
     useKotlinOutput {
         internalVisibility = false
     }
     buildConfigField('boolean', 'FEATURE_FINGERPRINT', 'false')
+    buildConfigField('String', 'LOCAL_API_BASE_URL', "\"${resolveLocalApiBaseUrl()}\"")
 }
 
 kotlin {
+    watchosArm64()
+    watchosDeviceArm64()
+    watchosSimulatorArm64()
+
     sourceSets {
         commonMain {
             dependencies {

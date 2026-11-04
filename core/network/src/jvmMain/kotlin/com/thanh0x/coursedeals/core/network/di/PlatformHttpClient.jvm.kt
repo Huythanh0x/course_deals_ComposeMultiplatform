@@ -1,5 +1,6 @@
 package com.thanh0x.coursedeals.core.network.di
 
+import com.thanh0x.coursedeals.core.common.BuildConfig
 import com.thanh0x.coursedeals.core.common.Constant
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
@@ -19,6 +20,9 @@ actual fun createPlatformHttpClient(block: HttpClientConfig<*>.() -> Unit): Http
 }
 
 actual fun platformBaseUrl(): String {
+    if (BuildConfig.LOCAL_API_BASE_URL.isNotBlank()) {
+        return BuildConfig.LOCAL_API_BASE_URL
+    }
     val isAndroid = try {
         Class.forName("android.os.Build")
         true

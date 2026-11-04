@@ -8,20 +8,93 @@
 
 /* Begin PBXBuildFile section */
 		A1000001 /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000001 /* iOSApp.swift */; };
-		B1000001 /* PhoneWatchConnectivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000001 /* PhoneWatchConnectivityManager.swift */; };
 		A1000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000002 /* ContentView.swift */; };
 		A1000003 /* ComposeApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A2000003 /* ComposeApp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A1000004 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A2000005 /* Assets.xcassets */; };
+		B1000001 /* PhoneWatchConnectivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000001 /* PhoneWatchConnectivityManager.swift */; };
+		W1000001 /* WatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = W2000001 /* WatchApp.swift */; };
+		W1000002 /* WatchDealModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = W2000002 /* WatchDealModel.swift */; };
+		W1000003 /* WatchDealCacheStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = W2000003 /* WatchDealCacheStore.swift */; };
+		W1000004 /* WatchConnectivityClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = W2000004 /* WatchConnectivityClient.swift */; };
+		W1000005 /* WatchDealListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = W2000005 /* WatchDealListView.swift */; };
+		W1000006 /* WatchDealCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = W2000006 /* WatchDealCardView.swift */; };
+		W1000007 /* WatchDealDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = W2000007 /* WatchDealDetailView.swift */; };
+		W1000011 /* WatchDealModel.swift in Widget Sources */ = {isa = PBXBuildFile; fileRef = W2000002 /* WatchDealModel.swift */; };
+		W1000012 /* WatchDealCacheStore.swift in Widget Sources */ = {isa = PBXBuildFile; fileRef = W2000003 /* WatchDealCacheStore.swift */; };
+		W1000013 /* WatchDealTimelineProvider.swift in Widget Sources */ = {isa = PBXBuildFile; fileRef = W2000008 /* WatchDealTimelineProvider.swift */; };
+		W1000014 /* ComplicationViews.swift in Widget Sources */ = {isa = PBXBuildFile; fileRef = W2000009 /* ComplicationViews.swift */; };
+		W1000015 /* SmartStackWidget.swift in Widget Sources */ = {isa = PBXBuildFile; fileRef = W2000010 /* SmartStackWidget.swift */; };
+		W1000016 /* WatchWidgetBundle.swift in Widget Sources */ = {isa = PBXBuildFile; fileRef = W2000011 /* WatchWidgetBundle.swift */; };
+		W1000020 /* WatchWidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = W2000021 /* WatchWidgetsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		W1000021 /* WatchApp.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = W2000020 /* WatchApp.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		W1000030 /* Assets.xcassets in Watch Resources */ = {isa = PBXBuildFile; fileRef = A2000005 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		W9000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A0000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = W5000002;
+			remoteInfo = WatchWidgetsExtension;
+		};
+		W9000002 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A0000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = W5000001;
+			remoteInfo = WatchApp;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		W7000010 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				W1000020 /* WatchWidgetsExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		W7000011 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				W1000021 /* WatchApp.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		A2000000 /* iosApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iosApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A2000001 /* iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSApp.swift; sourceTree = "<group>"; };
-		B2000001 /* PhoneWatchConnectivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneWatchConnectivityManager.swift; sourceTree = "<group>"; };
 		A2000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A2000003 /* ComposeApp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ComposeApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A2000004 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A2000005 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B2000001 /* PhoneWatchConnectivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneWatchConnectivityManager.swift; sourceTree = "<group>"; };
+		W2000001 /* WatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/WatchApp.swift; sourceTree = "<group>"; };
+		W2000002 /* WatchDealModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/Model/WatchDealModel.swift; sourceTree = "<group>"; };
+		W2000003 /* WatchDealCacheStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/Storage/WatchDealCacheStore.swift; sourceTree = "<group>"; };
+		W2000004 /* WatchConnectivityClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/Connectivity/WatchConnectivityClient.swift; sourceTree = "<group>"; };
+		W2000005 /* WatchDealListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/DealFeed/WatchDealListView.swift; sourceTree = "<group>"; };
+		W2000006 /* WatchDealCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/DealFeed/WatchDealCardView.swift; sourceTree = "<group>"; };
+		W2000007 /* WatchDealDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/DealDetail/WatchDealDetailView.swift; sourceTree = "<group>"; };
+		W2000008 /* WatchDealTimelineProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Widgets/Provider/WatchDealTimelineProvider.swift; sourceTree = "<group>"; };
+		W2000009 /* ComplicationViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Widgets/Views/ComplicationViews.swift; sourceTree = "<group>"; };
+		W2000010 /* SmartStackWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Widgets/Views/SmartStackWidget.swift; sourceTree = "<group>"; };
+		W2000011 /* WatchWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Widgets/WatchWidgetBundle.swift; sourceTree = "<group>"; };
+		W2000012 /* WatchAppInfo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = App/Info.plist; sourceTree = "<group>"; };
+		W2000013 /* WatchWidgetsInfo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Widgets/Info.plist; sourceTree = "<group>"; };
+		W2000020 /* WatchApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WatchApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		W2000021 /* WatchWidgetsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WatchWidgetsExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -33,6 +106,20 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		W3000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		W3000002 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -40,6 +127,7 @@
 			isa = PBXGroup;
 			children = (
 				A4000002 /* iosApp */,
+				W4000001 /* WatchApp */,
 				A4000003 /* Products */,
 				A4000004 /* Frameworks */,
 			);
@@ -57,10 +145,32 @@
 			path = iosApp;
 			sourceTree = "<group>";
 		};
+		W4000001 /* WatchApp */ = {
+			isa = PBXGroup;
+			children = (
+				W2000001 /* WatchApp.swift */,
+				W2000012 /* WatchAppInfo.plist */,
+				W2000002 /* WatchDealModel.swift */,
+				W2000003 /* WatchDealCacheStore.swift */,
+				W2000004 /* WatchConnectivityClient.swift */,
+				W2000005 /* WatchDealListView.swift */,
+				W2000006 /* WatchDealCardView.swift */,
+				W2000007 /* WatchDealDetailView.swift */,
+				W2000008 /* WatchDealTimelineProvider.swift */,
+				W2000009 /* ComplicationViews.swift */,
+				W2000010 /* SmartStackWidget.swift */,
+				W2000011 /* WatchWidgetBundle.swift */,
+				W2000013 /* WatchWidgetsInfo.plist */,
+			);
+			path = WatchApp;
+			sourceTree = "<group>";
+		};
 		A4000003 /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				A2000000 /* iosApp.app */,
+				W2000020 /* WatchApp.app */,
+				W2000021 /* WatchWidgetsExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -85,15 +195,53 @@
 				A3000001 /* Frameworks */,
 				A3000003 /* Resources */,
 				A7000002 /* Embed Frameworks */,
+				W7000011 /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				W9000012 /* PBXTargetDependency */,
 			);
 			name = iosApp;
 			productName = iosApp;
 			productReference = A2000000 /* iosApp.app */;
 			productType = "com.apple.product-type.application";
+		};
+		W5000001 /* WatchApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = W6000001 /* Build configuration list for PBXNativeTarget "WatchApp" */;
+			buildPhases = (
+				W7000001 /* Compile CourseDealsWatch KMP Framework */,
+				W3000011 /* Sources */,
+				W3000001 /* Frameworks */,
+				W3000021 /* Resources */,
+				W7000010 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				W9000011 /* PBXTargetDependency */,
+			);
+			name = WatchApp;
+			productName = WatchApp;
+			productReference = W2000020 /* WatchApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+		W5000002 /* WatchWidgetsExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = W6000002 /* Build configuration list for PBXNativeTarget "WatchWidgetsExtension" */;
+			buildPhases = (
+				W3000012 /* Sources */,
+				W3000002 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = WatchWidgetsExtension;
+			productName = WatchWidgetsExtension;
+			productReference = W2000021 /* WatchWidgetsExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -101,10 +249,16 @@
 		A0000001 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				BuildIndependentTargetsInParallel = 1;
-				LastUpgradeCheck = 1500;
+				BuildIndependentTargetsInParallel = 0;
+				LastUpgradeCheck = 2720;
 				TargetAttributes = {
 					A5000001 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+					W5000001 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+					W5000002 = {
 						CreatedOnToolsVersion = 15.0;
 					};
 				};
@@ -123,6 +277,8 @@
 			projectRoot = "";
 			targets = (
 				A5000001 /* iosApp */,
+				W5000001 /* WatchApp */,
+				W5000002 /* WatchWidgetsExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -133,6 +289,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1000004 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		W3000021 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				W1000030 /* Assets.xcassets in Watch Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -156,7 +320,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ \"$SKIP_KOTLIN_BUILD\" = \"1\" ]; then exit 0; fi\ncd \"$SRCROOT/..\"\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
+			shellScript = "if [ \"$SKIP_KOTLIN_BUILD\" = \"1\" ]; then exit 0; fi\ncd \"$SRCROOT/..\"\nif [ \"$PLATFORM_NAME\" = \"iphoneos\" ] && [ \"$CONFIGURATION\" = \"Debug\" ]; then\n  ./gradlew :shared:embedAndSignAppleFrameworkForXcode -PphysicalDeviceLocal=true\nelse\n  ./gradlew :shared:embedAndSignAppleFrameworkForXcode\nfi\n";
 		};
 		A7000002 /* Embed Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -177,6 +341,25 @@
 			shellPath = /bin/sh;
 			shellScript = "if [ \"$PLATFORM_NAME\" = \"iphonesimulator\" ]; then\n  SENTRY_SLICE=\"ios-arm64_x86_64-simulator\"\nelse\n  SENTRY_SLICE=\"ios-arm64\"\nfi\nSENTRY_FW=\"$SRCROOT/../build/sentryCocoa/9.30.2/Sentry-Dynamic.xcframework/$SENTRY_SLICE/Sentry.framework\"\nif [ -d \"$SENTRY_FW\" ]; then\n  mkdir -p \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH\"\n  rm -rf \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/Sentry.framework\"\n  cp -R \"$SENTRY_FW\" \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/Sentry.framework\"\n  codesign --force --sign \"${EXPANDED_CODE_SIGN_IDENTITY:--}\" \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/Sentry.framework\"\nfi\n";
 		};
+		W7000001 /* Compile CourseDealsWatch KMP Framework */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Compile CourseDealsWatch KMP Framework";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ \"$SKIP_KOTLIN_BUILD\" = \"1\" ]; then exit 0; fi\ncd \"$SRCROOT/..\"\nif [ \"$PLATFORM_NAME\" = \"watchsimulator\" ]; then\n  ./gradlew :domain:coupons:linkDebugFrameworkWatchosSimulatorArm64\nelse\n  ./gradlew :domain:coupons:linkDebugFrameworkWatchosDeviceArm64 -PphysicalDeviceLocal=true\nfi\n";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -190,7 +373,47 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		W3000011 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				W1000001 /* WatchApp.swift in Sources */,
+				W1000002 /* WatchDealModel.swift in Sources */,
+				W1000003 /* WatchDealCacheStore.swift in Sources */,
+				W1000004 /* WatchConnectivityClient.swift in Sources */,
+				W1000005 /* WatchDealListView.swift in Sources */,
+				W1000006 /* WatchDealCardView.swift in Sources */,
+				W1000007 /* WatchDealDetailView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		W3000012 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				W1000011 /* WatchDealModel.swift in Widget Sources */,
+				W1000012 /* WatchDealCacheStore.swift in Widget Sources */,
+				W1000013 /* WatchDealTimelineProvider.swift in Widget Sources */,
+				W1000014 /* ComplicationViews.swift in Widget Sources */,
+				W1000015 /* SmartStackWidget.swift in Widget Sources */,
+				W1000016 /* WatchWidgetBundle.swift in Widget Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		W9000011 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = W5000002 /* WatchWidgetsExtension */;
+			targetProxy = W9000001 /* PBXContainerItemProxy */;
+		};
+		W9000012 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = W5000001 /* WatchApp */;
+			targetProxy = W9000002 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		A8000001 /* Debug */ = {
@@ -200,10 +423,30 @@
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 99A9KNU9ZS;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -211,9 +454,16 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -226,13 +476,40 @@
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 99A9KNU9ZS;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 			};
@@ -244,20 +521,18 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
-				FRAMEWORK_SEARCH_PATHS = (
+				"FRAMEWORK_SEARCH_PATHS[sdk=iphoneos*]" = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)",
+					"$(SRCROOT)/../shared/build/bin/iosArm64/debugFramework",
+					"$(SRCROOT)/../build/sentryCocoa/9.30.2/Sentry-Dynamic.xcframework/ios-arm64",
+				);
+				"FRAMEWORK_SEARCH_PATHS[sdk=iphonesimulator*]" = (
 					"$(inherited)",
 					"$(BUILT_PRODUCTS_DIR)",
 					"$(SRCROOT)/../shared/build/bin/iosSimulatorArm64/debugFramework",
-					"$(SRCROOT)/../shared/build/bin/iosArm64/debugFramework",
 					"$(SRCROOT)/../build/sentryCocoa/9.30.2/Sentry-Dynamic.xcframework/ios-arm64_x86_64-simulator",
-					"$(SRCROOT)/../build/sentryCocoa/9.30.2/Sentry-Dynamic.xcframework/ios-arm64",
-				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-framework",
-					"Sentry",
 				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
@@ -268,6 +543,11 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					Sentry,
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.thanh0x.coursedeals.iosApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -282,20 +562,18 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
-				FRAMEWORK_SEARCH_PATHS = (
+				"FRAMEWORK_SEARCH_PATHS[sdk=iphoneos*]" = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)",
+					"$(SRCROOT)/../shared/build/bin/iosArm64/releaseFramework",
+					"$(SRCROOT)/../build/sentryCocoa/9.30.2/Sentry-Dynamic.xcframework/ios-arm64",
+				);
+				"FRAMEWORK_SEARCH_PATHS[sdk=iphonesimulator*]" = (
 					"$(inherited)",
 					"$(BUILT_PRODUCTS_DIR)",
 					"$(SRCROOT)/../shared/build/bin/iosSimulatorArm64/releaseFramework",
-					"$(SRCROOT)/../shared/build/bin/iosArm64/releaseFramework",
 					"$(SRCROOT)/../build/sentryCocoa/9.30.2/Sentry-Dynamic.xcframework/ios-arm64_x86_64-simulator",
-					"$(SRCROOT)/../build/sentryCocoa/9.30.2/Sentry-Dynamic.xcframework/ios-arm64",
-				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-framework",
-					"Sentry",
 				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
@@ -306,11 +584,178 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					Sentry,
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.thanh0x.coursedeals.iosApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		W8000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"ARCHS[sdk=watchos*]" = arm64;
+				"ARCHS[sdk=watchsimulator*]" = arm64;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 105;
+				DEVELOPMENT_TEAM = 99A9KNU9ZS;
+				"FRAMEWORK_SEARCH_PATHS[sdk=watchos*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/../domain/coupons/build/bin/watchosDeviceArm64/debugFramework",
+				);
+				"FRAMEWORK_SEARCH_PATHS[sdk=watchsimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/../domain/coupons/build/bin/watchosSimulatorArm64/debugFramework",
+				);
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = WatchApp/App/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					CourseDealsWatch,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.thanh0x.coursedeals.iosApp.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Debug;
+		};
+		W8000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"ARCHS[sdk=watchos*]" = arm64;
+				"ARCHS[sdk=watchsimulator*]" = arm64;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 105;
+				DEVELOPMENT_TEAM = 99A9KNU9ZS;
+				"FRAMEWORK_SEARCH_PATHS[sdk=watchos*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/../domain/coupons/build/bin/watchosDeviceArm64/debugFramework",
+				);
+				"FRAMEWORK_SEARCH_PATHS[sdk=watchsimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/../domain/coupons/build/bin/watchosSimulatorArm64/debugFramework",
+				);
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = WatchApp/App/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					CourseDealsWatch,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.thanh0x.coursedeals.iosApp.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Release;
+		};
+		W8000003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"ARCHS[sdk=watchos*]" = arm64;
+				"ARCHS[sdk=watchsimulator*]" = arm64;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 105;
+				DEVELOPMENT_TEAM = 99A9KNU9ZS;
+				"FRAMEWORK_SEARCH_PATHS[sdk=watchos*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/../domain/coupons/build/bin/watchosDeviceArm64/debugFramework",
+				);
+				"FRAMEWORK_SEARCH_PATHS[sdk=watchsimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/../domain/coupons/build/bin/watchosSimulatorArm64/debugFramework",
+				);
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = WatchApp/Widgets/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					CourseDealsWatch,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.thanh0x.coursedeals.iosApp.watchkitapp.widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG WIDGET_EXTENSION";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Debug;
+		};
+		W8000004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"ARCHS[sdk=watchos*]" = arm64;
+				"ARCHS[sdk=watchsimulator*]" = arm64;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 105;
+				DEVELOPMENT_TEAM = 99A9KNU9ZS;
+				"FRAMEWORK_SEARCH_PATHS[sdk=watchos*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/../domain/coupons/build/bin/watchosDeviceArm64/debugFramework",
+				);
+				"FRAMEWORK_SEARCH_PATHS[sdk=watchsimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/../domain/coupons/build/bin/watchosSimulatorArm64/debugFramework",
+				);
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = WatchApp/Widgets/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					CourseDealsWatch,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.thanh0x.coursedeals.iosApp.watchkitapp.widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = WIDGET_EXTENSION;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
 			};
 			name = Release;
 		};
@@ -331,6 +776,24 @@
 			buildConfigurations = (
 				A8000001 /* Debug */,
 				A8000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		W6000001 /* Build configuration list for PBXNativeTarget "WatchApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				W8000001 /* Debug */,
+				W8000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		W6000002 /* Build configuration list for PBXNativeTarget "WatchWidgetsExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				W8000003 /* Debug */,
+				W8000004 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

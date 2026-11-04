@@ -8,6 +8,7 @@ object PlatformActions {
     var onApplyDarkMode: ((Boolean) -> Unit)? = null
     var onShowToast: ((String) -> Unit)? = null
     var onNavigateToDetail: ((Int) -> Unit)? = null
+    var pendingDetailCourseId: Int? = null
 
     fun copyToClipboard(text: String) {
         onCopyToClipboard?.invoke(text)
@@ -39,6 +40,11 @@ object PlatformActions {
     }
 
     fun navigateToDetail(courseId: Int) {
-        onNavigateToDetail?.invoke(courseId)
+        val handler = onNavigateToDetail
+        if (handler != null) {
+            handler.invoke(courseId)
+        } else {
+            pendingDetailCourseId = courseId
+        }
     }
 }

@@ -1,4 +1,6 @@
 import SwiftUI
+import Combine
+import CourseDealsWatch
 #if canImport(WatchKit)
 import WatchKit
 #endif
@@ -32,14 +34,23 @@ public struct WatchDealListView: View {
                 }
             }
             .navigationTitle("Hot Deals")
+            #if os(watchOS)
             .navigationBarTitleDisplayMode(.inline)
+            #endif
             .sheet(item: selectedDealBinding) { _ in
                 if let index = selectedDealIndex, client.deals.indices.contains(index) {
                     WatchDealDetailView(deal: $client.deals[index])
                 }
             }
+            .onOpenURL { url in
+                handleWatchDeepLink(url)
+            }
             .onAppear {
                 client.requestDealsFromPhone()
+                applyLaunchArgumentsIfNeeded()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+                    applyLaunchArgumentsIfNeeded()
+                }
             }
             .onReceive(countdownTimer) { currentTimestamp in
                 now = currentTimestamp
@@ -51,15 +62,18 @@ public struct WatchDealListView: View {
         ScrollView {
             LazyVStack(spacing: 8) {
                 // Flash summary pill & iPhone Sync Status
-                HStack {
+                HStack(spacing: 4) {
                     Image(systemName: "iphone.gen3")
                         .foregroundColor(.blue)
                         .font(.caption2)
                     Text(client.syncSource)
-                        .font(.system(size: 10, weight: .semibold))
+                        .font(.system(size: 9, weight: .semibold))
                         .foregroundColor(.cyan)
                         .lineLimit(1)
+                        .accessibilityIdentifier("watch_sync_status_label")
+
                     Spacer()
+
                     Button(action: {
                         playHapticFeedback(.click)
                         client.requestDealsFromPhone()
@@ -78,9 +92,10 @@ public struct WatchDealListView: View {
                         playHapticFeedback(.click)
                         selectedDealIndex = index
                     }) {
-                        WatchDealCard(deal: deal, now: now)
+                        WatchDealCardView(deal: deal, now: now)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityIdentifier("watch_deal_card_\(deal.id)")
                 }
 
                 // Bottom refresh prompt
@@ -98,7 +113,9 @@ public struct WatchDealListView: View {
             }
             .padding(.horizontal, 2)
         }
+        .accessibilityIdentifier("watch_deal_list")
         .focusable()
+        #if os(watchOS)
         .digitalCrownRotation(
             $crownScrollPosition,
             from: 0,
@@ -108,6 +125,7 @@ public struct WatchDealListView: View {
             isContinuous: false,
             isHapticFeedbackEnabled: true
         )
+        #endif
     }
 
     private var loadingView: some View {
@@ -164,6 +182,41 @@ public struct WatchDealListView: View {
         )
     }
 
+    private func applyLaunchArgumentsIfNeeded() {
+        let args = CommandLine.arguments
+        if args.contains("--bookmark-top-deal"), let firstDeal = client.deals.first {
+            if !firstDeal.isBookmarked {
+                _ = client.toggleBookmark(for: firstDeal.id)
+            }
+        }
+        if args.contains("--open-top-deal"), !client.deals.isEmpty {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                selectedDealIndex = 0
+            }
+        }
+    }
+
+    private func handleWatchDeepLink(_ url: URL) {
+        let raw = url.absoluteString.trimmingCharacters(in: .whitespacesAndNewlines)
+        if raw.hasPrefix("coursedeals://feed") {
+            selectedDealIndex = nil
+            return
+        }
+        guard let targetIdObj = WatchDealJsonCodec.shared.parseCourseIdFromDeepLink(url: raw) else {
+            return
+        }
+        let targetId = targetIdObj.intValue
+        guard targetId > 0 else { return }
+        if raw.contains("bookmark=1") {
+            if !(client.deals.first(where: { $0.courseId == targetId })?.isBookmarked ?? false) {
+                _ = client.toggleBookmark(for: targetId)
+            }
+        }
+        if let index = client.deals.firstIndex(where: { $0.courseId == targetId }) {
+            selectedDealIndex = index
+        }
+    }
+
     private func loadDeals() {
         client.requestDealsFromPhone()
     }
@@ -177,101 +230,6 @@ public struct WatchDealListView: View {
         }
         WKInterfaceDevice.current().play(wkType)
         #endif
-    }
-}
-
-/// Compact glanceable card displaying an expiring deal.
-private struct WatchDealCard: View {
-    let deal: WatchDealModel
-    let now: Date
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 5) {
-            // Badges row
-            HStack(spacing: 4) {
-                if deal.isHot {
-                    Text("🔥 HOT")
-                        .font(.system(size: 9, weight: .heavy))
-                        .padding(.horizontal, 4)
-                        .padding(.vertical, 1.5)
-                        .background(Color.red)
-                        .foregroundColor(.white)
-                        .cornerRadius(3)
-                }
-
-                Text(deal.platform.displayName)
-                    .font(.system(size: 9, weight: .bold))
-                    .padding(.horizontal, 5)
-                    .padding(.vertical, 1.5)
-                    .background(deal.platform.tagColor)
-                    .foregroundColor(.white)
-                    .cornerRadius(3)
-
-                Text(deal.discountBadgeText)
-                    .font(.system(size: 9, weight: .heavy))
-                    .padding(.horizontal, 4)
-                    .padding(.vertical, 1.5)
-                    .background(Color.green)
-                    .foregroundColor(.black)
-                    .cornerRadius(3)
-
-                Spacer()
-
-                if deal.isBookmarked {
-                    Image(systemName: "bookmark.fill")
-                        .font(.system(size: 9))
-                        .foregroundColor(.yellow)
-                }
-
-                HStack(spacing: 2) {
-                    Image(systemName: "clock")
-                        .font(.system(size: 8))
-                    Text(deal.formattedTimeLeft(now: now))
-                        .font(.system(size: 9, weight: .semibold, design: .monospaced))
-                }
-                .foregroundColor(.orange)
-            }
-
-            // Title
-            Text(deal.title)
-                .font(.system(size: 12, weight: .semibold))
-                .foregroundColor(.primary)
-                .lineLimit(2)
-                .multilineTextAlignment(.leading)
-
-            // Rating & Students & Remaining
-            HStack(spacing: 5) {
-                Text(deal.formattedRating)
-                    .font(.system(size: 10, weight: .bold))
-                    .foregroundColor(.yellow)
-
-                if !deal.formattedStudents.isEmpty {
-                    Text("• \(deal.formattedStudents)")
-                        .font(.system(size: 9, weight: .medium))
-                        .foregroundColor(.secondary)
-                        .lineLimit(1)
-                }
-
-                if let remaining = deal.usesRemaining {
-                    Text("• \(remaining) left")
-                        .font(.system(size: 9))
-                        .foregroundColor(.secondary)
-                }
-
-                Spacer()
-
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 8, weight: .bold))
-                    .foregroundColor(.secondary.opacity(0.6))
-            }
-        }
-        .padding(8)
-        .background(Color.white.opacity(0.08))
-        .cornerRadius(10)
-        .overlay(
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(Color.white.opacity(0.12), lineWidth: 0.8)
-        )
     }
 }
 

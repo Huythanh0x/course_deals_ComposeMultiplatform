@@ -110,6 +110,9 @@ General Flow/coroutines discipline to follow:
 - OpenAPI Ktor & DTO Codegen: `./gradlew generateCourseDealsApi`
   - Syncs `../course_deals_backend/openapi/openapi.json` into `core/network/openapi/openapi.json` (when the sibling backend repo is present) and runs OpenAPI Generator (`kotlin` + `library = "multiplatform"`, `dateLibrary = "kotlinx-datetime"`) into `core/network/src/commonMain/gen/com/thanh0x/coursedeals/core/network/openapi/`.
   - `core/network/openapi/openapi.json` is committed to version control as the single source of truth, while `core/network/src/commonMain/gen/` is gitignored and generated automatically during build before `:core:network` compiles.
+- WatchOS Swift `Codable` DTO Codegen: `./gradlew :shared:generateWatchSwiftModels`
+  - Reads `@Serializable data class WatchDealDto` from `shared/src/commonMain/kotlin/com/thanh0x/coursedeals/shared/watch/WatchDealContract.kt` and generates `iosApp/WatchApp/Generated/WatchDealDto.generated.swift`.
+  - `iosApp/WatchApp/Generated/` is gitignored and generated automatically before `:shared` Kotlin compilation and at Step 0 of `bash iosApp/WatchApp/build_watch_app.sh`. Always run `./gradlew :shared:generateWatchSwiftModels` before running standalone `WatchApp` Swift verification scripts.
 - `git commit` messages are enforced by the `commit-msg` hook (Conventional Commits
   regex) and `pre-commit` runs `./gradlew detekt` across all modules — both installed via
   `./gradlew installGitHooks`, run once per clone if hooks aren't already installed.

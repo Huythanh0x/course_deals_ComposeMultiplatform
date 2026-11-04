@@ -140,6 +140,10 @@ fun App(
         PlatformActions.onNavigateToDetail = { courseId ->
             currentScreen = AppScreen.Detail(courseId)
         }
+        PlatformActions.pendingDetailCourseId?.let { pendingId ->
+            PlatformActions.pendingDetailCourseId = null
+            currentScreen = AppScreen.Detail(pendingId)
+        }
         val repo = KoinPlatformTools.defaultContext().getOrNull()?.getOrNull<UserProfileRepository>()
         val savedDarkMode = StartupTimeMonitor.trackStep(StartupTimeMonitor.StepName.AuthSession) {
             repo?.getEnableDarkMode()

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleDisplayName</key>
+	<string>Course Deals</string>
+	<key>CFBundleExecutable</key>
+	<string>WatchApp</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.thanh0x.coursedeals.iosApp.watchkitapp</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>WatchApp</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>CFBundleVersion</key>
+	<string>105</string>
+	<key>MinimumOSVersion</key>
+	<string>10.0</string>
+	<key>UIDeviceFamily</key>
+	<array>
+		<integer>4</integer>
+	</array>
+	<key>WKCompanionAppBundleIdentifier</key>
+	<string>com.thanh0x.coursedeals.iosApp</string>
+	<key>WKRunsIndependentlyOfCompanionApp</key>
+	<true/>
+	<key>WKApplication</key>
+	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>com.thanh0x.coursedeals.courseDetail</string>
+		<string>com.coursedeals.deal.open</string>
+	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.thanh0x.coursedeals.watch</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>coursedeals</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>
