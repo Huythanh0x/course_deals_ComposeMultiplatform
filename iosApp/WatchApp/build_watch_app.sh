@@ -16,7 +16,9 @@ xcrun --sdk watchsimulator swiftc \
   -sdk "$SDK_PATH" \
   -parse-as-library \
   "$SCRIPT_DIR/WatchApp.swift" \
+  "$SCRIPT_DIR/Generated/WatchDealDto.generated.swift" \
   "$SCRIPT_DIR/WatchDealModel.swift" \
+  "$SCRIPT_DIR/WatchDealCacheStore.swift" \
   "$SCRIPT_DIR/WatchConnectivityClient.swift" \
   "$SCRIPT_DIR/WatchDealListView.swift" \
   "$SCRIPT_DIR/WatchDealDetailView.swift" \
@@ -34,7 +36,9 @@ xcrun --sdk watchsimulator swiftc \
   -application-extension \
   -DWIDGET_EXTENSION \
   -Xlinker -e -Xlinker _NSExtensionMain \
+  "$SCRIPT_DIR/Generated/WatchDealDto.generated.swift" \
   "$SCRIPT_DIR/WatchDealModel.swift" \
+  "$SCRIPT_DIR/WatchDealCacheStore.swift" \
   "$SCRIPT_DIR/WatchWidgetBundle.swift" \
   "$SCRIPT_DIR/SmartStackWidget.swift" \
   -o "$PLUGIN_DIR/WatchWidgetsExtension"

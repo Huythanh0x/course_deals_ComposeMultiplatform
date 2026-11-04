@@ -105,18 +105,14 @@ public class PhoneWatchConnectivityManager: NSObject, WCSessionDelegate, Observa
     }
 
     public func buildHotDealsUrl(preference: String? = nil) -> URL {
-        var components = URLComponents(string: "http://127.0.0.1:8081/api/v1/coupons/hot-deals")!
-        var queryItems = [
-            URLQueryItem(name: "pageIndex", value: "0"),
-            URLQueryItem(name: "numberPerPage", value: "20"),
-            URLQueryItem(name: "minRating", value: "4.7")
-        ]
         let pref = preference ?? userPreference
-        if let pref = pref, !pref.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            queryItems.append(URLQueryItem(name: "preference", value: pref))
+        #if canImport(ComposeApp)
+        let urlString = MainViewControllerKt.buildWatchHotDealsUrl(preference: pref)
+        if let url = URL(string: urlString) {
+            return url
         }
-        components.queryItems = queryItems
-        return components.url ?? URL(string: "http://127.0.0.1:8081/api/v1/coupons/hot-deals")!
+        #endif
+        return URL(string: "http://127.0.0.1:8081/api/v1/coupons/hot-deals?pageIndex=0&numberPerPage=20&minRating=4.7")!
     }
 
     public func fetchLiveDealsFromAPI(preference: String? = nil, completion: @escaping ([[String: Any]]) -> Void) {
@@ -127,65 +123,26 @@ public class PhoneWatchConnectivityManager: NSObject, WCSessionDelegate, Observa
         request.setValue("application/json", forHTTPHeaderField: "Accept")
 
         let currentBookmarks = Self.loadStoredBookmarkedIds().union(bookmarkedCourseIds)
+        let bookmarksCsv = currentBookmarks.sorted().map(String.init).joined(separator: ",")
 
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            guard let data = data, error == nil else {
+        let task = URLSession.shared.dataTask(with: request) { data, _, error in
+            guard let data = data, error == nil, let rawJson = String(data: data, encoding: .utf8) else {
                 print("[PhoneWatchConnectivity] Live API error: \(String(describing: error))")
                 completion([])
                 return
             }
 
-            do {
-                if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-                   let courses = json["courses"] as? [[String: Any]] {
-                    let mappedDeals: [[String: Any]] = courses.prefix(5).map { course in
-                        let numericId = (course["courseId"] as? Int)
-                            ?? (course["courseId"] as? NSNumber)?.intValue
-                            ?? 0
-                        let idVal = "\(numericId)"
-                        let title = course["title"] as? String ?? "Course Deal"
-                        let author = course["author"] as? String ?? "Instructor"
-                        let category = course["category"] as? String ?? "Development"
-                        let expiredTimeNum = (course["expiredTime"] as? NSNumber)?.doubleValue ?? Date().addingTimeInterval(7200).timeIntervalSince1970
-                        let code = course["couponCode"] as? String ?? "HOT100"
-                        let previewImage = course["previewImage"] as? String ?? ""
-                        let rating = (course["rating"] as? NSNumber)?.doubleValue ?? 4.8
-                        let reviews = (course["reviews"] as? NSNumber)?.intValue ?? 10
-                        let students = (course["students"] as? NSNumber)?.intValue ?? 0
-
-                        let platform: String
-                        if previewImage.contains("udemy") {
-                            platform = "Udemy"
-                        } else if previewImage.contains("coursera") {
-                            platform = "Coursera"
-                        } else {
-                            platform = "edX"
-                        }
-
-                        return [
-                            "id": idVal,
-                            "courseId": numericId,
-                            "title": title,
-                            "author": author,
-                            "category": category,
-                            "platform": platform,
-                            "expiresAtEpochSeconds": expiredTimeNum,
-                            "couponCode": code,
-                            "targetUrl": "https://coursedeals.com/deal/\(idVal)",
-                            "rating": rating,
-                            "reviews": reviews,
-                            "students": students,
-                            "isHot": true,
-                            "isBookmarked": currentBookmarks.contains(numericId),
-                            "usesLeft": max(5, reviews / 10)
-                        ]
-                    }
-                    completion(mappedDeals)
-                    return
-                }
-            } catch {
-                print("[PhoneWatchConnectivity] JSON parsing error: \(error)")
+            #if canImport(ComposeApp)
+            let dealsJson = MainViewControllerKt.mapHotDealsJsonForWatch(
+                apiJson: rawJson,
+                bookmarkedIdsCsv: bookmarksCsv
+            )
+            if let mappedData = dealsJson.data(using: .utf8),
+               let mappedDeals = (try? JSONSerialization.jsonObject(with: mappedData)) as? [[String: Any]] {
+                completion(mappedDeals)
+                return
             }
+            #endif
             completion([])
         }
         task.resume()
@@ -197,8 +154,11 @@ public class PhoneWatchConnectivityManager: NSObject, WCSessionDelegate, Observa
         guard session.activationState == .activated else { return }
 
         let bookmarks = Self.loadStoredBookmarkedIds().union(bookmarkedCourseIds)
+        let dealsJson = (try? JSONSerialization.data(withJSONObject: deals))
+            .flatMap { String(data: $0, encoding: .utf8) } ?? "[]"
         var payload: [String: Any] = [
             "deals": deals,
+            "dealsJson": dealsJson,
             "bookmarkedIds": Array(bookmarks).sorted(),
             "timestamp": Date().timeIntervalSince1970,
             "source": "Spring Boot :8081 via iPhone"
@@ -344,15 +304,15 @@ public class PhoneWatchConnectivityManager: NSObject, WCSessionDelegate, Observa
         WCSession.default.activate()
     }
 
-    public func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
+    public func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
         _ = handleIncomingWatchAction(message)
     }
 
-    public func session(_ session: WCSession, didReceiveUserInfo userInfo: [String : Any] = [:]) {
+    public func session(_ session: WCSession, didReceiveUserInfo userInfo: [String: Any] = [:]) {
         _ = handleIncomingWatchAction(userInfo)
     }
 
-    public func session(_ session: WCSession, didReceiveMessage message: [String : Any], replyHandler: @escaping ([String : Any]) -> Void) {
+    public func session(_ session: WCSession, didReceiveMessage message: [String: Any], replyHandler: @escaping ([String: Any]) -> Void) {
         if handleIncomingWatchAction(message) {
             let bookmarks = Self.loadStoredBookmarkedIds().union(bookmarkedCourseIds)
             replyHandler([
@@ -367,9 +327,12 @@ public class PhoneWatchConnectivityManager: NSObject, WCSessionDelegate, Observa
             let bookmarks = Self.loadStoredBookmarkedIds().union(bookmarkedCourseIds)
             fetchLiveDealsFromAPI(preference: pref) { liveDeals in
                 if !liveDeals.isEmpty {
+                    let dealsJson = (try? JSONSerialization.data(withJSONObject: liveDeals))
+                        .flatMap { String(data: $0, encoding: .utf8) } ?? "[]"
                     var reply: [String: Any] = [
                         "status": "success",
                         "deals": liveDeals,
+                        "dealsJson": dealsJson,
                         "bookmarkedIds": Array(bookmarks).sorted(),
                         "source": "Spring Boot DB via iPhone"
                     ]
@@ -381,6 +344,7 @@ public class PhoneWatchConnectivityManager: NSObject, WCSessionDelegate, Observa
                     replyHandler([
                         "status": "error",
                         "deals": [],
+                        "dealsJson": "[]",
                         "bookmarkedIds": Array(bookmarks).sorted(),
                         "source": "API Unreachable"
                     ])

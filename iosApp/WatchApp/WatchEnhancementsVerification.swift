@@ -2,7 +2,8 @@ import Foundation
 
 #if WATCH_VERIFICATION_MAIN
 /// 4-Quadrant Verification Suite for Ticket #233 (#234 & #235):
-/// Complications, Smart Stack, Offline Cache, iPhone Handoff, and Two-Way Wishlist Sync.
+/// Complications, Smart Stack, Offline Cache, iPhone Handoff, Two-Way Wishlist Sync,
+/// and Auto-Generated Swift Codable DTO Decoding (`WatchDealDto.generated.swift`).
 public enum WatchEnhancementsVerificationSuite {
 
     private static func assertCondition(
@@ -28,7 +29,7 @@ public enum WatchEnhancementsVerificationSuite {
 
         let now = Date(timeIntervalSince1970: 1_760_000_000)
 
-        print("=== Quadrant 1: Happy Path (Cache Round-Trip, Bookmarks, TimelineEntry, Handoff) ===")
+        print("=== Quadrant 1: Happy Path (Cache Round-Trip, Bookmarks, TimelineEntry, Handoff, Generated Codable DTOs) ===")
         let deal1 = WatchDealModel(
             id: 501,
             title: "Kotlin Multiplatform Masterclass",
@@ -68,6 +69,65 @@ public enum WatchEnhancementsVerificationSuite {
         assertCondition(
             deal1.deepLinkUrl.absoluteString == "coursedeals://courses/501",
             "deepLinkUrl formats coursedeals://courses/501",
+            failures: &failures
+        )
+
+        let rawHotDealsApiJson = """
+        {
+          "courses": [
+            {
+              "courseId": 4917622,
+              "title": "Personal Growth - Affirmations and Taking Action",
+              "author": "Growth Lab",
+              "category": "Personal Development",
+              "couponCode": "27THOCT26",
+              "targetUrl": "https://coursedeals.com/deal/4917622",
+              "previewImage": "https://img-c.udemycdn.com/course/480x270/4917622.jpg",
+              "expiredTime": 1762500000,
+              "rating": 4.9,
+              "reviews": 400,
+              "students": 28500
+            }
+          ]
+        }
+        """.data(using: .utf8)!
+        let decodedApiDeals = WatchHotDealsEnvelope.decodeDeals(from: rawHotDealsApiJson)
+        assertCondition(
+            decodedApiDeals.count == 1 &&
+            decodedApiDeals.first?.id == 4917622 &&
+            decodedApiDeals.first?.couponCode == "27THOCT26" &&
+            decodedApiDeals.first?.platform == .udemy,
+            "WatchHotDealsEnvelope.decodeDeals decodes raw /api/v1/coupons/hot-deals JSON",
+            failures: &failures
+        )
+
+        let kmpWatchDealDtoJson = """
+        [
+          {
+            "id": 777,
+            "title": "Coursera Machine Learning Specialization",
+            "author": "Andrew Ng",
+            "category": "AI",
+            "couponCode": "MLFREE",
+            "couponUrl": "https://coursedeals.com/deal/777",
+            "expiredTime": 1762600000,
+            "rating": 5.0,
+            "reviews": 900,
+            "usesRemaining": 45,
+            "platform": "Coursera",
+            "isBookmarked": true,
+            "students": 120000,
+            "isHot": true
+          }
+        ]
+        """.data(using: .utf8)!
+        let decodedKmpDeals = WatchHotDealsEnvelope.decodeDeals(from: kmpWatchDealDtoJson)
+        assertCondition(
+            decodedKmpDeals.count == 1 &&
+            decodedKmpDeals.first?.id == 777 &&
+            decodedKmpDeals.first?.platform == .coursera &&
+            decodedKmpDeals.first?.isBookmarked == true,
+            "WatchHotDealsEnvelope.decodeDeals decodes KMP @Serializable WatchDealDto JSON array",
             failures: &failures
         )
 
@@ -196,7 +256,9 @@ private func runWatchVerificationEntry() {
         compileProcess.arguments = [
             "swiftc",
             "-DWATCH_VERIFICATION_MAIN",
+            "\(watchAppDir)/Generated/WatchDealDto.generated.swift",
             "\(watchAppDir)/WatchDealModel.swift",
+            "\(watchAppDir)/WatchDealCacheStore.swift",
             "\(watchAppDir)/WatchConnectivityClient.swift",
             "\(watchAppDir)/WatchDealListView.swift",
             "\(watchAppDir)/WatchDealDetailView.swift",

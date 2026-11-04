@@ -80,20 +80,22 @@ public class WatchConnectivityClient: NSObject, ObservableObject {
                 }
             } errorHandler: { [weak self] _ in
                 DispatchQueue.main.async {
-                    // Fallback to direct network fetch
                     self?.fetchDirectlyFromApi(preference: preference)
                 }
             }
         } else {
-            // Check application context or fetch directly from API
             if WCSession.isSupported() && session.activationState == .activated {
                 if let pref = session.receivedApplicationContext["preference"] as? String {
                     self.userPreference = pref
                 }
                 let remoteBookmarks = extractBookmarkedIds(from: session.receivedApplicationContext)
-                if let contextDeals = session.receivedApplicationContext["deals"] as? [[String: Any]], !contextDeals.isEmpty {
-                    let parsed = self.parseDeals(from: contextDeals)
-                    self.applyAndPersistDeals(parsed, remoteBookmarkedIds: remoteBookmarks, sourceLabel: "⚡ Synced via iPhone Context")
+                let parsed = decodeDealsFromPayload(session.receivedApplicationContext)
+                if !parsed.isEmpty {
+                    applyAndPersistDeals(
+                        parsed,
+                        remoteBookmarkedIds: remoteBookmarks,
+                        sourceLabel: "⚡ Synced via iPhone Context"
+                    )
                     return
                 }
             }
@@ -111,7 +113,7 @@ public class WatchConnectivityClient: NSObject, ObservableObject {
         request.timeoutInterval = 4.0
         request.setValue("application/json", forHTTPHeaderField: "Accept")
 
-        let task = URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+        let task = URLSession.shared.dataTask(with: request) { [weak self] data, _, error in
             DispatchQueue.main.async {
                 guard let self = self else { return }
                 self.isLoading = false
@@ -130,24 +132,16 @@ public class WatchConnectivityClient: NSObject, ObservableObject {
                     return
                 }
 
-                do {
-                    if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-                       let courses = json["courses"] as? [[String: Any]], !courses.isEmpty {
-                        let parsed = self.parseApiCourses(from: courses)
-                        let sharedPhoneBookmarks = self.readSharedPhoneBookmarks()
-                        self.applyAndPersistDeals(
-                            parsed,
-                            remoteBookmarkedIds: sharedPhoneBookmarks,
-                            sourceLabel: "🔥 Hot Deals :8081"
-                        )
-                        return
-                    } else if self.deals.isEmpty {
-                        self.syncSource = "No Hot Deals Found"
-                    }
-                } catch {
-                    if self.deals.isEmpty {
-                        self.syncSource = "API Parse Error"
-                    }
+                let parsed = WatchHotDealsEnvelope.decodeDeals(from: data)
+                if !parsed.isEmpty {
+                    let sharedPhoneBookmarks = self.readSharedPhoneBookmarks()
+                    self.applyAndPersistDeals(
+                        parsed,
+                        remoteBookmarkedIds: sharedPhoneBookmarks,
+                        sourceLabel: "🔥 Hot Deals :8081"
+                    )
+                } else if self.deals.isEmpty {
+                    self.syncSource = "No Hot Deals Found"
                 }
             }
         }
@@ -203,7 +197,6 @@ public class WatchConnectivityClient: NSObject, ObservableObject {
             enrichedPayload["timestamp"] = Date().timeIntervalSince1970
         }
 
-        // Write shared simulator relay event file immediately so paired iPhone simulator reacts without delay
         if JSONSerialization.isValidJSONObject(enrichedPayload),
            let data = try? JSONSerialization.data(withJSONObject: enrichedPayload, options: []) {
             try? data.write(
@@ -274,120 +267,34 @@ public class WatchConnectivityClient: NSObject, ObservableObject {
         return []
     }
 
+    internal func decodeDealsFromPayload(_ payload: [String: Any]) -> [WatchDealModel] {
+        if let dealsJson = payload["dealsJson"] as? String,
+           let data = dealsJson.data(using: .utf8) {
+            let decoded = WatchHotDealsEnvelope.decodeDeals(from: data)
+            if !decoded.isEmpty {
+                return decoded
+            }
+        }
+        if let dealsObj = payload["deals"],
+           JSONSerialization.isValidJSONObject(dealsObj),
+           let data = try? JSONSerialization.data(withJSONObject: dealsObj, options: []) {
+            return WatchHotDealsEnvelope.decodeDeals(from: data)
+        }
+        return []
+    }
+
     internal func handlePhoneReply(_ reply: [String: Any]) {
         self.isLoading = false
         if let pref = reply["preference"] as? String {
             self.userPreference = pref
         }
         let remoteBookmarks = extractBookmarkedIds(from: reply)
-        if let dealsData = reply["deals"] as? [[String: Any]], !dealsData.isEmpty {
-            let parsed = parseDeals(from: dealsData)
+        let parsed = decodeDealsFromPayload(reply)
+        if !parsed.isEmpty {
             let source = reply["source"] as? String ?? "iPhone 17"
             applyAndPersistDeals(parsed, remoteBookmarkedIds: remoteBookmarks, sourceLabel: "⚡ \(source)")
         } else {
             fetchDirectlyFromApi(preference: self.userPreference)
-        }
-    }
-
-    internal func parseApiCourses(from courses: [[String: Any]]) -> [WatchDealModel] {
-        return courses.compactMap { dict -> WatchDealModel? in
-            guard let title = dict["title"] as? String else {
-                return nil
-            }
-
-            let expiredTime = (dict["expiredTime"] as? Double)
-                ?? (dict["expiredTime"] as? Int64).map(Double.init)
-                ?? (dict["expiredTime"] as? NSNumber)?.doubleValue
-
-            let idVal = (dict["courseId"] as? Int)
-                ?? (dict["courseId"] as? NSNumber)?.intValue
-                ?? 501
-
-            let author = dict["author"] as? String ?? "Udemy Instructor"
-            let category = dict["category"] as? String ?? "Development"
-            let code = dict["couponCode"] as? String ?? "HOT100"
-            let url = dict["targetUrl"] as? String ?? dict["previewImage"] as? String ?? "https://coursedeals.com"
-            let rating = (dict["rating"] as? Double) ?? (dict["rating"] as? NSNumber)?.doubleValue ?? 4.8
-            let reviews = (dict["reviews"] as? Int) ?? (dict["reviews"] as? NSNumber)?.intValue ?? 240
-            let students = (dict["students"] as? Int) ?? (dict["students"] as? NSNumber)?.intValue ?? 0
-
-            let previewImage = dict["previewImage"] as? String ?? ""
-            let platform: WatchCoursePlatform
-            if previewImage.contains("coursera") || title.lowercased().contains("coursera") {
-                platform = .coursera
-            } else if previewImage.contains("edx") || title.lowercased().contains("edx") {
-                platform = .edx
-            } else {
-                platform = .udemy
-            }
-
-            return WatchDealModel(
-                id: idVal,
-                title: title,
-                heading: nil,
-                author: author,
-                category: category,
-                couponCode: code,
-                couponUrl: url,
-                expiredTime: expiredTime.map { Int64($0) },
-                rating: rating,
-                reviews: reviews,
-                usesRemaining: max(5, reviews / 20),
-                platform: platform,
-                isBookmarked: false,
-                students: students,
-                isHot: true
-            )
-        }
-    }
-
-    internal func parseDeals(from data: [[String: Any]]) -> [WatchDealModel] {
-        return data.compactMap { (dict: [String: Any]) -> WatchDealModel? in
-            guard let title = dict["title"] as? String else {
-                return nil
-            }
-
-            let idInt = (dict["id"] as? Int)
-                ?? Int((dict["id"] as? String) ?? "500")
-                ?? (dict["courseId"] as? Int)
-                ?? 500
-
-            let platformStr = dict["platform"] as? String ?? "Udemy"
-            let platform: WatchCoursePlatform
-            switch platformStr.lowercased() {
-            case "udemy": platform = .udemy
-            case "coursera": platform = .coursera
-            case "edx": platform = .edx
-            default: platform = .udemy
-            }
-
-            let expiresAt = (dict["expiresAtEpochSeconds"] as? Double)
-                ?? (dict["expiredTime"] as? Double)
-                ?? (dict["expiredTime"] as? Int64).map(Double.init)
-
-            let rating = (dict["rating"] as? Double) ?? (dict["rating"] as? NSNumber)?.doubleValue ?? 4.8
-            let reviews = (dict["reviews"] as? Int) ?? (dict["reviews"] as? NSNumber)?.intValue ?? 120
-            let students = (dict["students"] as? Int) ?? (dict["students"] as? NSNumber)?.intValue
-            let isHot = (dict["isHot"] as? Bool) ?? true
-            let isBookmarked = (dict["isBookmarked"] as? Bool) ?? false
-
-            return WatchDealModel(
-                id: idInt,
-                title: title,
-                heading: nil,
-                author: dict["author"] as? String ?? "Course Deals API",
-                category: dict["category"] as? String ?? "Mobile",
-                couponCode: dict["couponCode"] as? String ?? "HOT100",
-                couponUrl: dict["targetUrl"] as? String ?? "https://coursedeals.com",
-                expiredTime: expiresAt.map { Int64($0) },
-                rating: rating,
-                reviews: reviews,
-                usesRemaining: dict["usesLeft"] as? Int ?? max(5, reviews / 20),
-                platform: platform,
-                isBookmarked: isBookmarked,
-                students: students,
-                isHot: isHot
-            )
         }
     }
 }
@@ -412,28 +319,28 @@ extension WatchConnectivityClient: WCSessionDelegate {
         }
     }
 
-    public func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String : Any]) {
+    public func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String: Any]) {
         DispatchQueue.main.async {
             if let pref = applicationContext["preference"] as? String {
                 self.userPreference = pref
             }
             let remoteBookmarks = self.extractBookmarkedIds(from: applicationContext)
-            if let dealsData = applicationContext["deals"] as? [[String: Any]], !dealsData.isEmpty {
-                let parsed = self.parseDeals(from: dealsData)
+            let parsed = self.decodeDealsFromPayload(applicationContext)
+            if !parsed.isEmpty {
                 let source = applicationContext["source"] as? String ?? "iPhone Context"
                 self.applyAndPersistDeals(parsed, remoteBookmarkedIds: remoteBookmarks, sourceLabel: "⚡ \(source)")
             }
         }
     }
 
-    public func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
+    public func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
         DispatchQueue.main.async {
             if let pref = message["preference"] as? String {
                 self.userPreference = pref
             }
             let remoteBookmarks = self.extractBookmarkedIds(from: message)
-            if let dealsData = message["deals"] as? [[String: Any]], !dealsData.isEmpty {
-                let parsed = self.parseDeals(from: dealsData)
+            let parsed = self.decodeDealsFromPayload(message)
+            if !parsed.isEmpty {
                 let source = message["source"] as? String ?? "iPhone Push"
                 self.applyAndPersistDeals(parsed, remoteBookmarkedIds: remoteBookmarks, sourceLabel: "⚡ \(source)")
             }
