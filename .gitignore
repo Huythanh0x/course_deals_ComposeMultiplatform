@@ -40,4 +40,7 @@ docs/product/screenshots/
 # Auto-generated OpenAPI Ktor sources (regenerated at build time from core/network/openapi/openapi.json)
 core/network/src/commonMain/gen/
 
+# Auto-generated watchOS Swift Codable DTOs (regenerated via ./gradlew :shared:generateWatchSwiftModels)
+iosApp/WatchApp/Generated/
+
 

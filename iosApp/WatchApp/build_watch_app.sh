@@ -2,10 +2,14 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 BUILD_DIR="/tmp/CourseDealsWatchBuild/WatchApp.app"
 PLUGIN_DIR="$BUILD_DIR/PlugIns/WatchWidgetsExtension.appex"
 SDK_PATH="$(xcrun --sdk watchsimulator --show-sdk-path)"
 TARGET_TRIPLE="arm64-apple-watchos10.0-simulator"
+
+echo "0. Regenerating Watch Swift Codable DTOs (:shared:generateWatchSwiftModels)..."
+(cd "$REPO_ROOT" && ./gradlew :shared:generateWatchSwiftModels --quiet)
 
 rm -rf "$BUILD_DIR"
 mkdir -p "$PLUGIN_DIR"

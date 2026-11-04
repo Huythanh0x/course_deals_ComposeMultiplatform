@@ -39,7 +39,8 @@ Coordinate closely with `apple-developer` (who owns native `iosApp/` & `watchApp
 2. **Module & Build Conventions**:
    - Never hand-roll platform build logic in module `build.gradle` files; use project convention plugins (`coursedeals.kmp.library`, `coursedeals.android.library`, `coursedeals.kotlin.library`).
    - Follow Clean Architecture layering: `core:*` → `domain:*` (models, repository interfaces, use cases in `commonMain`) → `data:*` (Ktor network services, OpenAPI generated DTOs, `SettingsStore`/Room in `commonMain` + platform source sets) → `feature:*` (Compose Multiplatform UI, ViewModels, `UiState` in `commonMain`) → `shared` (KMP navigation & `CourseDealsApp` root).
-   - If the backend OpenAPI contract changed, run `./gradlew generateCourseDealsApi` to sync and regenerate `core/network` multiplatform DTOs/APIs.
+   - If the backend OpenAPI contract changed, run `./gradlew generateCourseDealsApi` to sync and regenerate `core/network` multiplatform DTOs/APIs (`core/network/src/commonMain/gen/` is git-ignored).
+   - If the shared Watch contract (`shared/src/commonMain/kotlin/com/thanh0x/coursedeals/shared/watch/WatchDealContract.kt`) changed, run `./gradlew :shared:generateWatchSwiftModels` to regenerate `iosApp/WatchApp/Generated/WatchDealDto.generated.swift` (`iosApp/WatchApp/Generated/` is git-ignored — never commit it).
 
 3. **Composition Root & Platform Bridging (`kmp-app-architecture`)**:
    - **Build the object graph outside `setContent { }` and `ComposeUIViewController { }`**: Composition content lambdas can re-run; construct DB drivers, Ktor clients, and SDK singletons once per process (in Koin modules / `Application.onCreate`).
