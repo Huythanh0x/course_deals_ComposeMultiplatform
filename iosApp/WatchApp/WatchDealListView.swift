@@ -9,7 +9,6 @@ import WatchKit
 public struct WatchDealListView: View {
     @ObservedObject private var client = WatchConnectivityClient.shared
     @State private var selectedDealIndex: Int? = nil
-    @State private var showComplicationsPreview: Bool = false
     @State private var crownScrollPosition: CGFloat = 0.0
     @State private var now: Date = Date()
 
@@ -34,19 +33,12 @@ public struct WatchDealListView: View {
                 }
             }
             .navigationTitle("Hot Deals")
+            #if os(watchOS)
             .navigationBarTitleDisplayMode(.inline)
+            #endif
             .sheet(item: selectedDealBinding) { _ in
                 if let index = selectedDealIndex, client.deals.indices.contains(index) {
                     WatchDealDetailView(deal: $client.deals[index])
-                }
-            }
-            .sheet(isPresented: $showComplicationsPreview) {
-                WatchComplicationsPreviewSheet { selectedDeal in
-                    if let idx = client.deals.firstIndex(where: { $0.id == selectedDeal.id }) {
-                        selectedDealIndex = idx
-                    } else if !client.deals.isEmpty {
-                        selectedDealIndex = 0
-                    }
                 }
             }
             .onOpenURL { url in
@@ -68,7 +60,7 @@ public struct WatchDealListView: View {
     private var dealListContent: some View {
         ScrollView {
             LazyVStack(spacing: 8) {
-                // Flash summary pill, iPhone Sync Status & Smart Stack / Complications Preview trigger
+                // Flash summary pill & iPhone Sync Status
                 HStack(spacing: 4) {
                     Image(systemName: "iphone.gen3")
                         .foregroundColor(.blue)
@@ -80,25 +72,6 @@ public struct WatchDealListView: View {
                         .accessibilityIdentifier("watch_sync_status_label")
 
                     Spacer()
-
-                    Button(action: {
-                        playHapticFeedback(.click)
-                        showComplicationsPreview = true
-                    }) {
-                        HStack(spacing: 2) {
-                            Image(systemName: "square.stack.3d.up.fill")
-                                .font(.system(size: 8))
-                            Text("Widgets")
-                                .font(.system(size: 8, weight: .bold))
-                        }
-                        .padding(.horizontal, 5)
-                        .padding(.vertical, 2)
-                        .background(Color.blue.opacity(0.28))
-                        .foregroundColor(.cyan)
-                        .cornerRadius(4)
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityIdentifier("watch_complications_button")
 
                     Button(action: {
                         playHapticFeedback(.click)
@@ -141,6 +114,7 @@ public struct WatchDealListView: View {
         }
         .accessibilityIdentifier("watch_deal_list")
         .focusable()
+        #if os(watchOS)
         .digitalCrownRotation(
             $crownScrollPosition,
             from: 0,
@@ -150,6 +124,7 @@ public struct WatchDealListView: View {
             isContinuous: false,
             isHapticFeedbackEnabled: true
         )
+        #endif
     }
 
     private var loadingView: some View {
@@ -179,23 +154,12 @@ public struct WatchDealListView: View {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 6)
 
-            HStack(spacing: 6) {
-                Button(action: loadDeals) {
-                    Text("Check Again")
-                        .font(.caption2.bold())
-                }
-                .buttonStyle(.borderedProminent)
-                .tint(.blue)
-
-                Button(action: {
-                    showComplicationsPreview = true
-                }) {
-                    Text("Widgets")
-                        .font(.caption2.bold())
-                }
-                .buttonStyle(.bordered)
-                .accessibilityIdentifier("watch_complications_button")
+            Button(action: loadDeals) {
+                Text("Check Again")
+                    .font(.caption2.bold())
             }
+            .buttonStyle(.borderedProminent)
+            .tint(.blue)
             .padding(.top, 4)
         }
         .padding(.horizontal, 6)
@@ -224,11 +188,7 @@ public struct WatchDealListView: View {
                 _ = client.toggleBookmark(for: firstDeal.id)
             }
         }
-        if args.contains("--show-widgets") {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                showComplicationsPreview = true
-            }
-        } else if args.contains("--open-top-deal"), !client.deals.isEmpty {
+        if args.contains("--open-top-deal"), !client.deals.isEmpty {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                 selectedDealIndex = 0
             }
@@ -237,13 +197,7 @@ public struct WatchDealListView: View {
 
     private func handleWatchDeepLink(_ url: URL) {
         let raw = url.absoluteString.trimmingCharacters(in: .whitespacesAndNewlines)
-        if raw.hasPrefix("coursedeals://widgets") || raw.hasPrefix("coursedeals://complications") {
-            selectedDealIndex = nil
-            showComplicationsPreview = true
-            return
-        }
         if raw.hasPrefix("coursedeals://feed") {
-            showComplicationsPreview = false
             selectedDealIndex = nil
             return
         }
@@ -267,7 +221,6 @@ public struct WatchDealListView: View {
                 _ = client.toggleBookmark(for: targetId)
             }
         }
-        showComplicationsPreview = false
         if let index = client.deals.firstIndex(where: { $0.id == targetId }) {
             selectedDealIndex = index
         }
@@ -296,53 +249,33 @@ private struct WatchDealCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 5) {
-            // Badges row
-            HStack(spacing: 3) {
+            // Badges row: only 🔥 HOT, bookmark indicator, and countdown timer
+            HStack(spacing: 4) {
                 if deal.isHot {
                     Text("🔥 HOT")
-                        .font(.system(size: 8, weight: .heavy))
+                        .font(.system(size: 8.5, weight: .heavy))
                         .lineLimit(1)
                         .fixedSize(horizontal: true, vertical: false)
-                        .padding(.horizontal, 3.5)
+                        .padding(.horizontal, 4)
                         .padding(.vertical, 1.5)
                         .background(Color.red)
                         .foregroundColor(.white)
                         .cornerRadius(3)
                 }
 
-                Text(deal.platform.displayName)
-                    .font(.system(size: 8, weight: .bold))
-                    .lineLimit(1)
-                    .fixedSize(horizontal: true, vertical: false)
-                    .padding(.horizontal, 4)
-                    .padding(.vertical, 1.5)
-                    .background(deal.platform.tagColor)
-                    .foregroundColor(.white)
-                    .cornerRadius(3)
-
-                Text(deal.discountBadgeText)
-                    .font(.system(size: 8, weight: .heavy))
-                    .lineLimit(1)
-                    .fixedSize(horizontal: true, vertical: false)
-                    .padding(.horizontal, 3.5)
-                    .padding(.vertical, 1.5)
-                    .background(Color.green)
-                    .foregroundColor(.black)
-                    .cornerRadius(3)
-
                 Spacer(minLength: 2)
 
                 if deal.isBookmarked {
                     Image(systemName: "bookmark.fill")
-                        .font(.system(size: 8))
+                        .font(.system(size: 8.5))
                         .foregroundColor(.yellow)
                 }
 
-                HStack(spacing: 1.5) {
+                HStack(spacing: 2) {
                     Image(systemName: "clock")
-                        .font(.system(size: 7.5))
+                        .font(.system(size: 8))
                     Text(deal.formattedTimeLeft(now: now))
-                        .font(.system(size: 8, weight: .semibold, design: .monospaced))
+                        .font(.system(size: 8.5, weight: .semibold, design: .monospaced))
                         .lineLimit(1)
                         .fixedSize(horizontal: true, vertical: false)
                 }

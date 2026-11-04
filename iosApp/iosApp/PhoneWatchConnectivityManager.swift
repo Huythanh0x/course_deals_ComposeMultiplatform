@@ -10,6 +10,8 @@ public class PhoneWatchConnectivityManager: NSObject, WCSessionDelegate, Observa
     public static let watchBookmarksKey = "watch_bookmarked_course_ids"
     public static let handoffActivityType = "com.thanh0x.coursedeals.courseDetail"
     public static let legacyHandoffActivityType = "com.coursedeals.deal.open"
+    public static let watchToPhoneEventFilePath = "/tmp/coursedeals_watch_to_phone_event.json"
+    public static let phoneBookmarksFilePath = "/tmp/coursedeals_phone_bookmarks.json"
 
     @Published public var isWatchPaired: Bool = false
     @Published public var isWatchAppInstalled: Bool = false
@@ -17,14 +19,53 @@ public class PhoneWatchConnectivityManager: NSObject, WCSessionDelegate, Observa
     @Published public var pendingDeepLinkUrl: String? = nil
     @Published public var bookmarkedCourseIds: Set<Int> = []
 
+    private var lastProcessedEventId: String? = nil
+    private var simulatorRelayTimer: Timer? = nil
+
     public override init() {
         super.init()
         self.bookmarkedCourseIds = Self.loadStoredBookmarkedIds()
+        Self.writeSharedPhoneBookmarks(self.bookmarkedCourseIds)
+
         if WCSession.isSupported() {
             let session = WCSession.default
             session.delegate = self
             session.activate()
         }
+
+        startSimulatorEventRelayTimer()
+    }
+
+    private func startSimulatorEventRelayTimer() {
+        DispatchQueue.main.async { [weak self] in
+            self?.simulatorRelayTimer?.invalidate()
+            let timer = Timer(timeInterval: 0.4, repeats: true) { [weak self] _ in
+                self?.pollWatchToPhoneEventFile()
+            }
+            RunLoop.main.add(timer, forMode: .common)
+            self?.simulatorRelayTimer = timer
+        }
+    }
+
+    private func pollWatchToPhoneEventFile() {
+        let url = URL(fileURLWithPath: Self.watchToPhoneEventFilePath)
+        guard let data = try? Data(contentsOf: url),
+              let dict = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let eventId = dict["eventId"] as? String,
+              !eventId.isEmpty,
+              eventId != lastProcessedEventId else {
+            return
+        }
+
+        let timestamp = (dict["timestamp"] as? TimeInterval)
+            ?? (dict["timestamp"] as? NSNumber)?.doubleValue
+            ?? 0
+        guard timestamp > Date().timeIntervalSince1970 - 30 else {
+            return
+        }
+
+        lastProcessedEventId = eventId
+        _ = handleIncomingWatchAction(dict)
     }
 
     public static func loadStoredBookmarkedIds(defaults: UserDefaults = .standard) -> Set<Int> {
@@ -42,13 +83,25 @@ public class PhoneWatchConnectivityManager: NSObject, WCSessionDelegate, Observa
         if let numArray = defaults.array(forKey: watchBookmarksKey) as? [NSNumber] {
             result.formUnion(numArray.map { $0.intValue }.filter { $0 > 0 })
         }
+        let sharedUrl = URL(fileURLWithPath: phoneBookmarksFilePath)
+        if let data = try? Data(contentsOf: sharedUrl),
+           let sharedIds = try? JSONDecoder().decode([Int].self, from: data) {
+            result.formUnion(sharedIds.filter { $0 > 0 })
+        }
         return result
+    }
+
+    private static func writeSharedPhoneBookmarks(_ ids: Set<Int>) {
+        let sorted = ids.filter { $0 > 0 }.sorted()
+        guard let data = try? JSONEncoder().encode(sorted) else { return }
+        try? data.write(to: URL(fileURLWithPath: phoneBookmarksFilePath), options: .atomic)
     }
 
     private func persistBookmarkedIds(_ ids: Set<Int>) {
         let sorted = ids.filter { $0 > 0 }.sorted()
         let csv = sorted.map(String.init).joined(separator: ",")
         UserDefaults.standard.set(csv, forKey: Self.watchBookmarksKey)
+        Self.writeSharedPhoneBookmarks(ids)
     }
 
     public func buildHotDealsUrl(preference: String? = nil) -> URL {
@@ -206,7 +259,7 @@ public class PhoneWatchConnectivityManager: NSObject, WCSessionDelegate, Observa
     }
 
     @discardableResult
-    private func handleIncomingWatchAction(_ message: [String: Any]) -> Bool {
+    public func handleIncomingWatchAction(_ message: [String: Any]) -> Bool {
         let action = (message["action"] as? String) ?? (message["request"] as? String) ?? ""
 
         if action == "bookmarkDeal" {

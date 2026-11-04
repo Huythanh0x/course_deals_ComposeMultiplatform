@@ -39,7 +39,7 @@ public struct WatchDealDetailView: View {
     public var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 5) {
-                // Header: Platform Tag, HOT Badge & 100% OFF Badge
+                // Header: 🔥 HOT Badge, Bookmark Indicator & Countdown Timer
                 HStack(spacing: 4) {
                     if deal.isHot {
                         Text("🔥 HOT")
@@ -53,27 +53,23 @@ public struct WatchDealDetailView: View {
                             .cornerRadius(3)
                     }
 
-                    Text(deal.platform.displayName)
-                        .font(.system(size: 8.5, weight: .bold))
-                        .lineLimit(1)
-                        .fixedSize(horizontal: true, vertical: false)
-                        .padding(.horizontal, 4.5)
-                        .padding(.vertical, 1.5)
-                        .background(deal.platform.tagColor)
-                        .foregroundColor(.white)
-                        .cornerRadius(3)
-
                     Spacer(minLength: 2)
 
-                    Text(deal.discountBadgeText)
-                        .font(.system(size: 8.5, weight: .heavy))
-                        .lineLimit(1)
-                        .fixedSize(horizontal: true, vertical: false)
-                        .padding(.horizontal, 4.5)
-                        .padding(.vertical, 1.5)
-                        .background(Color.green)
-                        .foregroundColor(.black)
-                        .cornerRadius(3)
+                    if deal.isBookmarked {
+                        Image(systemName: "bookmark.fill")
+                            .font(.system(size: 8.5))
+                            .foregroundColor(.yellow)
+                    }
+
+                    HStack(spacing: 2) {
+                        Image(systemName: "clock.fill")
+                            .font(.system(size: 8.5))
+                        Text(deal.formattedTimeLeft())
+                            .font(.system(size: 9, weight: .semibold, design: .monospaced))
+                            .lineLimit(1)
+                            .fixedSize(horizontal: true, vertical: false)
+                    }
+                    .foregroundColor(.orange)
                 }
 
                 // Full Course Title
@@ -83,7 +79,7 @@ public struct WatchDealDetailView: View {
                     .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
 
-                // Rating, Students & Expiry
+                // Rating & Students
                 HStack(spacing: 4) {
                     Text(deal.formattedRating)
                         .font(.system(size: 9.5, weight: .bold))
@@ -97,14 +93,6 @@ public struct WatchDealDetailView: View {
                     }
 
                     Spacer(minLength: 2)
-
-                    HStack(spacing: 2) {
-                        Image(systemName: "clock.fill")
-                            .font(.system(size: 8.5))
-                        Text(deal.formattedTimeLeft())
-                            .font(.system(size: 9, design: .monospaced))
-                    }
-                    .foregroundColor(.orange)
                 }
 
                 // Coupon Code Box with Haptic Feedback
@@ -201,7 +189,7 @@ public struct WatchDealDetailView: View {
         activity.becomeCurrent()
         activeUserActivity = activity
 
-        // Simultaneously relay via WCSession so paired iPhone navigates immediately when active
+        // Simultaneously relay via WCSession + shared event file so paired iPhone navigates immediately
         WatchConnectivityClient.shared.sendOpenOnPhoneRequest(for: deal)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + resetDelay) {

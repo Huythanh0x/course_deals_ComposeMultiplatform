@@ -133,9 +133,16 @@ public enum WatchCoursePlatform: String, Codable, CaseIterable {
     }
 }
 
+private struct SharedWatchCachePayload: Codable {
+    let deals: [WatchDealModel]
+    let bookmarkedIds: [Int]
+    let timestamp: TimeInterval
+}
+
 /// Persistent offline cache store for Apple Watch deals and bookmarked course IDs.
 /// Uses App Group `group.com.thanh0x.coursedeals` with automatic fallback/mirroring to `.standard`
-/// so both the main WatchApp and WidgetKit Complication/Smart Stack extensions read consistent state.
+/// and shared file `/tmp/coursedeals_watch_shared_cache_v1.json` so both `WatchApp` and `WatchWidgetsExtension.appex`
+/// read consistent state.
 public final class WatchDealCacheStore {
     public static let shared = WatchDealCacheStore()
 
@@ -143,6 +150,7 @@ public final class WatchDealCacheStore {
     public static let cachedDealsKey = "cached_watch_deals_v1"
     public static let bookmarkedIdsKey = "bookmarked_watch_deal_ids_v1"
     public static let lastCacheTimestampKey = "last_cache_timestamp_v1"
+    public static let sharedCacheFilePath = "/tmp/coursedeals_watch_shared_cache_v1.json"
 
     private let primaryDefaults: UserDefaults
     private let fallbackDefaults: UserDefaults
@@ -178,9 +186,12 @@ public final class WatchDealCacheStore {
         primaryDefaults.set(encoded, forKey: Self.cachedDealsKey)
         primaryDefaults.set(now, forKey: Self.lastCacheTimestampKey)
 
-        if mirrorToStandard && primaryDefaults !== fallbackDefaults {
-            fallbackDefaults.set(encoded, forKey: Self.cachedDealsKey)
-            fallbackDefaults.set(now, forKey: Self.lastCacheTimestampKey)
+        if mirrorToStandard {
+            if primaryDefaults !== fallbackDefaults {
+                fallbackDefaults.set(encoded, forKey: Self.cachedDealsKey)
+                fallbackDefaults.set(now, forKey: Self.lastCacheTimestampKey)
+            }
+            writeSharedCacheFile(deals: normalizedDeals, bookmarkedIds: bookmarked, timestamp: now)
         }
     }
 
@@ -188,16 +199,20 @@ public final class WatchDealCacheStore {
         let rawData = primaryDefaults.data(forKey: Self.cachedDealsKey)
             ?? (mirrorToStandard ? fallbackDefaults.data(forKey: Self.cachedDealsKey) : nil)
 
-        guard let data = rawData else {
-            return []
+        var decodedDeals: [WatchDealModel] = []
+        if let data = rawData,
+           let decoded = try? JSONDecoder().decode([WatchDealModel].self, from: data) {
+            decodedDeals = decoded
+        } else if mirrorToStandard, let sharedPayload = readSharedCacheFile() {
+            decodedDeals = sharedPayload.deals
         }
 
-        guard let decoded = try? JSONDecoder().decode([WatchDealModel].self, from: data) else {
+        guard !decodedDeals.isEmpty else {
             return []
         }
 
         let bookmarked = loadBookmarkedIds()
-        return decoded.map { deal in
+        return decodedDeals.map { deal in
             var copy = deal
             if bookmarked.contains(deal.id) {
                 copy.isBookmarked = true
@@ -214,11 +229,14 @@ public final class WatchDealCacheStore {
             return Set(nsNumbers.map { $0.intValue }.filter { $0 > 0 })
         }
         if mirrorToStandard {
-            if let array = fallbackDefaults.array(forKey: Self.bookmarkedIdsKey) as? [Int] {
+            if let array = fallbackDefaults.array(forKey: Self.bookmarkedIdsKey) as? [Int], !array.isEmpty {
                 return Set(array.filter { $0 > 0 })
             }
-            if let nsNumbers = fallbackDefaults.array(forKey: Self.bookmarkedIdsKey) as? [NSNumber] {
+            if let nsNumbers = fallbackDefaults.array(forKey: Self.bookmarkedIdsKey) as? [NSNumber], !nsNumbers.isEmpty {
                 return Set(nsNumbers.map { $0.intValue }.filter { $0 > 0 })
+            }
+            if let sharedPayload = readSharedCacheFile() {
+                return Set(sharedPayload.bookmarkedIds.filter { $0 > 0 })
             }
         }
         return []
@@ -255,10 +273,28 @@ public final class WatchDealCacheStore {
             }
             if let encoded = try? JSONEncoder().encode(updated) {
                 primaryDefaults.set(encoded, forKey: Self.cachedDealsKey)
-                if mirrorToStandard && primaryDefaults !== fallbackDefaults {
-                    fallbackDefaults.set(encoded, forKey: Self.cachedDealsKey)
+                if mirrorToStandard {
+                    if primaryDefaults !== fallbackDefaults {
+                        fallbackDefaults.set(encoded, forKey: Self.cachedDealsKey)
+                    }
+                    writeSharedCacheFile(
+                        deals: updated,
+                        bookmarkedIds: ids,
+                        timestamp: Date().timeIntervalSince1970
+                    )
                 }
             }
+        } else if mirrorToStandard, let existing = readSharedCacheFile() {
+            let updated = existing.deals.map { deal -> WatchDealModel in
+                var copy = deal
+                copy.isBookmarked = ids.contains(deal.id)
+                return copy
+            }
+            writeSharedCacheFile(
+                deals: updated,
+                bookmarkedIds: ids,
+                timestamp: Date().timeIntervalSince1970
+            )
         }
         return ids
     }
@@ -307,11 +343,33 @@ public final class WatchDealCacheStore {
         primaryDefaults.removeObject(forKey: Self.cachedDealsKey)
         primaryDefaults.removeObject(forKey: Self.bookmarkedIdsKey)
         primaryDefaults.removeObject(forKey: Self.lastCacheTimestampKey)
-        if mirrorToStandard && primaryDefaults !== fallbackDefaults {
-            fallbackDefaults.removeObject(forKey: Self.cachedDealsKey)
-            fallbackDefaults.removeObject(forKey: Self.bookmarkedIdsKey)
-            fallbackDefaults.removeObject(forKey: Self.lastCacheTimestampKey)
+        if mirrorToStandard {
+            if primaryDefaults !== fallbackDefaults {
+                fallbackDefaults.removeObject(forKey: Self.cachedDealsKey)
+                fallbackDefaults.removeObject(forKey: Self.bookmarkedIdsKey)
+                fallbackDefaults.removeObject(forKey: Self.lastCacheTimestampKey)
+            }
+            try? FileManager.default.removeItem(atPath: Self.sharedCacheFilePath)
         }
     }
-}
 
+    private func writeSharedCacheFile(
+        deals: [WatchDealModel],
+        bookmarkedIds: Set<Int>,
+        timestamp: TimeInterval
+    ) {
+        let payload = SharedWatchCachePayload(
+            deals: deals,
+            bookmarkedIds: bookmarkedIds.filter { $0 > 0 }.sorted(),
+            timestamp: timestamp
+        )
+        guard let data = try? JSONEncoder().encode(payload) else { return }
+        try? data.write(to: URL(fileURLWithPath: Self.sharedCacheFilePath), options: .atomic)
+    }
+
+    private func readSharedCacheFile() -> SharedWatchCachePayload? {
+        let url = URL(fileURLWithPath: Self.sharedCacheFilePath)
+        guard let data = try? Data(contentsOf: url) else { return nil }
+        return try? JSONDecoder().decode(SharedWatchCachePayload.self, from: data)
+    }
+}

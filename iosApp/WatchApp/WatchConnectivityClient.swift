@@ -9,6 +9,8 @@ import WidgetKit
 
 public class WatchConnectivityClient: NSObject, ObservableObject {
     public static let shared = WatchConnectivityClient()
+    public static let watchToPhoneEventFilePath = "/tmp/coursedeals_watch_to_phone_event.json"
+    public static let phoneBookmarksFilePath = "/tmp/coursedeals_phone_bookmarks.json"
 
     @Published public var deals: [WatchDealModel] = []
     @Published public var isConnectedToPhone: Bool = false
@@ -22,7 +24,7 @@ public class WatchConnectivityClient: NSObject, ObservableObject {
         self.cacheStore = cacheStore
         super.init()
 
-        // 1. Instant offline hydration from App Group / UserDefaults cache before WCSession handshake
+        // 1. Instant offline hydration from App Group / UserDefaults / shared cache before WCSession handshake
         let cachedDeals = cacheStore.loadDeals()
         if !cachedDeals.isEmpty {
             self.deals = cachedDeals
@@ -84,7 +86,7 @@ public class WatchConnectivityClient: NSObject, ObservableObject {
             }
         } else {
             // Check application context or fetch directly from API
-            if WCSession.isSupported() {
+            if WCSession.isSupported() && session.activationState == .activated {
                 if let pref = session.receivedApplicationContext["preference"] as? String {
                     self.userPreference = pref
                 }
@@ -132,7 +134,12 @@ public class WatchConnectivityClient: NSObject, ObservableObject {
                     if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
                        let courses = json["courses"] as? [[String: Any]], !courses.isEmpty {
                         let parsed = self.parseApiCourses(from: courses)
-                        self.applyAndPersistDeals(parsed, remoteBookmarkedIds: [], sourceLabel: "🔥 Hot Deals :8081")
+                        let sharedPhoneBookmarks = self.readSharedPhoneBookmarks()
+                        self.applyAndPersistDeals(
+                            parsed,
+                            remoteBookmarkedIds: sharedPhoneBookmarks,
+                            sourceLabel: "🔥 Hot Deals :8081"
+                        )
                         return
                     } else if self.deals.isEmpty {
                         self.syncSource = "No Hot Deals Found"
@@ -155,11 +162,12 @@ public class WatchConnectivityClient: NSObject, ObservableObject {
             ?? cacheStore.loadBookmarkedIds().contains(dealId)
         let newState = !currentlyBookmarked
 
-        cacheStore.setBookmarked(dealId: dealId, isBookmarked: newState)
+        let updatedBookmarks = cacheStore.setBookmarked(dealId: dealId, isBookmarked: newState)
         for index in deals.indices where deals[index].id == dealId {
             deals[index].isBookmarked = newState
         }
         cacheStore.saveDeals(deals)
+        writeSharedPhoneBookmarks(updatedBookmarks)
         reloadWidgetTimelines()
 
         let payload: [String: Any] = [
@@ -188,19 +196,50 @@ public class WatchConnectivityClient: NSObject, ObservableObject {
     }
 
     private func sendPayloadToPhone(_ payload: [String: Any]) {
+        var enrichedPayload = payload
+        let eventId = UUID().uuidString
+        enrichedPayload["eventId"] = eventId
+        if enrichedPayload["timestamp"] == nil {
+            enrichedPayload["timestamp"] = Date().timeIntervalSince1970
+        }
+
+        // Write shared simulator relay event file immediately so paired iPhone simulator reacts without delay
+        if JSONSerialization.isValidJSONObject(enrichedPayload),
+           let data = try? JSONSerialization.data(withJSONObject: enrichedPayload, options: []) {
+            try? data.write(
+                to: URL(fileURLWithPath: Self.watchToPhoneEventFilePath),
+                options: .atomic
+            )
+        }
+
         #if canImport(WatchConnectivity)
         guard WCSession.isSupported() else { return }
         let session = WCSession.default
         guard session.activationState == .activated else { return }
 
         if session.isReachable {
-            session.sendMessage(payload, replyHandler: nil) { _ in
-                session.transferUserInfo(payload)
+            session.sendMessage(enrichedPayload, replyHandler: nil) { _ in
+                session.transferUserInfo(enrichedPayload)
             }
         } else {
-            session.transferUserInfo(payload)
+            session.transferUserInfo(enrichedPayload)
         }
         #endif
+    }
+
+    private func readSharedPhoneBookmarks() -> Set<Int> {
+        let url = URL(fileURLWithPath: Self.phoneBookmarksFilePath)
+        guard let data = try? Data(contentsOf: url),
+              let ids = try? JSONDecoder().decode([Int].self, from: data) else {
+            return []
+        }
+        return Set(ids.filter { $0 > 0 })
+    }
+
+    private func writeSharedPhoneBookmarks(_ ids: Set<Int>) {
+        let sorted = ids.filter { $0 > 0 }.sorted()
+        guard let data = try? JSONEncoder().encode(sorted) else { return }
+        try? data.write(to: URL(fileURLWithPath: Self.phoneBookmarksFilePath), options: .atomic)
     }
 
     internal func applyAndPersistDeals(

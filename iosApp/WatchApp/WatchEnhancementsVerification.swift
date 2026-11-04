@@ -1,5 +1,6 @@
 import Foundation
 
+#if WATCH_VERIFICATION_MAIN
 /// 4-Quadrant Verification Suite for Ticket #233 (#234 & #235):
 /// Complications, Smart Stack, Offline Cache, iPhone Handoff, and Two-Way Wishlist Sync.
 public enum WatchEnhancementsVerificationSuite {
@@ -169,14 +170,58 @@ public enum WatchEnhancementsVerificationSuite {
     }
 }
 
-#if WATCH_VERIFICATION_MAIN
-@main
-struct WatchVerificationRunner {
-    static func main() {
-        let ok = WatchEnhancementsVerificationSuite.runAllTests()
-        if !ok {
-            exit(1)
+private func runWatchVerificationEntry() {
+    let ok = WatchEnhancementsVerificationSuite.runAllTests()
+    if !ok {
+        exit(1)
+    }
+}
+#else
+private func runWatchVerificationEntry() {
+    let scriptURL = URL(fileURLWithPath: #filePath)
+    let watchAppDir = scriptURL.deletingLastPathComponent().path
+    let tempDir = "/tmp/watch_enhancements_verification_build"
+    let mainFilePath = "\(tempDir)/main.swift"
+    let runnerPath = "\(tempDir)/watch_enhancements_verification_runner"
+
+    do {
+        try FileManager.default.createDirectory(atPath: tempDir, withIntermediateDirectories: true)
+        if FileManager.default.fileExists(atPath: mainFilePath) {
+            try FileManager.default.removeItem(atPath: mainFilePath)
         }
+        try FileManager.default.copyItem(atPath: scriptURL.path, toPath: mainFilePath)
+
+        let compileProcess = Process()
+        compileProcess.executableURL = URL(fileURLWithPath: "/usr/bin/xcrun")
+        compileProcess.arguments = [
+            "swiftc",
+            "-DWATCH_VERIFICATION_MAIN",
+            "\(watchAppDir)/WatchDealModel.swift",
+            "\(watchAppDir)/WatchConnectivityClient.swift",
+            "\(watchAppDir)/WatchDealListView.swift",
+            "\(watchAppDir)/WatchDealDetailView.swift",
+            "\(watchAppDir)/WatchWidgetBundle.swift",
+            "\(watchAppDir)/SmartStackWidget.swift",
+            mainFilePath,
+            "-o",
+            runnerPath
+        ]
+        try compileProcess.run()
+        compileProcess.waitUntilExit()
+        if compileProcess.terminationStatus != 0 {
+            exit(compileProcess.terminationStatus)
+        }
+
+        let runProcess = Process()
+        runProcess.executableURL = URL(fileURLWithPath: runnerPath)
+        try runProcess.run()
+        runProcess.waitUntilExit()
+        exit(runProcess.terminationStatus)
+    } catch {
+        print("Failed to run verification: \(error)")
+        exit(1)
     }
 }
 #endif
+
+runWatchVerificationEntry()

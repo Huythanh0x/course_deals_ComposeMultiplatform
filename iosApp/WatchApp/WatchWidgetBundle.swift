@@ -54,7 +54,7 @@ extension WatchDealTimelineEntry: TimelineEntry {}
 #endif
 
 /// Provides timeline entries for WatchKit/WidgetKit complications and watchOS 10+ Smart Stack widgets
-/// backed by `WatchDealCacheStore` (App Group `group.com.thanh0x.coursedeals` + `.standard` fallback).
+/// backed by `WatchDealCacheStore` (App Group `group.com.thanh0x.coursedeals` + `.standard` + shared cache file).
 public struct WatchDealTimelineProvider {
     private let cacheStore: WatchDealCacheStore
 
@@ -83,7 +83,7 @@ extension WatchDealTimelineProvider: TimelineProvider {
 
     public func getSnapshot(in context: Context, completion: @escaping (WatchDealTimelineEntry) -> Void) {
         let entry = buildCurrentEntry()
-        if context.isPreview && entry.topDeal == nil {
+        if entry.topDeal == nil {
             completion(WatchDealTimelineEntry.sample())
         } else {
             completion(entry)
@@ -93,9 +93,10 @@ extension WatchDealTimelineProvider: TimelineProvider {
     public func getTimeline(in context: Context, completion: @escaping (Timeline<WatchDealTimelineEntry>) -> Void) {
         let now = Date()
         let entry = buildCurrentEntry(now: now)
-        let nextRefresh = Calendar.current.date(byAdding: .minute, value: 30, to: now)
-            ?? now.addingTimeInterval(1800)
-        let timeline = Timeline(entries: [entry], policy: .after(nextRefresh))
+        let resolvedEntry = entry.topDeal != nil ? entry : WatchDealTimelineEntry.sample(now: now)
+        let nextRefresh = Calendar.current.date(byAdding: .minute, value: 15, to: now)
+            ?? now.addingTimeInterval(900)
+        let timeline = Timeline(entries: [resolvedEntry], policy: .after(nextRefresh))
         completion(timeline)
     }
 }
@@ -142,7 +143,7 @@ public struct CircularHotDealsComplicationView: View {
     }
 }
 
-/// `.accessoryRectangular` complication showing top hot deal title, platform, rating, and countdown.
+/// `.accessoryRectangular` complication showing top hot deal title, rating, and countdown.
 public struct RectangularHotDealComplicationView: View {
     public let deal: WatchDealModel?
     public let activeDealCount: Int
@@ -158,17 +159,18 @@ public struct RectangularHotDealComplicationView: View {
         VStack(alignment: .leading, spacing: 2) {
             if let deal = deal {
                 HStack(spacing: 4) {
-                    Text("🔥 \(deal.platform.displayName.uppercased())")
-                        .font(.system(size: 9, weight: .heavy))
+                    Text("🔥 HOT")
+                        .font(.system(size: 8.5, weight: .heavy))
                         .foregroundColor(.orange)
+                    if deal.isBookmarked {
+                        Image(systemName: "bookmark.fill")
+                            .font(.system(size: 8))
+                            .foregroundColor(.yellow)
+                    }
                     Spacer()
-                    Text(deal.discountBadgeText)
-                        .font(.system(size: 8, weight: .heavy))
-                        .padding(.horizontal, 4)
-                        .padding(.vertical, 1)
-                        .background(Color.green.opacity(0.25))
-                        .foregroundColor(.green)
-                        .cornerRadius(3)
+                    Text(deal.formattedTimeLeft(now: now))
+                        .font(.system(size: 8.5, weight: .semibold, design: .monospaced))
+                        .foregroundColor(.cyan)
                 }
 
                 Text(deal.title)
@@ -180,12 +182,12 @@ public struct RectangularHotDealComplicationView: View {
                     Text(deal.formattedRating)
                         .font(.system(size: 9, weight: .bold))
                         .foregroundColor(.yellow)
-                    Text("•")
-                        .font(.system(size: 9))
-                        .foregroundColor(.secondary)
-                    Text(deal.formattedTimeLeft(now: now))
-                        .font(.system(size: 9, weight: .medium, design: .monospaced))
-                        .foregroundColor(.cyan)
+                    if !deal.formattedStudents.isEmpty {
+                        Text("• \(deal.formattedStudents)")
+                            .font(.system(size: 8.5))
+                            .foregroundColor(.secondary)
+                            .lineLimit(1)
+                    }
                     Spacer()
                     if activeDealCount > 1 {
                         Text("+\(activeDealCount - 1) more")
@@ -203,14 +205,12 @@ public struct RectangularHotDealComplicationView: View {
                 Text("No active hot deals cached")
                     .font(.system(size: 10))
                     .foregroundColor(.secondary)
-                Text("Tap to refresh 100% OFF coupons")
+                Text("Tap to refresh hot coupons")
                     .font(.system(size: 8))
                     .foregroundColor(.cyan)
             }
         }
-        .padding(6)
-        .background(Color.white.opacity(0.08))
-        .cornerRadius(8)
+        .padding(4)
     }
 }
 
@@ -228,9 +228,9 @@ public struct InlineHotDealComplicationView: View {
 
     public var summaryText: String {
         if let deal = deal {
-            return "🔥 \( max(1, activeDealCount) ) Hot Deals • \(deal.formattedRating) • \(deal.formattedTimeLeft(now: now))"
+            return "🔥 \(max(1, activeDealCount)) Hot Deals • \(deal.formattedRating) • \(deal.formattedTimeLeft(now: now))"
         }
-        return "🔥 Course Deals • Tap for 100% OFF"
+        return "🔥 Course Deals • Hot Coupons"
     }
 
     public var body: some View {
@@ -253,9 +253,9 @@ public struct CornerHotDealsComplicationView: View {
             Image(systemName: "flame.fill")
                 .font(.system(size: 11, weight: .bold))
                 .foregroundColor(.orange)
-            Text("\(activeDealCount) FREE")
+            Text("\(activeDealCount) HOT")
                 .font(.system(size: 10, weight: .heavy, design: .rounded))
-                .foregroundColor(.green)
+                .foregroundColor(.orange)
         }
     }
 }
@@ -270,36 +270,47 @@ public struct HotDealsComplicationEntryView: View {
         self.entry = entry
     }
 
-    public var body: some View {
-        Group {
-            switch widgetFamily {
-            case .accessoryCircular:
-                CircularHotDealsComplicationView(activeDealCount: entry.activeDealCount)
-            case .accessoryRectangular:
-                RectangularHotDealComplicationView(
-                    deal: entry.topDeal,
-                    activeDealCount: entry.activeDealCount,
-                    now: entry.date
-                )
-            case .accessoryInline:
-                InlineHotDealComplicationView(
-                    deal: entry.topDeal,
-                    activeDealCount: entry.activeDealCount,
-                    now: entry.date
-                )
-            #if os(watchOS)
-            case .accessoryCorner:
-                CornerHotDealsComplicationView(activeDealCount: entry.activeDealCount)
-            #endif
-            default:
-                RectangularHotDealComplicationView(
-                    deal: entry.topDeal,
-                    activeDealCount: entry.activeDealCount,
-                    now: entry.date
-                )
-            }
+    @ViewBuilder
+    private var complicationContent: some View {
+        switch widgetFamily {
+        case .accessoryCircular:
+            CircularHotDealsComplicationView(activeDealCount: entry.activeDealCount)
+        case .accessoryRectangular:
+            RectangularHotDealComplicationView(
+                deal: entry.topDeal,
+                activeDealCount: entry.activeDealCount,
+                now: entry.date
+            )
+        case .accessoryInline:
+            InlineHotDealComplicationView(
+                deal: entry.topDeal,
+                activeDealCount: entry.activeDealCount,
+                now: entry.date
+            )
+        #if os(watchOS)
+        case .accessoryCorner:
+            CornerHotDealsComplicationView(activeDealCount: entry.activeDealCount)
+        #endif
+        default:
+            RectangularHotDealComplicationView(
+                deal: entry.topDeal,
+                activeDealCount: entry.activeDealCount,
+                now: entry.date
+            )
         }
-        .widgetURL(entry.topDeal?.deepLinkUrl)
+    }
+
+    public var body: some View {
+        if #available(watchOS 10.0, iOS 17.0, *) {
+            complicationContent
+                .widgetURL(entry.topDeal?.deepLinkUrl)
+                .containerBackground(for: .widget) {
+                    Color.clear
+                }
+        } else {
+            complicationContent
+                .widgetURL(entry.topDeal?.deepLinkUrl)
+        }
     }
 }
 
@@ -336,12 +347,15 @@ public struct HotDealsComplicationWidget: Widget {
             HotDealsComplicationEntryView(entry: entry)
         }
         .configurationDisplayName("Course Deals Hot Coupons")
-        .description("Glance at 100% OFF hot courses, ratings, and expiry timers on your watch face.")
+        .description("Glance at hot courses, ratings, and expiry timers on your watch face.")
         .supportedFamilies(supportedComplicationFamilies)
     }
 }
 
 /// Bundle combining Watch Face Complications and watchOS 10+ Smart Stack widget.
+#if WIDGET_EXTENSION
+@main
+#endif
 public struct WatchWidgetBundle: WidgetBundle {
     public init() {}
 
