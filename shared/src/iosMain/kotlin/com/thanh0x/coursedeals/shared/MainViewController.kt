@@ -27,13 +27,6 @@ private const val OUTDATED_TEST_VERSION_CODE = 100
 private const val MAX_VALID_VERSION_CODE = 10_000
 private const val WATCH_BOOKMARKED_COURSE_IDS_KEY = "watch_bookmarked_course_ids"
 
-private val SUPPORTED_DEEP_LINK_PREFIXES = listOf(
-    "coursedeals://courses/",
-    "coursedeals://coupon/",
-    "https://coursedeals.com/deal/",
-    "https://coursedeals.com/courses/",
-)
-
 private fun parseIosVersionOverride(args: List<String>): Int? {
     if (args.any { it.contains("--screen=force-update") }) {
         return OUTDATED_TEST_VERSION_CODE
@@ -165,17 +158,8 @@ private fun parseIosDeepLinkArg(args: List<String>): String? {
     return inlineArg ?: pairArg ?: defaultsArg
 }
 
-fun parseCourseIdFromDeepLink(url: String): Int? {
-    val trimmed = url.trim()
-    val matchingPrefix = SUPPORTED_DEEP_LINK_PREFIXES.firstOrNull { trimmed.startsWith(it) }
-        ?: return null
-    val pathPart = trimmed
-        .removePrefix(matchingPrefix)
-        .substringBefore("?")
-        .substringBefore("#")
-        .substringBefore("/")
-    return pathPart.toIntOrNull()?.takeIf { it > 0 }
-}
+fun parseCourseIdFromDeepLink(url: String): Int? =
+    WatchDealJsonCodec.parseCourseIdFromDeepLink(url)
 
 fun handleDeepLink(url: String) {
     val courseId = parseCourseIdFromDeepLink(url)

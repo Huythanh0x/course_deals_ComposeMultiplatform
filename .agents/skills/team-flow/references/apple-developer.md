@@ -69,9 +69,9 @@ Coordinate closely with `kmp-engineer` whenever shared KMP contracts (`:shared`,
    - **Entitlements & Privacy**: Keep Debug (`aps-environment = development`) and Release (`aps-environment = production`) entitlements separate, maintain `UILaunchScreen` in `Info.plist`, and keep `PrivacyInfo.xcprivacy` required-reason API declarations accurate.
 
 6. **Verification & Quality Gate**:
-   - **Regenerate Watch Swift `Codable` DTOs First (`[BLOCKING RULE]`)**:
-     - `iosApp/WatchApp/Generated/` (`WatchDealDto.generated.swift`) is **git-ignored** and auto-generated from Kotlin's `@Serializable data class WatchDealDto` in `shared/src/commonMain/kotlin/com/thanh0x/coursedeals/shared/watch/WatchDealContract.kt`.
-     - Always run `./gradlew :shared:generateWatchSwiftModels` before compiling `WatchApp` or running Swift verification scripts (note: `bash iosApp/WatchApp/build_watch_app.sh` and `:shared` Kotlin compile tasks run this automatically). Never stage or commit `iosApp/WatchApp/Generated/`.
+   - **Link Shared KMP watchOS Framework (`CourseDealsWatch.framework` — `[BLOCKING RULE]`)**:
+     - `WatchApp` and `WatchWidgetsExtension` import `CourseDealsWatch` directly from `:domain:coupons` (`watchosArm64()` and `watchosSimulatorArm64()`), sharing `WatchDealDto`, `WatchCoursePlatform`, `WatchDealJsonCodec`, and `Coupon` with zero Swift model duplication.
+     - Always run `./gradlew :domain:coupons:linkDebugFrameworkWatchosSimulatorArm64` before compiling `WatchApp` (note: `bash iosApp/WatchApp/build_watch_app.sh` runs this automatically).
    - Verify KMP iOS framework compilation & linking:
      `./gradlew :shared:linkDebugFrameworkIosSimulatorArm64`
    - Verify watchOS app + WidgetKit `.appex` build & signing:

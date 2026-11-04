@@ -1,7 +1,8 @@
 import Foundation
+import CourseDealsWatch
 
 private struct SharedWatchCachePayload: Codable {
-    let deals: [WatchDealModel]
+    let dealsJson: String
     let bookmarkedIds: [Int]
     let timestamp: TimeInterval
 }
@@ -9,7 +10,7 @@ private struct SharedWatchCachePayload: Codable {
 /// Persistent offline cache store for Apple Watch deals and bookmarked course IDs.
 /// Uses App Group `group.com.thanh0x.coursedeals` with automatic fallback/mirroring to `.standard`
 /// and shared file `/tmp/coursedeals_watch_shared_cache_v1.json` so both `WatchApp` and `WatchWidgetsExtension.appex`
-/// read consistent state.
+/// read consistent state. Serialization and active-deal ranking are delegated to KMP `WatchDealJsonCodec`.
 public final class WatchDealCacheStore {
     public static let shared = WatchDealCacheStore()
 
@@ -36,17 +37,15 @@ public final class WatchDealCacheStore {
     public func saveDeals(_ deals: [WatchDealModel]) {
         var bookmarked = loadBookmarkedIds()
         for deal in deals where deal.isBookmarked {
-            bookmarked.insert(deal.id)
+            bookmarked.insert(deal.courseId)
         }
         saveBookmarkedIds(bookmarked)
 
-        let normalizedDeals = deals.map { deal -> WatchDealModel in
-            var copy = deal
-            copy.isBookmarked = bookmarked.contains(deal.id)
-            return copy
+        let normalizedDeals = deals.map { deal in
+            deal.withBookmark(bookmarked: bookmarked.contains(deal.courseId))
         }
 
-        guard let encoded = try? JSONEncoder().encode(normalizedDeals) else {
+        guard let encoded = WatchHotDealsEnvelope.encodeDeals(normalizedDeals) else {
             return
         }
         let now = Date().timeIntervalSince1970
@@ -67,24 +66,19 @@ public final class WatchDealCacheStore {
             ?? (mirrorToStandard ? fallbackDefaults.data(forKey: Self.cachedDealsKey) : nil)
 
         var decodedDeals: [WatchDealModel] = []
-        if let data = rawData,
-           let decoded = try? JSONDecoder().decode([WatchDealModel].self, from: data) {
-            decodedDeals = decoded
-        } else if mirrorToStandard, let sharedPayload = readSharedCacheFile() {
-            decodedDeals = sharedPayload.deals
+        if let data = rawData {
+            decodedDeals = WatchHotDealsEnvelope.decodeDeals(from: data)
+        }
+        if decodedDeals.isEmpty, mirrorToStandard, let sharedPayload = readSharedCacheFile(),
+           let data = sharedPayload.dealsJson.data(using: .utf8) {
+            decodedDeals = WatchHotDealsEnvelope.decodeDeals(from: data)
         }
 
-        guard !decodedDeals.isEmpty else {
-            return []
-        }
+        guard !decodedDeals.isEmpty else { return [] }
 
         let bookmarked = loadBookmarkedIds()
         return decodedDeals.map { deal in
-            var copy = deal
-            if bookmarked.contains(deal.id) {
-                copy.isBookmarked = true
-            }
-            return copy
+            bookmarked.contains(deal.courseId) ? deal.withBookmark(bookmarked: true) : deal
         }
     }
 
@@ -128,16 +122,12 @@ public final class WatchDealCacheStore {
         }
         saveBookmarkedIds(ids)
 
-        let rawData = primaryDefaults.data(forKey: Self.cachedDealsKey)
-            ?? (mirrorToStandard ? fallbackDefaults.data(forKey: Self.cachedDealsKey) : nil)
-        if let data = rawData,
-           let decoded = try? JSONDecoder().decode([WatchDealModel].self, from: data) {
-            let updated = decoded.map { deal -> WatchDealModel in
-                var copy = deal
-                copy.isBookmarked = ids.contains(deal.id)
-                return copy
+        let existingDeals = loadDeals()
+        if !existingDeals.isEmpty {
+            let updated = existingDeals.map { deal in
+                deal.withBookmark(bookmarked: ids.contains(deal.courseId))
             }
-            if let encoded = try? JSONEncoder().encode(updated) {
+            if let encoded = WatchHotDealsEnvelope.encodeDeals(updated) {
                 primaryDefaults.set(encoded, forKey: Self.cachedDealsKey)
                 if mirrorToStandard {
                     if primaryDefaults !== fallbackDefaults {
@@ -150,17 +140,6 @@ public final class WatchDealCacheStore {
                     )
                 }
             }
-        } else if mirrorToStandard, let existing = readSharedCacheFile() {
-            let updated = existing.deals.map { deal -> WatchDealModel in
-                var copy = deal
-                copy.isBookmarked = ids.contains(deal.id)
-                return copy
-            }
-            writeSharedCacheFile(
-                deals: updated,
-                bookmarkedIds: ids,
-                timestamp: Date().timeIntervalSince1970
-            )
         }
         return ids
     }
@@ -171,38 +150,28 @@ public final class WatchDealCacheStore {
     ) -> [WatchDealModel] {
         var ids = loadBookmarkedIds().union(extraBookmarkedIds.filter { $0 > 0 })
         for deal in deals where deal.isBookmarked {
-            ids.insert(deal.id)
+            ids.insert(deal.courseId)
         }
         if !extraBookmarkedIds.isEmpty {
             saveBookmarkedIds(ids)
         }
         return deals.map { deal in
-            var copy = deal
-            copy.isBookmarked = ids.contains(deal.id)
-            return copy
+            deal.withBookmark(bookmarked: ids.contains(deal.courseId))
         }
     }
 
     public func topActiveDeal(now: Date = Date()) -> WatchDealModel? {
-        let deals = loadDeals()
-        guard !deals.isEmpty else { return nil }
-        let activeDeals = deals.filter { !$0.isExpired(now: now) }
-        let pool = activeDeals.isEmpty ? deals : activeDeals
-        return pool.sorted { lhs, rhs in
-            if lhs.isHot != rhs.isHot {
-                return lhs.isHot && !rhs.isHot
-            }
-            let lRating = lhs.rating ?? 0.0
-            let rRating = rhs.rating ?? 0.0
-            if abs(lRating - rRating) > 0.001 {
-                return lRating > rRating
-            }
-            return (lhs.students ?? 0) > (rhs.students ?? 0)
-        }.first
+        WatchDealJsonCodec.shared.selectTopActiveDeal(
+            deals: loadDeals(),
+            nowEpochMillis: Int64(now.timeIntervalSince1970 * 1000)
+        )
     }
 
     public func activeDealCount(now: Date = Date()) -> Int {
-        return loadDeals().filter { !$0.isExpired(now: now) }.count
+        Int(WatchDealJsonCodec.shared.countActiveDeals(
+            deals: loadDeals(),
+            nowEpochMillis: Int64(now.timeIntervalSince1970 * 1000)
+        ))
     }
 
     public func clearAll() {
@@ -225,7 +194,7 @@ public final class WatchDealCacheStore {
         timestamp: TimeInterval
     ) {
         let payload = SharedWatchCachePayload(
-            deals: deals,
+            dealsJson: WatchDealJsonCodec.shared.encodeDealsToJson(deals: deals),
             bookmarkedIds: bookmarkedIds.filter { $0 > 0 }.sorted(),
             timestamp: timestamp
         )

@@ -21,8 +21,8 @@ public struct WatchDealDetailView: View {
 
     public static func buildHandoffUserInfo(for deal: WatchDealModel) -> [String: Any] {
         var userInfo: [String: Any] = [
-            "courseId": deal.id,
-            "dealId": deal.id,
+            "courseId": deal.courseId,
+            "dealId": deal.courseId,
             "deepLink": deal.deepLinkUrl.absoluteString,
             "title": deal.title,
             "platform": deal.platform.displayName
@@ -158,7 +158,7 @@ public struct WatchDealDetailView: View {
             if CommandLine.arguments.contains("--trigger-handoff") {
                 if !deal.isBookmarked {
                     let newState = WatchConnectivityClient.shared.toggleBookmark(for: deal.id)
-                    deal.isBookmarked = newState
+                    deal = deal.withBookmark(bookmarked: newState)
                 }
                 triggerHandoffToIPhone(resetDelay: 12.0)
             }
@@ -177,7 +177,7 @@ public struct WatchDealDetailView: View {
     private func toggleBookmark() {
         playHapticFeedback(.click)
         let newState = WatchConnectivityClient.shared.toggleBookmark(for: deal.id)
-        deal.isBookmarked = newState
+        deal = deal.withBookmark(bookmarked: newState)
     }
 
     private func triggerHandoffToIPhone(resetDelay: TimeInterval = 2.5) {

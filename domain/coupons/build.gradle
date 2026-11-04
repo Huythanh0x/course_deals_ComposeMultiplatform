@@ -4,10 +4,21 @@ plugins {
 }
 
 kotlin {
+    [
+        watchosArm64(),
+        watchosSimulatorArm64()
+    ].each { watchTarget ->
+        watchTarget.binaries.framework {
+            baseName = "CourseDealsWatch"
+            isStatic = true
+            export project(':core:common')
+        }
+    }
+
     sourceSets {
         commonMain {
             dependencies {
-                implementation project(':core:common')
+                api project(':core:common')
                 implementation project(':domain:user')
                 implementation libs.kotlinx.serialization.json
                 implementation libs.kotlinx.coroutines.core

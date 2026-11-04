@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import CourseDealsWatch
 #if canImport(WatchConnectivity)
 import WatchConnectivity
 #endif
@@ -43,18 +44,11 @@ public class WatchConnectivityClient: NSObject, ObservableObject {
     }
 
     public func buildHotDealsUrl(preference: String? = nil) -> URL {
-        var components = URLComponents(string: "http://127.0.0.1:8081/api/v1/coupons/hot-deals")!
-        var queryItems = [
-            URLQueryItem(name: "pageIndex", value: "0"),
-            URLQueryItem(name: "numberPerPage", value: "20"),
-            URLQueryItem(name: "minRating", value: "4.7")
-        ]
-        let pref = preference ?? userPreference
-        if let pref = pref, !pref.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            queryItems.append(URLQueryItem(name: "preference", value: pref))
-        }
-        components.queryItems = queryItems
-        return components.url ?? URL(string: "http://127.0.0.1:8081/api/v1/coupons/hot-deals")!
+        let urlString = WatchDealJsonCodec.shared.buildHotDealsUrl(
+            baseUrl: "http://127.0.0.1:8081",
+            preference: preference ?? userPreference
+        )
+        return URL(string: urlString) ?? URL(string: "http://127.0.0.1:8081/api/v1/coupons/hot-deals")!
     }
 
     public func requestDealsFromPhone(preference: String? = nil) {
@@ -151,14 +145,19 @@ public class WatchConnectivityClient: NSObject, ObservableObject {
     // MARK: - Bookmark & Handoff Actions
 
     @discardableResult
+    public func toggleBookmark(for dealId: Int32) -> Bool {
+        toggleBookmark(for: Int(dealId))
+    }
+
+    @discardableResult
     public func toggleBookmark(for dealId: Int) -> Bool {
-        let currentlyBookmarked = deals.first(where: { $0.id == dealId })?.isBookmarked
+        let currentlyBookmarked = deals.first(where: { $0.courseId == dealId })?.isBookmarked
             ?? cacheStore.loadBookmarkedIds().contains(dealId)
         let newState = !currentlyBookmarked
 
         let updatedBookmarks = cacheStore.setBookmarked(dealId: dealId, isBookmarked: newState)
-        for index in deals.indices where deals[index].id == dealId {
-            deals[index].isBookmarked = newState
+        for index in deals.indices where deals[index].courseId == dealId {
+            deals[index] = deals[index].withBookmark(bookmarked: newState)
         }
         cacheStore.saveDeals(deals)
         writeSharedPhoneBookmarks(updatedBookmarks)
@@ -179,8 +178,8 @@ public class WatchConnectivityClient: NSObject, ObservableObject {
         let payload: [String: Any] = [
             "action": "openCourseOnPhone",
             "request": "openCourseOnPhone",
-            "courseId": deal.id,
-            "dealId": deal.id,
+            "courseId": deal.courseId,
+            "dealId": deal.courseId,
             "deepLink": deal.deepLinkUrl.absoluteString,
             "title": deal.title,
             "platform": deal.platform.displayName,

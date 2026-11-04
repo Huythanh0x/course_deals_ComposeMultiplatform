@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import CourseDealsWatch
 #if canImport(WidgetKit)
 import WidgetKit
 #endif
@@ -24,21 +25,8 @@ public struct WatchDealTimelineEntry {
     }
 
     public static func sample(now: Date = Date()) -> WatchDealTimelineEntry {
-        let sampleDeal = WatchDealModel(
-            id: 501,
-            title: "Complete Kotlin Multiplatform & SwiftUI Masterclass",
-            author: "Course Deals Academy",
-            category: "Mobile Development",
-            couponCode: "KMP100FREE",
-            couponUrl: "https://coursedeals.com/deal/501",
-            expiredTime: Int64(now.addingTimeInterval(7200).timeIntervalSince1970),
-            rating: 4.9,
-            reviews: 420,
-            usesRemaining: 18,
-            platform: .udemy,
-            isBookmarked: true,
-            students: 48_500,
-            isHot: true
+        let sampleDeal = WatchDealJsonCodec.shared.sampleDeal(
+            nowEpochSeconds: Int64(now.timeIntervalSince1970)
         )
         return WatchDealTimelineEntry(
             date: now,

@@ -4,6 +4,9 @@ plugins {
 }
 
 kotlin {
+    watchosArm64()
+    watchosSimulatorArm64()
+
     sourceSets {
         commonMain {
             dependencies {

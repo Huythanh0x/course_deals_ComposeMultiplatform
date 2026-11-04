@@ -1,9 +1,10 @@
 import Foundation
+import CourseDealsWatch
 
 #if WATCH_VERIFICATION_MAIN
 /// 4-Quadrant Verification Suite for Ticket #233 (#234 & #235):
 /// Complications, Smart Stack, Offline Cache, iPhone Handoff, Two-Way Wishlist Sync,
-/// and Auto-Generated Swift Codable DTO Decoding (`WatchDealDto.generated.swift`).
+/// and Shared KMP Framework (`CourseDealsWatch.framework`).
 public enum WatchEnhancementsVerificationSuite {
 
     private static func assertCondition(
@@ -29,37 +30,39 @@ public enum WatchEnhancementsVerificationSuite {
 
         let now = Date(timeIntervalSince1970: 1_760_000_000)
 
-        print("=== Quadrant 1: Happy Path (Cache Round-Trip, Bookmarks, TimelineEntry, Handoff, Generated Codable DTOs) ===")
+        print("=== Quadrant 1: Happy Path (Cache Round-Trip, Bookmarks, TimelineEntry, Handoff, KMP CourseDealsWatch.framework) ===")
         let deal1 = WatchDealModel(
             id: 501,
             title: "Kotlin Multiplatform Masterclass",
+            heading: nil,
             author: "JetBrains Pro",
             category: "Development",
             couponCode: "KMP100",
             couponUrl: "https://coursedeals.com/deal/501",
-            expiredTime: Int64(now.addingTimeInterval(7200).timeIntervalSince1970),
-            rating: 4.9,
-            reviews: 350,
-            usesRemaining: 20,
+            expiredTime: KotlinLong(value: Int64(now.addingTimeInterval(7200).timeIntervalSince1970)),
+            rating: KotlinDouble(value: 4.9),
+            reviews: KotlinInt(value: 350),
+            usesRemaining: KotlinInt(value: 20),
             platform: .udemy,
             isBookmarked: false,
-            students: 42_000,
+            students: KotlinInt(value: 42_000),
             isHot: true
         )
         let deal2 = WatchDealModel(
             id: 502,
             title: "SwiftUI & WidgetKit for watchOS 10",
+            heading: nil,
             author: "Apple Watch Academy",
             category: "Mobile",
             couponCode: "WATCH100",
             couponUrl: "https://coursedeals.com/deal/502",
-            expiredTime: Int64(now.addingTimeInterval(3600).timeIntervalSince1970),
-            rating: 4.8,
-            reviews: 210,
-            usesRemaining: 12,
+            expiredTime: KotlinLong(value: Int64(now.addingTimeInterval(3600).timeIntervalSince1970)),
+            rating: KotlinDouble(value: 4.8),
+            reviews: KotlinInt(value: 210),
+            usesRemaining: KotlinInt(value: 12),
             platform: .coursera,
             isBookmarked: false,
-            students: 19_000,
+            students: KotlinInt(value: 19_000),
             isHot: true
         )
 
@@ -97,37 +100,7 @@ public enum WatchEnhancementsVerificationSuite {
             decodedApiDeals.first?.id == 4917622 &&
             decodedApiDeals.first?.couponCode == "27THOCT26" &&
             decodedApiDeals.first?.platform == .udemy,
-            "WatchHotDealsEnvelope.decodeDeals decodes raw /api/v1/coupons/hot-deals JSON",
-            failures: &failures
-        )
-
-        let kmpWatchDealDtoJson = """
-        [
-          {
-            "id": 777,
-            "title": "Coursera Machine Learning Specialization",
-            "author": "Andrew Ng",
-            "category": "AI",
-            "couponCode": "MLFREE",
-            "couponUrl": "https://coursedeals.com/deal/777",
-            "expiredTime": 1762600000,
-            "rating": 5.0,
-            "reviews": 900,
-            "usesRemaining": 45,
-            "platform": "Coursera",
-            "isBookmarked": true,
-            "students": 120000,
-            "isHot": true
-          }
-        ]
-        """.data(using: .utf8)!
-        let decodedKmpDeals = WatchHotDealsEnvelope.decodeDeals(from: kmpWatchDealDtoJson)
-        assertCondition(
-            decodedKmpDeals.count == 1 &&
-            decodedKmpDeals.first?.id == 777 &&
-            decodedKmpDeals.first?.platform == .coursera &&
-            decodedKmpDeals.first?.isBookmarked == true,
-            "WatchHotDealsEnvelope.decodeDeals decodes KMP @Serializable WatchDealDto JSON array",
+            "WatchHotDealsEnvelope.decodeDeals decodes raw /api/v1/coupons/hot-deals JSON via KMP WatchDealJsonCodec",
             failures: &failures
         )
 
@@ -175,9 +148,18 @@ public enum WatchEnhancementsVerificationSuite {
         let expiredHighRatedDeal = WatchDealModel(
             id: 599,
             title: "Expired 5.0 Rated Course",
-            expiredTime: Int64(now.addingTimeInterval(-3600).timeIntervalSince1970),
-            rating: 5.0,
+            heading: nil,
+            author: nil,
+            category: nil,
+            couponCode: nil,
+            couponUrl: nil,
+            expiredTime: KotlinLong(value: Int64(now.addingTimeInterval(-3600).timeIntervalSince1970)),
+            rating: KotlinDouble(value: 5.0),
+            reviews: nil,
+            usesRemaining: nil,
             platform: .udemy,
+            isBookmarked: false,
+            students: nil,
             isHot: true
         )
         store.saveDeals([expiredHighRatedDeal, deal2])
@@ -205,10 +187,15 @@ public enum WatchEnhancementsVerificationSuite {
         print("=== Quadrant 4: Regression & Related Changes (Bookmark Retention Across Live Refresh) ===")
         store.clearAll()
         store.setBookmarked(dealId: 501, isBookmarked: true)
-        let freshUnbookmarkedFeed = [
-            WatchDealModel(id: 501, title: "Refreshed Course 501", isBookmarked: false),
-            WatchDealModel(id: 503, title: "Refreshed Course 503", isBookmarked: false)
-        ]
+        let freshUnbookmarkedFeed = WatchDealJsonCodec.shared.decodeDealsFromJson(
+            jsonString: """
+            [
+              {"id": 501, "title": "Refreshed Course 501", "isBookmarked": false},
+              {"id": 503, "title": "Refreshed Course 503", "isBookmarked": false}
+            ]
+            """,
+            limit: 10
+        )
         let merged = store.mergeDealsWithBookmarks(freshUnbookmarkedFeed, extraBookmarkedIds: [503])
         assertCondition(
             merged.first(where: { $0.id == 501 })?.isBookmarked == true &&
@@ -229,61 +216,4 @@ public enum WatchEnhancementsVerificationSuite {
         }
     }
 }
-
-private func runWatchVerificationEntry() {
-    let ok = WatchEnhancementsVerificationSuite.runAllTests()
-    if !ok {
-        exit(1)
-    }
-}
-#else
-private func runWatchVerificationEntry() {
-    let scriptURL = URL(fileURLWithPath: #filePath)
-    let watchAppDir = scriptURL.deletingLastPathComponent().path
-    let tempDir = "/tmp/watch_enhancements_verification_build"
-    let mainFilePath = "\(tempDir)/main.swift"
-    let runnerPath = "\(tempDir)/watch_enhancements_verification_runner"
-
-    do {
-        try FileManager.default.createDirectory(atPath: tempDir, withIntermediateDirectories: true)
-        if FileManager.default.fileExists(atPath: mainFilePath) {
-            try FileManager.default.removeItem(atPath: mainFilePath)
-        }
-        try FileManager.default.copyItem(atPath: scriptURL.path, toPath: mainFilePath)
-
-        let compileProcess = Process()
-        compileProcess.executableURL = URL(fileURLWithPath: "/usr/bin/xcrun")
-        compileProcess.arguments = [
-            "swiftc",
-            "-DWATCH_VERIFICATION_MAIN",
-            "\(watchAppDir)/Generated/WatchDealDto.generated.swift",
-            "\(watchAppDir)/WatchDealModel.swift",
-            "\(watchAppDir)/WatchDealCacheStore.swift",
-            "\(watchAppDir)/WatchConnectivityClient.swift",
-            "\(watchAppDir)/WatchDealListView.swift",
-            "\(watchAppDir)/WatchDealDetailView.swift",
-            "\(watchAppDir)/WatchWidgetBundle.swift",
-            "\(watchAppDir)/SmartStackWidget.swift",
-            mainFilePath,
-            "-o",
-            runnerPath
-        ]
-        try compileProcess.run()
-        compileProcess.waitUntilExit()
-        if compileProcess.terminationStatus != 0 {
-            exit(compileProcess.terminationStatus)
-        }
-
-        let runProcess = Process()
-        runProcess.executableURL = URL(fileURLWithPath: runnerPath)
-        try runProcess.run()
-        runProcess.waitUntilExit()
-        exit(runProcess.terminationStatus)
-    } catch {
-        print("Failed to run verification: \(error)")
-        exit(1)
-    }
-}
 #endif
-
-runWatchVerificationEntry()

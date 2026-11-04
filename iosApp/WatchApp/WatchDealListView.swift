@@ -1,5 +1,6 @@
 import SwiftUI
 import Combine
+import CourseDealsWatch
 #if canImport(WatchKit)
 import WatchKit
 #endif
@@ -201,27 +202,17 @@ public struct WatchDealListView: View {
             selectedDealIndex = nil
             return
         }
-        let prefixes = [
-            "coursedeals://courses/",
-            "coursedeals://coupon/",
-            "https://coursedeals.com/deal/",
-            "https://coursedeals.com/courses/"
-        ]
-        guard let prefix = prefixes.first(where: { raw.hasPrefix($0) }) else {
+        guard let targetIdObj = WatchDealJsonCodec.shared.parseCourseIdFromDeepLink(url: raw) else {
             return
         }
-        let tail = String(raw.dropFirst(prefix.count))
-            .components(separatedBy: CharacterSet(charactersIn: "?#/"))
-            .first ?? ""
-        guard let targetId = Int(tail), targetId > 0 else {
-            return
-        }
+        let targetId = targetIdObj.intValue
+        guard targetId > 0 else { return }
         if raw.contains("bookmark=1") {
-            if !(client.deals.first(where: { $0.id == targetId })?.isBookmarked ?? false) {
+            if !(client.deals.first(where: { $0.courseId == targetId })?.isBookmarked ?? false) {
                 _ = client.toggleBookmark(for: targetId)
             }
         }
-        if let index = client.deals.firstIndex(where: { $0.id == targetId }) {
+        if let index = client.deals.firstIndex(where: { $0.courseId == targetId }) {
             selectedDealIndex = index
         }
     }
