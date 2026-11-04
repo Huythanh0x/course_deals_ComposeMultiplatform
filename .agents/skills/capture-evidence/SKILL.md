@@ -54,7 +54,7 @@ If platform-specific flows are defined (e.g. `<flow>.yaml` and `<flow>-ios.yaml`
 
 ## 4. Multi-Platform Capture & Cloudflare R2 Upload
 
-### A. Capture Screenshots on Android & iOS
+### A. Capture Screenshots on Android, iOS & watchOS
 - **Android Emulator**:
   ```bash
   adb -s emulator-5554 exec-out screencap -p > .agents/tickets/<issue>-<slug>/evidence/<step>_android.png
@@ -63,6 +63,17 @@ If platform-specific flows are defined (e.g. `<flow>.yaml` and `<flow>-ios.yaml`
   ```bash
   xcrun simctl io booted screenshot .agents/tickets/<issue>-<slug>/evidence/<step>_ios.png
   ```
+- **watchOS Simulator (`Apple Watch Series 10 42mm` Paired with `iPhone 17`)**:
+  1. **Activate Simulator Pair**: Run `xcrun simctl list pairs` and `xcrun simctl pair_activate <pair-udid>`, boot both iPhone and Watch simulators, and open `/Applications/Xcode.app/Contents/Applications/DeviceHub.app` (or `Simulator.app`).
+  2. **Independent Launch & `.appex` Packaging**: Ensure `iosApp/WatchApp/Info.plist` includes `<key>WKRunsIndependentlyOfCompanionApp</key><true/>` alongside `WKCompanionAppBundleIdentifier` (otherwise `appconduitd` blocks `simctl launch` with `FBSOpenApplicationServiceErrorDomain Code=4`). Always `sleep 1.2` between `simctl terminate` and `simctl launch`.
+  3. **Verify Real WidgetKit Extension (`pluginkit`)**: Never use fake in-app preview sheets for Complications/Smart Stack. Build `WatchApp.app` with embedded `PlugIns/WatchWidgetsExtension.appex` (`bash iosApp/WatchApp/build_watch_app.sh`) and verify registration via:
+     ```bash
+     xcrun simctl spawn <watch-udid> pluginkit -m -v -i com.thanh0x.coursedeals.iosApp.watchkitapp.widgets
+     ```
+  4. **Programmatic Modular Watch Face (`whistler-digital`) Complication Verification**: Because watchOS Simulators default to `NTKBigNumeralsDigitalFaceBundle` (0 complication slots), shut down `<watch-udid>`, write a `whistler-digital` `face.json` with `type: 56` (`NTKWidgetComplication`) into `~/Library/Developer/CoreSimulator/Devices/<watch-udid>/data/Library/NanoTimeKit/CollectionStores/GlobalStores/LibraryFaces/Faces/<face-uuid>/face.json`, clear `Backups/*`, reboot `<watch-udid>`, wait 8s, and capture:
+     ```bash
+     xcrun simctl io <watch-udid> screenshot .agents/tickets/<issue>-<slug>/evidence/<step>_watchos.png
+     ```
 
 ### B. Visually Inspect Captured Images
 Invoke `read_file` on both `<step>_android.png` and `<step>_ios.png` to inspect layout, insets, text rendering, and colors.
