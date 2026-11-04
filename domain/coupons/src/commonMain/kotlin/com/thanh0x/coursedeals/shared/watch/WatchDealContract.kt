@@ -1,5 +1,6 @@
 package com.thanh0x.coursedeals.shared.watch
 
+import com.thanh0x.coursedeals.core.common.BuildConfig
 import com.thanh0x.coursedeals.domain.coupons.Coupon
 import kotlin.math.abs
 import kotlinx.serialization.SerialName
@@ -248,8 +249,11 @@ object WatchDealJsonCodec {
         isLenient = true
     }
 
+    fun defaultBaseUrl(): String =
+        BuildConfig.LOCAL_API_BASE_URL.ifBlank { DEFAULT_HOT_DEALS_BASE_URL }
+
     fun buildHotDealsUrl(
-        baseUrl: String = DEFAULT_HOT_DEALS_BASE_URL,
+        baseUrl: String = defaultBaseUrl(),
         preference: String? = null,
     ): String {
         val cleanBase = baseUrl.trimEnd('/')

@@ -320,7 +320,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ \"$SKIP_KOTLIN_BUILD\" = \"1\" ]; then exit 0; fi\ncd \"$SRCROOT/..\"\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
+			shellScript = "if [ \"$SKIP_KOTLIN_BUILD\" = \"1\" ]; then exit 0; fi\ncd \"$SRCROOT/..\"\nif [ \"$PLATFORM_NAME\" = \"iphoneos\" ] && [ \"$CONFIGURATION\" = \"Debug\" ]; then\n  ./gradlew :shared:embedAndSignAppleFrameworkForXcode -PphysicalDeviceLocal=true\nelse\n  ./gradlew :shared:embedAndSignAppleFrameworkForXcode\nfi\n";
 		};
 		A7000002 /* Embed Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -358,7 +358,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ \"$SKIP_KOTLIN_BUILD\" = \"1\" ]; then exit 0; fi\ncd \"$SRCROOT/..\"\nif [ \"$PLATFORM_NAME\" = \"watchsimulator\" ]; then\n  ./gradlew :domain:coupons:linkDebugFrameworkWatchosSimulatorArm64\nelse\n  ./gradlew :domain:coupons:linkDebugFrameworkWatchosDeviceArm64\nfi\n";
+			shellScript = "if [ \"$SKIP_KOTLIN_BUILD\" = \"1\" ]; then exit 0; fi\ncd \"$SRCROOT/..\"\nif [ \"$PLATFORM_NAME\" = \"watchsimulator\" ]; then\n  ./gradlew :domain:coupons:linkDebugFrameworkWatchosSimulatorArm64\nelse\n  ./gradlew :domain:coupons:linkDebugFrameworkWatchosDeviceArm64 -PphysicalDeviceLocal=true\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

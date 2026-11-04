@@ -29,6 +29,11 @@ static def getLocalIP() {
 }
 
 def getLocalApiUrl() {
+    def propUrl = project.findProperty("localApiUrl")?.toString()?.trim()
+    if (propUrl) return propUrl
+    def envUrl = System.getenv("LOCAL_API_URL")?.trim()
+    if (envUrl) return envUrl
+    def port = project.findProperty("localApiPort")?.toString()?.trim() ?: "8081"
     Properties properties = new Properties()
     def localPropertiesFile = project.rootProject.file('local.properties')
     if (localPropertiesFile.exists()) {
@@ -36,9 +41,9 @@ def getLocalApiUrl() {
     }
     def overrideIp = properties.getProperty("local.api.ip")
     if (overrideIp != null && !overrideIp.isEmpty()) {
-        return "http://${overrideIp}:8080"
+        return "http://${overrideIp}:${port}"
     }
-    return "http://${getLocalIP()}:8080"
+    return "http://${getLocalIP()}:${port}"
 }
 
 plugins {

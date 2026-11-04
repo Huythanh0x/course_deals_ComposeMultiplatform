@@ -44,11 +44,12 @@ public class WatchConnectivityClient: NSObject, ObservableObject {
     }
 
     public func buildHotDealsUrl(preference: String? = nil) -> URL {
+        let baseUrl = WatchDealJsonCodec.shared.defaultBaseUrl()
         let urlString = WatchDealJsonCodec.shared.buildHotDealsUrl(
-            baseUrl: "http://127.0.0.1:8081",
+            baseUrl: baseUrl,
             preference: preference ?? userPreference
         )
-        return URL(string: urlString) ?? URL(string: "http://127.0.0.1:8081/api/v1/coupons/hot-deals")!
+        return URL(string: urlString) ?? URL(string: "\(baseUrl)/api/v1/coupons/hot-deals")!
     }
 
     public func requestDealsFromPhone(preference: String? = nil) {
