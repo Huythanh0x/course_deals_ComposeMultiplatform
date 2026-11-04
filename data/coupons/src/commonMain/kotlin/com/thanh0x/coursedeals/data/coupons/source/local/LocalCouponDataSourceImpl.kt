@@ -10,16 +10,17 @@ import com.thanh0x.coursedeals.domain.coupons.FilterData
 import com.thanh0x.coursedeals.domain.coupons.SortOption
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 
 class LocalCouponDataSourceImpl : LocalCouponDataSource {
     private val couponsState = MutableStateFlow<Map<Int, Coupon>>(emptyMap())
     private val searchHistoryState = MutableStateFlow<Map<String, SearchHistory>>(emptyMap())
-    private val activePagingSources = mutableListOf<PagingSource<Int, Coupon>>()
+    private val activePagingSources = MutableStateFlow<List<PagingSource<Int, Coupon>>>(emptyList())
 
     private fun invalidatePagingSources() {
-        val sources = activePagingSources.toList()
-        activePagingSources.clear()
+        val sources = activePagingSources.getAndUpdate { emptyList() }
         sources.forEach { it.invalidate() }
     }
 
@@ -30,7 +31,9 @@ class LocalCouponDataSourceImpl : LocalCouponDataSource {
 
     override fun getFilteredCoupons(query: String?, filter: FilterData): PagingSource<Int, Coupon> {
         val items = filterAndSortCoupons(couponsState.value.values.toList(), query, filter)
-        return ListPagingSource(items).also { activePagingSources.add(it) }
+        return ListPagingSource(items).also { source ->
+            activePagingSources.update { it + source }
+        }
     }
 
     override fun getFilteredCount(query: String?, filter: FilterData): Flow<Int> =
@@ -63,24 +66,25 @@ class LocalCouponDataSourceImpl : LocalCouponDataSource {
     }
 
     override suspend fun insertCoupon(coupon: Coupon) {
-        val current = couponsState.value.toMutableMap()
-        current[coupon.courseId] = coupon
-        couponsState.value = current
+        couponsState.update { current ->
+            current + (coupon.courseId to coupon)
+        }
         invalidatePagingSources()
     }
 
     override suspend fun insertCoupons(coupons: List<Coupon>) {
-        val current = couponsState.value.toMutableMap()
-        coupons.forEach { current[it.courseId] = it }
-        couponsState.value = current
+        couponsState.update { current ->
+            val mutable = current.toMutableMap()
+            coupons.forEach { mutable[it.courseId] = it }
+            mutable
+        }
         invalidatePagingSources()
     }
 
     override suspend fun clearALlCoupons(): Int {
-        val count = couponsState.value.size
-        couponsState.value = emptyMap()
+        val prev = couponsState.getAndUpdate { emptyMap() }
         invalidatePagingSources()
-        return count
+        return prev.size
     }
 
     override suspend fun getRecentSearches(): List<String> {
@@ -100,9 +104,9 @@ class LocalCouponDataSourceImpl : LocalCouponDataSource {
     }
 
     override suspend fun insertSearchHistory(history: SearchHistory) {
-        val current = searchHistoryState.value.toMutableMap()
-        current[history.query] = history
-        searchHistoryState.value = current
+        searchHistoryState.update { current ->
+            current + (history.query to history)
+        }
     }
 
     private fun filterAndSortCoupons(

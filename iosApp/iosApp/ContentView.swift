@@ -27,6 +27,9 @@ struct ContentView: View {
             .onChange(of: watchConnectivity.pendingDeepLinkUrl) { newUrl in
                 if let newUrl = newUrl, !newUrl.isEmpty {
                     MainViewControllerKt.handleDeepLink(url: newUrl)
+                    DispatchQueue.main.async {
+                        watchConnectivity.pendingDeepLinkUrl = nil
+                    }
                 }
             }
     }

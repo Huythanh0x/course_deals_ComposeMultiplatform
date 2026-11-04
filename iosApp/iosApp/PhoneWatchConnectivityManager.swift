@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import WatchConnectivity
 #if canImport(ComposeApp)
 import ComposeApp
@@ -20,6 +21,7 @@ public class PhoneWatchConnectivityManager: NSObject, WCSessionDelegate, Observa
     @Published public var bookmarkedCourseIds: Set<Int> = []
 
     private var lastProcessedEventId: String? = nil
+    private var processedEventIds: Set<String> = []
     private var simulatorRelayTimer: Timer? = nil
 
     public override init() {
@@ -33,7 +35,25 @@ public class PhoneWatchConnectivityManager: NSObject, WCSessionDelegate, Observa
             session.activate()
         }
 
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleAppDidBecomeActive),
+            name: UIApplication.didBecomeActiveNotification,
+            object: nil
+        )
+
         startSimulatorEventRelayTimer()
+    }
+
+    @objc private func handleAppDidBecomeActive() {
+        guard WCSession.isSupported() else { return }
+        let session = WCSession.default
+        if session.activationState == .activated {
+            let ctx = session.receivedApplicationContext
+            if !ctx.isEmpty {
+                _ = handleIncomingWatchAction(ctx)
+            }
+        }
     }
 
     private func startSimulatorEventRelayTimer() {
@@ -221,6 +241,17 @@ public class PhoneWatchConnectivityManager: NSObject, WCSessionDelegate, Observa
     @discardableResult
     public func handleIncomingWatchAction(_ message: [String: Any]) -> Bool {
         let action = (message["action"] as? String) ?? (message["request"] as? String) ?? ""
+        guard action == "bookmarkDeal" || action == "openCourseOnPhone" else {
+            return false
+        }
+
+        if let eventId = message["eventId"] as? String, !eventId.isEmpty {
+            if processedEventIds.contains(eventId) {
+                return true
+            }
+            processedEventIds.insert(eventId)
+            lastProcessedEventId = eventId
+        }
 
         if action == "bookmarkDeal" {
             let courseId = Self.extractCourseId(from: message)
@@ -287,9 +318,17 @@ public class PhoneWatchConnectivityManager: NSObject, WCSessionDelegate, Observa
             self.isWatchPaired = session.isPaired
             self.isWatchAppInstalled = session.isWatchAppInstalled
             if activationState == .activated {
+                let ctx = session.receivedApplicationContext
+                if !ctx.isEmpty {
+                    _ = self.handleIncomingWatchAction(ctx)
+                }
                 self.pushLatestDeals()
             }
         }
+    }
+
+    public func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String: Any]) {
+        _ = handleIncomingWatchAction(applicationContext)
     }
 
     public func sessionReachabilityDidChange(_ session: WCSession) {

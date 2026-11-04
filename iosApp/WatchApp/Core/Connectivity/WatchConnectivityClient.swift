@@ -18,6 +18,7 @@ public class WatchConnectivityClient: NSObject, ObservableObject {
     @Published public var syncSource: String = "Connecting..."
     @Published public var isLoading: Bool = false
     @Published public var userPreference: String? = nil
+    private var pendingOutgoingPayload: [String: Any]? = nil
 
     public let cacheStore: WatchDealCacheStore
 
@@ -208,13 +209,21 @@ public class WatchConnectivityClient: NSObject, ObservableObject {
         #if canImport(WatchConnectivity)
         guard WCSession.isSupported() else { return }
         let session = WCSession.default
-        guard session.activationState == .activated else { return }
+        guard session.activationState == .activated else {
+            pendingOutgoingPayload = enrichedPayload
+            session.activate()
+            return
+        }
 
-        if session.isReachable {
-            session.sendMessage(enrichedPayload, replyHandler: nil) { _ in
+        try? session.updateApplicationContext(enrichedPayload)
+        session.sendMessage(
+            enrichedPayload,
+            replyHandler: { _ in },
+            errorHandler: { _ in
                 session.transferUserInfo(enrichedPayload)
             }
-        } else {
+        )
+        if !session.isReachable {
             session.transferUserInfo(enrichedPayload)
         }
         #endif
@@ -305,6 +314,17 @@ extension WatchConnectivityClient: WCSessionDelegate {
         DispatchQueue.main.async {
             self.isConnectedToPhone = session.isReachable
             if activationState == .activated {
+                if let pending = self.pendingOutgoingPayload {
+                    self.pendingOutgoingPayload = nil
+                    try? session.updateApplicationContext(pending)
+                    session.sendMessage(
+                        pending,
+                        replyHandler: { _ in },
+                        errorHandler: { _ in
+                            session.transferUserInfo(pending)
+                        }
+                    )
+                }
                 self.requestDealsFromPhone()
             }
         }
