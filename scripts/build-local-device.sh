@@ -13,7 +13,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-TARGET="ios" # ios, android, all
+TARGET="all" # ios, android, all
 PORT="8081"
 LAN_IP=""
 IOS_DEVICE_ID=""
@@ -168,8 +168,13 @@ build_and_install_android() {
     android_serial="$(adb devices | awk 'NR>1 && $2=="device" && $1 !~ /^emulator-/ {print $1; exit}' || true)"
     if [[ -n "${android_serial}" ]]; then
       echo "==> Installing APK onto physical Android device (${android_serial})..."
-      adb -s "${android_serial}" install -r "${apk_path}"
-      echo "✔ Installed on Android device (${android_serial})!"
+      if ! adb -s "${android_serial}" install -r "${apk_path}"; then
+        echo "⚠️  Signature mismatch detected on ${android_serial}; uninstalling existing com.thanh0x.coursedeals and reinstalling..."
+        adb -s "${android_serial}" uninstall com.thanh0x.coursedeals || true
+        adb -s "${android_serial}" install -r "${apk_path}"
+      fi
+      adb -s "${android_serial}" shell monkey -p com.thanh0x.coursedeals -c android.intent.category.LAUNCHER 1 >/dev/null 2>&1 || true
+      echo "✔ Installed and launched on Android device (${android_serial})!"
     else
       echo "ℹ️  No physical Android device detected via adb. APK ready at: ${apk_path}"
     fi

@@ -29,13 +29,13 @@ static def detectHostLanIp() {
 }
 
 def resolveLocalApiBaseUrl() {
-    def propUrl = project.findProperty("localApiUrl")?.toString()?.trim()
+    def propUrl = providers.gradleProperty("localApiUrl").orNull?.trim()
     if (propUrl) return propUrl
-    def envUrl = System.getenv("LOCAL_API_URL")?.trim()
+    def envUrl = providers.environmentVariable("LOCAL_API_URL").orNull?.trim()
     if (envUrl) return envUrl
-    def physicalLocal = project.findProperty("physicalDeviceLocal")?.toString()?.toBoolean() ?: false
+    def physicalLocal = providers.gradleProperty("physicalDeviceLocal").orNull?.toBoolean() ?: false
     if (physicalLocal) {
-        def port = project.findProperty("localApiPort")?.toString()?.trim() ?: "8081"
+        def port = providers.gradleProperty("localApiPort").orNull?.trim() ?: "8081"
         return "http://${detectHostLanIp()}:${port}"
     }
     return ""

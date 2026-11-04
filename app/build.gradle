@@ -29,11 +29,11 @@ static def getLocalIP() {
 }
 
 def getLocalApiUrl() {
-    def propUrl = project.findProperty("localApiUrl")?.toString()?.trim()
+    def propUrl = providers.gradleProperty("localApiUrl").orNull?.trim()
     if (propUrl) return propUrl
-    def envUrl = System.getenv("LOCAL_API_URL")?.trim()
+    def envUrl = providers.environmentVariable("LOCAL_API_URL").orNull?.trim()
     if (envUrl) return envUrl
-    def port = project.findProperty("localApiPort")?.toString()?.trim() ?: "8081"
+    def port = providers.gradleProperty("localApiPort").orNull?.trim() ?: "8081"
     Properties properties = new Properties()
     def localPropertiesFile = project.rootProject.file('local.properties')
     if (localPropertiesFile.exists()) {
