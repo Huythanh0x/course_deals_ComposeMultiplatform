@@ -1,0 +1,57 @@
+plugins {
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.compose.multiplatform)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.detekt)
+}
+
+kotlin {
+    wasmJs {
+        outputModuleName = "course-deals-webApp-wasm"
+        browser {
+            commonWebpackConfig {
+                outputFileName = "webApp-wasm.js"
+            }
+        }
+        binaries.executable()
+    }
+
+    js(IR) {
+        outputModuleName = "course-deals-webApp-js"
+        browser {
+            commonWebpackConfig {
+                outputFileName = "webApp-js.js"
+            }
+        }
+        binaries.executable()
+    }
+
+    sourceSets {
+        webMain {
+            dependencies {
+                implementation compose.runtime
+                implementation compose.foundation
+                implementation compose.material3
+                implementation libs.compose.material.icons.core
+                implementation compose.ui
+                implementation compose.components.resources
+                implementation libs.kotlinx.coroutines.core
+                implementation libs.kotlinx.serialization.json
+            }
+        }
+    }
+}
+
+detekt {
+    buildUponDefaultConfig = true
+    allRules = false
+    config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
+    source.setFrom(
+        files(
+            "src/webMain/kotlin",
+            "src/wasmJsMain/kotlin",
+            "src/jsMain/kotlin",
+        )
+    )
+}
